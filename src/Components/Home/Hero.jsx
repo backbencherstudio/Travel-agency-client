@@ -1,4 +1,7 @@
 import React from 'react'
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from 'react-slick';
 import './home.css';
 import DatePicker from '../Date-picker/DatePicker';
 import image1 from '../../assets/img/hero-img/image-1.png';
@@ -8,6 +11,30 @@ import image4 from '../../assets/img/hero-img/image-4.png';
 import image5 from '../../assets/img/hero-img/image-5.png';
 
 const Hero = () => {
+    const sliderSettings = {
+        dots: true, // Enable navigation dots
+        infinite: true, // Infinite scrolling
+        speed: 500, // Animation speed
+        slidesToShow: 3, // Number of slides visible
+        slidesToScroll: 1, // Number of slides to scroll per swipe
+        centerMode: true, // Center the active slide
+        centerPadding: "10px", // Padding around the center slide
+        responsive: [
+          {
+            breakpoint: 1024, // Tablet and smaller
+            settings: {
+              slidesToShow: 2,
+            },
+          },
+          {
+            breakpoint: 768, // Mobile and smaller
+            settings: {
+              slidesToShow: 1,
+            },
+          },
+        ],
+      };
+
   return (
     <div className=''>
         <div className='rectangular-1'></div>
@@ -37,12 +64,54 @@ const Hero = () => {
                 </div>
             </div>
             {/* image section */}
-            <div className='grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] mx-8 md:mx-auto mt-8'>
-                <img src={image1} alt="" className='w-[262.187px] h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image2} alt="" className='w-[255.739px] h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image3} alt="" className='w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image4} alt="" className='w-[255.739px] h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
-                <img src={image5} alt="" className='w-[262.187px] h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
+            <div className='hidden md:block'>
+                <div className='grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] mx-8 md:mx-auto mt-8'>
+                    <img src={image1} alt="" className='w-[262.187px] h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover' />
+                    <img src={image2} alt="" className='w-[255.739px] h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover' />
+                    <img src={image3} alt="" className='w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover' />
+                    <img src={image4} alt="" className='w-[255.739px] h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
+                    <img src={image5} alt="" className='w-[262.187px] h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
+                </div>
+            </div>
+            {/* for small devices */}
+            <div className="md:hidden container mx-auto mt-8">
+                <Slider {...sliderSettings} className="mx-4 md:mx-auto">
+                    <div>
+                    <img
+                        src={image1}
+                        alt=""
+                        className="w-[268px] h-[301px]  flex-shrink-0 rounded-2xl object-cover"
+                    />
+                    </div>
+                    <div>
+                    <img
+                        src={image2}
+                        alt=""
+                        className="w-[268px] h-[301px]  flex-shrink-0 rounded-2xl object-cover"
+                    />
+                    </div>
+                    <div>
+                    <img
+                        src={image3}
+                        alt=""
+                        className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
+                    />
+                    </div>
+                    <div>
+                    <img
+                        src={image4}
+                        alt=""
+                        className="w-[268px] h-[301px]  flex-shrink-0 rounded-2xl object-cover scale-x-[-1]"
+                    />
+                    </div>
+                    <div>
+                    <img
+                        src={image5}
+                        alt=""
+                        className="w-[268px] h-[301px]  flex-shrink-0 rounded-2xl object-cover scale-x-[-1]"
+                    />
+                    </div>
+                </Slider>
             </div>
         </div>
     </div>

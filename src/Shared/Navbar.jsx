@@ -59,7 +59,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="nav-style">
+    <header className="nav-style z-10">
         <div className="mx-auto container px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
                 <div className="md:flex md:items-center md:gap-12">

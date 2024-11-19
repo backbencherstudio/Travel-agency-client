@@ -156,7 +156,7 @@ export default function DatePicker() {
                 {isOpen && (
                   <div
                     id="datepicker-container"
-                    className="w-[350px] shadow-datepicker absolute right-0 mt-2 rounded-xl z-10 border border-stroke bg-white pt-5 dark:border-dark-3 dark:bg-dark-2"
+                    className="w-[282px] md:w-[350px] shadow-datepicker grid absolute md:right-0 mr-4 mt-2 rounded-xl z-10 border border-stroke bg-white pt-5 dark:border-dark-3 dark:bg-dark-2"
                   >
                     <div className="flex items-center justify-between px-5">
                       <button
