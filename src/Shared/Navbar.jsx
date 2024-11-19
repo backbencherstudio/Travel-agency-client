@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/Logo.svg';
 import arrowDown from '../assets/img/arrow-down.svg';
 import languageLogo from '../assets/img/Language.svg';
+import './nav.css';
 
 const Navbar = () => {
     const [contactDropDown, setContactDropDown] = useState(false);
@@ -58,7 +59,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-white">
+    <header className="nav-style">
         <div className="mx-auto container px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
                 <div className="md:flex md:items-center md:gap-12">

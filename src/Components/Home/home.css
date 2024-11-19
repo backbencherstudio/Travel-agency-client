@@ -1,0 +1,19 @@
+.rectangular-1 {
+    width: 311.63px;
+    height: 304.727px;
+    position: absolute;
+    left: -43px;
+    bottom: 188.273px;
+    background: var(--Orange-Orange-500, #EB5B2A);
+    filter: blur(273.614990234375px);
+}
+
+.rectangular-2 {
+    width: 311.63px;
+    height: 304.727px;
+    position: absolute;
+    right: 156.37px;
+    top: 278px;
+    background: #3D9FFB;
+    filter: blur(228.61500549316406px);
+}

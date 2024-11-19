@@ -1,0 +1,6 @@
+.nav-style {
+    /* padding: 16px 192px; */
+    display: flex;
+    background: var(--W, #FFF);
+    box-shadow: 0px 4px 35px 0px rgba(0, 102, 255, 0.08);
+}
