@@ -18,7 +18,8 @@ const Hero = () => {
         slidesToShow: 3, // Number of slides visible
         slidesToScroll: 1, // Number of slides to scroll per swipe
         centerMode: true, // Center the active slide
-        centerPadding: "10px", // Padding around the center slide
+        centerPadding: "30px", // Padding around the center slide
+        arrows: false,
         responsive: [
           {
             breakpoint: 1024, // Tablet and smaller
@@ -39,7 +40,7 @@ const Hero = () => {
     <div className=''>
         <div className='rectangular-1'></div>
         <div className='rectangular-2'></div>
-        <div className='container mx-auto pt-4 pb-20'>
+        <div className='container mx-auto'>
             <div className='max-w-7xl mx-2 md:mx-auto mt-12'>
                 <div className='text-[23px] md:text-7xl font-bold text-center'>Explore the World with Our Curated Travel Experiences</div>
                 <div className='max-w-[768px] md:w-[722px] mx-auto mt-4'>
@@ -63,16 +64,7 @@ const Hero = () => {
                     </div>
                 </div>
             </div>
-            {/* image section */}
-            <div className='hidden md:block'>
-                <div className='grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] mx-8 md:mx-auto mt-8'>
-                    <img src={image1} alt="" className='w-[262.187px] h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover' />
-                    <img src={image2} alt="" className='w-[255.739px] h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover' />
-                    <img src={image3} alt="" className='w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover' />
-                    <img src={image4} alt="" className='w-[255.739px] h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
-                    <img src={image5} alt="" className='w-[262.187px] h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
-                </div>
-            </div>
+            
             {/* for small devices */}
             <div className="md:hidden container mx-auto mt-8">
                 <Slider {...sliderSettings} className="mx-4 md:mx-auto">
@@ -112,6 +104,16 @@ const Hero = () => {
                     />
                     </div>
                 </Slider>
+            </div>
+        </div>
+        {/* image section */}
+        <div className='hidden md:block'>
+            <div className='grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] mx-8 md:mx-auto mt-8'>
+                <img src={image1} alt="" className='w-[262.187px] h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover' />
+                <img src={image2} alt="" className='w-[255.739px] h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover' />
+                <img src={image3} alt="" className='w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover' />
+                <img src={image4} alt="" className='w-[255.739px] h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
+                <img src={image5} alt="" className='w-[262.187px] h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
             </div>
         </div>
     </div>

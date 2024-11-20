@@ -188,11 +188,7 @@ const Navbar = () => {
                 </div>
             </div>
             {/* Mobile Menu with Animation */}
-            <div
-                className={`fixed inset-0 lg:hidden ${isMenuOpen ? 'visible' : 'invisible'
-                    } transition-visibility duration-300`}
-                style={{ transitionProperty: 'visibility' }}
-            >
+            <div className={`fixed inset-0 lg:hidden ${isMenuOpen ? 'visible' : 'invisible'} transition-visibility duration-300`} style={{ transitionProperty: 'visibility' }}>
                 {/* Semi-transparent overlay */}
                 <div
                     className={`absolute inset-0 bg-black transition-opacity duration-300 ${isMenuOpen ? 'opacity-50' : 'opacity-0'
