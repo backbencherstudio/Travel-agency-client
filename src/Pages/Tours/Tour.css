@@ -1,0 +1,11 @@
+.why{
+    color: var(--Gray-Black-500, #1D1F2C);
+text-align: center;
+
+/* 48/Bold */
+font-family: Inter;
+font-size: 48px;
+font-style: normal;
+font-weight: 700;
+line-height: 130%; /* 62.4px */
+}

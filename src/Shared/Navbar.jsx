@@ -77,7 +77,7 @@ const Navbar = () => {
                         </li>
 
                         <li>
-                        <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Tours </a>
+                        <a className="text-[#475467] transition hover:text-gray-500/75" href="/tours"> Tours </a>
                         </li>
 
                         <li>
