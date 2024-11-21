@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CiSearch } from 'react-icons/ci';
@@ -80,6 +80,57 @@ function AllTours() {
     });
     console.log(selectedPopularAreas); // This will print the selected popular areas
 
+
+    const [tours, setTours] = useState([]);
+    const [filters, setFilters] = useState({
+        location: '',
+        budget: 5000,
+        startDate: null,
+        endDate: null,
+        page: 1,
+        limit: 10,
+        ratingFilters: { 5: false, 4: false, 3: false, 2: false, 1: false },
+    });
+
+    const [totalPages, setTotalPages] = useState(0);
+
+    const applyFilters = async () => {
+        setLoading(true);
+    
+        const queryParams = new URLSearchParams();
+    
+        if (filters.location) queryParams.append('location', filters.location);
+        if (filters.budget) queryParams.append('budget', filters.budget);
+        if (filters.page) queryParams.append('page', filters.page);
+        if (filters.limit) queryParams.append('limit', filters.limit);
+    
+        // Add rating filters to query string
+        Object.keys(filters.ratingFilters).forEach((rating) => {
+          if (filters.ratingFilters[rating]) {
+            queryParams.append('ratingFilters[' + rating + ']', true);
+          }
+        });
+    
+        try {
+          const response = await fetch(`http://localhost:5000/api/tours?${queryParams.toString()}`);
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch tours');
+          }
+    
+          const data = await response.json();
+          setTours(data.tours);  // Set filtered tours
+          setLoading(false);
+        } catch (err) {
+          setError(err.message);  // Handle any error
+          setLoading(false);
+        }
+      };
+
+    // Call applyFilters whenever filters change
+    useEffect(() => {
+        applyFilters();
+    }, [filters]);
 
     return (
         <div className='container mx-auto'>
