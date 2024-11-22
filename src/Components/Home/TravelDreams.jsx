@@ -7,7 +7,7 @@ import image4 from '../../assets/img/travel/image-4.png';
 const TravelDreams = () => {
   return (
     <div className='container mx-auto'>
-        <div className='text-xl md:text-5xl font-bold text-center'>Bringing Your Travel Dreams to Life</div>
+        <div className='text-2xl md:text-5xl font-bold text-center'>Bringing Your Travel Dreams to Life</div>
         <div className='max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-start content-center self-center gap-12 md:gap-20 py-12 md:py-32'>
             <div className='flex flex-col gap-5 md:w-[30rem]'>
                 <div className='text-xl md:text-[32px] font-bold text-center md:text-left'>Why Choose <span className='text-orange-500'>Around 360?</span></div>
@@ -21,12 +21,12 @@ const TravelDreams = () => {
                 <img src={image1} alt="" className='w-[137px] md:w-[274px] h-[224px] md:h-[448px] object-cover rounded-[95px]' />
                 <div className='grid items-end '>
                     <div></div>
-                    <div className='relative right-4 bg-white rounded-tl-[50px] md:rounded-tl-[105px] md:rounded-bl-[94px] pl-2 md:pl-3'>
+                    <div className='relative right-3 md:right-6 bg-white rounded-l-[50px] md:rounded-tl-[105px] md:rounded-bl-[94px] pl-2 md:pl-3'>
                         <img src={image4} alt="" className='w-[100px] md:w-[200px] h-[166px] md:h-[332px] object-cover rounded-[90px]' />
                     </div>
                 </div>
                 <div className='grid items-start '>
-                    <div className='relative right-10 bg-white rounded-b-full md:rounded-b-[92px] pl-2 md:pl-3 pb-2'>
+                    <div className='relative right-8 md:right-16 bg-white rounded-b-full md:rounded-b-[92px] pl-2 md:pl-3 pb-2'>
                         <img src={image3} alt="" className='w-[90px] md:w-[180px] h-[155.5px] md:h-[311px] object-cover rounded-[90px]' />
                         <div></div>
                     </div>

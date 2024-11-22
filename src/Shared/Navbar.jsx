@@ -63,7 +63,7 @@ const Navbar = () => {
         <div className="mx-auto container px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
                 <div className="md:flex md:items-center md:gap-12">
-                    <a className="block text-teal-600" href="#">
+                    <a className="block text-teal-600" href="/">
                         <span className="sr-only">Home</span>
                         <img src={logo} alt="" className=' w-44' />
                     </a>
@@ -73,7 +73,7 @@ const Navbar = () => {
                     <nav aria-label="Global">
                     <ul className="flex items-center gap-6 text-base">
                         <li>
-                        <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Home </a>
+                        <a className="text-[#475467] transition hover:text-gray-500/75" href="/"> Home </a>
                         </li>
 
                         <li>
@@ -213,11 +213,11 @@ const Navbar = () => {
                     <nav className="flex flex-col p-4 space-y-4">
                         <ul className=" text-base">
                             <li>
-                            <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Home </a>
+                            <a className="text-[#475467] transition hover:text-gray-500/75" href="/"> Home </a>
                             </li>
 
                             <li>
-                            <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Tours </a>
+                            <a className="text-[#475467] transition hover:text-gray-500/75" href="/tours"> Tours </a>
                             </li>
 
                             <li>
