@@ -6,7 +6,7 @@ import image4 from '../../assets/img/travel/image-4.png';
 
 const TravelDreams = () => {
   return (
-    <div className='container mx-auto'>
+    <div className='container px-8 md:mx-auto'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Bringing Your Travel Dreams to Life</div>
         <div className='max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-start content-center self-center gap-12 md:gap-20 py-12 md:py-32'>
             <div className='flex flex-col gap-5 md:w-[30rem]'>
