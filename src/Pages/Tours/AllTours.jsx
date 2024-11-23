@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { CiSearch } from 'react-icons/ci';
 import { FaRegCalendarAlt, FaStar } from 'react-icons/fa';
+import TourCard from './tourCard';
 
 function AllTours() {
     const [startDate, setStartDate] = useState(null);
@@ -12,6 +13,7 @@ function AllTours() {
     const [isRatingOpen, setIsRatingOpen] = useState(false);
     const [isCancellationOpen, setIsCancellationOpen] = useState(false);
     const [isResidenceOpen, setResidenceOpen] = useState(false);
+    const [isDestinationOpen, setDestinationOpen] = useState(false);
     const [isMealPlanOpen, setMealPlanOpen] = useState(false);
     const [isPopularAreaOpen, setPopularAreaOpen] = useState(false);
     const [budget, setBudget] = useState(5000); // Default budget set to 5000 
@@ -23,6 +25,7 @@ function AllTours() {
     const toggleResidence = () => setResidenceOpen((prev) => !prev);
     const toggleMealPlan = () => setMealPlanOpen((prev) => !prev);
     const togglePopularArea = () => setPopularAreaOpen((prev) => !prev);
+    const toggleDestination = () => setDestinationOpen((prev) => !prev);
 
     const handleBudgetChange = (e) => {
         setBudget(e.target.value); // Update budget state
@@ -34,7 +37,6 @@ function AllTours() {
 
 
     const [searchDestination, setSearchDestination] = useState('');
-    console.log(budget); // This will print the selected budget value
     const [ratingFilters, setRatingFilters] = useState({
         fiveStars: false,
         fourStars: false,
@@ -42,17 +44,16 @@ function AllTours() {
         twoStars: false,
         oneStar: false,
     });
+
     const handleRatingChange = (rating) => {
         setRatingFilters((prevState) => ({
             ...prevState,
             [rating]: !prevState[rating],
         }));
     };
-    console.log(ratingFilters); // This will print the selected ratings as true/false
-    const [isFreeCancellation, setIsFreeCancellation] = useState(false);
 
-    console.log(isFreeCancellation); // This will print true or false
-    const [selectedResidences, setSelectedResidences] = useState({
+    const [isFreeCancellation, setIsFreeCancellation] = useState(false);
+    const [selectedDestinations, setSelectedDestinations] = useState({
         indonesia: false,
         bali: false,
         iceland: false,
@@ -60,14 +61,24 @@ function AllTours() {
         italy: false,
         paris: false,
     });
-    console.log(selectedResidences); // This will print the selected residences
+
+    const [selectedResidences, setSelectedResidences] = useState({
+        resort: false,
+        hotel: false,
+        villa: false,
+        apartment: false,
+        privateVacationHome: false,
+        guesthouse: false,
+        houseboat: false,
+    });
+
     const [selectedMealPlans, setSelectedMealPlans] = useState({
         breakfast: false,
         allInclusive: false,
         dinner: false,
         lunch: false,
     });
-    console.log(selectedMealPlans); // This will print the selected meal plans
+
     const [selectedPopularAreas, setSelectedPopularAreas] = useState({
         beach: false,
         mountain: false,
@@ -78,63 +89,138 @@ function AllTours() {
         historical: false,
         personalizedTours: false,
     });
-    console.log(selectedPopularAreas); // This will print the selected popular areas
 
 
     const [tours, setTours] = useState([]);
-    const [filters, setFilters] = useState({
-        location: '',
-        budget: 5000,
-        startDate: null,
-        endDate: null,
-        page: 1,
-        limit: 10,
-        ratingFilters: { 5: false, 4: false, 3: false, 2: false, 1: false },
-    });
-
-    const [totalPages, setTotalPages] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const applyFilters = async () => {
         setLoading(true);
-    
-        const queryParams = new URLSearchParams();
-    
-        if (filters.location) queryParams.append('location', filters.location);
-        if (filters.budget) queryParams.append('budget', filters.budget);
-        if (filters.page) queryParams.append('page', filters.page);
-        if (filters.limit) queryParams.append('limit', filters.limit);
-    
-        // Add rating filters to query string
-        Object.keys(filters.ratingFilters).forEach((rating) => {
-          if (filters.ratingFilters[rating]) {
-            queryParams.append('ratingFilters[' + rating + ']', true);
-          }
-        });
-    
-        try {
-          const response = await fetch(`http://localhost:5000/api/tours?${queryParams.toString()}`);
-          
-          if (!response.ok) {
-            throw new Error('Failed to fetch tours');
-          }
-    
-          const data = await response.json();
-          setTours(data.tours);  // Set filtered tours
-          setLoading(false);
-        } catch (err) {
-          setError(err.message);  // Handle any error
-          setLoading(false);
-        }
-      };
+        setError(null);
 
-    // Call applyFilters whenever filters change
+        const queryParams = new URLSearchParams();
+
+        // Location 
+        if (searchDestination) queryParams.append('location', searchDestination);
+
+        // Budget
+        queryParams.append('budget', budget);
+
+        // Dates
+        if (startDate) queryParams.append('startDate', startDate.toISOString());
+        if (endDate) queryParams.append('endDate', endDate.toISOString()); 
+    
+
+
+        Object.keys(ratingFilters).forEach((rating) => {
+            if (ratingFilters[rating]) { 
+                const ratingValue = rating === 'fiveStars' ? 5
+                                    : rating === 'fourStars' ? 4
+                                    : rating === 'threeStars' ? 3
+                                    : rating === 'twoStars' ? 2
+                                    : 1; // oneStar
+                queryParams.append('ratingFilters[' + ratingValue + ']', 'true'); // Send as string "true"
+            }
+        });
+
+        // Free Cancellation
+        if (isFreeCancellation) queryParams.append('isFreeCancellation', true);
+
+        // Destinations
+        const selectedDestinationsArray = Object.keys(selectedDestinations).filter(
+            (dest) => selectedDestinations[dest]
+        );
+        if (selectedDestinationsArray.length > 0) {
+            queryParams.append('destinations', selectedDestinationsArray.join(','));
+        }
+
+        // Residences
+        const selectedResidencesArray = Object.keys(selectedResidences).filter(
+            (residence) => selectedResidences[residence]
+        );
+        if (selectedResidencesArray.length > 0) {
+            queryParams.append('residences', selectedResidencesArray.join(','));
+        }
+
+        // Meal Plans
+        const selectedMealPlansArray = Object.keys(selectedMealPlans).filter(
+            (mealPlan) => selectedMealPlans[mealPlan]
+        );
+        if (selectedMealPlansArray.length > 0) {
+            queryParams.append('mealPlans', selectedMealPlansArray.join(','));
+        }
+
+        // Popular Areas
+        const selectedPopularAreasArray = Object.keys(selectedPopularAreas).filter(
+            (area) => selectedPopularAreas[area]
+        );
+        if (selectedPopularAreasArray.length > 0) {
+            queryParams.append('popularAreas', selectedPopularAreasArray.join(','));
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/tours?${queryParams.toString()}`);
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || 'Failed to fetch tours');
+            }
+
+            const data = await response.json();
+            setTours(data.tours);
+            setLoading(false);
+        } catch (err) {
+            setError(err.message);
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        const fetchAllTours = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await fetch("http://localhost:5000/api/tours"); // Fetch all tours initially
+                const data = await response.json();
+                if (response.ok) {
+                    setTours(data.tours);
+                } else {
+                    console.error("Error fetching tours:", data.message);
+                }
+            } catch (error) {
+                console.error("Error fetching tours:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchAllTours();
+    }, []); // Empty dependency array ensures this runs only once on mount
+
+    useEffect(() => {
+        // Initial fetch when the component mounts (you might want to remove filters here)
+        applyFilters();
+    }, []);
+
+    // Call applyFilters whenever a filter changes (you'll need to add all filter dependencies)
     useEffect(() => {
         applyFilters();
-    }, [filters]);
+    }, [
+        searchDestination,
+        budget,
+        startDate,
+        endDate,
+        ratingFilters,
+        isFreeCancellation,
+        selectedDestinations,
+        selectedResidences,
+        selectedMealPlans,
+        selectedPopularAreas,
+    ]);
 
     return (
         <div className='container mx-auto'>
-            <div className='py-20'>
+            <div className='py-20 flex items-start justify-start gap-20'>
                 {/* Filter Section */}
                 <div className='p-6 bg-white w-fit rounded-xl shadow-md min-w-[300px] flex flex-col gap-3'>
                     {/* Search Input */}
@@ -425,6 +511,114 @@ function AllTours() {
                             </div>
                         )}
                     </div>
+                    {/* Destination Section */}
+                    <div>
+                        <h5
+                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            onClick={toggleDestination}
+                        >
+                            Popular Destination
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="25"
+                                viewBox="0 0 24 25"
+                                fill="none"
+                            >
+                                <path
+                                    d={isResidenceOpen ? 'M7 10.5L12 14.5L17 10.5' : 'M17 14.5L12 10.5L7 14.5'}
+                                    stroke="#0F1416"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </h5>
+
+                        {isDestinationOpen && (
+                            <div className='mt-4 flex flex-col gap-4'>
+                                <div className='flex items-center gap-3'>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedResidences.indonesia}
+                                        onChange={() =>
+                                            setSelectedDestinations((prevState) => ({
+                                                ...prevState,
+                                                indonesia: !prevState.indonesia,
+                                            }))
+                                        }
+                                    />
+
+                                    <p className='text-[#49556D]'>Indonesia </p>
+                                </div>
+                                <div className='flex items-center gap-3'>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedResidences.bali}
+                                        onChange={() =>
+                                            setSelectedDestinations((prevState) => ({
+                                                ...prevState,
+                                                bali: !prevState.bali,
+                                            }))
+                                        }
+                                    />
+                                    <p className='text-[#49556D]'>Bali </p>
+                                </div>
+                                <div className='flex items-center gap-3'>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedResidences.iceland}
+                                        onChange={() =>
+                                            setSelectedDestinations((prevState) => ({
+                                                ...prevState,
+                                                iceland: !prevState.iceland,
+                                            }))
+                                        }
+                                    />
+                                    <p className='text-[#49556D]'>Iceland </p>
+                                </div>
+                                <div className='flex items-center gap-3'>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedResidences.japan}
+                                        onChange={() =>
+                                            setSelectedDestinations((prevState) => ({
+                                                ...prevState,
+                                                japan: !prevState.japan,
+                                            }))
+                                        }
+                                    /> <p className='text-[#49556D]'>Japan </p>
+                                </div>
+                                <div className='flex items-center gap-3'>
+
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedResidences.italy}
+                                        onChange={() =>
+                                            setSelectedDestinations((prevState) => ({
+                                                ...prevState,
+                                                italy: !prevState.italy,
+                                            }))
+                                        }
+                                    />
+                                    <p className='text-[#49556D]'>Italy </p>
+                                </div>
+                                <div className='flex items-center gap-3'>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedResidences.paris}
+                                        onChange={() =>
+                                            setSelectedDestinations((prevState) => ({
+                                                ...prevState,
+                                                paris: !prevState.paris,
+                                            }))
+                                        }
+                                    />
+                                    <p className='text-[#49556D]'>Paris </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     {/* residence Section */}
                     <div>
                         <h5
@@ -454,81 +648,94 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.indonesia}
+                                        checked={selectedResidences.resort}
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
-                                                indonesia: !prevState.indonesia,
+                                                resort: !prevState.resort,
                                             }))
                                         }
                                     />
 
-                                    <p className='text-[#49556D]'>Indonesia </p>
+                                    <p className='text-[#49556D]'>Resort </p>
                                 </div>
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.bali}
+                                        checked={selectedResidences.hotel}
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
-                                                bali: !prevState.bali,
+                                                hotel: !prevState.hotel,
                                             }))
                                         }
                                     />
-                                    <p className='text-[#49556D]'>Bali </p>
+                                    <p className='text-[#49556D]'>Hotel </p>
                                 </div>
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.iceland}
+                                        checked={selectedResidences.villa}
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
-                                                iceland: !prevState.iceland,
+                                                villa: !prevState.villa,
                                             }))
                                         }
                                     />
-                                    <p className='text-[#49556D]'>Iceland </p>
+                                    <p className='text-[#49556D]'>Villa </p>
                                 </div>
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.japan}
+                                        checked={selectedResidences.apartment}
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
-                                                japan: !prevState.japan,
+                                                apartment: !prevState.apartment,
                                             }))
                                         }
-                                    /> <p className='text-[#49556D]'>Japan </p>
+                                    /> <p className='text-[#49556D]'>Apartment </p>
                                 </div>
                                 <div className='flex items-center gap-3'>
 
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.italy}
+                                        checked={selectedResidences.privateVacationHome}
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
-                                                italy: !prevState.italy,
+                                                privateVacationHome: !prevState.privateVacationHome,
                                             }))
                                         }
                                     />
-                                    <p className='text-[#49556D]'>Italy </p>
+                                    <p className='text-[#49556D]'>Private vacation home </p>
                                 </div>
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.paris}
+                                        checked={selectedResidences.guesthouse}
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
-                                                paris: !prevState.paris,
+                                                guesthouse: !prevState.guesthouse,
                                             }))
                                         }
                                     />
-                                    <p className='text-[#49556D]'>Paris </p>
+                                    <p className='text-[#49556D]'>Guesthouse </p>
+                                </div>
+                                <div className='flex items-center gap-3'>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedResidences.houseboat}
+                                        onChange={() =>
+                                            setSelectedResidences((prevState) => ({
+                                                ...prevState,
+                                                houseboat: !prevState.houseboat,
+                                            }))
+                                        }
+                                    />
+                                    <p className='text-[#49556D]'>Houseboat </p>
                                 </div>
                             </div>
                         )}
@@ -762,6 +969,22 @@ function AllTours() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+                <div>
+                    <div className=' '> 
+
+                        {/* Tour Display Section */}
+                        <div className=' '>
+                            {loading && <div>Loading tours...</div>}
+                            {error && <div className="text-red-500">{error}</div>}
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                                {tours.map((tour) => (
+                                    <TourCard key={tour._id} tour={tour} />
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
