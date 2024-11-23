@@ -9,7 +9,7 @@ const TravelPackages = () => {
   return (
     <div className='max-w-7xl mx-auto'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Exclusive Travel Packages</div>
-        <div className='flex flex-col md:flex-row gap-6 items-center justify-center py-12'>
+        <div className='flex flex-col md:flex-row flex-wrap gap-6 items-center justify-center py-12'>
             <div class="relative flex flex-col my-6 bg-white shadow-md border border-slate-200 rounded-lg w-80 md:w-96">
                 <div class="relative h-56 m-2.5 overflow-hidden text-white rounded-md">
                 <img src={package1} alt="card-image" />

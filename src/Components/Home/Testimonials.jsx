@@ -23,7 +23,7 @@ const Testimonials = () => {
                         <span class="inline-block w-1 h-1 rounded-full bg-indigo-500 ml-1"></span>
                     </div> */}
                 </div>
-                <div class="-mx-3 flex flex-wrap gap-4 items-start justify-between py-12 md:py-20">
+                <div class="-mx-3 flex flex-col md:flex-row flex-wrap gap-4 items-start justify-between py-12 md:py-20">
                         <div class="md:w-[28%] rounded-lg bg-white shadow p-4 text-gray-800 font-light">
                             <div className='flex gap-2 items-center'>
                                 <img src={starFull} alt="" />
