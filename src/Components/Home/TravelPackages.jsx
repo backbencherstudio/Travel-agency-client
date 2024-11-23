@@ -23,10 +23,10 @@ const TravelPackages = () => {
                             Hotel + All inclusive
                         </div>
                     </div>
-                    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
+                    <h6 class="mb-2 text-[#1D1F2C] text-xl font-bold">
                         The Allure Italy's Rich Culture. History. And Cuisine.
                     </h6>
-                    <p class="text-[#65666b] leading-normal text-sm font-light">
+                    <p class="text-[#4A4C56] text-sm leading-normal font-normal">
                         Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for...
                         <a href='' className=' text-blue-500'>Read more</a>
                     </p>
@@ -98,10 +98,10 @@ const TravelPackages = () => {
                             Hotel + All inclusive
                         </div>
                     </div>
-                    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
+                    <h6 class="mb-2 text-[#1D1F2C] text-xl font-bold">
                         Explore Europe’s charm, history, and landscapes.
                     </h6>
-                    <p class="text-[#65666b] leading-normal text-sm font-light">
+                    <p class="text-[#4A4C56] text-sm leading-normal font-normal">
                         Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for...
                         <a href='' className=' text-blue-500'>Read more</a>
                     </p>
@@ -173,10 +173,10 @@ const TravelPackages = () => {
                             Hotel + All inclusive
                         </div>
                     </div>
-                    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
+                    <h6 class="mb-2 text-[#1D1F2C] text-xl font-bold">
                         Experience Africa’s wildlife, landscapes, and rich culture.
                     </h6>
-                    <p class="text-[#65666b] text-sm leading-normal font-light">
+                    <p class="text-[#4A4C56] text-sm leading-normal font-normal">
                         Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for...
                         <a href='' className=' text-blue-500'>Read more</a>
                     </p>
