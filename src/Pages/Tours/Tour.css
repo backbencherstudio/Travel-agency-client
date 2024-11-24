@@ -9,3 +9,24 @@ font-style: normal;
 font-weight: 700;
 line-height: 130%; /* 62.4px */
 }
+
+ input[type='range']::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            pointer-events: all;
+            width: 14px;
+            height: 14px;
+            background-color: white;
+            border:1px solid #EB5B2A;
+            border-radius: 50%;
+            box-shadow:  1px  rgb(247, 94, 6);
+            cursor: pointer;
+          }
+          
+          input[type='range']::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow:  4px 4px 4px 4px   rgb(247, 94, 6);
+            cursor: pointer;
+          }
