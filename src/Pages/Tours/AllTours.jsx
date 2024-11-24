@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -70,36 +70,36 @@ function AllTours() {
 
     const tours = [
         {
-          id: 1,
-          name: "The Allure Italy's Rich Culture. History. And Cuisine.",
-          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-          rating: 4.8,
-          days: 7,
-          location: "Beijing, China",
-          starting_price: 2999,
-          images: [package1, package2],
+            id: 1,
+            name: "The Allure Italy's Rich Culture. History. And Cuisine.",
+            description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
+            rating: 4.8,
+            days: 7,
+            location: "Beijing, China",
+            starting_price: 2999,
+            images: [package1, package2],
         },
         {
-          id: 2,
-          name: "Explore Europe’s charm, history, and landscapes.",
-          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-          rating: 4.6,
-          days: 5,
-          location: "Beijing, China",
-          starting_price: 3999,
-          images: [package2, package3],
+            id: 2,
+            name: "Explore Europe’s charm, history, and landscapes.",
+            description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
+            rating: 4.6,
+            days: 5,
+            location: "Beijing, China",
+            starting_price: 3999,
+            images: [package2, package3],
         },
         {
-          id: 3,
-          name: "Experience Africa’s wildlife, landscapes, and rich culture.",
-          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-          rating: 4.7,
-          days: 10,
-          location: "Beijing, China",
-          starting_price: 4999,
-          images: [package3, package1],
+            id: 3,
+            name: "Experience Africa’s wildlife, landscapes, and rich culture.",
+            description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
+            rating: 4.7,
+            days: 10,
+            location: "Beijing, China",
+            starting_price: 4999,
+            images: [package3, package1],
         },
-      ];
+    ];
 
     const handleMaxBudgetChange = (e) => {
         setMaxBudget(e.target.value);
@@ -128,8 +128,10 @@ function AllTours() {
     const toggleDestination = () => setDestinationOpen((prev) => !prev);
 
     // Function to apply filters and fetch data
-    
+
     console.log('tours', tours)
+    const startDatePickerRef = useRef(null);
+    const endDatePickerRef = useRef(null);
 
     return (
         <div className='max-w-7xl mx-auto'>
@@ -151,59 +153,44 @@ function AllTours() {
 
                     {/* Duration Section */}
                     <div>
-                        <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
-                            onClick={toggleDuration}
-                        >
-                            Duration
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="25"
-                                viewBox="0 0 24 25"
-                                fill="none"
-                            >
-                                <path
-                                    d={isDurationOpen ? 'M7 10.5L12 14.5L17 10.5' : 'M17 14.5L12 10.5L7 14.5'}
-                                    stroke="#0F1416"
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
-                        </h5>
+                        {/* Start Date Picker */}
+                        <div className='flex border items-center justify-between p-2 mb-4 rounded-md border-[#C1D0E5] shadow-sm'>
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(date) => setStartDate(date)}
+                                selectsStart
+                                startDate={startDate}
+                                endDate={endDate}
+                                placeholderText="Start Date"
+                                className='outline-none w-full'
+                                ref={startDatePickerRef} // Assign ref to the startDate DatePicker
+                            />
+                            {/* Calendar Icon for Start Date */}
+                            <FaRegCalendarAlt
+                                onClick={() => startDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
+                                className='text-2xl cursor-pointer ml-2'
+                            />
+                        </div>
 
-                        {isDurationOpen && (
-                            <div className='mt-4 flex flex-col gap-4'>
-                                <div className='flex flex-col gap-3'>
-                                    <div className='flex border items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
-                                        <DatePicker
-                                            selected={startDate}
-                                            onChange={(date) => setStartDate(date)}
-                                            selectsStart
-                                            startDate={startDate}
-                                            endDate={endDate}
-                                            placeholderText="Start Date"
-                                            className='outline-none w-full'
-                                        />
-                                        <FaRegCalendarAlt className='text-2xl' />
-                                    </div>
-                                    <div className='flex border items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
-                                        <DatePicker
-                                            selected={endDate}
-                                            onChange={(date) => setEndDate(date)}
-                                            selectsEnd
-                                            startDate={startDate}
-                                            endDate={endDate}
-                                            minDate={startDate}
-                                            placeholderText="End Date"
-                                            className='outline-none w-full'
-                                        />
-                                        <FaRegCalendarAlt className='text-2xl' />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                        {/* End Date Picker */}
+                        <div className='flex border items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
+                            <DatePicker
+                                selected={endDate}
+                                onChange={(date) => setEndDate(date)}
+                                selectsEnd
+                                startDate={startDate}
+                                endDate={endDate}
+                                minDate={startDate}
+                                placeholderText="End Date"
+                                className='outline-none w-full'
+                                ref={endDatePickerRef} // Assign ref to the endDate DatePicker
+                            />
+                            {/* Calendar Icon for End Date */}
+                            <FaRegCalendarAlt
+                                onClick={() => endDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
+                                className='text-2xl cursor-pointer ml-2'
+                            />
+                        </div>
                     </div>
 
                     {/* Budget Section */}
@@ -239,32 +226,32 @@ function AllTours() {
                                         <span>${maxBudget}</span>
                                     </div>
                                     <div className='flex items-center justify-center'>
-                                       
-                                            {/* Min Budget Range Slider */}
-                                            <input
-                                                type="range"
-                                                min="0"
-                                                max={maxBudget}  // Min budget cannot exceed max budget
-                                                step="100"
-                                                value={minBudget}
-                                                onChange={(e) => setMinBudget(Math.min(e.target.value, maxBudget))}  // Ensure minBudget does not exceed maxBudget
-                                                style={minSliderStyle} // Dynamic background color based on the budget
-                                                className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
-                                            />
-                                     
-                                       
-                                            {/* Max Budget Range Slider */}
-                                            <input
-                                                type="range"
-                                                min={minBudget}  // Max budget cannot go below min budget
-                                                max="5000"
-                                                step="100"
-                                                value={maxBudget}
-                                                onChange={(e) => setMaxBudget(Math.max(e.target.value, minBudget))}  // Ensure maxBudget does not go below minBudget
-                                                style={sliderStyle} // Dynamic background color based on the budget
-                                                className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
-                                            />
-                                        
+
+                                        {/* Min Budget Range Slider */}
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max={maxBudget}  // Min budget cannot exceed max budget
+                                            step="100"
+                                            value={minBudget}
+                                            onChange={(e) => setMinBudget(Math.min(e.target.value, maxBudget))}  // Ensure minBudget does not exceed maxBudget
+                                            style={minSliderStyle} // Dynamic background color based on the budget
+                                            className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
+                                        />
+
+
+                                        {/* Max Budget Range Slider */}
+                                        <input
+                                            type="range"
+                                            min={minBudget}  // Max budget cannot go below min budget
+                                            max="5000"
+                                            step="100"
+                                            value={maxBudget}
+                                            onChange={(e) => setMaxBudget(Math.max(e.target.value, minBudget))}  // Ensure maxBudget does not go below minBudget
+                                            style={sliderStyle} // Dynamic background color based on the budget
+                                            className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
+                                        />
+
                                     </div>
                                 </div>
                             </div>
@@ -917,7 +904,7 @@ function AllTours() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
