@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import { CiSearch } from 'react-icons/ci';
 import { FaRegCalendarAlt, FaStar } from 'react-icons/fa';
 import TourCard from './tourCard';
@@ -16,26 +17,8 @@ function AllTours() {
     const [isDestinationOpen, setDestinationOpen] = useState(false);
     const [isMealPlanOpen, setMealPlanOpen] = useState(false);
     const [isPopularAreaOpen, setPopularAreaOpen] = useState(false);
-    const [budget, setBudget] = useState(5000); // Default budget set to 5000 
-
-    const toggleDuration = () => setIsDurationOpen((prev) => !prev);
-    const toggleBudget = () => setIsBudgetOpen((prev) => !prev);
-    const toggleRating = () => setIsRatingOpen((prev) => !prev);
-    const toggleCancellation = () => setIsCancellationOpen((prev) => !prev);
-    const toggleResidence = () => setResidenceOpen((prev) => !prev);
-    const toggleMealPlan = () => setMealPlanOpen((prev) => !prev);
-    const togglePopularArea = () => setPopularAreaOpen((prev) => !prev);
-    const toggleDestination = () => setDestinationOpen((prev) => !prev);
-
-    const handleBudgetChange = (e) => {
-        setBudget(e.target.value); // Update budget state
-    };
-
-    const sliderStyle = {
-        background: `linear-gradient(to right, rgba(235, 91, 42, 1) ${budget / 50}%, rgba(224, 224, 224, 1) ${budget / 50}%)`,
-    };
-
-
+    const [maxBudget, setMaxBudget] = useState(5000);
+    const [minBudget, setMinBudget] = useState(0);
     const [searchDestination, setSearchDestination] = useState('');
     const [ratingFilters, setRatingFilters] = useState({
         fiveStars: false,
@@ -44,14 +27,6 @@ function AllTours() {
         twoStars: false,
         oneStar: false,
     });
-
-    const handleRatingChange = (rating) => {
-        setRatingFilters((prevState) => ({
-            ...prevState,
-            [rating]: !prevState[rating],
-        }));
-    };
-
     const [isFreeCancellation, setIsFreeCancellation] = useState(false);
     const [selectedDestinations, setSelectedDestinations] = useState({
         indonesia: false,
@@ -61,7 +36,6 @@ function AllTours() {
         italy: false,
         paris: false,
     });
-
     const [selectedResidences, setSelectedResidences] = useState({
         resort: false,
         hotel: false,
@@ -71,14 +45,12 @@ function AllTours() {
         guesthouse: false,
         houseboat: false,
     });
-
     const [selectedMealPlans, setSelectedMealPlans] = useState({
         breakfast: false,
         allInclusive: false,
         dinner: false,
         lunch: false,
     });
-
     const [selectedPopularAreas, setSelectedPopularAreas] = useState({
         beach: false,
         mountain: false,
@@ -89,134 +61,37 @@ function AllTours() {
         historical: false,
         personalizedTours: false,
     });
-
-
     const [tours, setTours] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const applyFilters = async () => {
-        setLoading(true);
-        setError(null);
-
-        const queryParams = new URLSearchParams();
-
-        // Location 
-        if (searchDestination) queryParams.append('location', searchDestination);
-
-        // Budget
-        queryParams.append('budget', budget);
-
-        // Dates
-        if (startDate) queryParams.append('startDate', startDate.toISOString());
-        if (endDate) queryParams.append('endDate', endDate.toISOString()); 
-    
-
-
-        Object.keys(ratingFilters).forEach((rating) => {
-            if (ratingFilters[rating]) { 
-                const ratingValue = rating === 'fiveStars' ? 5
-                                    : rating === 'fourStars' ? 4
-                                    : rating === 'threeStars' ? 3
-                                    : rating === 'twoStars' ? 2
-                                    : 1; // oneStar
-                queryParams.append('ratingFilters[' + ratingValue + ']', 'true'); // Send as string "true"
-            }
-        });
-
-        // Free Cancellation
-        if (isFreeCancellation) queryParams.append('isFreeCancellation', true);
-
-        // Destinations
-        const selectedDestinationsArray = Object.keys(selectedDestinations).filter(
-            (dest) => selectedDestinations[dest]
-        );
-        if (selectedDestinationsArray.length > 0) {
-            queryParams.append('destinations', selectedDestinationsArray.join(','));
-        }
-
-        // Residences
-        const selectedResidencesArray = Object.keys(selectedResidences).filter(
-            (residence) => selectedResidences[residence]
-        );
-        if (selectedResidencesArray.length > 0) {
-            queryParams.append('residences', selectedResidencesArray.join(','));
-        }
-
-        // Meal Plans
-        const selectedMealPlansArray = Object.keys(selectedMealPlans).filter(
-            (mealPlan) => selectedMealPlans[mealPlan]
-        );
-        if (selectedMealPlansArray.length > 0) {
-            queryParams.append('mealPlans', selectedMealPlansArray.join(','));
-        }
-
-        // Popular Areas
-        const selectedPopularAreasArray = Object.keys(selectedPopularAreas).filter(
-            (area) => selectedPopularAreas[area]
-        );
-        if (selectedPopularAreasArray.length > 0) {
-            queryParams.append('popularAreas', selectedPopularAreasArray.join(','));
-        }
-
-        try {
-            const response = await fetch(`http://localhost:5000/api/tours?${queryParams.toString()}`);
-
-            if (!response.ok) {
-                const data = await response.json();
-                throw new Error(data.message || 'Failed to fetch tours');
-            }
-
-            const data = await response.json();
-            setTours(data.tours);
-            setLoading(false);
-        } catch (err) {
-            setError(err.message);
-            setLoading(false);
-        }
+    const handleMaxBudgetChange = (e) => {
+        setMaxBudget(e.target.value);
     };
-    useEffect(() => {
-        const fetchAllTours = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const response = await fetch("http://localhost:5000/api/tours"); // Fetch all tours initially
-                const data = await response.json();
-                if (response.ok) {
-                    setTours(data.tours);
-                } else {
-                    console.error("Error fetching tours:", data.message);
-                }
-            } catch (error) {
-                console.error("Error fetching tours:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const handleMinBudgetChange = (e) => {
+        setMaxBudget(e.target.value);
+    };
 
-        fetchAllTours();
-    }, []); // Empty dependency array ensures this runs only once on mount
+    const sliderStyle = {
+        background: `linear-gradient(to right, rgba(235, 91, 42, 1) ${maxBudget / 50}%, rgba(224, 224, 224, 1) ${maxBudget / 50}%)`,
+    };
+    const minSliderStyle = {
+        background: `linear-gradient(to right, rgba(235, 91, 42, 1) ${minBudget / 50}%, rgba(224, 224, 224, 1) ${minBudget / 50}%)`,
+    };
 
-    useEffect(() => {
-        // Initial fetch when the component mounts (you might want to remove filters here)
-        applyFilters();
-    }, []);
 
-    // Call applyFilters whenever a filter changes (you'll need to add all filter dependencies)
-    useEffect(() => {
-        applyFilters();
-    }, [
-        searchDestination,
-        budget,
-        startDate,
-        endDate,
-        ratingFilters,
-        isFreeCancellation,
-        selectedDestinations,
-        selectedResidences,
-        selectedMealPlans,
-        selectedPopularAreas,
-    ]);
+
+
+    const toggleDuration = () => setIsDurationOpen((prev) => !prev);
+    const toggleBudget = () => setIsBudgetOpen((prev) => !prev);
+    const toggleRating = () => setIsRatingOpen((prev) => !prev);
+    const toggleCancellation = () => setIsCancellationOpen((prev) => !prev);
+    const toggleResidence = () => setResidenceOpen((prev) => !prev);
+    const toggleMealPlan = () => setMealPlanOpen((prev) => !prev);
+    const togglePopularArea = () => setPopularAreaOpen((prev) => !prev);
+    const toggleDestination = () => setDestinationOpen((prev) => !prev);
+
+    // Function to apply filters and fetch data
 
     return (
         <div className='container mx-auto'>
@@ -294,7 +169,7 @@ function AllTours() {
                     </div>
 
                     {/* Budget Section */}
-                    <div>
+                    <div className=''>
                         <h5
                             className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleBudget}
@@ -321,27 +196,43 @@ function AllTours() {
                             <div className='mt-4 flex flex-col gap-4'>
                                 <div>
                                     {/* Budget Range Slider */}
-                                    <div className="flex items-center justify-between text-sm text-black">
-                                        <span>$0</span>
-                                        <span>$5000</span>
+                                    <div className="flex mb-5 items-center justify-between text-sm text-black">
+                                        <span>${minBudget}</span>
+                                        <span>${maxBudget}</span>
                                     </div>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="5000"
-                                        step="100"
-                                        value={budget}
-                                        onChange={handleBudgetChange}
-                                        style={sliderStyle} // Dynamic background color based on the budget
-                                        className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
-                                    />
-                                    <p className="text-center mt-2 text-gray-700 font-medium">
-                                        ${budget}
-                                    </p>
+                                    <div className='flex items-center justify-center'>
+                                       
+                                            {/* Min Budget Range Slider */}
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max={maxBudget}  // Min budget cannot exceed max budget
+                                                step="100"
+                                                value={minBudget}
+                                                onChange={(e) => setMinBudget(Math.min(e.target.value, maxBudget))}  // Ensure minBudget does not exceed maxBudget
+                                                style={minSliderStyle} // Dynamic background color based on the budget
+                                                className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
+                                            />
+                                     
+                                       
+                                            {/* Max Budget Range Slider */}
+                                            <input
+                                                type="range"
+                                                min={minBudget}  // Max budget cannot go below min budget
+                                                max="5000"
+                                                step="100"
+                                                value={maxBudget}
+                                                onChange={(e) => setMaxBudget(Math.max(e.target.value, minBudget))}  // Ensure maxBudget does not go below minBudget
+                                                style={sliderStyle} // Dynamic background color based on the budget
+                                                className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
+                                            />
+                                        
+                                    </div>
                                 </div>
                             </div>
                         )}
                     </div>
+
                     {/* Rating Section */}
                     <div>
                         <h5
@@ -374,7 +265,7 @@ function AllTours() {
                                             <input
                                                 type="checkbox"
                                                 checked={ratingFilters.fiveStars}
-                                                onChange={() => handleRatingChange('fiveStars')}
+                                                onChange={() => handleRatingChange(5)}
                                             />
 
                                             <div className='flex gap-[1px]'>
@@ -394,7 +285,7 @@ function AllTours() {
                                             <input
                                                 type="checkbox"
                                                 checked={ratingFilters.fourStars}
-                                                onChange={() => handleRatingChange('fourStars')}
+                                                onChange={() => handleRatingChange(4)}
                                             />
 
                                             <div className='flex gap-[1px]'>
@@ -414,7 +305,7 @@ function AllTours() {
                                             <input
                                                 type="checkbox"
                                                 checked={ratingFilters.threeStars}
-                                                onChange={() => handleRatingChange('threeStars')}
+                                                onChange={() => handleRatingChange(3)}
                                             />
 
                                             <div className='flex gap-[1px]'>
@@ -434,7 +325,7 @@ function AllTours() {
                                             <input
                                                 type="checkbox"
                                                 checked={ratingFilters.twoStars}
-                                                onChange={() => handleRatingChange('twoStars')}
+                                                onChange={() => handleRatingChange(2)}
                                             />
 
                                             <div className='flex gap-[1px]'>
@@ -454,7 +345,7 @@ function AllTours() {
                                             <input
                                                 type="checkbox"
                                                 checked={ratingFilters.oneStar}
-                                                onChange={() => handleRatingChange('oneStar')}
+                                                onChange={() => handleRatingChange(1)}
                                             />
 
                                             <div className='flex gap-[1px]'>
@@ -526,7 +417,7 @@ function AllTours() {
                                 fill="none"
                             >
                                 <path
-                                    d={isResidenceOpen ? 'M7 10.5L12 14.5L17 10.5' : 'M17 14.5L12 10.5L7 14.5'}
+                                    d={isDestinationOpen ? 'M7 10.5L12 14.5L17 10.5' : 'M17 14.5L12 10.5L7 14.5'}
                                     stroke="#0F1416"
                                     strokeWidth="1.5"
                                     strokeLinecap="round"
@@ -837,7 +728,7 @@ function AllTours() {
                                 fill="none"
                             >
                                 <path
-                                    d={isMealPlanOpen ? 'M7 10.5L12 14.5L17 10.5' : 'M17 14.5L12 10.5L7 14.5'}
+                                    d={isPopularAreaOpen ? 'M7 10.5L12 14.5L17 10.5' : 'M17 14.5L12 10.5L7 14.5'}
                                     stroke="#0F1416"
                                     strokeWidth="1.5"
                                     strokeLinecap="round"
@@ -972,7 +863,7 @@ function AllTours() {
                     </div>
                 </div>
                 <div>
-                    <div className=' '> 
+                    <div className=' '>
 
                         {/* Tour Display Section */}
                         <div className=' '>
