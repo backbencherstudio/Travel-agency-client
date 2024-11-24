@@ -5,6 +5,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { CiSearch } from 'react-icons/ci';
 import { FaRegCalendarAlt, FaStar } from 'react-icons/fa';
 import TourCard from './tourCard';
+import package1 from "../../assets/img/travel-packages/package-1.png";
+import package2 from "../../assets/img/travel-packages/package-2.png";
+import package3 from "../../assets/img/travel-packages/package-3.png";
 
 function AllTours() {
     const [startDate, setStartDate] = useState(null);
@@ -61,9 +64,42 @@ function AllTours() {
         historical: false,
         personalizedTours: false,
     });
-    const [tours, setTours] = useState([]);
+    // const [tours, setTours] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const tours = [
+        {
+          id: 1,
+          name: "The Allure Italy's Rich Culture. History. And Cuisine.",
+          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
+          rating: 4.8,
+          days: 7,
+          location: "Beijing, China",
+          starting_price: 2999,
+          images: [package1, package2],
+        },
+        {
+          id: 2,
+          name: "Explore Europe’s charm, history, and landscapes.",
+          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
+          rating: 4.6,
+          days: 5,
+          location: "Beijing, China",
+          starting_price: 3999,
+          images: [package2, package3],
+        },
+        {
+          id: 3,
+          name: "Experience Africa’s wildlife, landscapes, and rich culture.",
+          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
+          rating: 4.7,
+          days: 10,
+          location: "Beijing, China",
+          starting_price: 4999,
+          images: [package3, package1],
+        },
+      ];
 
     const handleMaxBudgetChange = (e) => {
         setMaxBudget(e.target.value);
@@ -92,12 +128,14 @@ function AllTours() {
     const toggleDestination = () => setDestinationOpen((prev) => !prev);
 
     // Function to apply filters and fetch data
+    
+    console.log('tours', tours)
 
     return (
-        <div className='container mx-auto'>
+        <div className='max-w-7xl mx-auto'>
             <div className='py-20 flex items-start justify-start gap-20'>
                 {/* Filter Section */}
-                <div className='p-6 bg-white w-fit rounded-xl shadow-md min-w-[300px] flex flex-col gap-3'>
+                <div className='p-6 bg-white w-fit rounded-xl shadow-md min-w-[25%] flex flex-col gap-3'>
                     {/* Search Input */}
                     <div className='flex gap-2 border items-center py-2 px-5 rounded-md'>
                         <CiSearch className='text-3xl' />

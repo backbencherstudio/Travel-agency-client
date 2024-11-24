@@ -27,7 +27,7 @@ function Tours() {
             {/* Main Content Section */}
             <div className="  my-20">
                 <h1 className="why mb-12">Why Travel with Us</h1>
-                <div className="container mx-auto flex items-center justify-center gap-6">
+                <div className="max-w-7xl mx-auto flex items-center justify-betweeb gap-12">
                     <div className='w-[286px] border flex flex-col items-center justify-center text-center p-6 gap-4 shadow-md rounded-md'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
                             <g clipPath="url(#clip0_3562_4676)">

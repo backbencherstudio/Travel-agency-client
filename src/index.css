@@ -11,11 +11,11 @@
 
 .active{ 
   color: rgba(235, 91, 42, 1);  
-font-size: 16px;
-font-style: normal;
-font-weight: 700;
-line-height: 160%; 
-letter-spacing: 0.08px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 160%; 
+  letter-spacing: 0.08px;
 } 
 
 .pageTitle{

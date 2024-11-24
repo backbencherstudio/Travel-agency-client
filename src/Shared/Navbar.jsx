@@ -3,6 +3,7 @@ import logo from '../assets/img/Logo.svg';
 import arrowDown from '../assets/img/arrow-down.svg';
 import languageLogo from '../assets/img/Language.svg';
 import './nav.css';
+import { Link, NavLink } from 'react-router-dom';
 
 const Navbar = () => {
     const [contactDropDown, setContactDropDown] = useState(false);
@@ -63,41 +64,41 @@ const Navbar = () => {
         <div className="mx-auto container px-4 sm:px-6 lg:px-8">
             <div className="flex lg:gap-6 h-16 items-center justify-between">
                 <div className="md:flex md:items-center md:gap-12">
-                    <a className="block text-teal-600" href="/">
+                    <Link className="block text-teal-600" to="/">
                         <span className="sr-only">Home</span>
                         <img src={logo} alt="" className=' w-44' />
-                    </a>
+                    </Link>
                 </div>
 
                 <div className="hidden lg:block">
                     <nav aria-label="Global">
                     <ul className="flex items-center gap-6 text-base">
                         <li>
-                        <a className="text-[#475467] transition hover:text-gray-500/75" href="/"> Home </a>
+                        <NavLink to="/" className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Home </NavLink>
                         </li>
 
                         <li>
-                        <a className="text-[#475467] transition hover:text-gray-500/75" href="/tours"> Tours </a>
+                        <NavLink to="/tours" className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Tours </NavLink>
                         </li>
 
                         <li>
-                        <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Cruises </a>
+                        <NavLink to="/cruises" className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Cruises </NavLink>
                         </li>
 
                         <li>
-                        <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Packages </a>
+                        <NavLink to="/packages"  className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Packages </NavLink>
                         </li>
 
                         <li>
-                        <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Reservations </a>
+                        <NavLink to="/reservations"  className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Reservations </NavLink>
                         </li>
 
                         <li>
-                        <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Blog </a>
+                        <NavLink to="/blogs"  className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Blogs </NavLink>
                         </li>
 
                         <li>
-                        <a className="flex justify-between items-center gap-[6px] text-[#475467] transition hover:text-gray-500/75" href="#">
+                        <button className="flex justify-between items-center gap-[6px] text-[#475467] transition hover:text-gray-500/75" to="#">
                             {/* Contacts
                             <img className='w-5 h-5' src={arrowDown} /> */}
                             <div className="relative inline-block text-left">
@@ -113,14 +114,14 @@ const Navbar = () => {
                                 {contactDropDown && (
                                 <div className="absolute right-0 z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black/5">
                                     <div className="py-1">
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Account settings</a>
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Support</a>
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">License</a>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Account settings</Link>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Support</Link>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">License</Link>
                                     </div>
                                 </div>
                                 )}
                             </div>
-                        </a>
+                        </button>
                         </li>
                     </ul>
                     </nav>
@@ -142,36 +143,35 @@ const Navbar = () => {
                             {languageDropDown && (
                                 <div className="absolute right-0 z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black/5">
                                 <div className="py-1">
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700">English</a>
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700">Spanish</a>
-                                    <a href="#" className="block px-4 py-2 text-sm text-gray-700">French</a>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700">English</Link>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700">Spanish</Link>
+                                    <Link to="#" className="block px-4 py-2 text-sm text-gray-700">French</Link>
                                 </div>
                                 </div>
                             )}
                         </div>
                         <div className=' hidden lg:block'>
                             <div className="flex gap-6">
-                                <a
+                                <Link
                                     className="p-5 xl:px-5 xl:py-2.5 text-sm font-medium text-gray-500"
-                                    href="#"
+                                    to="#"
                                 >
                                     Login
-                                </a>
+                                </Link>
 
                                 <div className="hidden sm:flex">
-                                    <a
+                                    <Link
                                     className="rounded-3xl bg-orange-500 xl:px-5 xl:pt-2.5 xl:pb-3 text-sm font-medium text-white"
-                                    href="#"
+                                    to="#"
                                     >
                                     Sign Up
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>
 
                         <div className="block lg:hidden">
-                            <button className="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75" ref={buttonRef}
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                            <button className="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75" ref={buttonRef} onClick={() => setIsMenuOpen(!isMenuOpen)}>
                                 <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="size-5"
@@ -233,20 +233,20 @@ const Navbar = () => {
                 <nav className="flex flex-col p-4 space-y-6">
                 <ul className="text-lg">
                     {[
-                    { name: "Home", href: "/" },
-                    { name: "Tours", href: "/tours" },
-                    { name: "Cruises", href: "#" },
-                    { name: "Packages", href: "#" },
-                    { name: "Reservations", href: "#" },
-                    { name: "Blog", href: "#" },
+                    { name: "Home", to: "/" },
+                    { name: "Tours", to: "/tours" },
+                    { name: "Cruises", to: "#" },
+                    { name: "Packages", to: "#" },
+                    { name: "Reservations", to: "#" },
+                    { name: "Blog", to: "#" },
                     ].map((item, index) => (
                     <li key={index}>
-                        <a
-                        href={item.href}
+                        <NavLink
+                        to={item.to}
                         className="block px-4 py-2 rounded-md text-gray-800 hover:bg-gray-100 hover:text-gray-600"
                         >
                         {item.name}
-                        </a>
+                        </NavLink>
                     </li>
                     ))}
                     <li>
@@ -270,42 +270,42 @@ const Navbar = () => {
                         </button>
                         {contactDropDown && (
                         <div className="absolute left-0 z-20 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black/10">
-                            <a
-                            href="#"
+                            <NavLink
+                            to="#"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                             Account settings
-                            </a>
-                            <a
-                            href="#"
+                            </NavLink>
+                            <NavLink
+                            to="#"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                             Support
-                            </a>
-                            <a
-                            href="#"
+                            </NavLink>
+                            <NavLink
+                            to="#"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                             License
-                            </a>
+                            </NavLink>
                         </div>
                         )}
                     </div>
                     </li>
                 </ul>
                 <div className="flex flex-col gap-4 mt-6">
-                    <a
-                    href="#"
+                    <NavLink
+                    to="#"
                     className="block px-6 py-3 text-center text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
                     >
                     Login
-                    </a>
-                    <a
-                    href="#"
+                    </NavLink>
+                    <NavLink
+                    to="#"
                     className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
                     >
                     Sign Up
-                    </a>
+                    </NavLink>
                 </div>
                 </nav>
             </div>
