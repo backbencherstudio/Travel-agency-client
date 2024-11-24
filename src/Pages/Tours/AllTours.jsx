@@ -102,8 +102,82 @@ function AllTours() {
     const togglePopularArea = () => setPopularAreaOpen((prev) => !prev);
     const toggleDestination = () => setDestinationOpen((prev) => !prev);
 
-    // Function to apply filters and fetch data
+    const logAllFilters = () => {
+        console.group('Current Filter States:');
 
+        // Date Range
+        console.group('Date Range:');
+        console.log('Start Date:', startDate ? startDate.toISOString() : 'Not selected');
+        console.log('End Date:', endDate ? endDate.toISOString() : 'Not selected');
+        console.groupEnd();
+
+        // Price Range
+        console.group('Price Range:');
+        console.log('Min Price:', `$${priceRange.min}`);
+        console.log('Max Price:', `$${priceRange.max}`);
+        console.groupEnd();
+
+        // Rating Filters
+        console.group('Rating Filters:');
+        console.log('5 Stars:', ratingFilters.fiveStars);
+        console.log('4 Stars:', ratingFilters.fourStars);
+        console.log('3 Stars:', ratingFilters.threeStars);
+        console.log('2 Stars:', ratingFilters.twoStars);
+        console.log('1 Star:', ratingFilters.oneStar);
+        console.groupEnd();
+
+        // Cancellation
+        console.log('Free Cancellation:', isFreeCancellation);
+
+        // Destinations
+        console.group('Selected Destinations:');
+        Object.entries(selectedDestinations).forEach(([destination, isSelected]) => {
+            console.log(`${destination}:`, isSelected);
+        });
+        console.groupEnd();
+
+        // Residences
+        console.group('Selected Residences:');
+        Object.entries(selectedResidences).forEach(([residence, isSelected]) => {
+            console.log(`${residence}:`, isSelected);
+        });
+        console.groupEnd();
+
+        // Meal Plans
+        console.group('Selected Meal Plans:');
+        Object.entries(selectedMealPlans).forEach(([plan, isSelected]) => {
+            console.log(`${plan}:`, isSelected);
+        });
+        console.groupEnd();
+
+        // Popular Areas
+        console.group('Selected Popular Areas:');
+        Object.entries(selectedPopularAreas).forEach(([area, isSelected]) => {
+            console.log(`${area}:`, isSelected);
+        });
+        console.groupEnd();
+
+        // Search Query
+        console.log('Search Query:', searchDestination);
+
+        console.groupEnd();
+    };
+
+
+    useEffect(() => {
+        logAllFilters();
+    }, [
+        startDate,
+        endDate,
+        priceRange,
+        ratingFilters,
+        isFreeCancellation,
+        selectedDestinations,
+        selectedResidences,
+        selectedMealPlans,
+        selectedPopularAreas,
+        searchDestination
+    ]);
     return (
         <div className='container mx-auto'>
             <div className='py-20 flex items-start justify-start gap-20'>
