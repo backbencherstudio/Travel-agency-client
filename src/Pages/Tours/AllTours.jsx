@@ -153,44 +153,74 @@ function AllTours() {
 
                     {/* Duration Section */}
                     <div>
-                        {/* Start Date Picker */}
-                        <div className='flex border items-center justify-between p-2 mb-4 rounded-md border-[#C1D0E5] shadow-sm'>
-                            <DatePicker
-                                selected={startDate}
-                                onChange={(date) => setStartDate(date)}
-                                selectsStart
-                                startDate={startDate}
-                                endDate={endDate}
-                                placeholderText="Start Date"
-                                className='outline-none w-full'
-                                ref={startDatePickerRef} // Assign ref to the startDate DatePicker
-                            />
-                            {/* Calendar Icon for Start Date */}
-                            <FaRegCalendarAlt
-                                onClick={() => startDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
-                                className='text-2xl cursor-pointer ml-2'
-                            />
-                        </div>
+                        <h5
+                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            onClick={toggleDuration}
+                        >
+                            Duration
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="25"
+                                viewBox="0 0 24 25"
+                                fill="none"
+                            >
+                                <path
+                                    d={isDurationOpen ? 'M7 10.5L12 14.5L17 10.5' : 'M17 14.5L12 10.5L7 14.5'}
+                                    stroke="#0F1416"
+                                    strokeWidth="1.5"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                />
+                            </svg>
+                        </h5>
 
-                        {/* End Date Picker */}
-                        <div className='flex border items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
-                            <DatePicker
-                                selected={endDate}
-                                onChange={(date) => setEndDate(date)}
-                                selectsEnd
-                                startDate={startDate}
-                                endDate={endDate}
-                                minDate={startDate}
-                                placeholderText="End Date"
-                                className='outline-none w-full'
-                                ref={endDatePickerRef} // Assign ref to the endDate DatePicker
-                            />
-                            {/* Calendar Icon for End Date */}
-                            <FaRegCalendarAlt
-                                onClick={() => endDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
-                                className='text-2xl cursor-pointer ml-2'
-                            />
-                        </div>
+                        {isDurationOpen && (
+                            <div className='mt-4 flex flex-col gap-4'>
+                                <div className='flex flex-col gap-3'>
+                                    <div>
+                                        {/* Start Date Picker */}
+                                        <div className='flex border items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
+                                            <DatePicker
+                                                selected={startDate}
+                                                onChange={(date) => setStartDate(date)}
+                                                selectsStart
+                                                startDate={startDate}
+                                                endDate={endDate}
+                                                placeholderText="Start Date"
+                                                className='outline-none w-full'
+                                                ref={startDatePickerRef} // Assign ref to the startDate DatePicker
+                                            />
+                                            {/* Calendar Icon for Start Date */}
+                                            <FaRegCalendarAlt
+                                                onClick={() => startDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
+                                                className='text-2xl cursor-pointer ml-2'
+                                            />
+                                        </div>
+
+                                        {/* End Date Picker */}
+                                        <div className='flex border mt-4 items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
+                                            <DatePicker
+                                                selected={endDate}
+                                                onChange={(date) => setEndDate(date)}
+                                                selectsEnd
+                                                startDate={startDate}
+                                                endDate={endDate}
+                                                minDate={startDate}
+                                                placeholderText="End Date"
+                                                className='outline-none w-full'
+                                                ref={endDatePickerRef} // Assign ref to the endDate DatePicker
+                                            />
+                                            {/* Calendar Icon for End Date */}
+                                            <FaRegCalendarAlt
+                                                onClick={() => endDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
+                                                className='text-2xl cursor-pointer ml-2'
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Budget Section */}
