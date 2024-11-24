@@ -18,3 +18,12 @@
     background: #3D9FFB;
 filter: blur(228.61500549316406px);
 }
+
+.image-gradient-1 {
+    background: linear-gradient(180deg, rgba(214, 83, 38, 0.00) 0%, #D65326 100%)
+}
+
+.image-gradient-2 {
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 35.08%, rgba(0, 0, 0, 0.50) 77.71%);
+}

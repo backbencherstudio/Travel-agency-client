@@ -61,7 +61,7 @@ const Navbar = () => {
   return (
     <header className="nav-style z-10">
         <div className="mx-auto container px-4 sm:px-6 lg:px-8">
-            <div className="flex h-16 items-center justify-between">
+            <div className="flex lg:gap-6 h-16 items-center justify-between">
                 <div className="md:flex md:items-center md:gap-12">
                     <a className="block text-teal-600" href="/">
                         <span className="sr-only">Home</span>
@@ -69,7 +69,7 @@ const Navbar = () => {
                     </a>
                 </div>
 
-                <div className="hidden md:block">
+                <div className="hidden lg:block">
                     <nav aria-label="Global">
                     <ul className="flex items-center gap-6 text-base">
                         <li>
@@ -127,7 +127,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className='flex gap-[6px] items-center'>
+                    <div className='flex gap-6 xl:gap-[6px] items-center'>
                         {/* Language Dropdown */}
                         <div className="relative inline-block text-left">
                             <button
@@ -149,10 +149,10 @@ const Navbar = () => {
                                 </div>
                             )}
                         </div>
-                        <div className=' hidden md:block'>
-                            <div className="sm:flex sm:gap-4">
+                        <div className=' hidden lg:block'>
+                            <div className="flex gap-6">
                                 <a
-                                    className="px-5 py-2.5 text-sm font-medium text-gray-500"
+                                    className="p-5 xl:px-5 xl:py-2.5 text-sm font-medium text-gray-500"
                                     href="#"
                                 >
                                     Login
@@ -160,7 +160,7 @@ const Navbar = () => {
 
                                 <div className="hidden sm:flex">
                                     <a
-                                    className="rounded-3xl bg-orange-500 px-5 py-2.5 text-sm font-medium text-white"
+                                    className="rounded-3xl bg-orange-500 xl:px-5 xl:pt-2.5 xl:pb-3 text-sm font-medium text-white"
                                     href="#"
                                     >
                                     Sign Up
@@ -169,7 +169,7 @@ const Navbar = () => {
                             </div>
                         </div>
 
-                        <div className="block md:hidden">
+                        <div className="block lg:hidden">
                             <button className="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75" ref={buttonRef}
                         onClick={() => setIsMenuOpen(!isMenuOpen)}>
                                 <svg

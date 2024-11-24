@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from 'react-slick';
@@ -11,30 +11,42 @@ import image4 from '../../assets/img/hero-img/image-4.png';
 import image5 from '../../assets/img/hero-img/image-5.png';
 
 const Hero = () => {
+    const [input, setInput] = useState();
+    const [selectedDate, setSelectedDate] = useState(null);
+
     const sliderSettings = {
-        dots: true, // Enable navigation dots
-        infinite: true, // Infinite scrolling
-        speed: 500, // Animation speed
-        slidesToShow: 3, // Number of slides visible
-        slidesToScroll: 1, // Number of slides to scroll per swipe
-        centerMode: true, // Center the active slide
-        centerPadding: "30px", // Padding around the center slide
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        centerMode: true,
+        centerPadding: "30px",
         arrows: false,
         responsive: [
           {
-            breakpoint: 1024, // Tablet and smaller
+            breakpoint: 1024,
             settings: {
               slidesToShow: 2,
             },
           },
           {
-            breakpoint: 768, // Mobile and smaller
+            breakpoint: 768,
             settings: {
               slidesToShow: 1,
             },
           },
         ],
       };
+
+      const handleInput = (value) => {
+        setInput(value);
+      }
+
+      const handleSubmit = async() => {
+        const data = { destination: input, selectedDate: selectedDate }
+        // console.log('data', data)
+      }
 
   return (
     <div className=''>
@@ -49,18 +61,18 @@ const Hero = () => {
                         <div className="w-full max-w-sm min-w-[200px]">
                             <div className="relative flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="absolute w-5 h-5 top-2.5 left-2.5 text-slate-600 pl-1">
-                                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                                <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clipRule="evenodd" />
                                 </svg>
                             
                                 <input
                                 className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-full pl-10 pr-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
-                                placeholder="Where to next?" 
+                                placeholder="Where to next?" value={input} onChange={(e) => handleInput(e.target.value)} 
                                 />
                                 
                             </div>
                         </div>
-                        <DatePicker />
-                        <button className="rounded-3xl bg-orange-500 px-5 py-2.5 text-sm font-medium text-white">Search</button> 
+                        <DatePicker setSelectedDate={setSelectedDate} selectedDate={selectedDate} />
+                        <button className="rounded-3xl bg-orange-500 px-5 py-2.5 text-sm font-medium text-white" onClick={handleSubmit}>Search</button> 
                     </div>
                 </div>
             </div>
@@ -108,12 +120,12 @@ const Hero = () => {
         </div>
         {/* image section */}
         <div className='hidden md:block'>
-            <div className='grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] mx-8 md:mx-auto mt-8'>
-                <img src={image1} alt="" className='w-[262.187px] h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image2} alt="" className='w-[255.739px] h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image3} alt="" className='w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image4} alt="" className='w-[255.739px] h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
-                <img src={image5} alt="" className='w-[262.187px] h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
+            <div className=' container mx-auto grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] md:mx-auto mt-8'>
+                <img src={image1} alt="" className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover' />
+                <img src={image2} alt="" className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover' />
+                <img src={image3} alt="" className='w-[190px] h-[180px] xl:w-[268px] xl:h-[301px] flex-shrink-0 rounded-2xl object-cover' />
+                <img src={image4} alt="" className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
+                <img src={image5} alt="" className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
             </div>
         </div>
     </div>
