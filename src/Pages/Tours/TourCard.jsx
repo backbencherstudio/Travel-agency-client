@@ -9,11 +9,11 @@ function TourCard({ tour }) {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
             if (i <= Math.floor(rating)) {
-               
-                stars.push(<FaStar key={i} className="text-yellow-500" />);
+
+                stars.push(<FaStar key={i} className="text-orange-500" />);
             } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
-                
-                stars.push(<FaStarHalfAlt key={i} className="text-yellow-500" />);
+
+                stars.push(<FaStarHalfAlt key={i} className="text-orange-500" />);
             } else {
                 // Empty star
                 stars.push(<FaRegStar key={i} className="text-gray-300" />);
@@ -23,8 +23,8 @@ function TourCard({ tour }) {
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <img src={tour.images[0]} alt={tour.name} className="max-w-[518px]h-48 object-cover" />
+        <div className="flex flex-col items-center gap-4 pb-5 flex-1 rounded-lg bg-white shadow-md  ">
+            <img src={tour.images[0]} alt={tour.name} className=" rounded-t-lg object-cover" />
             <div className="p-4">
                 <div className="flex items-center gap-5">
                     <p className="text-xs mb-2 flex items-center py-2 w-fit px-5 bg-[#0E457D] text-white rounded-full gap-1">
@@ -67,14 +67,28 @@ function TourCard({ tour }) {
                 >
                     {tour.overview}
                 </p>
-                <div className="flex items-center mb-4">
-                    {renderStars(tour.rating)} {/* Display rating with stars */}
-                    <span className="ml-2 text-sm text-gray-600">{tour.rating.toFixed(1)}</span>
+                <div className="flex items-center mb-4 gap-2">
+                    <div className='flex items-center gap-1'>  <span className="ml-2 mr-2 font-medium text-sm text-gray-600">{tour.rating.toFixed(1)}</span>
+                        <div className='flex items-center gap-[2px]'>{renderStars(tour.rating)}</div></div>
+                    <div className='flex items-center gap-1'>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.00033 1.16699C3.77858 1.16699 1.16699 3.77858 1.16699 7.00033C1.16699 10.2221 3.77858 12.8337 7.00033 12.8337C10.2221 12.8337 12.8337 10.2221 12.8337 7.00033C12.8337 3.77858 10.2221 1.16699 7.00033 1.16699ZM9.05951 9.05951C8.97434 9.14468 8.86233 9.18783 8.75033 9.18783C8.63833 9.18783 8.52631 9.14526 8.44114 9.05951L6.69114 7.30951C6.60889 7.22726 6.56283 7.11583 6.56283 7.00033V4.08366C6.56283 3.84216 6.75883 3.64616 7.00033 3.64616C7.24183 3.64616 7.43783 3.84216 7.43783 4.08366V6.81889L9.05951 8.44057C9.23043 8.61207 9.23043 8.88859 9.05951 9.05951Z" fill="#4A4C56" />
+                        </svg> <span>{tour.days} days</span>
+                    </div>
                 </div>
+                <p><span className='text-orange-500'>Cancellation Policy</span> ( {tour.cancellationPolicy}  )</p>
+                <hr className='my-4' />
                 <div className="flex justify-between items-center">
-                    <span className="text-lg font-medium">${tour.pricePerPerson} / person</span>
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-                        View Details
+                    <div>
+                        <h4>Starting Form</h4>
+                        <span className="text-lg font-medium">${tour.pricePerPerson} / person</span>
+                    </div>
+
+                    <button class="flex px-4 py-2 justify-center items-center gap-1.5 rounded-full border border-blue-600 shadow-xs">
+                        Book Now <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M3.33301 8H12.6663" stroke="#0E457D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M8 3.33301L12.6667 7.99967L8 12.6663" stroke="#0E457D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
                     </button>
                 </div>
             </div>

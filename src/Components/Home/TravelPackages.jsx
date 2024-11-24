@@ -9,7 +9,7 @@ const TravelPackages = () => {
   return (
     <div className='max-w-7xl mx-auto'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Exclusive Travel Packages</div>
-        <div className='flex flex-col md:flex-row gap-6 items-center justify-center py-12'>
+        <div className='flex flex-col md:flex-row flex-wrap gap-6 items-center justify-center py-12'>
             <div class="relative flex flex-col my-6 bg-white shadow-md border border-slate-200 rounded-lg w-80 md:w-96">
                 <div class="relative h-56 m-2.5 overflow-hidden text-white rounded-md">
                 <img src={package1} alt="card-image" />
@@ -23,10 +23,10 @@ const TravelPackages = () => {
                             Hotel + All inclusive
                         </div>
                     </div>
-                    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
+                    <h6 class="mb-2 text-[#1D1F2C] text-xl font-bold">
                         The Allure Italy's Rich Culture. History. And Cuisine.
                     </h6>
-                    <p class="text-[#65666b] leading-normal text-sm font-light">
+                    <p class="text-[#4A4C56] text-sm leading-normal font-normal">
                         Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for...
                         <a href='' className=' text-blue-500'>Read more</a>
                     </p>
@@ -98,10 +98,10 @@ const TravelPackages = () => {
                             Hotel + All inclusive
                         </div>
                     </div>
-                    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
+                    <h6 class="mb-2 text-[#1D1F2C] text-xl font-bold">
                         Explore Europe’s charm, history, and landscapes.
                     </h6>
-                    <p class="text-[#65666b] leading-normal text-sm font-light">
+                    <p class="text-[#4A4C56] text-sm leading-normal font-normal">
                         Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for...
                         <a href='' className=' text-blue-500'>Read more</a>
                     </p>
@@ -173,10 +173,10 @@ const TravelPackages = () => {
                             Hotel + All inclusive
                         </div>
                     </div>
-                    <h6 class="mb-2 text-slate-800 text-xl font-semibold">
+                    <h6 class="mb-2 text-[#1D1F2C] text-xl font-bold">
                         Experience Africa’s wildlife, landscapes, and rich culture.
                     </h6>
-                    <p class="text-[#65666b] text-sm leading-normal font-light">
+                    <p class="text-[#4A4C56] text-sm leading-normal font-normal">
                         Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for...
                         <a href='' className=' text-blue-500'>Read more</a>
                     </p>

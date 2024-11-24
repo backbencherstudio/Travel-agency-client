@@ -59,7 +59,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="nav-style z-10">
+    <header className="nav-style z-10 ">
         <div className="mx-auto container px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
                 <div className="md:flex md:items-center md:gap-12">
@@ -187,104 +187,130 @@ const Navbar = () => {
                     </div>
                 </div>
             </div>
-            {/* Mobile Menu with Animation */}
-            <div className={`fixed inset-0 lg:hidden ${isMenuOpen ? 'visible' : 'invisible'} transition-visibility duration-300`} style={{ transitionProperty: 'visibility' }}>
-                {/* Semi-transparent overlay */}
-                <div
-                    className={`absolute inset-0 bg-black transition-opacity duration-300 ${isMenuOpen ? 'opacity-50' : 'opacity-0'
-                        }`}
+            {/* Mobile Menu with Modern Design */}
+            <div
+            className={`fixed inset-0 z-50 lg:hidden transition-all duration-300 ${
+                isMenuOpen ? "visible" : "invisible"
+            }`}
+            >
+            {/* Semi-transparent overlay */}
+            <div
+                className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${
+                isMenuOpen ? "opacity-100" : "opacity-0"
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+            />
+
+            {/* Menu content */}
+            <div
+                ref={menuRef}
+                className={`absolute top-0 left-0 w-4/5 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+                isMenuOpen ? "translate-x-0" : "-translate-x-full"
+                }`}
+            >
+                <div className="flex items-center justify-between p-4 border-b">
+                <span className="text-lg font-bold text-gray-800">Menu</span>
+                <button
                     onClick={() => setIsMenuOpen(false)}
-                />
-
-                {/* Menu content */}
-                <div
-                    ref={menuRef}
-                    className={`absolute top-0 left-0 w-4/5 h-full bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'
-                        }`}
+                    className="p-2 text-gray-600 rounded-full hover:bg-gray-100"
                 >
-                    <div className="flex justify-end p-4">
-                        <button
-                            onClick={() => setIsMenuOpen(false)}
-                            className="p-2 rounded-lg hover:bg-gray-100  "
-                        >
-                            <div className="w-6 h-6 text-gray-700">X</div>
-                        </button>
-                    </div>
-                    <nav className="flex flex-col p-4 space-y-4">
-                        <ul className=" text-base">
-                            <li>
-                            <a className="text-[#475467] transition hover:text-gray-500/75" href="/"> Home </a>
-                            </li>
-
-                            <li>
-                            <a className="text-[#475467] transition hover:text-gray-500/75" href="/tours"> Tours </a>
-                            </li>
-
-                            <li>
-                            <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Cruises </a>
-                            </li>
-
-                            <li>
-                            <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Packages </a>
-                            </li>
-
-                            <li>
-                            <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Reservations </a>
-                            </li>
-
-                            <li>
-                            <a className="text-[#475467] transition hover:text-gray-500/75" href="#"> Blog </a>
-                            </li>
-
-                            <li>
-                                <a className="flex justify-between items-center gap-[6px] text-[#475467] transition hover:text-gray-500/75" href="#">
-                                    {/* Contacts
-                                    <img className='w-5 h-5' src={arrowDown} /> */}
-                                    <div className="relative inline-block text-left">
-                                        <button
-                                        className="inline-flex w-full justify-center gap-x-1.5 text-[#475467] transition"
-                                        onClick={handleDropdownToggle('contact')}
-                                        >
-                                        Contacts
-                                        <svg className="-mr-1 size-5 w-6 h-6 text-[#475467]" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
-                                        </svg>
-                                        </button>
-                                        {contactDropDown && (
-                                        <div className="absolute z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black/5">
-                                            <div className="py-1">
-                                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Account settings</a>
-                                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Support</a>
-                                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">License</a>
-                                            </div>
-                                        </div>
-                                        )}
-                                    </div>
-                                </a>
-                            </li>
-                            <li className='flex gap-4 items-center mt-4'>
-                                <li className="">
-                                    <a
-                                        className="rounded-md bg-gray-200 px-7 py-2.5 text-sm font-medium text-black"
-                                        href="#"
-                                    >
-                                        Login
-                                    </a>
-                                </li>
-
-                                <li className="">
-                                    <a
-                                    className="rounded-md bg-orange-500 px-5 py-2.5 text-sm font-medium text-white"
-                                    href="#"
-                                    >
-                                    Sign Up
-                                    </a>
-                                </li>
-                            </li>
-                        </ul>
-                    </nav>
+                    <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                    </svg>
+                </button>
                 </div>
+                <nav className="flex flex-col p-4 space-y-6">
+                <ul className="text-lg">
+                    {[
+                    { name: "Home", href: "/" },
+                    { name: "Tours", href: "/tours" },
+                    { name: "Cruises", href: "#" },
+                    { name: "Packages", href: "#" },
+                    { name: "Reservations", href: "#" },
+                    { name: "Blog", href: "#" },
+                    ].map((item, index) => (
+                    <li key={index}>
+                        <a
+                        href={item.href}
+                        className="block px-4 py-2 rounded-md text-gray-800 hover:bg-gray-100 hover:text-gray-600"
+                        >
+                        {item.name}
+                        </a>
+                    </li>
+                    ))}
+                    <li>
+                    <div className="relative">
+                        <button
+                        className="flex items-center justify-between w-full px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 hover:text-gray-600"
+                        onClick={handleDropdownToggle("contact")}
+                        >
+                        Contacts
+                        <svg
+                            className="w-5 h-5 text-gray-600"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                            fillRule="evenodd"
+                            d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
+                            clipRule="evenodd"
+                            />
+                        </svg>
+                        </button>
+                        {contactDropDown && (
+                        <div className="absolute left-0 z-20 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black/10">
+                            <a
+                            href="#"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                            Account settings
+                            </a>
+                            <a
+                            href="#"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                            Support
+                            </a>
+                            <a
+                            href="#"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            >
+                            License
+                            </a>
+                        </div>
+                        )}
+                    </div>
+                    </li>
+                </ul>
+                <div className="flex flex-col gap-4 mt-6">
+                    <a
+                    href="#"
+                    className="block px-6 py-3 text-center text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
+                    >
+                    Login
+                    </a>
+                    <a
+                    href="#"
+                    className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
+                    >
+                    Sign Up
+                    </a>
+                </div>
+                </nav>
             </div>
+            </div>
+
         </div>
     </header>
   )

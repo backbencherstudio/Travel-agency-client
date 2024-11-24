@@ -6,6 +6,8 @@ import TravelWithUs from '../../Components/Home/TravelWithUs';
 import TravelPackages from '../../Components/Home/TravelPackages';
 import Testimonials from '../../Components/Home/Testimonials';
 import Destinations from '../../Components/Home/Destinations';
+import Blogs from '../../Components/Home/Blogs';
+import Faqs from '../../Components/Home/Faqs';
 
 const Home = () => {
     return (
@@ -30,6 +32,12 @@ const Home = () => {
             </div>
             <div className='py-20 bg-[#F0F4F9]'>
                 <Destinations />
+            </div>
+            <div className='py-20'>
+                <Blogs />
+            </div>
+            <div className='py-20 bg-[#F0F4F9]'>
+                <Faqs />
             </div>
         </div>
     );

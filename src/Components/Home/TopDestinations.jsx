@@ -10,7 +10,7 @@ const TopDestinations = () => {
   return (
     <div className='container mx-auto'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Top Travel Destinations</div>
-        <div className='flex flex-col gap-6 items-center justify-center py-12 md:py-20'>
+        <div className='flex flex-col flex-wrap gap-6 items-center justify-center py-12 md:py-20'>
             <div className='flex  flex-wrap justify-between gap-6 mx-2'>
                 <div class="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 mx-auto md:h-[400px] md:w-[285px]">
                     <img src={image1} alt="University of Southern California" class="absolute inset-0 h-full w-full object-cover" />

@@ -23,7 +23,7 @@ const Testimonials = () => {
                         <span class="inline-block w-1 h-1 rounded-full bg-indigo-500 ml-1"></span>
                     </div> */}
                 </div>
-                <div class="-mx-3 flex flex-wrap gap-4 items-start justify-between py-12 md:py-20">
+                <div class="-mx-3 flex flex-col md:flex-row flex-wrap gap-4 items-start justify-between py-12 md:py-20">
                         <div class="md:w-[28%] rounded-lg bg-white shadow p-4 text-gray-800 font-light">
                             <div className='flex gap-2 items-center'>
                                 <img src={starFull} alt="" />
@@ -33,14 +33,14 @@ const Testimonials = () => {
                                 <img src={starFull} alt="" />
                             </div>
                             <div class="w-full mt-4">
-                                <p class="text-xl leading-tight">Loved every moment of my trip! The guides were knowledgeable, friendly, and highly professional.</p>
+                                <p class="text-xl leading-tight text-[#404C5C]">Loved every moment of my trip! The guides were knowledgeable, friendly, and highly professional.</p>
                             </div>
                             <div class="w-full flex mb-4 items-center mt-4">
                                 <div class="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
                                     <img src={avatar1} alt=""/>
                                 </div>
                                 <div class="flex-grow pl-3">
-                                    <h6 class="font-bold text-xl uppercase text-black">Samantha Lau</h6>
+                                    <h6 class="font-bold text-xl uppercase text-[#323B47]">Samantha Lau</h6>
                                     <p className='text-sm text-gray-500'>baleful_exorcism_76</p>
                                 </div>
                             </div>
@@ -54,14 +54,14 @@ const Testimonials = () => {
                                 <img src={starNone} alt="" />
                             </div>
                             <div class="w-full mt-4">
-                                <p class="text-xl leading-tight">An unforgettable journey! Every detail was planned to perfection. Truly a once-in-a-lifetime experience.</p>
+                                <p class="text-xl leading-tight text-[#404C5C]">An unforgettable journey! Every detail was planned to perfection. Truly a once-in-a-lifetime experience.</p>
                             </div>
                             <div class="w-full flex mb-4 items-center mt-4">
                                 <div class="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
                                     <img src={avatar2} alt=""/>
                                 </div>
                                 <div class="flex-grow pl-3">
-                                    <h6 class="font-bold text-xl uppercase text-black">Divya Ansari</h6>
+                                    <h6 class="font-bold text-xl uppercase text-[#323B47]">Divya Ansari</h6>
                                     <p className='text-sm text-gray-500'>turgid_designer_29</p>
                                 </div>
                             </div>
@@ -75,14 +75,14 @@ const Testimonials = () => {
                                 <img src={starNone} alt="" />
                             </div>
                             <div class="w-full mt-4">
-                                <p class="text-xl leading-tight">From start to finish, everything was seamless. The personalized itinerary made all the difference!</p>
+                                <p class="text-xl leading-tight text-[#404C5C]">From start to finish, everything was seamless. The personalized itinerary made all the difference!</p>
                             </div>
                             <div class="w-full flex mb-4 items-center mt-4">
                                 <div class="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
                                     <img src={avatar3} alt=""/>
                                 </div>
                                 <div class="flex-grow pl-3">
-                                    <h6 class="font-bold text-xl uppercase text-black">Carlota Rossi</h6>
+                                    <h6 class="font-bold text-xl uppercase text-[#323B47]">Carlota Rossi</h6>
                                     <p className='text-sm text-gray-500'>garrulous_designer_41</p>
                                 </div>
                             </div>
@@ -96,7 +96,7 @@ const Testimonials = () => {
                                 <img src={starNone} alt="" />
                             </div>
                             <div class="w-full mt-4">
-                                <p class="text-xl leading-tight">Exceeded my expectations! I felt cared for every step of the way. Highly recommend!</p>
+                                <p class="text-xl leading-tight text-[#404C5C]">Exceeded my expectations! I felt cared for every step of the way. Highly recommend!</p>
                             </div>
                             <div class="w-full flex mb-4 items-center mt-4">
                                 <div class="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
@@ -117,14 +117,14 @@ const Testimonials = () => {
                                 <img src={starNone} alt="" />
                             </div>
                             <div class="w-full mt-4">
-                                <p class="text-xl leading-tight">A dream vacation come true. The attention to detail and unique spots made it unforgettable</p>
+                                <p class="text-xl leading-tight text-[#404C5C]">A dream vacation come true. The attention to detail and unique spots made it unforgettable</p>
                             </div>
                             <div class="w-full flex mb-4 items-center mt-4">
                                 <div class="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
                                     <img src={avatar5} alt=""/>
                                 </div>
                                 <div class="flex-grow pl-3">
-                                    <h6 class="font-bold text-xl uppercase text-black">Aishwarya Kumar</h6>
+                                    <h6 class="font-bold text-xl uppercase text-[#323B47]">Aishwarya Kumar</h6>
                                     <p className='text-sm text-gray-500'>redolent_cupcake_89</p>
                                 </div>
                             </div>
@@ -138,14 +138,14 @@ const Testimonials = () => {
                                 <img src={starNone} alt="" />
                             </div>
                             <div class="w-full mt-4">
-                                <p class="text-xl leading-tight">The perfect mix of adventure and relaxation. Couldn’t have asked for a better experience!</p>
+                                <p class="text-xl leading-tight text-[#404C5C]">The perfect mix of adventure and relaxation. Couldn’t have asked for a better experience!</p>
                             </div>
                             <div class="w-full flex mb-4 items-center mt-4">
                                 <div class="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
                                     <img src={avatar6} alt=""/>
                                 </div>
                                 <div class="flex-grow pl-3">
-                                    <h6 class="font-bold text-xl uppercase text-black">Ajeet Bai</h6>
+                                    <h6 class="font-bold text-xl uppercase text-[#323B47]">Ajeet Bai</h6>
                                     <p className='text-sm text-gray-500'>rebarbative_toejam_26</p>
                                 </div>
                             </div>

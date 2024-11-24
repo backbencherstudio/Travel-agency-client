@@ -10,7 +10,9 @@ const Layout = () => {
             <div className="flex-grow">
                 <Outlet />
             </div>
-            <Footer />
+            <div className='bg-[#061D35]'>
+                <Footer />
+            </div>
         </div>
     );
 };

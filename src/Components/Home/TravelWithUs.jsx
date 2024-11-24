@@ -4,7 +4,7 @@ const TravelWithUs = () => {
   return (
     <div className="">
         <h1 className="text-2xl md:text-5xl font-bold text-center mb-12">Why Travel with Us</h1>
-        <div className="container mx-auto flex flex-col md:flex-row items-center justify-center gap-6">
+        <div className="container mx-auto flex flex-col md:flex-row flex-wrap items-center justify-center gap-6">
             <div className='w-[286px] border flex flex-col items-center justify-center text-center p-6 gap-4 shadow-md rounded-md'>
                 <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
                     <g clip-path="url(#clip0_3562_4676)">
