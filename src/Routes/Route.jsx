@@ -5,6 +5,9 @@ import Layout from "../Layout/Layout";
 import Home from "../Pages/Home/Home";
 import Tours from "../Pages/Tours/Tours";
 import Signup from "../Pages/Auth/Signup";
+import Login from "../Pages/Auth/Login";
+import ForgetPassword from "../Pages/Auth/ForgetPassword";
+import Otp from "../Pages/Auth/OTP";
 
 export const router = createBrowserRouter([
     {
@@ -24,5 +27,17 @@ export const router = createBrowserRouter([
     {
         path: 'signup',
         element: <Signup />
+    },
+    {
+        path: 'login',
+        element: <Login />
+    },
+    {
+        path: 'forget-password',
+        element: <ForgetPassword />
+    },
+    {
+        path: 'otp',
+        element: <Otp />
     },
 ]);

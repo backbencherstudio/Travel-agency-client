@@ -5,11 +5,7 @@ import logo from '../../assets/img/form-img/logo.png';
 import { Link } from "react-router-dom";
 
 const Signup = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors }, } = useForm();
 
   const onSubmit = (data) => {
     console.log(data);
@@ -98,7 +94,7 @@ const Signup = () => {
                 </button>
                 <div className="flex gap-1 items-center justify-center text-sm">
                   <p className="text-[#475467]">Already have an account?</p>
-                  <Link className="text-[#EB5B2A] font-semibold">Log in</Link>
+                  <Link to="/login" className="text-[#EB5B2A] font-semibold">Log in</Link>
                 </div>
               </div>
             </form>
