@@ -161,7 +161,8 @@ const Navbar = () => {
 
                                 <div className="hidden sm:flex">
                                     <Link
-                                    className="rounded-3xl bg-orange-500 xl:px-5 xl:pt-2.5 xl:pb-3 text-sm font-medium text-white"
+                                    className="rounded-3xl bg-orange-500 xl:px-5 xl:pt-2.5 xl:pb-3 text-sm font-medium text-nowrap content-center 
+                                     text-white"
                                     to="/signup"
                                     >
                                     Sign Up

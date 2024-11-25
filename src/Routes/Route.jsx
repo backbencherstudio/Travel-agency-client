@@ -8,6 +8,7 @@ import Signup from "../Pages/Auth/Signup";
 import Login from "../Pages/Auth/Login";
 import ForgetPassword from "../Pages/Auth/ForgetPassword";
 import Otp from "../Pages/Auth/OTP";
+import TourDetails from "../Pages/TourDetails/TourDetails";
 
 export const router = createBrowserRouter([
     {
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
             {
                 path: '/tours',
                 element: <Tours />
+            },
+            {
+                path: '/tour-details',
+                element: <TourDetails />
             }
         ]
     },
