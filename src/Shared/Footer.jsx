@@ -9,7 +9,7 @@ const Footer = () => {
         <div className='flex flex-col gap-8'>
           <img src={logo} alt="" className='w-[264.055px] h-[56px]' />
           <div className='flex flex-col gap-6'>
-            <p className='text-xl w-96'>Explore the world with us! Find inspiration, plan adventures, and make unforgettable memories every journey.</p>
+            <p className='text-xl md:w-96'>Explore the world with us! Find inspiration, plan adventures, and make unforgettable memories every journey.</p>
             <div className="flex justify-between py-2 pl-4 pr-2 border-[0.5px] border-[#8f8f8f] rounded-lg bg-[#1d3349] w-[328px]">
               <input type="email" placeholder='Enter your email' className='bg-[#1d3349] focus:outline-none text-base' />
               <div className="flex gap-[6px] px-4 py-2 bg-[#0E457D] items-center rounded-md">
