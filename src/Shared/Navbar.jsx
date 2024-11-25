@@ -154,7 +154,7 @@ const Navbar = () => {
                             <div className="flex gap-6">
                                 <Link
                                     className="p-5 xl:px-5 xl:py-2.5 text-sm font-medium text-gray-500"
-                                    to="#"
+                                    to="/login"
                                 >
                                     Login
                                 </Link>
@@ -162,7 +162,7 @@ const Navbar = () => {
                                 <div className="hidden sm:flex">
                                     <Link
                                     className="rounded-3xl bg-orange-500 xl:px-5 xl:pt-2.5 xl:pb-3 text-sm font-medium text-white"
-                                    to="#"
+                                    to="/signup"
                                     >
                                     Sign Up
                                     </Link>
@@ -235,10 +235,10 @@ const Navbar = () => {
                     {[
                     { name: "Home", to: "/" },
                     { name: "Tours", to: "/tours" },
-                    { name: "Cruises", to: "#" },
-                    { name: "Packages", to: "#" },
-                    { name: "Reservations", to: "#" },
-                    { name: "Blog", to: "#" },
+                    { name: "Cruises", to: "/cruises" },
+                    { name: "Packages", to: "/packages" },
+                    { name: "Reservations", to: "/reservations" },
+                    { name: "Blogs", to: "/blogs" },
                     ].map((item, index) => (
                     <li key={index}>
                         <NavLink
@@ -270,42 +270,42 @@ const Navbar = () => {
                         </button>
                         {contactDropDown && (
                         <div className="absolute left-0 z-20 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black/10">
-                            <NavLink
+                            <Link
                             to="#"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                             Account settings
-                            </NavLink>
-                            <NavLink
+                            </Link>
+                            <Link
                             to="#"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                             Support
-                            </NavLink>
-                            <NavLink
+                            </Link>
+                            <Link
                             to="#"
                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
                             License
-                            </NavLink>
+                            </Link>
                         </div>
                         )}
                     </div>
                     </li>
                 </ul>
                 <div className="flex flex-col gap-4 mt-6">
-                    <NavLink
-                    to="#"
+                    <Link
+                    to="login"
                     className="block px-6 py-3 text-center text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
                     >
                     Login
-                    </NavLink>
-                    <NavLink
-                    to="#"
+                    </Link>
+                    <Link
+                    to="/signup"
                     className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
                     >
                     Sign Up
-                    </NavLink>
+                    </Link>
                 </div>
                 </nav>
             </div>
