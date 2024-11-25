@@ -8,49 +8,58 @@ import image6 from '../../assets/img/top-destinations/image-6.png';
 import './home.css'
 
 const TopDestinations = () => {
+
+    const destinations = [
+        { name: "Indonesia", tours: "78 Times Tour", image: image1 },
+        { name: "Bali", tours: "100 Times Tour", image: image2 },
+        { name: "Iceland", tours: "50 Times Tour", image: image3 },
+        { name: "Japan", tours: "98 Times Tour", image: image4 },
+        { name: "Italy", tours: "26 Times Tour", image: image5 },
+        { name: "Paris", tours: "48 Times Tour", image: image6 },
+      ];
+
   return (
-    <div className='container mx-auto'>
-        <div className='text-2xl md:text-5xl font-bold text-center'>Top Travel Destinations</div>
-        <div className='flex flex-col flex-wrap gap-6 items-center justify-center py-12 md:py-20'>
-            <div className='flex flex-wrap justify-between gap-6 mx-2'>
-                <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 mx-auto md:h-[400px] md:w-[285px]">
-                    <img src={image1} alt="University of Southern California" className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0 image-gradient-2"></div>
-                    <h3 className="z-10 mt-3 text-2xl font-semibold text-white">Indonesia</h3>
-                    <div className="z-10 gap-y-1 overflow-hidden text-base leading-6 text-white">78 Times Tour</div>
+    <div className="max-w-7xl mx-auto px-4">
+        <div className="text-2xl md:text-5xl font-bold text-center">
+            Top Travel Destinations
+        </div>
+        <div className="py-12 md:py-20">
+            <div className="grid grid-cols-12 gap-6">
+            {destinations.map((destination, index) => (
+                <div
+                key={index}
+                className={`relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 h-[400px] ${
+                    index === 0 || index === 2
+                    ? "col-span-12 md:col-span-3"
+                    : index === 1
+                    ? "col-span-12 md:col-span-6"
+                    : index === 3 || index === 4 || index === 5
+                    ? "col-span-12 md:col-span-4"
+                    : ""
+                }`}
+                >
+                <img
+                    src={destination.image}
+                    alt={destination.name}
+                    className="absolute inset-0 h-full w-full object-cover"
+                />
+                <div className={`absolute inset-0 ${
+                    index === 0 || index === 2
+                    ? "col-span-12 md:col-span-3 image-gradient-2"
+                    : index === 1
+                    ? "col-span-12 md:col-span-6 image-gradient-1"
+                    : index === 3 || index === 4 || index === 5
+                    ? "col-span-12 md:col-span-4 image-gradient-2"
+                    : ""
+                }`}></div>
+                <h3 className="z-10 mt-3 text-2xl font-semibold text-white">
+                    {destination.name}
+                </h3>
+                <div className="z-10 gap-y-1 overflow-hidden text-base leading-6 text-white">
+                    {destination.tours}
                 </div>
-                <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 mx-auto md:h-[400px] md:w-[598px]">
-                    <img src={image2} alt="University of Southern California" className="absolute inset-0 h-full w-full object-cover " />
-                    <div className="absolute inset-0 image-gradient-1"></div>
-                    <h3 className="z-10 mt-3 text-2xl font-semibold text-white">Bali</h3>
-                    <div className="z-10 gap-y-1 overflow-hidden text-base leading-6 text-white">100 Times Tour</div>
                 </div>
-                <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 mx-auto h-[255px] w-[345px] md:h-[400px] md:w-[285px]">
-                    <img src={image3} alt="University of Southern California" className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0 image-gradient-2"></div>
-                    <h3 className="z-10 mt-3 text-2xl font-semibold text-white">Iceland</h3>
-                    <div className="z-10 gap-y-1 overflow-hidden text-base leading-6 text-white">50 Times Tour</div>
-                </div>
-            </div>
-            <div className='flex flex-wrap justify-between gap-6 mx-2'>
-                <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 mx-auto md:h-[376px] md:w-[389.33px]">
-                    <img src={image4} alt="University of Southern California" className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0 image-gradient-2"></div>
-                    <h3 className="z-10 mt-3 text-2xl font-semibold text-white">Japan</h3>
-                    <div className="z-10 gap-y-1 overflow-hidden text-base leading-6 text-white">98 Times Tour</div>
-                </div>
-                <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 mx-auto md:h-[376px] md:w-[389.33px]">
-                    <img src={image5} alt="University of Southern California" className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0 image-gradient-2"></div>
-                    <h3 className="z-10 mt-3 text-2xl font-semibold text-white">Italy</h3>
-                    <div className="z-10 gap-y-1 overflow-hidden text-base leading-6 text-white">26 Times Tour</div>
-                </div>
-                <div className="relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 mx-auto h-[255px] w-[345px] md:h-[376px] md:w-[389.33px]">
-                    <img src={image6} alt="University of Southern California" className="absolute inset-0 h-full w-full object-cover" />
-                    <div className="absolute inset-0 image-gradient-2"></div>
-                    <h3 className="z-10 mt-3 text-2xl font-semibold text-white">Paris</h3>
-                    <div className="z-10 gap-y-1 overflow-hidden text-base leading-6 text-white">48 Times Tour</div>
-                </div>
+            ))}
             </div>
         </div>
     </div>
