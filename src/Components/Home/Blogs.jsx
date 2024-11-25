@@ -1,4 +1,3 @@
-import React from 'react'
 import image1 from '../../assets/img/blogs/image-1.png';
 import image2 from '../../assets/img/blogs/image-2.png';
 import image3 from '../../assets/img/blogs/image-3.png';
@@ -9,6 +8,7 @@ const Blogs = () => {
     <div className='max-w-7xl mx-auto'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Travel Inspiration & Tips</div>
         <div className='flex flex-col md:flex-row gap-6 items-center justify-center py-12'>
+
             <div className="relative flex flex-col my-6 bg-white shadow-md border border-slate-200 rounded-xl w-80 md:w-96">
                 <div className="relative h-56 overflow-hidden text-white rounded-t-xl">
                     <img src={image1} alt="card-image" />
@@ -42,6 +42,7 @@ const Blogs = () => {
                     </div>
                 </div>
             </div>
+
             <div className="relative flex flex-col my-6 bg-white shadow-md border border-slate-200 rounded-xl w-80 md:w-96">
                 <div className="relative h-56 overflow-hidden text-white rounded-t-xl">
                     <img src={image2} alt="card-image" />
@@ -75,6 +76,7 @@ const Blogs = () => {
                     </div>
                 </div>
             </div>
+
             <div className="relative flex flex-col my-6 bg-white shadow-md border border-slate-200 rounded-xl w-80 md:w-96">
                 <div className="relative h-56 overflow-hidden text-white rounded-t-xl">
                     <img src={image3} alt="card-image" />
@@ -109,6 +111,7 @@ const Blogs = () => {
                 </div>
             </div>
         </div>
+
         <div className='grid justify-center'>
             <button className='flex gap-2 items-center justify-center px-5 py-3 bg-[#D65326] rounded-full text-white text-base'>
                 See All Blogs 
