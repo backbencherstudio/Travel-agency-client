@@ -17,7 +17,7 @@ const ForgetPassword = () => {
     return (
       <>
       <div className='flex flex-col lg:flex-row items-center'>
-          <div className=''>
+          <div className='hidden md:block'>
               <img src={image} className='md:w-0 md:h-0 lg:h-[1024px] lg:w-[432px] xl:w-[732px] lg:rounded-r-[80px] object-cover max-h-screen' alt="" />
           </div>
           <div className="w-full xl:w-1/2 h-full p-6 md:p-0">
