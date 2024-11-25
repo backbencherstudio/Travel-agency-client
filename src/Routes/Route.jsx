@@ -4,6 +4,7 @@ import {
 import Layout from "../Layout/Layout";
 import Home from "../Pages/Home/Home";
 import Tours from "../Pages/Tours/Tours";
+import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
 
 export const router = createBrowserRouter([
     {
@@ -17,6 +18,10 @@ export const router = createBrowserRouter([
             {
                 path: '/tours',
                 element: <Tours />
+            },
+            {
+                path: '/review_package',
+                element: <ReviewPackage />
             }
         ]
     },
