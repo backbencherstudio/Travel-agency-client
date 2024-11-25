@@ -146,10 +146,10 @@ function AllTours() {
     const endDatePickerRef = useRef(null);
 
     return (
-        <div className='max-w-7xl mx-auto'>
-            <div className='lg:py-20 flex items-start justify-start lg:gap-16 flex-col lg:flex-row'>
+        <div className='max-w-[1200px] mx-auto'>
+            <div className='lg:py-20 flex items-start justify-start lg:gap-6 flex-col lg:flex-row'>
                 {/* Filter Section */}
-                <div className='p-6 bg-white  rounded-xl shadow-md lg:min-w-[25%] flex flex-col  w-full gap-3'>
+                <div className='p-6 max-w-[300px] bg-white  rounded-xl shadow-md  flex flex-col  w-full gap-3'>
                     {/* Search Input */}
                     <div className='flex gap-2 border items-center py-2 px-5 rounded-md'>
                         <CiSearch className='text-3xl' />
