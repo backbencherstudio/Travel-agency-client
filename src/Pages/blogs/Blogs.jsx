@@ -78,7 +78,18 @@ const Blogs = () => {
                 </div>
 
                 {/* =================================================================== Subscribe ============================================================= */}
-                <Subscribe/>
+                <Subscribe />
+
+                {/* =================================================================== 3 Blogs ============================================================= */}
+                <div className=' grid md:grid-cols-2 lg:grid-cols-3  gap-5 mb-8 '>
+                    {
+                        blogsArray?.slice(0, 3).map(item => (
+                            <CardComponent blog={item} key={item.id} />
+                        ))
+                    }
+                </div>
+
+                
 
             </ParentComponent>
 

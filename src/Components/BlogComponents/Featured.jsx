@@ -3,7 +3,7 @@ import Nature from "../../assets/img/blogs/nature.jpg"
 
 const Featured = () => {
     return (
-        <div className="grid md:grid-cols-2 md:gap-10 bg-[#FFFFFF] px-10 py-6 rounded-lg mb-8 ">
+        <div className="grid lg:grid-cols-2 md:gap-10 bg-[#FFFFFF] px-2 md:px-10 py-6 rounded-lg mb-8 ">
             <div >
                 <div className="flex gap-10 items-center" >
                     <h2 className="bg-[#F1F4FD] font-semibold px-[17px] py-[6px] rounded-md text-[#003087] " >Featured</h2>
@@ -17,7 +17,7 @@ const Featured = () => {
             </div>
 
             <div>
-                <img className="w-full rounded-3xl" src={Nature} alt="" />
+                <img className="w-full rounded-3xl mt-5 md:mt-0" src={Nature} alt="" />
             </div>
         </div>
     );
