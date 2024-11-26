@@ -9,6 +9,7 @@ import Login from "../Pages/Auth/Login";
 import ForgetPassword from "../Pages/Auth/ForgetPassword";
 import Otp from "../Pages/Auth/OTP";
 import Blogs from "../Pages/blogs/Blogs";
+import SingleBlog from "../Pages/blogs/SingleBlog";
 
 export const router = createBrowserRouter([
     {
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
             {
                 path: '/blogs',
                 element: <Blogs />
+            },
+            {
+                path: '/blogDetails/:id',
+                element: <SingleBlog />
             }
         ]
     },
