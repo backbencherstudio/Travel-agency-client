@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/Logo.svg';
-import arrowDown from '../assets/img/arrow-down.svg';
 import languageLogo from '../assets/img/Language.svg';
 import './nav.css';
 import { Link, NavLink } from 'react-router-dom';
@@ -60,8 +59,8 @@ const Navbar = () => {
   };
 
   return (
-    <header className="nav-style z-10 ">
-        <div className="mx-auto container px-4 sm:px-6 lg:px-8">
+    <header className=" z-10 bg-re ">
+        <div className="mx-auto max-w-[1216px] px-4 xl:px-0 ">
             <div className="flex lg:gap-6 h-16 items-center justify-between">
                 <div className="md:flex md:items-center md:gap-12">
                     <Link className="block text-teal-600" to="/">

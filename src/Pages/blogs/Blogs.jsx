@@ -1,4 +1,5 @@
 // import blogImage from "./../assets/img/blogs/blog-banner.png"
+import { Pagination, Stack } from "@mui/material";
 import Featured from "../../Components/BlogComponents/Featured";
 import Subscribe from "../../Components/BlogComponents/Subscribe";
 import CardComponent from "../../Components/CardComponent/CardComponent";
@@ -93,7 +94,13 @@ const Blogs = () => {
                     }
                 </div>
 
-                
+                {/* =================================================================== Pagination ============================================================= */}
+                <div className="flex justify-center " >
+                    <Stack spacing={2}>
+                        <Pagination count={10} color="primary" />
+                    </Stack>
+                </div>
+
 
             </ParentComponent>
 
