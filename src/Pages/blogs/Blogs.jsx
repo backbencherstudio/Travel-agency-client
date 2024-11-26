@@ -1,4 +1,5 @@
 // import blogImage from "./../assets/img/blogs/blog-banner.png"
+import { Pagination, Stack } from "@mui/material";
 import Featured from "../../Components/BlogComponents/Featured";
 import Subscribe from "../../Components/BlogComponents/Subscribe";
 import CardComponent from "../../Components/CardComponent/CardComponent";
@@ -22,7 +23,7 @@ const Blogs = () => {
             title: "A Food Lover’s Guide to Southeast Asia",
             description: "Indulge in Southeast Asia’s rich food culture with our guide to must-try dishes, from Thai street food to Malaysian delights.",
             days: 5,
-            image: "https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg",
+            image: "https://gratisography.com/wp-content/uploads/2024/10/gratisography-cool-cat-800x525.jpg",
             user: { name: 'Bessie Cooper', role: 'Tour Expert', image: "https://png.pngtree.com/png-vector/20230928/ourmid/pngtree-young-indian-man-png-image_10149659.png" },
         },
         {
@@ -89,7 +90,13 @@ const Blogs = () => {
                     }
                 </div>
 
-                
+                {/* =================================================================== Pagination ============================================================= */}
+                <div className="flex justify-center " >
+                    <Stack spacing={2}>
+                        <Pagination count={10} color="primary" />
+                    </Stack>
+                </div>
+
 
             </ParentComponent>
 
