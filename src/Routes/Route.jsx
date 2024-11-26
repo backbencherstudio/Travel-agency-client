@@ -1,6 +1,4 @@
-import {
-    createBrowserRouter,
-} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import Layout from "../Layout/Layout";
 import Home from "../Pages/Home/Home";
 import Tours from "../Pages/Tours/Tours";
@@ -12,42 +10,42 @@ import Blogs from "../Pages/blogs/Blogs";
 import TourDetails from "../Pages/TourDetails/TourDetails";
 
 export const router = createBrowserRouter([
-    {
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      {
         path: "/",
-        element: <Layout />,
-        children: [
-            {
-                path: '/',
-                element: <Home />
-            },
-            {
-                path: '/tours',
-                element: <Tours />
-            },
-            {
-                path: '/blogs',
-                element: <Blogs />
-            },
-            {
-                path: '/tour-details',
-                element: <TourDetails />
-            }
-        ]
-    },
-    {
-        path: 'signup',
-        element: <Signup />
-    },
-    {
-        path: 'login',
-        element: <Login />
-    },
-    {
-        path: 'forget-password',
-        element: <ForgetPassword />
-    },
-    {
-        path: 'otp',
-        element: <Otp />
-    },
+        element: <Home />,
+      },
+      {
+        path: "/tours",
+        element: <Tours />,
+      },
+      {
+        path: "/blogs",
+        element: <Blogs />,
+      },
+      {
+        path: "/tour-details/:id",
+        element: <TourDetails />,
+      },
+    ],
+  },
+  {
+    path: "signup",
+    element: <Signup />,
+  },
+  {
+    path: "login",
+    element: <Login />,
+  },
+  {
+    path: "forget-password",
+    element: <ForgetPassword />,
+  },
+  {
+    path: "otp",
+    element: <Otp />,
+  },
 ]);

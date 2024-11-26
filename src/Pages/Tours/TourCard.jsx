@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 function TourCard({ tour }) {
 
@@ -41,9 +42,9 @@ function TourCard({ tour }) {
                         Hotel + All inclusive
                     </div>
                 </div>
-                <h6 className="mb-2 text-[#1D1F2C] text-xl font-bold">
+                <Link to={`/tour-details/${tour.id}`} className="mb-2 text-[#1D1F2C] text-xl font-bold hover:text-blue-500">
                     {tour.name}
-                </h6>
+                </Link>
                 <p className="text-[#4A4C56] text-sm leading-normal font-normal">
                     {tour.description}...
                     <a href='' className=' text-blue-500'>Read more</a>
