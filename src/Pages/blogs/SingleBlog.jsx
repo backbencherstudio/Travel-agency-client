@@ -16,14 +16,21 @@ const SingleBlog = () => {
             id: 1,
             image: "https://static.artzone.ai/media/62077/conversions/22yojXNhcyfLN9S4fsdjFXkjvxK7UcGKiIw92ybU-w768.webp",
             name: "Mark Williams",
-            data: "11/monthName/11",
+            data: "11 jun, 2024",
             description: "It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
         },
         {
             id: 2,
             image: "https://static.artzone.ai/media/62077/conversions/22yojXNhcyfLN9S4fsdjFXkjvxK7UcGKiIw92ybU-w768.webp",
             name: "Mark Williams",
-            data: "11/monthName/11",
+            data: "11 jun, 2024",
+            description: "It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+        },
+        {
+            id: 3,
+            image: "https://static.artzone.ai/media/62077/conversions/22yojXNhcyfLN9S4fsdjFXkjvxK7UcGKiIw92ybU-w768.webp",
+            name: "Mark Williams",
+            data: "11 jun, 2024",
             description: "It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
         }
     ]
@@ -115,11 +122,27 @@ const SingleBlog = () => {
 
                         <div className="flex border rounded-lg items-center px-2 " >
                             <CiSearch className="text-3xl cursor-pointer " />
-                            <input type="text" className= " w-full p-2 focus:outline-none " />
+                            <input type="text" className=" w-full p-2 focus:outline-none " />
                         </div>
 
-                        <div className="bg-[#f0f4f9] mt-4  " >
+                        <div className="bg-[#f0f4f9] mt-4 px-6 py-5 rounded-lg " >
                             <h2 className="font-inter text-[20px] font-bold leading-[1.3] tracking-[0.1px]" > Recent Post </h2>
+
+                            <div className="mt-5" >
+                                {
+                                    comments?.map((item, index) => <div key={item.id} >
+                                        <div className={`mb-5 pb-5 ${comments.length === index + 1 ? "border-none" : "border-b"} `} >
+                                            <div className="flex items-center" >
+                                                <img src="https://create.microsoft.com/_next/image?url=https%3A%2F%2Fdsgrcdnblobprod5u3.azureedge.net%2Fimages%2Fimage-creator-T03_cat.webp&w=1920&q=90" className="w-[100px] h-[80px] rounded-xl " alt="" />
+                                                <span className="ml-2" >
+                                                    <h2 className="font-inter text-[16px] font-bold leading-[1.6] tracking-[0.08px]" >{item.name}</h2>
+                                                    <p className="mt-2">{item.data}</p>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>)
+                                }
+                            </div>
                         </div>
 
                     </div>
