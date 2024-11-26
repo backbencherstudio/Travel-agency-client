@@ -45,7 +45,7 @@ const Blogs = () => {
     console.log('blogs', blogs)
 
   return (
-    <div className='max-w-7xl mx-auto'>
+    <div className='max-w-7xl mx-auto px-5'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Travel Inspiration & Tips</div>
         <div className=' grid md:grid-cols-2 lg:grid-cols-3  gap-5 mb-8 py-12'>
             {blogs?.map(blog => (

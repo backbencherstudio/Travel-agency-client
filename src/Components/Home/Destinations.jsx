@@ -50,7 +50,7 @@ const Destinations = () => {
   return (
     <div>
         <div className="w-full px-5">
-            <div className="w-full max-w-6xl mx-auto">
+            <div className="w-full max-w-7xl mx-auto">
                 <div className="text-center max-w-xl mx-auto">
                     <div className='text-2xl md:text-5xl font-bold text-center'>Destinations for you</div>
                 </div>
