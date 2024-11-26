@@ -2,7 +2,6 @@ import React from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 
 function TourCard({ tour }) {
-    console.log(tour);
 
     // Function to render stars based on rating
     const renderStars = (rating) => {

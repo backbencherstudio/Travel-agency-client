@@ -1,4 +1,3 @@
-import React from 'react'
 import image1 from '../../assets/img/blogs/image-1.png';
 import image2 from '../../assets/img/blogs/image-2.png';
 import image3 from '../../assets/img/blogs/image-3.png';
@@ -89,6 +88,7 @@ const Blogs = () => {
                 </div>
             ))}
         </div>
+
         <div className='grid justify-center'>
             <button className='flex gap-2 items-center justify-center px-5 py-3 bg-[#D65326] rounded-full text-white text-base'>
                 See All Blogs 
