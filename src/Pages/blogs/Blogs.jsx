@@ -95,6 +95,9 @@ const Blogs = () => {
                     <Stack spacing={2}>
                         <Pagination count={10} color="primary" />
                     </Stack>
+                    <Stack spacing={2}>
+                        <Pagination count={10} color="primary" />
+                    </Stack>
                 </div>
 
 
