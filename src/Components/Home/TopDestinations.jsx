@@ -19,7 +19,7 @@ const TopDestinations = () => {
       ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="max-w-[1216px] mx-auto px-4">
         <div className="text-2xl md:text-5xl font-bold text-center">
             Top Travel Destinations
         </div>

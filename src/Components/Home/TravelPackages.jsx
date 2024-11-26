@@ -60,7 +60,7 @@ const TravelPackages = () => {
 
 
   return (
-    <div className='max-w-7xl mx-auto px-5'>
+    <div className='max-w-[1216px] mx-auto px-5'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Exclusive Travel Packages</div>
         <div className=' grid md:grid-cols-2 xl:grid-cols-3 justify-center gap-5 mb-8 py-12'>
             {tours?.map(tour => (

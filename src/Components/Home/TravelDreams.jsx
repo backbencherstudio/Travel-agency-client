@@ -6,11 +6,11 @@ import image4 from '../../assets/img/travel/image-4.png';
 
 const TravelDreams = () => {
   return (
-    <div className='container px-8 md:mx-auto'>
+    <div className='max-w-[1216px] mx-auto px-8'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Bringing Your Travel Dreams to Life</div>
         <div className='max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-start content-center self-center gap-12 md:gap-20 py-12 md:py-32'>
             <div className='flex flex-col gap-5 md:w-[30rem]'>
-                <div className='text-xl md:text-[32px] font-bold text-center md:text-left'>Why Choose <span className='text-orange-500'>Around 360?</span></div>
+                <div className='text-xl md:text-[32px] leading-10 font-bold text-center md:text-left'>Why Choose <span className='text-orange-500'>Around 360?</span></div>
                 <div className='flex flex-col gap-4 mx-4 md:mx-0'>
                     <p className='text-base text-gray-500'>At Around 360, we believe that travel is more than just a journey—it's an experience that transforms. Founded by passionate explorers, our agency is dedicated to creating customized travel experiences that cater to your unique interests and needs.</p>
                     <p className='text-base text-gray-500'> From hidden gems to iconic landmarks, we plan every trip with an insider’s touch, ensuring each moment is memorable and meaningful. Whether you’re seeking a luxurious getaway, an adventurous safari, or a family-friendly escape, our team of travel specialists is here to make your dream vacation come to life.</p>
