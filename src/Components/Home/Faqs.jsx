@@ -34,7 +34,7 @@ const Faqs = () => {
   ];
 
   return (
-    <div className="max-w-[1216px] px-4 sm:px-6 lg:px-8 mx-auto">
+    <div className="max-w-[1216px] px-4 sm:px-6 lg:px-8 xl:px-0 mx-auto">
       <div className="flex flex-col md:flex-row">
         <div className="text-center md:text-left">
           <h2 className="text-2xl font-bold md:text-5xl md:leading-tight text-[#252D3C]">
@@ -50,7 +50,7 @@ const Faqs = () => {
           </div>
         </div>
         <div>
-          <div className="grid gap-4 divide-y divide-gray-200">
+          <div className="grid gap-4 divide-gray-200">
             {faqs.map((faq, index) => (
               <div
                 key={index}

@@ -23,13 +23,13 @@ const CardComponent = ({ blog }) => {
                             Jan 6, 2024
                         </div>
                     </div>
-                    <h6 className="mb-2 text-slate-800 text-xl font-bold">
+                    <Link to={`/blog-details/${blog.id}`} className="mb-2 text-slate-800 text-xl font-bold">
                         {blog.title}
-                    </h6>
+                    </Link>
                     <p className="text-[#65666b] leading-normal text-base font-light">
                         {blog.description.length > 100 ? blog.description.substring(0, 100) + "..." : blog.description.name}
                         {blog.description.length > 100 && (
-                            <Link to={`/blogs/${blog.id}`} className="text-[#0E457D] ml-2 font-bold">
+                            <Link to={`/blog-details/${blog.id}`} className="text-[#0E457D] ml-2 font-bold">
                                 Read More
                             </Link>
                         )}

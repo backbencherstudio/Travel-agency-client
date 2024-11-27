@@ -10,6 +10,7 @@ import Blogs from "../Pages/blogs/Blogs";
 import TourDetails from "../Pages/TourDetails/TourDetails";
 import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
 import ChangePassword from "../Pages/Auth/ChangePassword";
+import BlogDetails from "../Pages/blogs/BlogDetails";
 
 export const router = createBrowserRouter([
   {
@@ -35,7 +36,11 @@ export const router = createBrowserRouter([
       {
           path: '/review_package',
           element: <ReviewPackage />
-      }
+      },
+      {
+        path: "/blog-details/:id",
+        element: <BlogDetails />,
+      },
     ],
   },
   {

@@ -21,7 +21,7 @@ const TravelDreams = () => {
                 <img src={image1} alt="" className='w-[137px] h-[224px] lg:w-48 lg:h-[300px] xl:w-[274px] xl:h-[448px] object-cover rounded-[95px]' />
                 <div className='grid items-end '>
                     <div></div>
-                    <div className='relative right-3 md:right-6 bg-white rounded-l-[30px] lg:rounded-l-[50px] xl:rounded-tl-[85px] xl:rounded-bl-[75px] pl-2 lg:pl-3'>
+                    <div className='relative right-3 md:right-6 bg-white rounded-l-[50px] md:rounded-l-[25px] lg:rounded-l-[50px] xl:rounded-tl-[85px] xl:rounded-bl-[75px] pl-2 lg:pl-3'>
                         <img src={image4} alt="" className='w-[100px] h-[166px] md:w-full md:h-[166px] xl:w-[200px] xl:h-[332px] object-cover rounded-[90px]' />
                     </div>
                 </div>

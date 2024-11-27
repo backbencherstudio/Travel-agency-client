@@ -49,12 +49,12 @@ const Destinations = () => {
     
   return (
     <div>
-        <div className="w-full px-5">
+        <div className="w-full px-5 xl:px-0">
             <div className="max-w-[1216px] mx-auto">
                 <div className="text-center max-w-xl mx-auto">
                     <div className='text-2xl md:text-5xl font-bold text-center'>Destinations for you</div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start py-12 md:py-20">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 items-start py-12 md:py-20">
                     {destinations?.map(destination => (
                         <div className="flex gap-3 bg-white shadow rounded-xl overflow-hidden items-center justify-start">
                             <div className="relative w-[102px] h-[102px] flex-shrink-0">

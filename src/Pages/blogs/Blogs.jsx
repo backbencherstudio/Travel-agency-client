@@ -10,8 +10,10 @@ import image1 from '../../assets/img/blogs/image-1.png';
 import image2 from '../../assets/img/blogs/image-2.png';
 import image3 from '../../assets/img/blogs/image-3.png';
 import avatar3 from '../../assets/img/avatar/avatar-1.jpg';
+import Faqs from "../../Components/Home/Faqs";
 
 const Blogs = () => {
+    const links = [{name: "Home", path: "/"}, {name: "Blogs", path: "/tours"}]
 
     const blogsArray = [
         {
@@ -66,8 +68,9 @@ const Blogs = () => {
 
 
     return (
-        <div className="bg-[#F0F4F9]" >
-            <HeroSection bgImg={blogImage} pageName="Our Blogs" pathName1="/" pathName2="blogs" pageName1="Home" pageName2="Blog" description="Explore our blog for the latest travel tips, destination guides, and inspiring stories to fuel your wanderlust. From must-see locations to insider advice, we’re here to make your journey unforgettable." />
+        <div>
+            <HeroSection bgImg={blogImage} pageName="Our Blogs" links={links} description="Explore our blog for the latest travel tips, destination guides, and inspiring stories to fuel your wanderlust. From must-see locations to insider advice, we’re here to make your journey unforgettable." />
+            <div className="bg-[#F0F4F9]">
 
             <ParentComponent>
                 {/* ===================================================================  Fetured ============================================================= */}
@@ -95,15 +98,18 @@ const Blogs = () => {
                 </div>
 
                 {/* =================================================================== Pagination ============================================================= */}
-                <div className="flex justify-center " >
+                <div className="flex justify-center mt-20" >
                     <Stack spacing={2}>
                         <Pagination count={10} color="primary" />
                     </Stack>
                 </div>
 
-
             </ParentComponent>
-
+            
+            </div>
+            <div className="py-20">
+                <Faqs />
+            </div>
         </div >
     );
 };
