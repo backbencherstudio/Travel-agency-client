@@ -4,10 +4,10 @@ import circleIcon from '../../assets/img/tour-details/check-circle.svg';
 import removeIcon from '../../assets/img/tour-details/remove-circle.svg';
 import up from '../../assets/img/tour-details/direction-up.svg';
 import down from '../../assets/img/tour-details/direction-down.svg';
-import TourBook from './TourBook';
+import BookCard from './BookCard';
 
-const Details = ({ tour }) => {
-    const [selectedImage, setSelectedImage] = useState(tour?.locationImage);
+const Details = ({ details }) => {
+    const [selectedImage, setSelectedImage] = useState(details?.locationImage);
     const [activeIndex, setActiveIndex] = useState(null);
     const contentRefs = useRef([]);
 
@@ -37,22 +37,22 @@ const Details = ({ tour }) => {
     return (
         <div className="grid lg:grid-cols-3 gap-6 bg-[#F0F4F9]">
             <div className="col-span-2 flex flex-col gap-5">
-                <h1 className="text-[40px] text-[#0F1416] font-semibold">{tour?.title}</h1>
+                <h1 className="text-3xl md:text-[40px] text-[#0F1416] font-semibold">{details?.title}</h1>
                 <div className="grid grid-cols-3 items-center justify-between">
                     <div className="border-r-2">
                         <p className="text-sm text-[#8993A0]">Review</p>
                         <div className="flex gap-1 items-center">
-                            {renderStars(tour?.rating)}{' '}
+                            {renderStars(details?.rating)}{' '}
                             <span className="text-xs md:text-base text-[#8993A0]">(1214 reviews)</span>
                         </div>
                     </div>
                     <div className="grid justify-center border-r-2">
                         <p className="text-sm text-[#8993A0]">Days</p>
-                        <p className="text-base font-medium text-[#0F1416]">{tour?.days} days</p>
+                        <p className="text-base font-medium text-[#0F1416]">{details?.days} days</p>
                     </div>
                     <div className="grid justify-end">
                         <p className="text-sm text-[#8993A0]">Location</p>
-                        <p className="text-base font-medium text-[#0F1416]">{tour?.location}</p>
+                        <p className="text-base font-medium text-[#0F1416]">{details?.location}</p>
                     </div>
                 </div>
                 <div className="flex flex-col gap-4">
@@ -66,7 +66,7 @@ const Details = ({ tour }) => {
                     </div>
                     {/* Grid images */}
                     <div className="grid grid-cols-4 gap-4">
-                        {tour?.tourPlan?.map((planimg) => (
+                        {details?.tourPlan?.map((planimg) => (
                             <button
                                 key={planimg.day}
                                 className={``}
@@ -84,24 +84,24 @@ const Details = ({ tour }) => {
                 <div className='flex flex-col gap-[30px]'>
                     <div className='flex flex-col gap-5 border-b pb-5'>
                         <h3 className='text-[40px] font-semibold text-[#0F1416]'>Overview</h3>
-                        <p className='text-base font-normal text-[#0F1416] self-stretch'>{tour.overview}</p>
+                        <p className='text-base font-normal text-[#0F1416] self-stretch'>{details.overview}</p>
                     </div>
                     <div className='flex flex-col gap-5 border-b pb-5'>
                         <h3 className='text-xl font-bold text-[#0F1416]'>Included/Excluded</h3>
                         <div className='grid grid-cols-2'>
                             <div className='flex flex-col gap-4'>
-                                {tour.include.map((inc, index) => (
+                                {details.include.map((inc, index) => (
                                     <div key={index} className='flex gap-3'>
                                         <img src={circleIcon} alt="" />
-                                        <p className='text-base text-[#0F1416]'>{inc}</p>
+                                        <p className='md:text-base text-[#0F1416]'>{inc}</p>
                                     </div>
                                 ))}
                             </div>
                             <div className='flex flex-col gap-4'>
-                                {tour.exclude.map((ex, index) => (
+                                {details.exclude.map((ex, index) => (
                                     <div key={index} className='flex gap-3'>
                                         <img src={removeIcon} alt="" />
-                                        <p className='text-base text-[#0F1416]'>{ex}</p>
+                                        <p className='md:text-base text-[#0F1416]'>{ex}</p>
                                     </div>
                                 ))}
                             </div>
@@ -111,7 +111,7 @@ const Details = ({ tour }) => {
                         <h3 className='text-xl font-bold text-[#0F1416]'>Trip Plan</h3>
                         <div>
                             <div className="flex flex-col gap-5 ">
-                                {tour.tourPlan.map((plan, index) => (
+                                {details.tourPlan.map((plan, index) => (
                                 <div
                                     key={index}
                                     className="hs-accordion"
@@ -185,8 +185,8 @@ const Details = ({ tour }) => {
                     </div>
                 </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl max-h-fit max-w-full">
-                <TourBook tour={tour} renderStars={renderStars} />
+            <div className="bg-white p-6 rounded-2xl max-h-fit max-w-full col-span-2 lg:col-span-1 xl:col-span-0">
+                <BookCard details={details} renderStars={renderStars} />
             </div>
         </div>
     );
