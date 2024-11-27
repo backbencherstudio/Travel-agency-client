@@ -18,16 +18,16 @@ const TravelDreams = () => {
                 </div>
             </div>
             <div className='flex justify-center ml-6 md:w-1/2'>
-                <img src={image1} alt="" className='w-[137px] md:w-[274px] h-[224px] md:h-[448px] object-cover rounded-[95px]' />
+                <img src={image1} alt="" className='w-[137px] h-[224px] lg:w-48 lg:h-[300px] xl:w-[274px] xl:h-[448px] object-cover rounded-[95px]' />
                 <div className='grid items-end '>
                     <div></div>
-                    <div className='relative right-3 md:right-6 bg-white rounded-l-[50px] md:rounded-tl-[105px] md:rounded-bl-[94px] pl-2 md:pl-3'>
-                        <img src={image4} alt="" className='w-[100px] md:w-[200px] h-[166px] md:h-[332px] object-cover rounded-[90px]' />
+                    <div className='relative right-3 md:right-6 bg-white rounded-l-[30px] lg:rounded-l-[50px] xl:rounded-tl-[85px] xl:rounded-bl-[75px] pl-2 lg:pl-3'>
+                        <img src={image4} alt="" className='w-[100px] h-[166px] md:w-full md:h-[166px] xl:w-[200px] xl:h-[332px] object-cover rounded-[90px]' />
                     </div>
                 </div>
                 <div className='grid items-start '>
-                    <div className='relative right-8 md:right-16 bg-white rounded-b-full md:rounded-b-[92px] pl-2 md:pl-3 pb-2'>
-                        <img src={image3} alt="" className='w-[90px] md:w-[180px] h-[155.5px] md:h-[311px] object-cover rounded-[90px]' />
+                    <div className='relative right-8 lg:right-16 bg-white rounded-b-full xl:rounded-b-[92px] pl-2 lg:pl-3 pb-2'>
+                        <img src={image3} alt="" className='w-[90px] h-[155.5px] md:w-full md:h-40 xl:w-[180px] xl:h-[311px] object-cover rounded-[90px]' />
                         <div></div>
                     </div>
                 </div>

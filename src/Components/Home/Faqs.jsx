@@ -67,38 +67,40 @@ const Faqs = () => {
                   >
                     {faq.question}
                   </h5>
-                  <svg
-                    className={`w-6 h-6 text-gray-900 transition duration-500 ${
-                      activeIndex === index ? "hidden" : "block"
-                    }`}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 12H18M12 18V6"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </svg>
-                  <svg
-                    className={`w-6 h-6 text-gray-900 transition duration-500 ${
-                      activeIndex === index ? "block" : "hidden"
-                    }`}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 12H18"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </svg>
+                  <div className="p-1 border rounded-full">
+                    <svg
+                      className={`w-6 h-6 text-gray-900 transition duration-500 ${
+                        activeIndex === index ? "hidden" : "block"
+                      }`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 12H18M12 18V6"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>
+                    </svg>
+                    <svg
+                      className={`w-6 h-6 text-gray-900 transition duration-500 ${
+                        activeIndex === index ? "block" : "hidden"
+                      }`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 12H18"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>
+                    </svg>
+                  </div>
                 </button>
                 <div
                   ref={(el) => (contentRefs.current[index] = el)}
