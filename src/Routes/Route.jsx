@@ -9,6 +9,7 @@ import Otp from "../Pages/Auth/OTP";
 import Blogs from "../Pages/blogs/Blogs";
 import TourDetails from "../Pages/TourDetails/TourDetails";
 import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
+import ChangePassword from "../Pages/Auth/ChangePassword";
 
 export const router = createBrowserRouter([
   {
@@ -52,5 +53,9 @@ export const router = createBrowserRouter([
   {
     path: "otp",
     element: <Otp />,
+  },
+  {
+    path: "change-password",
+    element: <ChangePassword />,
   },
 ]);
