@@ -1,7 +1,7 @@
 import React from 'react';
 import starFull from '../../assets/img/star.svg';
 import starNone from '../../assets/img/star-none.svg';
-import avatar1 from '../../assets/img/avatar/avatar-1.png';
+import avatar1 from '../../assets/img/avatar/avatar-1.jpg';
 import avatar2 from '../../assets/img/avatar/avatar-2.png';
 import avatar3 from '../../assets/img/avatar/avatar-3.png';
 import avatar4 from '../../assets/img/avatar/avatar-4.png';
@@ -99,7 +99,7 @@ const Testimonials = () => {
                             </div>
                             <div className="w-full flex mb-4 items-center mt-4">
                                 <div className="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
-                                    <img src={testimonial.user.image} alt=""/>
+                                    <img src={testimonial.user.image} alt="" className=' w-10 h-10 object-cover'/>
                                 </div>
                                 <div className="flex-grow pl-3">
                                     <h6 className="font-bold text-xl uppercase text-[#323B47]">{testimonial.user.name}</h6>

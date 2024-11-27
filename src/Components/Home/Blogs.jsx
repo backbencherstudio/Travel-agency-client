@@ -1,7 +1,7 @@
 import image1 from '../../assets/img/blogs/image-1.png';
 import image2 from '../../assets/img/blogs/image-2.png';
 import image3 from '../../assets/img/blogs/image-3.png';
-import avatar3 from '../../assets/img/avatar/avatar-3.png';
+import avatar3 from '../../assets/img/avatar/avatar-1.jpg';
 import { Link } from 'react-router-dom';
 import CardComponent from '../CardComponent/CardComponent';
 

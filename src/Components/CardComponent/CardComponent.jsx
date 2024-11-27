@@ -36,7 +36,7 @@ const CardComponent = ({ blog }) => {
                     </p>
                     <div className="w-full flex mb-1 items-center mt-4">
                         <div className="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
-                            <img src={blog.user?.image} alt="" />
+                            <img src={blog.user?.image} alt="" className=" w-10 h-10 object-cover" />
                         </div>
                         <div className="flex-grow pl-3">
                             <h6 className="font-bold text-base uppercase text-black">{blog.user.name}</h6>
