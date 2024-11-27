@@ -4,6 +4,7 @@ import { base_url } from "../../utils/base_path";
 
 axios.defaults.withCredentials = true;
 
+
 export const registerUser = createAsyncThunk(
   'users/register',
   async (userData, { rejectWithValue }) => {
