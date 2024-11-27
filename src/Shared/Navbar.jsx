@@ -1,16 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import  { useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/Logo.svg';
-import arrowDown from '../assets/img/arrow-down.svg';
 import languageLogo from '../assets/img/Language.svg';
 import './nav.css';
 import { Link, NavLink } from 'react-router-dom';
+import avatar from "../assets/img/avatar/avatar-1.jpg";
 
 const Navbar = () => {
     const [contactDropDown, setContactDropDown] = useState(false);
     const [languageDropDown, setLanguageDropDown] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isloginOpen, setLoginOpen] = useState(false)
     const menuRef = useRef();
     const buttonRef = useRef();
+    const ProfileRef = useRef();
+
+    const isLogin = false;
+
+    const toggloginOpen = () => {
+        setLoginOpen(!isloginOpen)
+    }
 
     // Close dropdowns when clicking outside
   useEffect(() => {
@@ -31,9 +39,12 @@ const Navbar = () => {
             menuRef.current &&
             !menuRef.current.contains(event.target) &&
             buttonRef.current &&
-            !buttonRef.current.contains(event.target)
+            !buttonRef.current.contains(event.target) &&
+            ProfileRef.current &&
+            !ProfileRef.current.contains(event.target)
         ) {
             setIsMenuOpen(false);
+            setLoginOpen(false);
         }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -60,8 +71,8 @@ const Navbar = () => {
   };
 
   return (
-    <header className="nav-style z-10 ">
-        <div className="mx-auto container px-4 sm:px-6 lg:px-8">
+    <header className="z-10 bg-white nav-style">
+        <div className="mx-auto max-w-[1216px] px-4 xl:px-0 ">
             <div className="flex lg:gap-6 h-16 items-center justify-between">
                 <div className="md:flex md:items-center md:gap-12">
                     <Link className="block text-teal-600" to="/">
@@ -128,7 +139,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className='flex gap-6 xl:gap-[6px] items-center'>
+                    <div className='flex gap-4 items-center'>
                         {/* Language Dropdown */}
                         <div className="relative inline-block text-left">
                             <button
@@ -151,23 +162,67 @@ const Navbar = () => {
                             )}
                         </div>
                         <div className=' hidden lg:block'>
-                            <div className="flex gap-6">
-                                <Link
-                                    className="p-5 xl:px-5 xl:py-2.5 text-sm font-medium text-gray-500"
-                                    to="/login"
-                                >
-                                    Login
-                                </Link>
-
-                                <div className="hidden sm:flex">
-                                    <Link
-                                    className="rounded-3xl bg-orange-500 xl:px-5 xl:pt-2.5 xl:pb-3 text-sm font-medium text-white"
-                                    to="/signup"
+                            {isLogin ? (
+                                <div className="relative">
+                                    <div className='flex items-center'>
+                                        <button onClick={toggloginOpen} className="w-10 h-10 text-lg bg-[#EB5B2A] flex justify-center items-center rounded-full">
+                                            {avatar ? (
+                                                <img src={avatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />
+                                            ) : (
+                                                <span className="text-white font-bold">
+                                                {`${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`}
+                                                </span>
+                                            )}
+                                        </button>
+                                        <div>
+                                            <svg className="-mr-1 size-5 w-6 h-6 text-[#475467]" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    {isloginOpen && (
+                                    <div
+                                        className={`bg-white p-6 absolute flex flex-col top-full -right-12 mt-2 space-y-1 border rounded shadow popup w-60`}
+                                        ref={ProfileRef}
                                     >
-                                    Sign Up
-                                    </Link>
+                                        <div className="w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block"></div>
+                                        <Link
+                                        to="/account"
+                                        className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
+                                        >
+                                        My Account
+                                        </Link>
+                                        <Link
+                                        onClick={"handleLogout"}
+                                        className="text-base xl:text-xl text-red-400 hover:text-[#b24b7d] duration-300"
+                                        >
+                                        Logout
+                                        </Link>
+                                    </div>
+                                    )}
                                 </div>
-                            </div>
+                              
+                            )
+                            :
+                            (
+                                <div className="flex xl:gap-4">
+                                    <Link
+                                        className="p-5 xl:px-5 xl:py-2.5 text-sm font-medium text-gray-500"
+                                        to="/login"
+                                    >
+                                        Login
+                                    </Link>
+
+                                    <div className="hidden lg:flex items-center justify-center">
+                                        <Link
+                                        className="rounded-3xl bg-orange-500 px-2 pt-2 pb-3 xl:px-4 xl:pt-2.5 xl:pb-3 text-xs xl:text-sm font-medium text-white"
+                                        to="/signup"
+                                        >
+                                        Sign Up
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="block lg:hidden">

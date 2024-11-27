@@ -60,11 +60,11 @@ const TravelPackages = () => {
 
 
   return (
-    <div className='max-w-7xl mx-auto'>
+    <div className='max-w-[1216px] mx-auto px-5'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Exclusive Travel Packages</div>
-        <div className='flex flex-col md:flex-row flex-wrap gap-6 items-center justify-center py-12'>
+        <div className=' grid md:grid-cols-2 xl:grid-cols-3 justify-center gap-5 mb-8 pt-12'>
             {tours?.map(tour => (
-                <div key={tour.id} className="relative flex flex-col my-6 bg-white shadow-md border border-slate-200 rounded-lg w-80 md:w-96">
+                <div key={tour.id} className="relative flex flex-col my-6 bg-white shadow-md border border-slate-200 rounded-lg">
                     <div className="relative h-56 m-2.5 overflow-hidden text-white rounded-md">
                         <img src={tour.image} alt="card-image" />
                     </div>
@@ -95,7 +95,7 @@ const TravelPackages = () => {
                                             <path fillRule="evenodd" clipRule="evenodd" d="M6.99984 1.16699C3.77809 1.16699 1.1665 3.77858 1.1665 7.00033C1.1665 10.2221 3.77809 12.8337 6.99984 12.8337C10.2216 12.8337 12.8332 10.2221 12.8332 7.00033C12.8332 3.77858 10.2216 1.16699 6.99984 1.16699ZM9.05902 9.05951C8.97385 9.14468 8.86184 9.18783 8.74984 9.18783C8.63784 9.18783 8.52582 9.14526 8.44065 9.05951L6.69065 7.30951C6.6084 7.22726 6.56234 7.11583 6.56234 7.00033V4.08366C6.56234 3.84216 6.75834 3.64616 6.99984 3.64616C7.24134 3.64616 7.43734 3.84216 7.43734 4.08366V6.81889L9.05902 8.44057C9.22994 8.61207 9.22994 8.88859 9.05902 9.05951Z" fill="#4A4C56"/>
                                         </svg>
                                     </div>
-                                    <p className="ms-1 text-sm  text-gray-600 dark:text-gray-400">{tour.days} days</p>
+                                    <p className="ms-1 text-xs md:text-sm  text-gray-600 dark:text-gray-400">{tour.days} days</p>
                                 </div>
                             <div className="flex items-center ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">
                                 <div>
@@ -103,7 +103,7 @@ const TravelPackages = () => {
                                     <path d="M6.00024 0C3.60387 0 1.6543 1.94958 1.6543 4.34592C1.6543 7.31986 5.54349 11.6858 5.70908 11.8702C5.86461 12.0434 6.13616 12.0431 6.29141 11.8702C6.45699 11.6858 10.3462 7.31986 10.3462 4.34592C10.3461 1.94958 8.39659 0 6.00024 0ZM6.00024 6.53248C4.79457 6.53248 3.81371 5.55159 3.81371 4.34592C3.81371 3.14025 4.79459 2.15939 6.00024 2.15939C7.20589 2.15939 8.18675 3.14027 8.18675 4.34595C8.18675 5.55162 7.20589 6.53248 6.00024 6.53248Z" fill="#4A4C56"/>
                                     </svg>
                                 </div>
-                                <p className="ms-1 text-sm  text-gray-600 dark:text-gray-400">{tour.location}</p>
+                                <p className="ms-1 text-xs md:text-sm  text-gray-600 dark:text-gray-400">{tour.location}</p>
                             </div>
                         </div>
                         <div className='text-sm mt-1 text-[#0068EF]'>Free cancellation <span className='text-xs text-[#49556D]'>(Cancel within 24H)</span></div>

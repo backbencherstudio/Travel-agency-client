@@ -100,20 +100,32 @@ function AllTours() {
             images: [package3, package1],
         },
     ];
+    const [priceRange, setPriceRange] = useState({
+        min: 0,
+        max: 5000
+    });
+    const minPrice = 0;
+    const maxPrice = 5000;
 
-    const handleMaxBudgetChange = (e) => {
-        setMaxBudget(e.target.value);
-    };
-    const handleMinBudgetChange = (e) => {
-        setMaxBudget(e.target.value);
+    const handleMinChange = (e) => {
+        const value = Math.min(Number(e.target.value), priceRange.max - 100);
+        setPriceRange({
+            ...priceRange,
+            min: value
+        });
     };
 
-    const sliderStyle = {
-        background: `linear-gradient(to right, rgba(235, 91, 42, 1) ${maxBudget / 50}%, rgba(224, 224, 224, 1) ${maxBudget / 50}%)`,
+    const handleMaxChange = (e) => {
+        const value = Math.max(Number(e.target.value), priceRange.min + 100);
+        setPriceRange({
+            ...priceRange,
+            max: value
+        });
     };
-    const minSliderStyle = {
-        background: `linear-gradient(to right, rgba(235, 91, 42, 1) ${minBudget / 50}%, rgba(224, 224, 224, 1) ${minBudget / 50}%)`,
-    };
+
+    const leftPosition = ((priceRange.min - minPrice) / (maxPrice - minPrice)) * 100;
+    const rightPosition = ((maxPrice - priceRange.max) / (maxPrice - minPrice)) * 100;
+
 
 
 
@@ -134,10 +146,10 @@ function AllTours() {
     const endDatePickerRef = useRef(null);
 
     return (
-        <div className='max-w-7xl mx-auto'>
-            <div className='py-20 flex items-start justify-start gap-20'>
+        <div className='max-w-[1200px] mx-auto'>
+            <div className='lg:py-20 flex items-start justify-start lg:gap-6 flex-col lg:flex-row'>
                 {/* Filter Section */}
-                <div className='p-6 bg-white w-fit rounded-xl shadow-md min-w-[25%] flex flex-col gap-3'>
+                <div className='p-6 max-w-[300px] bg-white  rounded-xl shadow-md  flex flex-col  w-full gap-3'>
                     {/* Search Input */}
                     <div className='flex gap-2 border items-center py-2 px-5 rounded-md'>
                         <CiSearch className='text-3xl' />
@@ -251,38 +263,48 @@ function AllTours() {
                             <div className='mt-4 flex flex-col gap-4'>
                                 <div>
                                     {/* Budget Range Slider */}
-                                    <div className="flex mb-5 items-center justify-between text-sm text-black">
-                                        <span>${minBudget}</span>
-                                        <span>${maxBudget}</span>
-                                    </div>
-                                    <div className='flex items-center justify-center'>
+                                    <div className="relative h-2 mb-8">
+                                        <div className="flex justify-between mb5 text-sm text-gray-500">
+                                            <span>${minPrice.toLocaleString()}</span>
+                                            <span>${maxPrice.toLocaleString()}</span>
+                                        </div>
 
-                                        {/* Min Budget Range Slider */}
+                                        <div className="absolute mt-[2px] w-full h-[5px] bg-gray-200 rounded-full" />
+
+                                        <div
+                                            className="absolute mt-[2px] h-[5px] bg-orange-500 rounded-full"
+                                            style={{
+                                                left: `${leftPosition}%`,
+                                                right: `${rightPosition}%`
+                                            }}
+                                        />
                                         <input
                                             type="range"
-                                            min="0"
-                                            max={maxBudget}  // Min budget cannot exceed max budget
-                                            step="100"
-                                            value={minBudget}
-                                            onChange={(e) => setMinBudget(Math.min(e.target.value, maxBudget))}  // Ensure minBudget does not exceed maxBudget
-                                            style={minSliderStyle} // Dynamic background color based on the budget
-                                            className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
+                                            min={minPrice}
+                                            max={maxPrice}
+                                            value={priceRange.min}
+                                            onChange={handleMinChange}
+                                            className="absolute w-full h-full appearance-none bg-transparent pointer-events-none"
+                                            style={{
+                                                WebkitAppearance: 'none',
+                                                zIndex: 3
+                                            }}
                                         />
 
-
-                                        {/* Max Budget Range Slider */}
                                         <input
                                             type="range"
-                                            min={minBudget}  // Max budget cannot go below min budget
-                                            max="5000"
-                                            step="100"
-                                            value={maxBudget}
-                                            onChange={(e) => setMaxBudget(Math.max(e.target.value, minBudget))}  // Ensure maxBudget does not go below minBudget
-                                            style={sliderStyle} // Dynamic background color based on the budget
-                                            className="w-full h-1 rounded-lg appearance-none cursor-pointer text-white"
+                                            min={minPrice}
+                                            max={maxPrice}
+                                            value={priceRange.max}
+                                            onChange={handleMaxChange}
+                                            className="absolute w-full h-full appearance-none bg-transparent pointer-events-none"
+                                            style={{
+                                                WebkitAppearance: 'none',
+                                                zIndex: 4
+                                            }}
                                         />
-
                                     </div>
+
                                 </div>
                             </div>
                         )}
@@ -319,7 +341,7 @@ function AllTours() {
                                         <div className='flex gap-2'>
                                             <input
                                                 type="checkbox"
-                                                checked={ratingFilters.fiveStars}
+                                               
                                                 onChange={() => handleRatingChange(5)}
                                             />
 
@@ -339,7 +361,7 @@ function AllTours() {
                                         <div className='flex gap-2'>
                                             <input
                                                 type="checkbox"
-                                                checked={ratingFilters.fourStars}
+                                               
                                                 onChange={() => handleRatingChange(4)}
                                             />
 
@@ -359,7 +381,7 @@ function AllTours() {
                                         <div className='flex gap-2'>
                                             <input
                                                 type="checkbox"
-                                                checked={ratingFilters.threeStars}
+                                               
                                                 onChange={() => handleRatingChange(3)}
                                             />
 
@@ -379,7 +401,7 @@ function AllTours() {
                                         <div className='flex gap-2'>
                                             <input
                                                 type="checkbox"
-                                                checked={ratingFilters.twoStars}
+                                               
                                                 onChange={() => handleRatingChange(2)}
                                             />
 
@@ -399,7 +421,7 @@ function AllTours() {
                                         <div className='flex gap-2'>
                                             <input
                                                 type="checkbox"
-                                                checked={ratingFilters.oneStar}
+                                               
                                                 onChange={() => handleRatingChange(1)}
                                             />
 
@@ -448,7 +470,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={isFreeCancellation}
+                                       
                                         onChange={() => setIsFreeCancellation((prev) => !prev)}
                                     />
                                     <p>Free Cancellation </p>
@@ -486,7 +508,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.indonesia}
+                                       
                                         onChange={() =>
                                             setSelectedDestinations((prevState) => ({
                                                 ...prevState,
@@ -500,7 +522,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.bali}
+                                       
                                         onChange={() =>
                                             setSelectedDestinations((prevState) => ({
                                                 ...prevState,
@@ -513,7 +535,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.iceland}
+                                       
                                         onChange={() =>
                                             setSelectedDestinations((prevState) => ({
                                                 ...prevState,
@@ -526,7 +548,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.japan}
+                                       
                                         onChange={() =>
                                             setSelectedDestinations((prevState) => ({
                                                 ...prevState,
@@ -539,7 +561,7 @@ function AllTours() {
 
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.italy}
+                                       
                                         onChange={() =>
                                             setSelectedDestinations((prevState) => ({
                                                 ...prevState,
@@ -552,7 +574,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.paris}
+                                       
                                         onChange={() =>
                                             setSelectedDestinations((prevState) => ({
                                                 ...prevState,
@@ -594,7 +616,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.resort}
+                                       
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
@@ -608,7 +630,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.hotel}
+                                       
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
@@ -621,7 +643,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.villa}
+                                       
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
@@ -634,7 +656,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.apartment}
+                                       
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
@@ -647,7 +669,7 @@ function AllTours() {
 
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.privateVacationHome}
+                                       
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
@@ -660,7 +682,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.guesthouse}
+                                       
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
@@ -673,7 +695,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedResidences.houseboat}
+                                       
                                         onChange={() =>
                                             setSelectedResidences((prevState) => ({
                                                 ...prevState,
@@ -715,7 +737,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedMealPlans.breakfast}
+                                       
                                         onChange={() =>
                                             setSelectedMealPlans((prevState) => ({
                                                 ...prevState,
@@ -729,7 +751,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedMealPlans.allInclusive}
+                                       
                                         onChange={() =>
                                             setSelectedMealPlans((prevState) => ({
                                                 ...prevState,
@@ -742,7 +764,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedMealPlans.dinner}
+                                       
                                         onChange={() =>
                                             setSelectedMealPlans((prevState) => ({
                                                 ...prevState,
@@ -755,7 +777,7 @@ function AllTours() {
                                 <div className='flex items-center gap-3'>
                                     <input
                                         type="checkbox"
-                                        checked={selectedMealPlans.lunch}
+                                       
                                         onChange={() =>
                                             setSelectedMealPlans((prevState) => ({
                                                 ...prevState,
@@ -798,7 +820,7 @@ function AllTours() {
                                     <div className='flex items-center gap-2'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedPopularAreas.beach}
+                                           
                                             onChange={() =>
                                                 setSelectedPopularAreas((prevState) => ({
                                                     ...prevState,
@@ -814,7 +836,7 @@ function AllTours() {
                                     <div className='flex items-center gap-2'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedPopularAreas.mountain}
+                                           
                                             onChange={() =>
                                                 setSelectedPopularAreas((prevState) => ({
                                                     ...prevState,
@@ -830,7 +852,7 @@ function AllTours() {
                                     <div className='flex items-center gap-2'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedPopularAreas.city}
+                                           
                                             onChange={() =>
                                                 setSelectedPopularAreas((prevState) => ({
                                                     ...prevState,
@@ -844,7 +866,7 @@ function AllTours() {
                                     <div className='flex items-center gap-2'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedPopularAreas.adventure}
+                                           
                                             onChange={() =>
                                                 setSelectedPopularAreas((prevState) => ({
                                                     ...prevState,
@@ -859,7 +881,7 @@ function AllTours() {
                                     <div className='flex items-center gap-2'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedPopularAreas.thematicTours}
+                                           
                                             onChange={() =>
                                                 setSelectedPopularAreas((prevState) => ({
                                                     ...prevState,
@@ -873,7 +895,7 @@ function AllTours() {
                                     <div className='flex items-center gap-2'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedPopularAreas.cultural}
+                                           
                                             onChange={() =>
                                                 setSelectedPopularAreas((prevState) => ({
                                                     ...prevState,
@@ -887,7 +909,7 @@ function AllTours() {
                                     <div className='flex items-center gap-2'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedPopularAreas.historical}
+                                           
                                             onChange={() =>
                                                 setSelectedPopularAreas((prevState) => ({
                                                     ...prevState,
@@ -902,7 +924,7 @@ function AllTours() {
                                     <div className='flex items-center gap-2'>
                                         <input
                                             type="checkbox"
-                                            checked={selectedPopularAreas.personalizedTours}
+                                           
                                             onChange={() =>
                                                 setSelectedPopularAreas((prevState) => ({
                                                     ...prevState,
@@ -933,7 +955,7 @@ function AllTours() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> 
         </div >
     );
 }

@@ -40,7 +40,7 @@ const Signup = () => {
           <div className="max-w-xl mx-auto ">
             <img src={logo} className="w-[89px] h-12" alt="" />
           </div>
-          <div className="w-full max-w-xl mx-auto flex flex-col gap-8">
+          <div className="w-full max-w-xl mx-auto  flex flex-col gap-8">
             <div className="flex flex-col gap-3 mt-8">
               <h2 className="text-[32px] font-bold text-[#101828]">Create New Account</h2>
               <p className="text-[#475467] text-base">Please enter details</p>
@@ -55,8 +55,9 @@ const Signup = () => {
                   type="text"
                   id="name"
                   {...register("name", { required: "Name is required" })}
-                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${errors.name ? "border-red-500" : "shadow-sm"
-                    }`}
+                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${
+                    errors.name ? "border-red-500" : "shadow-sm"
+                  }`}
                   placeholder="Enter your name"
                 />
                 {errors.name && (
@@ -73,8 +74,9 @@ const Signup = () => {
                   type="email"
                   id="email"
                   {...register("email", { required: "Email is required" })}
-                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${errors.email ? "border-red-500" : "shadow-sm"
-                    }`}
+                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${
+                    errors.email ? "border-red-500" : "shadow-sm"
+                  }`}
                   placeholder="Enter your email"
                 />
                 {errors.email && (
@@ -91,35 +93,13 @@ const Signup = () => {
                   type="password"
                   id="password"
                   {...register("password", { required: "Password is required" })}
-                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${errors.password ? "border-red-500" : "shadow-sm"
-                    }`}
+                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${
+                    errors.password ? "border-red-500" : "shadow-sm"
+                  }`}
                   placeholder="Create a password"
                 />
                 {errors.password && (
                   <p className="text-red-500 text-sm">{errors.password.message}</p>
-                )}
-              </div>
-
-              {/* Role Dropdown Field */}
-              <div className="mb-4">
-                <label htmlFor="role" className="block text-sm font-medium text-[#344054]">
-                  Role*
-                </label>
-                <select
-                  id="role"
-                  {...register("role", { required: "Role is required" })}
-                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${errors.role ? "border-red-500" : "shadow-sm"
-                    }`}
-                >
-                  {/* <option value="" disabled selected>
-                    Select your role
-                  </option> */}<option value="user">user</option>
-                  <option value="admin">admin</option>
-                  <option value="seller">seller</option>
-
-                </select>
-                {errors.role && (
-                  <p className="text-red-500 text-sm">{errors.role.message}</p>
                 )}
               </div>
 
@@ -138,8 +118,8 @@ const Signup = () => {
               </div>
             </form>
           </div>
-        </div>
       </div>
+    </div>
     </>
   );
 };

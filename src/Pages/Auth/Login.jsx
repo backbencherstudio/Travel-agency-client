@@ -53,8 +53,9 @@ const Login = () => {
                   type="email"
                   id="email"
                   {...register("email", { required: "Email is required" })}
-                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${errors.email ? "border-red-500" : "shadow-sm"
-                    }`}
+                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${
+                    errors.email ? "border-red-500" : "shadow-sm"
+                  }`}
                   placeholder="Enter your email"
                 />
                 {errors.email && (
@@ -71,8 +72,9 @@ const Login = () => {
                   type="password"
                   id="password"
                   {...register("password", { required: "Password is required" })}
-                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${errors.password ? "border-red-500" : "shadow-sm"
-                    }`}
+                  className={`mt-1 px-3 py-2 w-full border rounded-lg ${
+                    errors.password ? "border-red-500" : "shadow-sm"
+                  }`}
                   placeholder="Create a password"
                 />
                 {errors.password && (
@@ -81,8 +83,8 @@ const Login = () => {
               </div>
               <div className="flex justify-between py-6">
                 <div className="flex gap-2">
-                  <input type="checkbox" className="rounded-[4px] border border-[#D0D5DD]" />
-                  <p className="text-sm text-[#344054] font-medium">Remember for 30 days</p>
+                    <input type="checkbox" className="rounded-[4px] border border-[#D0D5DD]" />
+                    <p className="text-sm text-[#344054] font-medium">Remember for 30 days</p>
                 </div>
                 <Link to='/forget-password' className="text-sm font-semibold text-[#EB5B2A]">Forget password</Link>
               </div>
@@ -101,8 +103,8 @@ const Login = () => {
               </div>
             </form>
           </div>
-        </div>
       </div>
+    </div>
     </>
   );
 }
