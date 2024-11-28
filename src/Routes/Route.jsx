@@ -9,6 +9,7 @@ import Otp from "../Pages/Auth/OTP";
 import Blogs from "../Pages/blogs/Blogs";
 import SingleBlog from "../Pages/blogs/SingleBlog";
 import TourDetails from "../Pages/TourDetails/TourDetails";
+import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
 
 export const router = createBrowserRouter([
     {
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
             {
                 path: '/blogDetails/:id',
                 element: <SingleBlog />
+            },
+            {
+                path: '/review_package',
+                element: <ReviewPackage />
             }
         ]
     },
