@@ -45,7 +45,7 @@ const SingleBlog = () => {
 
                 <div className="blog-details grid grid-cols-12 gap-6 ">
 
-                    <div className="col-span-8">
+                    <div className=" col-span-12 lg:col-span-8">
                         <div>
                             <img className="rounded-2xl" src="https://letsenhance.io/static/a31ab775f44858f1d1b80ee51738f4f3/11499/EnhanceAfter.jpg" alt="" />
                         </div>
@@ -118,7 +118,7 @@ const SingleBlog = () => {
 
                     </div>
 
-                    <div className="col-span-4">
+                    <div className=" col-span-12 lg:col-span-4">
 
                         <div className="flex border rounded-lg items-center px-2 " >
                             <CiSearch className="text-3xl cursor-pointer " />
