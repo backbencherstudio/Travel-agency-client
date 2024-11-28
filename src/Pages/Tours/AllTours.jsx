@@ -933,7 +933,7 @@ function AllTours() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> 
         </div >
     );
 }

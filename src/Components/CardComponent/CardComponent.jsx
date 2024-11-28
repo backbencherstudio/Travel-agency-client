@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
 
+import { Link } from "react-router-dom";
+
 const CardComponent = ({ blog }) => {
 
     return (
         <div>
 
             <div key={blog?.id} className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-xl">
-                <div className="relative h-56 overflow-hidden text-white rounded-t-xl">
+            <div className="relative h-56 overflow-hidden text-white rounded-t-xl">
                     <img src={blog.image} alt="card-image" />
                     <div className="absolute top-0 left-0 bg-[#F5F7F9] text-[#323B47] px-3 pb-1 m-4 rounded-full text-xs font-bold">
                         Recently Added
@@ -25,7 +27,12 @@ const CardComponent = ({ blog }) => {
                         {blog.title}
                     </h6>
                     <p className="text-[#65666b] leading-normal text-base font-light">
-                        {blog.description.length > 80 ? blog.description.substring(0, 80) + "..." : blog.description.name}
+                        {blog.description.length > 100 ? blog.description.substring(0, 100) + "..." : blog.description.name}
+                        {blog.description.length > 100 && (
+                            <Link to={`/blogs/${blog.id}`} className="text-[#0E457D] ml-2 font-bold">
+                                Read More
+                            </Link>
+                        )}
                     </p>
                     <div className="w-full flex mb-1 items-center mt-4">
                         <div className="overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow">
