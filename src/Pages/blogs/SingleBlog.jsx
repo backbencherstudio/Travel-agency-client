@@ -56,7 +56,7 @@ const SingleBlog = () => {
 
                         <div className="content" >
 
-                            <h2 className="font-inter text-[40px] font-semibold leading-[130%]">Bali’s must-sees: beaches, temples, waterfalls.</h2>
+                            <h2 className="font-inter text-[30px] md:text-[40px] font-semibold leading-[130%]">Bali’s must-sees: beaches, temples, waterfalls.</h2>
                             <p className="mt-5" >Bali is a paradise that promises breathtaking scenery, rich cultural heritage, and unforgettable experiences. From serene beaches and ancient temples to majestic waterfalls hidden in lush landscapes, Bali has something for every traveler. This guide takes you through the must-see spots in Bali for an adventure you'll treasure forever.</p>
 
                             <div>
