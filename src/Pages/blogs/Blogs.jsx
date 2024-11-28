@@ -67,6 +67,7 @@ const Blogs = () => {
 
     return (
         <div className="bg-[#F0F4F9]" >
+            
             <HeroSection bgImg={blogImage} pageName="Our Blogs" pathName1="/" pathName2="blogs" pageName1="Home" pageName2="Blog" description="Explore our blog for the latest travel tips, destination guides, and inspiring stories to fuel your wanderlust. From must-see locations to insider advice, we’re here to make your journey unforgettable." />
 
             <ParentComponent>
