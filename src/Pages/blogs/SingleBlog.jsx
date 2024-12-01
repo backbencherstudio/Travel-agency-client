@@ -88,8 +88,6 @@ const SingleBlog = () => {
                                 <p className="mt-2" >Nusa Dua – Family-friendly and tranquil, Nusa Dua is ideal for safe swimming and luxury resorts, away from the crowds.</p>
                                 <p className="mt-2" >Each of these beaches gives you a different flavor of Bali’s coastal beauty. Relax, surf, or explore the beachside cafes and markets—there’s always something to enjoy.</p>
                             </div>
-
-
                         </div>
 
                         <div className="mt-12" >
