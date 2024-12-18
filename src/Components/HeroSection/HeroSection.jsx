@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 
+import { FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const HeroSection = ({ bgImg, pageName, links, description }) => {
