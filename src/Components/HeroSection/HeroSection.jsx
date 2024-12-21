@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 
+import { FaChevronRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-const HeroSection = ({ bgImg, pageName, pathName1, pathName2, pageName1, pageName2, description }) => {
+const HeroSection = ({ bgImg, pageName, pathName1, pathName2, dynamicData, pageName1, pageName2, description }) => {
     return (
         <div>
             <div
@@ -14,27 +15,19 @@ const HeroSection = ({ bgImg, pageName, pathName1, pathName2, pageName1, pageNam
                     backgroundRepeat: 'no-repeat',
                 }}
             >
-                <div className="text-center flex items-center justify-center flex-col text-white">
-                    <h3 className="flex gap-2 justify-center items-center text-lg">
+                <div className="text-center flex items-center justify-center flex-col text-white ">
+                    <div className=" text-lg flex items-center gap-2 ">
                         <Link to={`${pathName1}`}>{pageName1}</Link>
-                        <span className="mx-2">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="5"
-                                height="10"
-                                viewBox="0 0 5 10"
-                                fill="none"
-                            >
-                                <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M0.442596 0.344988C0.173058 0.560619 0.129357 0.953926 0.344988 1.22347L3.36597 4.9997L0.344987 8.77593C0.129356 9.04547 0.173057 9.43878 0.442596 9.65441C0.712135 9.87004 1.10544 9.82634 1.32107 9.5568L4.65441 5.39013C4.83702 5.16187 4.83702 4.83753 4.65441 4.60926L1.32107 0.442596C1.10544 0.173058 0.712135 0.129357 0.442596 0.344988Z"
-                                    fill="white"
-                                />
-                            </svg>
-                        </span>
+                        <FaChevronRight />
                         <Link to={`/${pathName2}`}>{pageName2}</Link>
-                    </h3>
+                        {
+                            dynamicData &&
+                            < >
+                                <FaChevronRight />
+                                <h2>{dynamicData}</h2>
+                            </>
+                        }
+                    </div>
                     <h4 className="pageTitle">{pageName}</h4>
                     <p className="mt-4 text-lg px-6 sm:px-10 md:px-16 lg:max-w-[45%]">
                         {description}
