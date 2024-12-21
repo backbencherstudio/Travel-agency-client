@@ -8,6 +8,8 @@ import ForgetPassword from "../Pages/Auth/ForgetPassword";
 import Otp from "../Pages/Auth/OTP";
 import Blogs from "../Pages/blogs/Blogs";
 import TourDetails from "../Pages/TourDetails/TourDetails";
+import DashboardLayout from "../Layout/DashboardLayout";
+import DashboardAnalysis from "../Components/Dashboard/Dashboard/DashboardAnalysis";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +31,16 @@ export const router = createBrowserRouter([
       {
         path: "/tour-details/:id",
         element: <TourDetails />,
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardLayout />,
+    children: [
+      {
+        index: true,
+        element: <DashboardAnalysis />,
       },
     ],
   },
