@@ -42,21 +42,21 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="lg:flex h-screen">
+    <div className="lg:flex h-screen bg-[#e9f0f9]">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 transform ${
+        className={`bg-[#061d35] fixed inset-y-0 left-0 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform lg:translate-x-0 lg:relative w-[280px] bg-white border p-5 z-50 h-screen`}
+        } transition-transform lg:translate-x-0 lg:relative w-[280px] border p-5 z-50 h-screen`}
       >
         <h1 className="text-2xl font-bold mb-5">Admin</h1>
-        <nav className="flex flex-col gap-4">
+        <nav className="flex flex-col gap-4 text-white">
           <button
             onClick={() => handleNavigation("Dashboard", "")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Dashboard"
-                ? "bg-[#fdf0ea] primary_text font-semibold"
-                : "hover:bg-zinc-300"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
             }`}
           >
             <LuLayoutDashboard />
@@ -66,8 +66,8 @@ const Dashboard = () => {
             onClick={() => handleNavigation("Tour", "tour-list")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Tour"
-                ? "bg-[#fdf0ea] primary_text font-semibold"
-                : "hover:bg-zinc-300"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
             }`}
           >
             <IoGolfOutline />
@@ -77,8 +77,8 @@ const Dashboard = () => {
             onClick={() => handleNavigation("Users", "user-list")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Users"
-                ? "bg-[#fdf0ea] primary_text font-semibold"
-                : "hover:bg-zinc-300"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
             }`}
           >
             <FaRegUser />
@@ -88,8 +88,8 @@ const Dashboard = () => {
             onClick={() => handleNavigation("Package", "package")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Package"
-                ? "bg-[#fdf0ea] primary_text font-semibold"
-                : "hover:bg-zinc-300"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
             }`}
           >
             <PiTrolleySuitcase />
@@ -99,8 +99,8 @@ const Dashboard = () => {
             onClick={() => handleNavigation("Payment", "payment")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Payment"
-                ? "bg-[#fdf0ea] primary_text font-semibold"
-                : "hover:bg-zinc-300"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
             }`}
           >
             <MdOutlinePayment />
@@ -110,15 +110,15 @@ const Dashboard = () => {
             onClick={() => handleNavigation("Blog", "blog-list")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Blog"
-                ? "bg-[#fdf0ea] primary_text font-semibold"
-                : "hover:bg-zinc-300"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
             }`}
           >
             <GrArticle />
             <span>Blog</span>
           </button>
         </nav>
-        <button className="absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-[#72777F]">
+        <button className="absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white">
           <CiLogout className="mt-1" /> Logout
         </button>
       </aside>
@@ -131,7 +131,7 @@ const Dashboard = () => {
             className="lg:hidden text-2xl text-orange-500"
           >
             {isSidebarOpen && showCloseIcon ? (
-              <IoClose className="absolute top-7 left-60 z-50 transition-all ease-linear hover:bg-[#fdf0ea] rounded-full" />
+              <IoClose className="absolute top-7 left-60 z-50 transition-all ease-linear text-white hover:text-[#eb5b2a] rounded-full" />
             ) : (
               <IoMenu />
             )}

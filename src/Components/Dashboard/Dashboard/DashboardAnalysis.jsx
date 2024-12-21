@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { GiProfit } from "react-icons/gi";
-// import { LuBaggageClaim, LuChartNoAxesCombined } from "react-icons/lu";
+import { FaRegCalendarCheck } from "react-icons/fa";
+import { PiUserCirclePlusBold } from "react-icons/pi";
+import { GrUserWorker } from "react-icons/gr";
 import revenue from "../../../assets/dashboard/revenue.svg";
 import traveler from "../../../assets/dashboard/traveler.svg";
 import profit from "../../../assets/dashboard/profit.svg";
 import DashboardCard from "./DashboardCard";
 import Chart from "./Chart";
 import CustomTable from "../../../Shared/CustomTable";
+import TravelChart from "./TravelChart";
+import { statusData } from "../../../data/data";
 
 const DashboardAnalysis = () => {
-  const [chartType, setChartType] = useState("Revenue");
+  const [chartType, setChartType] = useState("Booking");
   const [timeInterval, setTimeInterval] = useState("monthly");
   const [tourDateFilter, setTourDateFilter] = useState("all");
   const [columns] = useState({
@@ -24,12 +28,8 @@ const DashboardAnalysis = () => {
   const dashboardData = [
     {
       title: "Booking",
-      amount: "850,930",
-      percent: 12,
-      bgColor: "bg-teal-50",
-      bgColor2: "bg-teal-100",
-      txColor: "text-teal-500",
-      icon: "LuChartNoAxesCombined",
+      amount: "1,930",
+      icon: FaRegCalendarCheck,
       image: revenue,
       revenueData: [
         { x: "Jan", y: 12000 },
@@ -53,12 +53,8 @@ const DashboardAnalysis = () => {
     },
     {
       title: "User",
-      amount: "8,930",
-      percent: 4,
-      bgColor: "bg-purple-50",
-      bgColor2: "bg-purple-100",
-      txColor: "text-purple-500",
-      icon: "LuBaggageClaim",
+      amount: "2,930",
+      icon: PiUserCirclePlusBold,
       image: traveler,
       travelerData: [
         { x: "Jan", y: 12000 },
@@ -82,11 +78,32 @@ const DashboardAnalysis = () => {
     },
     {
       title: "Guides",
-      amount: "80,930",
-      percent: 6,
-      bgColor: "bg-red-50",
-      bgColor2: "bg-red-100",
-      txColor: "text-red-500",
+      amount: "140+ ",
+      icon: GrUserWorker,
+      image: profit,
+      profitData: [
+        { x: "Jan", y: 12000 },
+        { x: "Feb", y: 15000 },
+        { x: "Mar", y: 17000 },
+        { x: "Apr", y: 19000 },
+        { x: "May", y: 27000 },
+        { x: "June", y: 17000 },
+        { x: "Week 1", y: 1000 },
+        { x: "Week 2", y: 1200 },
+        { x: "Week 3", y: 1100 },
+        { x: "Week 4", y: 1400 },
+        { x: "Week 5", y: 1100 },
+        { x: "Week 6", y: 1800 },
+        { x: "2021", y: 25000 },
+        { x: "2022", y: 30000 },
+        { x: "2023", y: 35000 },
+        { x: "2024", y: 20000 },
+        { x: "2025", y: 50000 },
+      ],
+    },
+    {
+      title: "Earnings",
+      amount: "$12,930",
       icon: GiProfit,
       image: profit,
       profitData: [
@@ -306,16 +323,12 @@ const DashboardAnalysis = () => {
   return (
     <div className="">
       <div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mt-4">
           {dashboardData?.map((data, index) => (
             <DashboardCard
               key={index}
               title={data.title}
               amount={data.amount}
-              percent={data.percent}
-              bgColor={data.bgColor}
-              bgColor2={data.bgColor2}
-              txColor={data.txColor}
               icon={data.icon}
               image={data.image}
               chartType={chartType}
@@ -323,20 +336,25 @@ const DashboardAnalysis = () => {
             />
           ))}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-3">
           <div className="md:col-span-2">
-            {chartType === "Revenue" ? (
+            {chartType === "Booking" ? (
               <Chart
-                title="Revenue"
-                color="teal"
+                title="Booking"
                 data={dashboardData[0].revenueData}
                 timeInterval={timeInterval}
                 setTimeInterval={setTimeInterval}
               />
-            ) : chartType === "Traveler" ? (
+            ) : chartType === "User" ? (
               <Chart
-                title="Traveler"
-                color="purple"
+                title="User"
+                data={dashboardData[1].travelerData}
+                timeInterval={timeInterval}
+                setTimeInterval={setTimeInterval}
+              />
+            ) : chartType === "Guides" ? (
+              <Chart
+                title="Guides"
                 data={dashboardData[1].travelerData}
                 timeInterval={timeInterval}
                 setTimeInterval={setTimeInterval}
@@ -344,18 +362,17 @@ const DashboardAnalysis = () => {
             ) : (
               <Chart
                 title="Profit"
-                color="red"
                 data={dashboardData[2].profitData}
                 timeInterval={timeInterval}
                 setTimeInterval={setTimeInterval}
               />
             )}
           </div>
+          <TravelChart statusData={statusData} />
         </div>
       </div>
-
       <CustomTable
-        title={"Tour List"}
+        title={"Recent Booking"}
         data={bookingData}
         setDateFilter={setTourDateFilter}
         dateFilter={tourDateFilter}
