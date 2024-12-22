@@ -12,6 +12,7 @@ import TourDetails from "../Pages/TourDetails/TourDetails";
 import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
 import DashboardLayout from "../Layout/DashboardLayout";
 import DashboardAnalysis from "../Components/Dashboard/Dashboard/DashboardAnalysis";
+import Packages from "../Components/Dashboard/Packages/Packages";
 
 export const router = createBrowserRouter([
   {
@@ -85,6 +86,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardAnalysis />,
+      },
+      {
+        path: "packages",
+        element: <Packages />,
       },
     ],
   },

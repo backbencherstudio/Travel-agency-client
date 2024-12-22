@@ -61,9 +61,9 @@ const Dashboard = () => {
             <span>Dashboard</span>
           </button>
           <button
-            onClick={() => handleNavigation("Package", "packages")}
+            onClick={() => handleNavigation("Packages", "packages")}
             className={`flex items-center space-x-2 p-2 rounded ${
-              selectedTab === "Tour"
+              selectedTab === "Packages"
                 ? "bg-[#eb5b2a] text-white font-semibold"
                 : "hover:bg-[#0d3055]"
             }`}
