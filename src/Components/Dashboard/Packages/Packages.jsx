@@ -15,6 +15,7 @@ const Packages = () => {
   return (
     <div>
       <CustomTable
+        tableType="package"
         title={"Travel Packages"}
         data={bookingData}
         setDateFilter={setTourDateFilter}

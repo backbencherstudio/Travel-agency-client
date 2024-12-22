@@ -15,7 +15,7 @@ import { bookingData, statusData } from "../../../data/data";
 const DashboardAnalysis = () => {
   const [chartType, setChartType] = useState("Booking");
   const [timeInterval, setTimeInterval] = useState("monthly");
-  const [tourDateFilter, setTourDateFilter] = useState("all");
+  // const [tourDateFilter, setTourDateFilter] = useState("all");
   const [columns] = useState({
     bookingId: true,
     name: true,
@@ -182,8 +182,6 @@ const DashboardAnalysis = () => {
       <CustomTable
         title={"Recent Booking"}
         data={bookingData}
-        setDateFilter={setTourDateFilter}
-        dateFilter={tourDateFilter}
         columns={columns}
       />
     </div>

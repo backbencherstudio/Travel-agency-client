@@ -16,14 +16,7 @@ import { FiEdit3 } from "react-icons/fi";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegSquarePlus } from "react-icons/fa6";
 
-const CustomTable = ({
-  tableType = "",
-  title,
-  setDateFilter,
-  dateFilter,
-  data,
-  columns,
-}) => {
+const CustomTable = ({ tableType = "", title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
@@ -49,18 +42,23 @@ const CustomTable = ({
 
   return (
     <div className="">
-      <Paper>
-        <div className="flex mt-8 p-5 justify-between flex-wrap">
-          <h1 className="font-semibold text-[24px]">{title}</h1>{" "}
-          {(tableType === "blog" || tableType === "package")  && (
-            <button onClick={()=>navigate('create/new')} className="text-[16px] font-medium px-4 py-2 primary_bg  text-white rounded-md flex  items-center gap-1.5 hover:bg-opacity-90">
-              <FaRegSquarePlus className="text-xl" /> Add{" "}
-              {tableType.charAt(0).toUpperCase() + tableType.slice(1)}
-            </button>
-          )}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 items-center mb-5  gap-3 px-4">
-          <div className="relative md:col-span-2">
+      <div className="flex my-5 justify-between flex-wrap">
+        <h1 className="font-semibold text-[24px]">{title}</h1>{" "}
+        {(tableType === "blog" || tableType === "package") && (
+          <button
+            onClick={() => navigate("create/new")}
+            className="text-[16px] font-medium px-4 py-2 bg-[#eb5b2a] text-white rounded-md flex  items-center gap-1.5 hover:bg-opacity-90"
+          >
+            <FaRegSquarePlus className="text-xl" /> Add{" "}
+            {tableType.charAt(0).toUpperCase() + tableType.slice(1)}
+          </button>
+        )}
+      </div>
+      <Paper style={{ borderRadius: "10px" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 items-center  gap-3 px-4 pt-4 rounded-t-xl">
+          <div></div>
+          <div></div>
+          <div className="relative md:col-span-1">
             <input
               type="text"
               placeholder="Search..."
@@ -70,7 +68,7 @@ const CustomTable = ({
             />
             <FaSearch className="absolute top-3 left-3 text-zinc-400" />
           </div>
-          <select
+          {/* <select
             className="md:col-span-1"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
@@ -88,7 +86,7 @@ const CustomTable = ({
             <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
-          </select>
+          </select> */}
         </div>
         <TableContainer sx={{ padding: "16px" }}>
           <Table
