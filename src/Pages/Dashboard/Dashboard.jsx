@@ -37,7 +37,6 @@ const Dashboard = () => {
   }, [isSidebarOpen]);
 
   useEffect(() => {
-    // Close the sidebar when location changes (i.e., when navigating)
     setSidebarOpen(false);
   }, [location]);
 
