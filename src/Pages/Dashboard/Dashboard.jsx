@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
 import { FaRegBell } from "react-icons/fa";
-import { IoClose, IoMenu } from "react-icons/io5";
-import { LuLayoutDashboard } from "react-icons/lu";
-import { MdOutlineBusinessCenter } from "react-icons/md";
+import { IoClose, IoMenu, IoSettingsOutline } from "react-icons/io5";
+import {
+  LuBaggageClaim,
+  LuBookmarkCheck,
+  LuLayoutDashboard,
+} from "react-icons/lu";
+import { MdOutlineBusinessCenter, MdOutlinePayment } from "react-icons/md";
 import image from "../../assets/img/logo.png";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { CiLogout } from "react-icons/ci";
 import logo from "../../assets/img/Logo.svg";
+import { FiCompass } from "react-icons/fi";
+import { RiArticleLine } from "react-icons/ri";
+import { TbCancel } from "react-icons/tb";
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -70,6 +77,83 @@ const Dashboard = () => {
           >
             <MdOutlineBusinessCenter className="h-5 w-5" />
             <span>Packages</span>
+          </button>
+          <button
+            onClick={() => handleNavigation("Bookings", "bookings")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "Bookings"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <LuBookmarkCheck className="h-5 w-5" />
+            <span>Bookings</span>
+          </button>
+          <button
+            onClick={() => handleNavigation("Travelers", "travelers")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "Travelers"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <LuBaggageClaim className="h-5 w-5" />
+            <span>Travelers</span>
+          </button>
+          <button
+            onClick={() => handleNavigation("Guides", "guides")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "Guides"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <FiCompass className="h-5 w-5" />
+            <span>Guides</span>
+          </button>
+          <button
+            onClick={() => handleNavigation("Payment", "payment")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "Payment"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <MdOutlinePayment className="h-5 w-5" />
+            <span>Payment</span>
+          </button>
+          <button
+            onClick={() => handleNavigation("Blog", "blog")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "Blog"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <RiArticleLine className="h-5 w-5" />
+            <span>Blog</span>
+          </button>
+          <button
+            onClick={() => handleNavigation("Cancellation", "cancellation")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "Cancellation"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <TbCancel className="h-5 w-5" />
+            <span>Cancellation</span>
+          </button>
+          <button
+            onClick={() => handleNavigation("Settings", "settings")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "Settings"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <IoSettingsOutline className="h-5 w-5" />
+            <span>Settings</span>
           </button>
         </nav>
         <button className="absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white">
