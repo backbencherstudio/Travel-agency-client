@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
-import { FaRegBell, FaRegUser } from "react-icons/fa";
-import { IoClose, IoGolfOutline, IoMenu } from "react-icons/io5";
+import { FaRegBell } from "react-icons/fa";
+import { IoClose, IoMenu } from "react-icons/io5";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { PiTrolleySuitcase } from "react-icons/pi";
-import { MdOutlinePayment } from "react-icons/md";
-import { GrArticle } from "react-icons/gr";
+import { MdOutlineBusinessCenter } from "react-icons/md";
 import image from "../../assets/img/logo.png";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { CiLogout } from "react-icons/ci";
-
+import logo from "../../assets/img/Logo.svg";
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,8 +47,8 @@ const Dashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } transition-transform lg:translate-x-0 lg:relative w-[280px] border p-5 z-50 h-screen`}
       >
-        <h1 className="text-2xl font-bold mb-5">Admin</h1>
-        <nav className="flex flex-col gap-4 text-white">
+        <img src={logo} alt="" className="w-full h-8 mt-3" />
+        <nav className="flex flex-col gap-4 text-white mt-11">
           <button
             onClick={() => handleNavigation("Dashboard", "")}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -59,63 +57,19 @@ const Dashboard = () => {
                 : "hover:bg-[#0d3055]"
             }`}
           >
-            <LuLayoutDashboard />
+            <LuLayoutDashboard className="h-5 w-5" />
             <span>Dashboard</span>
           </button>
           <button
-            onClick={() => handleNavigation("Tour", "tour-list")}
+            onClick={() => handleNavigation("Package", "packages")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Tour"
                 ? "bg-[#eb5b2a] text-white font-semibold"
                 : "hover:bg-[#0d3055]"
             }`}
           >
-            <IoGolfOutline />
-            <span>Tour</span>
-          </button>
-          <button
-            onClick={() => handleNavigation("Users", "user-list")}
-            className={`flex items-center space-x-2 p-2 rounded ${
-              selectedTab === "Users"
-                ? "bg-[#eb5b2a] text-white font-semibold"
-                : "hover:bg-[#0d3055]"
-            }`}
-          >
-            <FaRegUser />
-            <span>Users</span>
-          </button>
-          <button
-            onClick={() => handleNavigation("Package", "package")}
-            className={`flex items-center space-x-2 p-2 rounded ${
-              selectedTab === "Package"
-                ? "bg-[#eb5b2a] text-white font-semibold"
-                : "hover:bg-[#0d3055]"
-            }`}
-          >
-            <PiTrolleySuitcase />
-            <span>Package</span>
-          </button>
-          <button
-            onClick={() => handleNavigation("Payment", "payment")}
-            className={`flex items-center space-x-2 p-2 rounded ${
-              selectedTab === "Payment"
-                ? "bg-[#eb5b2a] text-white font-semibold"
-                : "hover:bg-[#0d3055]"
-            }`}
-          >
-            <MdOutlinePayment />
-            <span>Payment History</span>
-          </button>
-          <button
-            onClick={() => handleNavigation("Blog", "blog-list")}
-            className={`flex items-center space-x-2 p-2 rounded ${
-              selectedTab === "Blog"
-                ? "bg-[#eb5b2a] text-white font-semibold"
-                : "hover:bg-[#0d3055]"
-            }`}
-          >
-            <GrArticle />
-            <span>Blog</span>
+            <MdOutlineBusinessCenter className="h-5 w-5" />
+            <span>Packages</span>
           </button>
         </nav>
         <button className="absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white">
@@ -131,7 +85,7 @@ const Dashboard = () => {
             className="lg:hidden text-2xl text-orange-500"
           >
             {isSidebarOpen && showCloseIcon ? (
-              <IoClose className="absolute top-7 left-60 z-50 transition-all ease-linear text-white hover:text-[#eb5b2a] rounded-full" />
+              <IoClose className="absolute top-7 left-60 z-50 transition-all ease-linear text-[#002cff] hover:text-[#eb5b2a] rounded-full hidden" />
             ) : (
               <IoMenu />
             )}
