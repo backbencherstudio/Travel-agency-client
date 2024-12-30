@@ -15,6 +15,7 @@ import DashboardAnalysis from "../Components/Dashboard/Dashboard/DashboardAnalys
 import Packages from "../Components/Dashboard/Packages/Packages";
 import ChangePassword from "../Pages/Auth/ChangePassword";
 import BlogDetails from "../Pages/blogs/BlogDetails";
+import AddPackage from "../Pages/Dashboard/Package/AddPackage";
 
 export const router = createBrowserRouter([
   {
@@ -88,6 +89,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardAnalysis />,
+      },
+      {
+        path: "add-package",
+        element: <AddPackage />,
       },
       {
         path: "packages",

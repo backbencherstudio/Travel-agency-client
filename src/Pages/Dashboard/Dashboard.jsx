@@ -9,11 +9,12 @@ import {
 import { MdOutlineBusinessCenter, MdOutlinePayment } from "react-icons/md";
 import image from "../../assets/img/logo.png";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-import { CiLogout } from "react-icons/ci";
+import { CiLogout, CiSquarePlus } from "react-icons/ci";
 import logo from "../../assets/img/Logo.svg";
 import { FiCompass } from "react-icons/fi";
 import { RiArticleLine } from "react-icons/ri";
 import { TbCancel } from "react-icons/tb";
+import { FaRegSquarePlus } from "react-icons/fa6";
 const Dashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,12 +47,12 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="lg:flex h-screen bg-[#e9f0f9]">
+    <div className="lg:flex  bg-[#e9f0f9]">
       {/* Sidebar */}
       <aside
         className={`bg-[#061d35] fixed inset-y-0 left-0 transform ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } transition-transform lg:translate-x-0 lg:relative w-[280px] border p-5 z-50 h-screen`}
+        } transition-transform lg:translate-x-0 lg:relative w-[280px] border border-[#061D35] p-5 z-50 `}
       >
         <img src={logo} alt="" className="w-full h-8 mt-3" />
         <nav className="flex flex-col gap-4 text-white mt-11">
@@ -65,6 +66,17 @@ const Dashboard = () => {
           >
             <LuLayoutDashboard className="h-5 w-5" />
             <span>Dashboard</span>
+          </button>
+          <button
+            onClick={() => handleNavigation("addPackage", "add-package")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "addPackage"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <FaRegSquarePlus className="h-5 w-5" />
+            <span>Add Package</span>
           </button>
           <button
             onClick={() => handleNavigation("Packages", "packages")}
@@ -88,7 +100,7 @@ const Dashboard = () => {
             <LuBookmarkCheck className="h-5 w-5" />
             <span>Bookings</span>
           </button>
-          <button
+          {/* <button
             onClick={() => handleNavigation("Travelers", "travelers")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Travelers"
@@ -98,8 +110,19 @@ const Dashboard = () => {
           >
             <LuBaggageClaim className="h-5 w-5" />
             <span>Travelers</span>
-          </button>
+          </button> */}
           <button
+            onClick={() => handleNavigation("Travelers", "travelers")}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === "Travelers"
+                ? "bg-[#eb5b2a] text-white font-semibold"
+                : "hover:bg-[#0d3055]"
+            }`}
+          >
+            <FiCompass className="h-5 w-5" />
+            <span>Vendor</span>
+          </button>
+          {/* <button
             onClick={() => handleNavigation("Guides", "guides")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Guides"
@@ -109,7 +132,7 @@ const Dashboard = () => {
           >
             <FiCompass className="h-5 w-5" />
             <span>Guides</span>
-          </button>
+          </button> */}
           <button
             onClick={() => handleNavigation("Payment", "payment")}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -132,7 +155,7 @@ const Dashboard = () => {
             <RiArticleLine className="h-5 w-5" />
             <span>Blog</span>
           </button>
-          <button
+          {/* <button
             onClick={() => handleNavigation("Cancellation", "cancellation")}
             className={`flex items-center space-x-2 p-2 rounded ${
               selectedTab === "Cancellation"
@@ -142,7 +165,7 @@ const Dashboard = () => {
           >
             <TbCancel className="h-5 w-5" />
             <span>Cancellation</span>
-          </button>
+          </button> */}
           <button
             onClick={() => handleNavigation("Settings", "settings")}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -161,7 +184,7 @@ const Dashboard = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1 overflow-y-auto h-screen">
+      <div className="flex flex-col flex-1 overflow-y-auto ">
         <header className="flex items-center justify-between bg-zinc-50 p-4 shadow-md">
           <button
             onClick={() => setSidebarOpen(!isSidebarOpen)}
