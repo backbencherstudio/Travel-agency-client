@@ -2,64 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 .inter {
   font-family: "Inter", serif;
 }
-
-
-
-.active{ 
-  color: rgba(235, 91, 42, 1);  
+.primary_text {
+  color: #eb5b2a;
+}
+.active {
+  color: #eb5b2a;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
-  line-height: 160%; 
+  line-height: 160%;
   letter-spacing: 0.08px;
-} 
-
-.pageTitle{
-  color: var(--W, #FFF);
-text-align: center;
-
-
-font-family: Inter;
-font-size: 60px;
-font-style: normal;
-font-weight: 700;
-line-height: 130%; 
 }
-  
- 
+
+.pageTitle {
+  color: var(--W, #fff);
+  text-align: center;
+
+  font-family: Inter;
+  font-size: 60px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 130%;
+}
+
 input[type="range"]::-webkit-slider-thumb {
-  background-color: white; 
-  border: 2px solid #e1e1e1; 
-  height: 20px; 
-  width: 20px; 
-  border-radius: 50%; 
-  cursor: pointer; 
-  appearance: none; 
+  background-color: white;
+  border: 2px solid #e1e1e1;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  appearance: none;
 }
-
 
 input[type="range"]::-moz-range-thumb {
-  background-color: white; 
-  border: 2px solid #e1e1e1; 
-  height: 20px; 
-  width: 20px; 
-  border-radius: 50%; 
-  cursor: pointer; 
+  background-color: white;
+  border: 2px solid #e1e1e1;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
 }
-
 
 input[type="range"]::-ms-thumb {
-  background-color: white; 
-  border: 2px solid #e1e1e1; 
-  height: 20px; 
-  width: 20px; 
-  border-radius: 50%; 
-  cursor: pointer; 
+  background-color: white;
+  border: 2px solid #e1e1e1;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
 }
-
- 
