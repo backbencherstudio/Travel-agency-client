@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaTrash } from 'react-icons/fa';
 import uploadIcon from '../../../assets/dashboard/upload-icon.svg';
 
 const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
@@ -61,10 +61,7 @@ const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
     );
 };
 
-const TourPlan = () => {
-    const [tourPlan, setTourPlan] = useState([
-        { day: 1, title: '', overview: '', images: [] },
-    ]);
+const TourPlan = ({ tourPlan, setTourPlan }) => {
 
     const handleInputChange = (index, field, value) => {
         setTourPlan((prev) => {
@@ -100,6 +97,13 @@ const TourPlan = () => {
         ]);
     };
 
+    const deleteDay = (index) => {
+        setTourPlan((prev) => {
+            const updatedPlan = prev.filter((_, idx) => idx !== index);
+            return updatedPlan.map((day, idx) => ({ ...day, day: idx + 1 })); // Reorder days
+        });
+    };
+
     console.log('tourPlan', tourPlan)
 
     return (
@@ -109,7 +113,19 @@ const TourPlan = () => {
                     key={index}
                     className="px-4 py-3 bg-[#fffcfb] border border-[#DFDFDF] rounded-lg flex flex-col gap-3 mb-4"
                 >
-                    <h3 className="text-2xl font-medium text-[#4A4C56]">Day {dayPlan.day}</h3>
+                    <div className='flex justify-between'>
+                        <h3 className="text-2xl font-medium text-[#4A4C56]">Day {dayPlan.day}</h3>
+                        {/* Delete Day Button */}
+                        {tourPlan.length > 1 && index > 0 && (
+                            <button
+                                onClick={() => deleteDay(index)}
+                                className=" bg-red-500 text-white p-2 rounded-full"
+                                title="Delete Day"
+                            >
+                                <FaTrash />
+                            </button>
+                        )}
+                    </div>
                     <div className="p-4 bg-[#F0F4F9] rounded-lg flex flex-col gap-3">
                         {/* Trip Title */}
                         <div>
