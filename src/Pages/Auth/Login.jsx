@@ -1,14 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import image from "../../assets/img/form-img/login-img.png";
 import logo from '../../assets/img/form-img/logo.png';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import AuthApis from "../../Apis/AuthApis";
 
 const Login = () => {
-  const { register, handleSubmit, formState: { errors }, } = useForm();
-
-  const onSubmit = (data) => {
-    console.log(data);
+  const { register, handleSubmit, formState: { errors, isLoading } } = useForm();
+  const [resMessage, setResMessage] = useState();
+  const navigate = useNavigate();
+  
+  const onSubmit = async (data) => {
+    const res = await AuthApis.login(data);
+    if (res.success) {
+        // console.log('res', res)
+        localStorage.token = res.authorization.token;
+        // window.location.reload();
+        navigate('/')
+    } else {
+        setResMessage(res);
+        setTimeout(() => {
+            setResMessage('');
+        }, 5000);
+    }
   };
 
   return (
@@ -71,13 +85,16 @@ const Login = () => {
                 </div>
                 <Link to='/forget-password' className="text-sm font-semibold text-[#EB5B2A]">Forget password</Link>
               </div>
+              {resMessage && resMessage.statusCode === 401 && (
+                  <p className="text-red-500 mb-4">{resMessage.message}</p>
+              )}
               {/* Submit Button */}
               <div className="flex flex-col gap-4">
                 <button
                   type="submit"
                   className="w-full bg-[#EB5B2A] text-white text-base font-semibold py-2 px-4 rounded-full hover:bg-[#EB5B2A] transition"
                 >
-                  Get started
+                  {isLoading ? 'Get started...' : 'Get started'}
                 </button>
                 <div className="flex gap-1 items-center justify-center text-sm">
                   <p className="text-[#475467]">Don’t have an account?</p>

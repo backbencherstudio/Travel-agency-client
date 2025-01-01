@@ -58,18 +58,40 @@ const AddPackage = () => {
     };
 
     const onSubmit = async (data) => {
-        const formData = {
+        const formDataObject = {
             ...data,
             includedPackages,
             excludedPackages,
-            images: images.map((image) => image.file),
+            package_images: images.map((image) => image.file),
             tourPlan,
         };
-        console.log('Form Data:', formData);
+        const form = new FormData();
+        for (let key in formDataObject) {
+            if (key === 'tourPlan') {
+                // handle trip_plans_images
+                formDataObject[key].forEach((tripPlan, index) => {
+                    tripPlan.images.forEach((image) => form.append(`trip_plans_images`, image));
+                });
+                form.append(key, JSON.stringify(formDataObject[key]));
+            } else if (key === 'package_images') {
+                formDataObject[key].forEach((image) => form.append('package_images', image));
+            } else if (key === 'includedPackages' || key === 'excludedPackages') {
+                formDataObject[key].forEach((item) => form.append(key, item.value));
+            } else {
+                form.append(key, formDataObject[key]);
+            }
+        }
 
-        let url = "http://192.168.10.159:4000/api/admin/package";
-        const res = await axios.post(url, formData);
-        console.log('first', res)
+        for (let pair of form.entries()) {
+            console.log(pair[0], pair[1]);
+        }
+
+        // Uncomment to send the form data to your API
+        const url = "http://192.168.10.159:4000/api/admin/package";
+        const res = await axios.post(url, form, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        console.log('Response:', res.data);
     };
 
     return (

@@ -1,14 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import image from "../../assets/img/form-img/signup-img.png";
 import logo from '../../assets/img/form-img/logo.png';
 import { Link } from "react-router-dom";
+import AuthApis from "../../Apis/AuthApis";
 
 const Signup = () => {
-  const { register, handleSubmit, formState: { errors }, } = useForm();
+  const { register, handleSubmit, formState: { errors, isLoading } } = useForm();
+  const [resMessage, setResMessage] = useState();
+  
+  const onSubmit = async (data) => {
+      console.log('data', data)
+      const res = await AuthApis.save(data);
+      console.log('res', res)
+      if (res.success) {
 
-  const onSubmit = (data) => {
-    console.log(data);
+      } else {
+        setResMessage(res);
+        setTimeout(() => {
+          setResMessage();
+        }, 4000)
+      }
   };
 
   return (
@@ -83,14 +95,17 @@ const Signup = () => {
                   <p className="text-red-500 text-sm">{errors.password.message}</p>
                 )}
               </div>
-
+              
+              {resMessage && resMessage.statusCode === 401 && (
+                  <p className="text-red-500 mb-4">{resMessage.message}</p>
+              )}
               {/* Submit Button */}
               <div className="flex flex-col gap-4">
                 <button
                   type="submit"
                   className="w-full bg-[#EB5B2A] text-white text-base font-semibold py-2 px-4 rounded-full hover:bg-[#EB5B2A] transition"
                 >
-                  Get started
+                  {isLoading ? 'Get started...' : 'Get started'}
                 </button>
                 <div className="flex gap-1 items-center justify-center text-sm">
                   <p className="text-[#475467]">Already have an account?</p>

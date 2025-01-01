@@ -69,16 +69,48 @@ const Dashboard = () => {
             <span>Dashboard</span>
           </button>
           <button
-            onClick={() => handleNavigation("addPackage", "add-package")}
-            className={`flex items-center space-x-2 p-2 rounded ${
-              selectedTab === "addPackage"
-                ? "bg-[#eb5b2a] text-white font-semibold"
-                : "hover:bg-[#0d3055]"
-            }`}
-          >
-            <FaRegSquarePlus className="h-5 w-5" />
-            <span>Add Package</span>
-          </button>
+              onClick={() => setSubmenuOpen(!isSubmenuOpen)}
+              className={`flex items-center justify-between w-full p-2 rounded ${
+                selectedTab === "addPackage" || selectedTab === "packageCategory&Tag" 
+                  ? "bg-[#eb5b2a] text-white font-semibold"
+                  : "hover:bg-[#0d3055]"
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <FaRegSquarePlus className="h-5 w-5" />
+                <span>Add Package</span>
+              </div>
+              <span
+                className={`transform transition-transform ${
+                  isSubmenuOpen ? "rotate-90" : ""
+                }`}
+              >
+                ▸
+              </span>
+            </button>
+            {isSubmenuOpen && (
+              <div className="ml-6 flex flex-col gap-2">
+                <button
+                  onClick={() => handleNavigation("addPackage", "add-package")}
+                  className={`text-sm flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded 
+                    ${selectedTab === "addPackage"
+                    ? "bg-[#eb5b2a] text-white font-semibold"
+                    : "hover:bg-[#0d3055]"}`}
+                  >
+                  <span>Add Package</span>
+                </button>
+                <button
+                  onClick={() =>
+                    handleNavigation("packageCategory&Tag", "package-category-&-tag")
+                  }
+                  className={`text-sm flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${selectedTab === "packageCategory&Tag"
+                    ? "bg-[#eb5b2a] text-white font-semibold"
+                    : "hover:bg-[#0d3055]"}`}
+                >
+                  <span>Package categories & tags</span>
+                </button>
+              </div>
+            )}
           <button
             onClick={() => handleNavigation("Packages", "packages")}
             className={`flex items-center space-x-2 p-2 rounded ${
