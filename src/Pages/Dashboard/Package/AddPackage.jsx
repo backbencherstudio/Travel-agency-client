@@ -3,11 +3,12 @@ import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import uploadIcon from '../../../assets/dashboard/upload-icon.svg';
 import Select from 'react-select';
-import TourPlan from './TourPlan';
+import TourPlan from '../../../Components/Dashboard/Packages/AddPackage/TourPlan';
 import image1 from '../../../assets/img/tour-details/image-1.png';
 import image2 from '../../../assets/img/tour-details/image-2.png';
 import image3 from '../../../assets/img/tour-details/image-3.png';
 import image4 from '../../../assets/img/tour-details/image-4.png';
+import axios from 'axios';
 
 const AddPackage = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
@@ -56,7 +57,7 @@ const AddPackage = () => {
         setImages((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
         const formData = {
             ...data,
             includedPackages,
@@ -65,13 +66,17 @@ const AddPackage = () => {
             tourPlan,
         };
         console.log('Form Data:', formData);
+
+        let url = "http://192.168.10.159:4000/api/admin/package";
+        const res = await axios.post(url, formData);
+        console.log('first', res)
     };
 
     return (
         <div className="flex flex-col gap-4">
             <h3 className="text-2xl font-semibold text-[#080613]">Add New Travel Package</h3>
             <form onSubmit={handleSubmit(onSubmit)} className="">
-                <div className="bg-white min-h-screen pt-8 px-6 pb-8 rounded-lg flex flex-col gap-6">
+                <div className="bg-white min-h-screen pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
                     <div className="md:grid md:grid-cols-3 gap-8">
                         <div className="flex flex-col gap-8 col-span-2">
                             <h3 className="text-2xl font-semibold text-[#080613]">Package Details</h3>
@@ -117,10 +122,10 @@ const AddPackage = () => {
                                 >
                                     <img src={uploadIcon} className="bg-[#EB5B2A] p-[10px] rounded-full mb-[6px]" alt="" />
                                     <input {...imageDropzone.getInputProps()} />
-                                    <p className="text-base text-black rounded-full">
+                                    <p className="text-xs md:text-base text-black rounded-full">
                                         Drag & Drop or <span className="text-[#EB5B2A]">Choose File</span> to upload
                                     </p>
-                                    <p className="mt-1 text-sm md:text-base text-gray-400 text-center">
+                                    <p className="mt-1 text-xs md:text-base text-gray-400 text-center">
                                         Supported formats : jpeg, png
                                     </p>
                                 </div>
@@ -178,7 +183,7 @@ const AddPackage = () => {
                                 <TourPlan tourPlan={tourPlan} setTourPlan={setTourPlan} />
                             </div>
                         </div>
-                        <div className='p-4 bg-[#FDEFEA] rounded-2xl h-fit'>
+                        <div className='p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0'>
                             <div className="flex flex-col gap-4 col-span-2">
                                 <div>
                                     <label className="block text-gray-500 text-base font-medium mb-4">
@@ -258,8 +263,8 @@ const AddPackage = () => {
                                                 <img
                                                     src={gallery.image}
                                                     alt=""
-                                                    className="w-full h-[120px] rounded-lg"
-                                                    />
+                                                    className="w-full h-[120px] rounded-lg object-cover"
+                                                />
                                             </div>
                                         ))}
                                     </div>

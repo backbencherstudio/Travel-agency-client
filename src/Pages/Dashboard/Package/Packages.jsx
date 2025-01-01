@@ -1,20 +1,20 @@
 import { useState } from "react";
-import CustomTable from "../../../Shared/CustomTable";
 import { bookingData } from "../../../data/data";
+import PackageTable from "../../../Components/Dashboard/Packages/PackageTable";
 
 const Packages = () => {
   const [tourDateFilter, setTourDateFilter] = useState("all");
   const [columns] = useState({
-    bookingId: true,
-    name: true,
-    date: true,
-    destination: true,
-    amount: true,
+    packageName: true,
+    package: true,
+    details: true,
+    budget: true,
     status: true,
+    action: true,
   });
   return (
     <div>
-      <CustomTable
+      <PackageTable
         tableType="package"
         title={"Travel Packages"}
         data={bookingData}

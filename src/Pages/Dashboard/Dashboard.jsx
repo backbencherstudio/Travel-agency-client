@@ -23,6 +23,7 @@ const Dashboard = () => {
   );
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [showCloseIcon, setShowCloseIcon] = useState(false);
+  const [isSubmenuOpen, setSubmenuOpen] = useState(false); // State for submenu
 
   useEffect(() => {
     localStorage.setItem("tab", selectedTab);
@@ -47,7 +48,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="lg:flex  bg-[#e9f0f9]">
+    <div className="flex min-h-screen bg-[#e9f0f9]">
       {/* Sidebar */}
       <aside
         className={`bg-[#061d35] fixed inset-y-0 left-0 transform ${

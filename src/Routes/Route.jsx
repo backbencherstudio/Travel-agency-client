@@ -12,7 +12,7 @@ import TourDetails from "../Pages/TourDetails/TourDetails";
 import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
 import DashboardLayout from "../Layout/DashboardLayout";
 import DashboardAnalysis from "../Components/Dashboard/Dashboard/DashboardAnalysis";
-import Packages from "../Components/Dashboard/Packages/Packages";
+import Packages from "../Pages/Dashboard/Package/Packages";
 import ChangePassword from "../Pages/Auth/ChangePassword";
 import BlogDetails from "../Pages/blogs/BlogDetails";
 import AddPackage from "../Pages/Dashboard/Package/AddPackage";
