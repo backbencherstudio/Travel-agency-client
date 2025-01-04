@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { bookingData } from "../../../data/data";
 import PackageTable from "../../../Components/Dashboard/Packages/PackageTable";
+import { PackageData } from "../../../data/package";
 
 const Packages = () => {
   const [tourDateFilter, setTourDateFilter] = useState("all");
@@ -17,7 +17,7 @@ const Packages = () => {
       <PackageTable
         tableType="package"
         title={"Travel Packages"}
-        data={bookingData}
+        data={PackageData}
         setDateFilter={setTourDateFilter}
         dateFilter={tourDateFilter}
         columns={columns}

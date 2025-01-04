@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useForm } from 'react-hook-form';
 import uploadIcon from '../../../assets/dashboard/upload-icon.svg';
@@ -9,16 +9,40 @@ import image2 from '../../../assets/img/tour-details/image-2.png';
 import image3 from '../../../assets/img/tour-details/image-3.png';
 import image4 from '../../../assets/img/tour-details/image-4.png';
 import axios from 'axios';
+import axiosClient from '../../../axiosClient';
 
 const AddPackage = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [isDragging, setIsDragging] = useState(false);
     const [includedPackages, setIncludedPackages] = useState([]);
     const [excludedPackages, setExcludedPackages] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [images, setImages] = useState([]);
     const [tourPlan, setTourPlan] = useState([
         { day: 1, title: '', overview: '', images: [] },
     ]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const resTag = await axiosClient.get('api/admin/tag');
+                setTags(resTag.data.data.map(tag => ({ value: tag.id, label: tag.name })));
+    
+                const resCategory = await axiosClient.get('api/admin/category');
+                setCategories(resCategory.data.data.map(cat => ({ value: cat.id, label: cat.name })));
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+    
+        fetchData();
+    }, [])
+
+    console.log('tags', tags)
+    console.log('categories', categories)
+
+    console.log('includedPackages', includedPackages)
 
     const imageGalleries = [
         { image: image1 },
@@ -76,7 +100,7 @@ const AddPackage = () => {
             } else if (key === 'package_images') {
                 formDataObject[key].forEach((image) => form.append('package_images', image));
             } else if (key === 'includedPackages' || key === 'excludedPackages') {
-                formDataObject[key].forEach((item) => form.append(key, item.value));
+                formDataObject[key].forEach((item) => form.append(key === 'includedPackages' ? 'included_packages' : 'excluded_packages', item.value));
             } else {
                 form.append(key, formDataObject[key]);
             }
@@ -88,10 +112,18 @@ const AddPackage = () => {
 
         // Uncomment to send the form data to your API
         const url = "http://192.168.10.159:4000/api/admin/package";
-        const res = await axios.post(url, form, {
+        const res = await axiosClient.post(url, form, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
         console.log('Response:', res.data);
+    };
+
+    const handleIncludedPackagesChange = (selected) => {
+        setIncludedPackages(selected || []);  // Store the selected objects in state
+    };
+
+    const handleExcludedPackagesChange = (selected) => {
+        setExcludedPackages(selected || []);  // Store the selected objects in state
     };
 
     return (
@@ -110,11 +142,11 @@ const AddPackage = () => {
                                 <input
                                     type="text"
                                     placeholder="Enter your package title"
-                                    {...register('packageTitle', { required: 'Package title is required' })}
+                                    {...register('name', { required: 'Package name is required' })}
                                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                                 />
-                                {errors.packageTitle && (
-                                    <p className="text-red-500 text-xs mt-1">{errors.packageTitle.message}</p>
+                                {errors.name && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
                                 )}
                             </div>
 
@@ -175,10 +207,10 @@ const AddPackage = () => {
                             <div>
                                 <label className="block text-gray-500 text-base font-medium mb-2">Included Package</label>
                                 <Select
-                                    options={packageOptions.slice(0, 3)}
+                                    options={tags}  // Tags are now in { value: id, label: name } format
                                     isMulti
-                                    value={includedPackages}
-                                    onChange={(selected) => setIncludedPackages(selected)}
+                                    value={includedPackages}  // This will be an array of objects in { value, label } format
+                                    onChange={handleIncludedPackagesChange}
                                     placeholder="Select included items"
                                     className="react-select-container"
                                     classNamePrefix="react-select"
@@ -189,15 +221,16 @@ const AddPackage = () => {
                             <div>
                                 <label className="block text-gray-500 text-base font-medium mb-2">Excluded Package</label>
                                 <Select
-                                    options={packageOptions.slice(3)}
+                                    options={tags}  // Tags are now in { value: id, label: name } format
                                     isMulti
-                                    value={excludedPackages}
-                                    onChange={(selected) => setExcludedPackages(selected)}
+                                    value={excludedPackages}  // This will be an array of objects in { value, label } format
+                                    onChange={handleExcludedPackagesChange}
                                     placeholder="Select excluded items"
                                     className="react-select-container"
                                     classNamePrefix="react-select"
                                 />
                             </div>
+
 
                             {/* Tour Plan Section */}
                             <div className="flex flex-col gap-4">
@@ -214,17 +247,16 @@ const AddPackage = () => {
                                     <select
                                         type="text"
                                         placeholder="Select a package"
-                                        {...register('packageCategory', { required: 'Package/Tour category is required' })}
+                                        {...register('package_category', { required: 'Package/Tour category is required' })}
                                         className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                                     >
-                                        <option value="" className='text-base text-[#C9C9C9]'>Select a package</option>
-                                        <option value="family-package">Family Package</option>
-                                        <option value="romantic-package">Romantic Package</option>
-                                        <option value="group-package">Group Package</option>
-                                        <option value="special-package">Special Package</option>
+                                        <option value="" className="text-base text-[#C9C9C9]">Select a package</option>
+                                        {categories.map(cat => (
+                                            <option key={cat.value} value={cat.value}>{cat.label}</option> // Ensure a return for each <option>
+                                        ))}
                                     </select>
-                                    {errors.packageCategory && (
-                                        <p className="text-red-500 text-xs mt-1">{errors.packageCategory.message}</p>
+                                    {errors.package_category && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.package_category.message}</p>
                                     )}
                                 </div>
                                 <div>
@@ -234,11 +266,11 @@ const AddPackage = () => {
                                     <input
                                         type='number'
                                         placeholder="Start Price :"
-                                        {...register('packagePrice', { required: 'Price is required' })}
+                                        {...register('price', { required: 'Price is required' })}
                                         className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                                     />
-                                    {errors.packagePrice && (
-                                        <p className="text-red-500 text-xs mt-1">{errors.packagePrice.message}</p>
+                                    {errors.price && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>
                                     )}
                                 </div>
                                 <div>
@@ -247,7 +279,7 @@ const AddPackage = () => {
                                     </label>
                                     <select
                                         placeholder="Select days"
-                                        {...register('packageDuration', { required: 'Package duration is required' })}
+                                        {...register('duration', { required: 'Package duration is required' })}
                                         className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                                     >
                                         <option value="" className='text-base text-[#C9C9C9]'>Select days</option>
@@ -257,8 +289,56 @@ const AddPackage = () => {
                                         <option value="8">8</option>
                                         <option value="10">10</option>
                                     </select>
-                                    {errors.packageCategory && (
-                                        <p className="text-red-500 text-xs mt-1">{errors.packageCategory.message}</p>
+                                    {errors.duration && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.duration.message}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-gray-500 text-base font-medium mb-4">
+                                        Min. Capacity
+                                    </label>
+                                    <select
+                                        placeholder="Select min capacity"
+                                        {...register('min_capacity', { required: 'Min. capacity is required' })}
+                                        className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                                    >
+                                        <option value="" className='text-base text-[#C9C9C9]'>Select min. capacity</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                    {errors.min_capacity && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.min_capacity.message}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-gray-500 text-base font-medium mb-4">
+                                        Max. Capacity
+                                    </label>
+                                    <select
+                                        placeholder="Select max. capacity"
+                                        {...register('max_capacity', { required: 'Max. capacity is required' })}
+                                        className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                                    >
+                                        <option value="" className='text-base text-[#C9C9C9]'>Select max. capacity</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                    {errors.max_capacity && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.max_capacity.message}</p>
                                     )}
                                 </div>
                                 <div>
@@ -268,12 +348,12 @@ const AddPackage = () => {
                                     <input
                                         type='text'
                                         placeholder="Enter cancellation policy"
-                                        {...register('packagePrice', { required: 'Price is required' })}
+                                        {...register('cancelation_policy')}
                                         className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                                     />
-                                    {errors.packagePrice && (
-                                        <p className="text-red-500 text-xs mt-1">{errors.packagePrice.message}</p>
-                                    )}
+                                    {/* {errors.cancelation_policy && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
+                                    )} */}
                                 </div>
                                 <div>
                                     <label className="block text-gray-500 text-base font-medium mb-4">
