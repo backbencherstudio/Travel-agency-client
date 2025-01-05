@@ -92,7 +92,7 @@ const Dashboard = () => {
               <div className="ml-6 flex flex-col gap-2">
                 <button
                   onClick={() => handleNavigation("addPackage", "add-package")}
-                  className={`text-sm flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded 
+                  className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded 
                     ${selectedTab === "addPackage"
                     ? "bg-[#eb5b2a] text-white font-semibold"
                     : "hover:bg-[#0d3055]"}`}
@@ -103,11 +103,21 @@ const Dashboard = () => {
                   onClick={() =>
                     handleNavigation("packageCategory&Tag", "package-category-&-tag")
                   }
-                  className={`text-sm flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${selectedTab === "packageCategory&Tag"
+                  className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${selectedTab === "packageCategory&Tag"
                     ? "bg-[#eb5b2a] text-white font-semibold"
                     : "hover:bg-[#0d3055]"}`}
                 >
-                  <span>Package categories & tags</span>
+                  <span>Package Categories & Tags</span>
+                </button>
+                <button
+                  onClick={() =>
+                    handleNavigation("packageDestination&Policy", "package-destination-&-policy")
+                  }
+                  className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${selectedTab === "packageDestination&Policy"
+                    ? "bg-[#eb5b2a] text-white font-semibold"
+                    : "hover:bg-[#0d3055]"}`}
+                >
+                  <span>Package Destinations & Policies</span>
                 </button>
               </div>
             )}

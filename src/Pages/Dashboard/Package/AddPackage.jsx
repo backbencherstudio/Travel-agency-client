@@ -18,6 +18,8 @@ const AddPackage = () => {
     const [excludedPackages, setExcludedPackages] = useState([]);
     const [tags, setTags] = useState([]);
     const [categories, setCategories] = useState([]);
+    const [policies, setPolicies] = useState([]);
+    const [destinations, setDestinations] = useState([]);
     const [images, setImages] = useState([]);
     const [tourPlan, setTourPlan] = useState([
         { day: 1, title: '', overview: '', images: [] },
@@ -31,6 +33,12 @@ const AddPackage = () => {
     
                 const resCategory = await axiosClient.get('api/admin/category');
                 setCategories(resCategory.data.data.map(cat => ({ value: cat.id, label: cat.name })));
+
+                const resPolicies = await axiosClient.get('api/admin/package-cancellation-policy');
+                setPolicies(resPolicies.data.data.map(cat => ({ value: cat.id, label: cat.policy })));
+
+                const resDestinations = await axiosClient.get('api/admin/destination');
+                setDestinations(resDestinations.data.data.map(cat => ({ value: cat.id, label: cat.name })));
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -39,10 +47,11 @@ const AddPackage = () => {
         fetchData();
     }, [])
 
-    console.log('tags', tags)
-    console.log('categories', categories)
+    // console.log('tags', tags)
+    // console.log('categories', categories)
 
-    console.log('includedPackages', includedPackages)
+    // console.log('includedPackages', includedPackages)
+    console.log('policies', policies)
 
     const imageGalleries = [
         { image: image1 },
@@ -100,7 +109,9 @@ const AddPackage = () => {
             } else if (key === 'package_images') {
                 formDataObject[key].forEach((image) => form.append('package_images', image));
             } else if (key === 'includedPackages' || key === 'excludedPackages') {
-                formDataObject[key].forEach((item) => form.append(key === 'includedPackages' ? 'included_packages' : 'excluded_packages', item.value));
+                const packages = formDataObject[key].map((item) => ({ id: item.value })); // Transform to desired format
+                console.log('packages', packages)
+                form.append(key === 'includedPackages' ? 'included_packages' : 'excluded_packages', JSON.stringify(packages));
             } else {
                 form.append(key, formDataObject[key]);
             }
@@ -125,6 +136,8 @@ const AddPackage = () => {
     const handleExcludedPackagesChange = (selected) => {
         setExcludedPackages(selected || []);  // Store the selected objects in state
     };
+
+    console.log('first', includedPackages)
 
     return (
         <div className="flex flex-col gap-4">
@@ -261,6 +274,25 @@ const AddPackage = () => {
                                 </div>
                                 <div>
                                     <label className="block text-gray-500 text-base font-medium mb-4">
+                                        Destination
+                                    </label>
+                                    <select
+                                        type="text"
+                                        placeholder="Select a destination"
+                                        {...register('destination_id', { required: 'Destination is required' })}
+                                        className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                                    >
+                                        <option value="" className="text-base text-[#C9C9C9]">Select a destination</option>
+                                        {destinations.map(cat => (
+                                            <option key={cat.value} value={cat.value}>{cat.label}</option> // Ensure a return for each <option>
+                                        ))}
+                                    </select>
+                                    {errors.destination_id && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.destination_id.message}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-gray-500 text-base font-medium mb-4">
                                         Package Price ($)
                                     </label>
                                     <input
@@ -343,14 +375,36 @@ const AddPackage = () => {
                                 </div>
                                 <div>
                                     <label className="block text-gray-500 text-base font-medium mb-4">
+                                        Type
+                                    </label>
+                                    <select
+                                        placeholder="Select max. capacity"
+                                        {...register('type', { required: 'Type is required' })}
+                                        className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                                    >
+                                        <option value="" className='text-base text-[#C9C9C9]'>Select Package Type</option>
+                                        <option value="tour">Tour</option>
+                                        <option value="cruise">Cruise</option>
+                                    </select>
+                                    {errors.max_capacity && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.max_capacity.message}</p>
+                                    )}
+                                </div>
+                                <div>
+                                    <label className="block text-gray-500 text-base font-medium mb-4">
                                         Cancellation Policy
                                     </label>
-                                    <input
-                                        type='text'
+                                    <select
+                                        type="text"
                                         placeholder="Enter cancellation policy"
-                                        {...register('cancelation_policy')}
-                                        className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                                    />
+                                        {...register('cancellation_policy_id')}
+                                        className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                                    >
+                                        <option value="" className="text-base text-[#C9C9C9]">Select a policy</option>
+                                        {policies.map(cat => (
+                                            <option key={cat.value} value={cat.value}>{cat.label}</option> // Ensure a return for each <option>
+                                        ))}
+                                    </select>
                                     {/* {errors.cancelation_policy && (
                                         <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
                                     )} */}

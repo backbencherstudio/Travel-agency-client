@@ -17,6 +17,7 @@ import ChangePassword from "../Pages/Auth/ChangePassword";
 import BlogDetails from "../Pages/blogs/BlogDetails";
 import AddPackage from "../Pages/Dashboard/Package/AddPackage";
 import PackageCategoryTag from "../Pages/Dashboard/Package/PackageCategoryTag";
+import PackageDestinationPolicy from "../Pages/Dashboard/Package/PackageDestinationPolicy";
 
 export const router = createBrowserRouter([
   {
@@ -98,6 +99,10 @@ export const router = createBrowserRouter([
       {
         path: "package-category-&-tag",
         element: <PackageCategoryTag />,
+      },
+      {
+        path: "package-destination-&-policy",
+        element: <PackageDestinationPolicy />,
       },
       {
         path: "packages",
