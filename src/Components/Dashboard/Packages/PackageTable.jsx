@@ -21,6 +21,7 @@ import { BsThreeDots } from "react-icons/bs";
 const PackageTable = ({ tableType = "", title, data, columns }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isOpenAction, setIsOpenAction] = useState(null);
+    const [showTab, setShowTab] = useState('all');
     const navigate = useNavigate();
     const actionRefs = useRef(new Map());
   
@@ -38,11 +39,7 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
       setPage(0);
     };
     const handleRowClick = (id) => {
-      if (tableType === "user" || tableType === "blog") {
-        navigate(`${id}`);
-      } else {
-        // navigate(`/other-list/${id}`);
-      }
+      navigate(`${id}`);
     };
 
     console.log('data', data)
@@ -53,6 +50,9 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
     }
     console.log('isOpenAction', isOpenAction)
 
+    const handleActiveTab = (tab) => {
+      setShowTab(tab)
+    }
     
     useEffect(() => {
       const handleClickOutside = (event) => {
@@ -88,9 +88,9 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
         <Paper style={{ borderRadius: "10px" }}>
           <div className="flex flex-col lg:flex-row justify-between items-end  gap-3 px-4 pt-4 rounded-t-xl">
             <div className="flex gap-6 border-b border-[#EAECF0] w-full lg:w-1/2">
-              <button className="text-sm md:text-base font-semibold text-[#667085] px-4 pb-3 border-b-2 border-[#EB5B2A] text-[#A7411E]">All Packages</button>
-              <button className="text-sm md:text-base font-semibold text-[#667085] px-4 pb-3">Tour Packages</button>
-              <button className="text-sm md:text-base font-semibold text-[#667085] px-4 pb-3">Cruises Packages</button>
+              <button className={`text-sm md:text-base font-semibold text-[#667085] px-4 pb-3 ${showTab === 'all' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('all')}>All Packages</button>
+              <button className={`text-sm md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === 'tour' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('tour')}>Tour Packages</button>
+              <button className={`text-sm md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === 'cruise' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('cruise')}>Cruises Packages</button>
             </div>
             <div className="relative right-0">
               <input

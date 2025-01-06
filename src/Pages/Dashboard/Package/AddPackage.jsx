@@ -22,7 +22,7 @@ const AddPackage = () => {
     const [destinations, setDestinations] = useState([]);
     const [images, setImages] = useState([]);
     const [tourPlan, setTourPlan] = useState([
-        { day: 1, title: '', overview: '', images: [] },
+        { day: 1, title: '', description: '', images: [] },
     ]);
 
     useEffect(() => {
@@ -105,7 +105,7 @@ const AddPackage = () => {
                 formDataObject[key].forEach((tripPlan, index) => {
                     tripPlan.images.forEach((image) => form.append(`trip_plans_images`, image));
                 });
-                form.append(key, JSON.stringify(formDataObject[key]));
+                form.append('trip_plans', JSON.stringify(formDataObject[key]));
             } else if (key === 'package_images') {
                 formDataObject[key].forEach((image) => form.append('package_images', image));
             } else if (key === 'includedPackages' || key === 'excludedPackages') {
@@ -309,18 +309,12 @@ const AddPackage = () => {
                                     <label className="block text-gray-500 text-base font-medium mb-4">
                                         Package Duration (Days)
                                     </label>
-                                    <select
-                                        placeholder="Select days"
+                                    <input
+                                        type='text'
+                                        placeholder="Write duration"
                                         {...register('duration', { required: 'Package duration is required' })}
                                         className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                                    >
-                                        <option value="" className='text-base text-[#C9C9C9]'>Select days</option>
-                                        <option value="2">2</option>
-                                        <option value="4">4</option>
-                                        <option value="6">6</option>
-                                        <option value="8">8</option>
-                                        <option value="10">10</option>
-                                    </select>
+                                    />
                                     {errors.duration && (
                                         <p className="text-red-500 text-xs mt-1">{errors.duration.message}</p>
                                     )}

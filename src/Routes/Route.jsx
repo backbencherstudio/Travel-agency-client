@@ -18,6 +18,7 @@ import BlogDetails from "../Pages/blogs/BlogDetails";
 import AddPackage from "../Pages/Dashboard/Package/AddPackage";
 import PackageCategoryTag from "../Pages/Dashboard/Package/PackageCategoryTag";
 import PackageDestinationPolicy from "../Pages/Dashboard/Package/PackageDestinationPolicy";
+import PackageDetails from "../Components/Dashboard/Packages/PackageDetails";
 
 export const router = createBrowserRouter([
   {
@@ -107,6 +108,10 @@ export const router = createBrowserRouter([
       {
         path: "packages",
         element: <Packages />,
+      },
+      {
+        path: "packages/:id",
+        element: <PackageDetails />,
       },
     ],
   },

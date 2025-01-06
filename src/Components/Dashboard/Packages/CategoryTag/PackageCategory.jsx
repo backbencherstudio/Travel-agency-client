@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TablePagination } from '@mui/material';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import axiosClient from '../../../../axiosClient';
 import ProjectCategoryApis from '../../../../Apis/PackageCategoryApis';
@@ -9,6 +9,9 @@ import ProjectCategoryApis from '../../../../Apis/PackageCategoryApis';
 const PackageCategory = () => {
     const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
     const [editCategoryId, setEditCategoryId] = useState(null);
+    // Pagination states
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
     // Fetch categories
     const { isLoading, isError, data = [], error, refetch } = useQuery({
@@ -18,6 +21,15 @@ const PackageCategory = () => {
             return response.data;
         },
     });
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     // Mutation for saving a new category
     const saveMutation = useMutation({
@@ -134,7 +146,7 @@ const PackageCategory = () => {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {data?.data?.map((category) => (
+                                        {data?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((category) => (
                                             <TableRow key={category.id}>
                                                 <TableCell>{category.id}</TableCell>
                                                 <TableCell>{category.name}</TableCell>
@@ -161,6 +173,15 @@ const PackageCategory = () => {
                             </TableContainer>
                         )}
                     </div>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={data?.data?.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
                 </div>
             </form>
         </div>

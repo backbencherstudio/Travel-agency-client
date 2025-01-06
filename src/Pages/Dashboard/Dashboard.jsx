@@ -43,6 +43,11 @@ const Dashboard = () => {
   }, [location]);
 
   const handleNavigation = (tab, path) => {
+    if (tab === 'addPackage' || tab === 'packageCategory&Tag' || tab === 'packageDestination&Policy') {
+      setSubmenuOpen(true);
+    } else {
+      setSubmenuOpen(false);
+    }
     setSelectedTab(tab);
     navigate(path);
   };
@@ -71,7 +76,7 @@ const Dashboard = () => {
           <button
               onClick={() => setSubmenuOpen(!isSubmenuOpen)}
               className={`flex items-center justify-between w-full p-2 rounded ${
-                selectedTab === "addPackage" || selectedTab === "packageCategory&Tag" 
+                selectedTab === "addPackage" || selectedTab === "packageCategory&Tag" || selectedTab === "packageDestination&Policy"
                   ? "bg-[#eb5b2a] text-white font-semibold"
                   : "hover:bg-[#0d3055]"
               }`}
@@ -89,7 +94,7 @@ const Dashboard = () => {
               </span>
             </button>
             {isSubmenuOpen && (
-              <div className="ml-6 flex flex-col gap-2">
+              <div className="ml-6 flex flex-col gap-2 animate-dropdown">
                 <button
                   onClick={() => handleNavigation("addPackage", "add-package")}
                   className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TablePagination } from '@mui/material';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import axiosClient from '../../../../axiosClient';
 import ProjectDestinationApis from '../../../../Apis/ProjectDestinationApis';
@@ -14,6 +14,9 @@ const PackageDestination = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [images, setImages] = useState([]);
     const [countries, setCountry] = useState([]);
+    // Pagination states
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     
     useEffect(() => {
         const fetchData = async () => {
@@ -35,6 +38,17 @@ const PackageDestination = () => {
             return response.data;
         },
     });
+
+    console.log('data', data)
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     const onImageDrop = (acceptedFiles) => {
         const newImages = acceptedFiles.map((file) => ({
@@ -65,6 +79,7 @@ const PackageDestination = () => {
         onSuccess: () => {
             refetch();
             reset();
+            setImages([]);
             setEditDestinationId(null);
         },
     });
@@ -75,6 +90,7 @@ const PackageDestination = () => {
         onSuccess: () => {
             refetch();
             reset();
+            setImages([]);
             setEditDestinationId(null);
         },
     });
@@ -213,7 +229,7 @@ const PackageDestination = () => {
                                     {images.map((image, index) => (
                                         <div key={index} className="relative">
                                             <img
-                                                src={image.image_url}
+                                                src={image.preview || image.image_url}
                                                 alt=""
                                                 className="w-16 h-16 object-cover rounded-lg"
                                             />
@@ -270,7 +286,7 @@ const PackageDestination = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {data?.data?.map((category) => (
+                                    {data?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((category) => (
                                         <TableRow key={category.id}>
                                             <TableCell>{category.id}</TableCell>
                                             <TableCell>{category.name}</TableCell>
@@ -299,6 +315,15 @@ const PackageDestination = () => {
                         </TableContainer>
                     )}
                 </div>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={data?.data?.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
             </div>
         </form>
     </div>

@@ -93,7 +93,7 @@ const TourPlan = ({ tourPlan, setTourPlan }) => {
     const addDay = () => {
         setTourPlan((prev) => [
             ...prev,
-            { day: prev.length + 1, title: '', overview: '', images: [] },
+            { day: prev.length + 1, title: '', description: '', images: [] },
         ]);
     };
 
@@ -148,9 +148,9 @@ const TourPlan = ({ tourPlan, setTourPlan }) => {
                                 </label>
                                 <input
                                     type="text"
-                                    value={dayPlan.overview}
+                                    value={dayPlan.description}
                                     onChange={(e) =>
-                                        handleInputChange(index, 'overview', e.target.value)
+                                        handleInputChange(index, 'description', e.target.value)
                                     }
                                     placeholder="Enter package description"
                                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
