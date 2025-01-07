@@ -10,9 +10,10 @@ import image3 from '../../../assets/img/tour-details/image-3.png';
 import image4 from '../../../assets/img/tour-details/image-4.png';
 import axios from 'axios';
 import axiosClient from '../../../axiosClient';
+import { Link, useParams } from 'react-router-dom';
 
 const AddPackage = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm();
     const [isDragging, setIsDragging] = useState(false);
     const [includedPackages, setIncludedPackages] = useState([]);
     const [excludedPackages, setExcludedPackages] = useState([]);
@@ -21,37 +22,71 @@ const AddPackage = () => {
     const [policies, setPolicies] = useState([]);
     const [destinations, setDestinations] = useState([]);
     const [images, setImages] = useState([]);
+    const [selectedPolicy, setSelectedPolicy] = useState('');
     const [tourPlan, setTourPlan] = useState([
-        { day: 1, title: '', description: '', images: [] },
+        { id: null, day: 1, title: '', description: '', images: [] },
     ]);
-
+    const { id } = useParams();
+    const editId = id;
+    console.log('editId', editId)
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const resTag = await axiosClient.get('api/admin/tag');
-                setTags(resTag.data.data.map(tag => ({ value: tag.id, label: tag.name })));
+                setTags(resTag.data?.data?.map(tag => ({ value: tag?.id, label: tag?.name })));
     
                 const resCategory = await axiosClient.get('api/admin/category');
-                setCategories(resCategory.data.data.map(cat => ({ value: cat.id, label: cat.name })));
+                setCategories(resCategory.data?.data?.map(cat => ({ value: cat?.id, label: cat?.name })));
 
                 const resPolicies = await axiosClient.get('api/admin/package-cancellation-policy');
-                setPolicies(resPolicies.data.data.map(cat => ({ value: cat.id, label: cat.policy })));
+                setPolicies(resPolicies.data?.data?.map(cat => ({ value: cat?.id, label: cat?.policy })));
 
                 const resDestinations = await axiosClient.get('api/admin/destination');
-                setDestinations(resDestinations.data.data.map(cat => ({ value: cat.id, label: cat.name })));
+                setDestinations(resDestinations.data?.data?.map(cat => ({ value: cat?.id, label: cat?.name })));
+
+                if (editId) {
+                    const resPackage = await axiosClient.get(`api/admin/package/${editId}`);
+                    const packageData = resPackage.data.data;
+                    console.log('packageData', packageData)
+                    setValue('name', packageData.name);
+                    setValue('description', packageData.description);
+                    setValue('package_category', packageData.package_categories?.map((category) => (category?.category?.id)));
+                    setValue('destination_id', packageData.destination?.id);
+                    setValue('price', packageData.price);
+                    setValue('duration', packageData.duration);
+                    setValue('min_capacity', packageData.min_capacity);
+                    setValue('max_capacity', packageData.max_capacity);
+                    setSelectedPolicy(packageData.cancellation_policy?.id || '');;
+                    setValue('type', packageData.type);
+                    setImages(packageData.package_images);
+                    setIncludedPackages(packageData.package_tags?.filter(tag => tag?.type === "included").map((tag) => ({value: tag?.tag?.id, label: tag?.tag?.name})));
+                    setExcludedPackages(packageData.package_tags?.filter(tag => tag?.type === "excluded").map((tag) => ({value: tag?.tag?.id, label: tag?.tag?.name})));
+                    if (packageData.package_trip_plans && packageData.package_trip_plans.length > 0) {
+                        setTourPlan(
+                            packageData.package_trip_plans?.map((plan, index) => ({
+                                id: plan?.id,
+                                day: index + 1,
+                                title: plan?.title || '',
+                                description: plan?.description || '',
+                                images: plan?.package_trip_plan_images?.map(img => img),
+                            }))
+                        );
+                    }
+                }
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
         };
     
         fetchData();
-    }, [])
+    }, [editId])
 
     // console.log('tags', tags)
     // console.log('categories', categories)
 
     // console.log('includedPackages', includedPackages)
     console.log('policies', policies)
+    console.log('images', images)
 
     const imageGalleries = [
         { image: image1 },
@@ -95,7 +130,7 @@ const AddPackage = () => {
             ...data,
             includedPackages,
             excludedPackages,
-            package_images: images.map((image) => image.file),
+            package_images: images.map((image) => image.file ? image.file : image),
             tourPlan,
         };
         const form = new FormData();
@@ -109,8 +144,8 @@ const AddPackage = () => {
             } else if (key === 'package_images') {
                 formDataObject[key].forEach((image) => form.append('package_images', image));
             } else if (key === 'includedPackages' || key === 'excludedPackages') {
-                const packages = formDataObject[key].map((item) => ({ id: item.value })); // Transform to desired format
-                console.log('packages', packages)
+                const packages = formDataObject[key].map((item) => ({ id: item.value }));
+                // console.log('packages', packages)
                 form.append(key === 'includedPackages' ? 'included_packages' : 'excluded_packages', JSON.stringify(packages));
             } else {
                 form.append(key, formDataObject[key]);
@@ -121,12 +156,22 @@ const AddPackage = () => {
             console.log(pair[0], pair[1]);
         }
 
-        // Uncomment to send the form data to your API
-        const url = "http://192.168.10.159:4000/api/admin/package";
-        const res = await axiosClient.post(url, form, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        console.log('Response:', res.data);
+        if (editId) {
+             // Uncomment to send the form data to your API
+             const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
+             const res = await axiosClient.patch(url, form, {
+                 headers: { 'Content-Type': 'multipart/form-data' },
+             });
+             console.log('Response:', res.data);
+        } else {
+
+            // Uncomment to send the form data to your API
+            const url = "http://192.168.10.159:4000/api/admin/package";
+            const res = await axiosClient.post(url, form, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            console.log('Response:', res.data);
+        }
     };
 
     const handleIncludedPackagesChange = (selected) => {
@@ -137,11 +182,11 @@ const AddPackage = () => {
         setExcludedPackages(selected || []);  // Store the selected objects in state
     };
 
-    console.log('first', includedPackages)
+    console.log('includedPackages', includedPackages)
 
     return (
         <div className="flex flex-col gap-4">
-            <h3 className="text-2xl font-semibold text-[#080613]">Add New Travel Package</h3>
+            <h3 className="text-2xl font-semibold text-[#080613]">{editId ? 'Edit' : 'Add New'} Travel Package</h3>
             <form onSubmit={handleSubmit(onSubmit)} className="">
                 <div className="bg-white min-h-screen pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
                     <div className="md:grid md:grid-cols-3 gap-8">
@@ -200,8 +245,8 @@ const AddPackage = () => {
                                     {images.map((image, index) => (
                                         <div key={index} className="relative">
                                             <img
-                                                src={image.preview}
-                                                alt=""
+                                                src={image.preview || image.image_url}
+                                                alt={image.preview || image.image_url}
                                                 className="w-16 h-16 object-cover rounded-lg"
                                             />
                                             <button
@@ -393,6 +438,7 @@ const AddPackage = () => {
                                         placeholder="Enter cancellation policy"
                                         {...register('cancellation_policy_id')}
                                         className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                                        value={selectedPolicy}
                                     >
                                         <option value="" className="text-base text-[#C9C9C9]">Select a policy</option>
                                         {policies.map(cat => (
@@ -423,14 +469,14 @@ const AddPackage = () => {
                         </div>
                     </div>
                     <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-                        <button className="border border-[#061D35] px-20 py-3 rounded-full text-base font-normal text-[#4A4C56] hover:bg-[#061D35] hover:text-white">
+                        <Link to="/dashboard/packages" className="border border-[#061D35] px-20 py-3 rounded-full text-base font-normal text-[#4A4C56] hover:bg-[#061D35] hover:text-white">
                             Cancel
-                        </button>
+                        </Link>
                         <button
                             type="submit"
                             className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
                         >
-                            Add New Package
+                            {editId ? 'Update' : 'Add New'} Package
                         </button>
                     </div>
                 </div>

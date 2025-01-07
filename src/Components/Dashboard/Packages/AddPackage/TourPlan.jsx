@@ -36,13 +36,13 @@ const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
             {/* Image Thumbnails */}
             <div className="mt-4 flex flex-wrap gap-4 justify-start items-start">
                 {images.map((file, idx) => {
-                    const imageUrl = URL.createObjectURL(file);
+                    const imageUrl = file instanceof File || file instanceof Blob ? URL.createObjectURL(file) : file.image_url;
                     return (
                         <div key={idx} className="relative w-16 h-16">
                             {/* Image Thumbnail */}
                             <img
                                 src={imageUrl}
-                                alt="Uploaded"
+                                alt={imageUrl}
                                 className="w-full h-full object-cover rounded-lg"
                             />
                             {/* Delete Button */}

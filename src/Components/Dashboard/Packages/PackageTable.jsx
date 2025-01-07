@@ -17,6 +17,7 @@ import { FaRegSquarePlus } from "react-icons/fa6";
 import { IoIosCheckmark } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import { BsThreeDots } from "react-icons/bs";
+import noPreview from '../../../assets/dashboard/no-preview.png'
 
 const PackageTable = ({ tableType = "", title, data, columns }) => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -72,13 +73,13 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
 
     return (
       <div className="">
-        <div className="flex my-5 justify-between flex-wrap">
-          <h1 className="font-semibold text-[24px]">{title}</h1>{" "}
+        <div className="flex my-5 justify-between items-center flex-wrap">
+          <h1 className="font-semibold  text-[18px] md:text-[24px]">{title}</h1>{" "}
           {(tableType === "blog" || tableType === "package") && (
             <Link
               // onClick={() => navigate("/dashboard/add-package")}
               to="/dashboard/add-package"
-              className="text-[16px] font-medium px-4 py-2 bg-[#eb5b2a] text-white rounded-md flex  items-center gap-1.5 hover:bg-opacity-90"
+              className="text-sm md:text-[16px] font-medium px-4 py-2 bg-[#eb5b2a] text-white rounded-md flex  items-center gap-1.5 hover:bg-opacity-90"
             >
               <FaRegSquarePlus className="text-xl" /> Add{" "}
               {tableType.charAt(0).toUpperCase() + tableType.slice(1)}
@@ -87,10 +88,10 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
         </div>
         <Paper style={{ borderRadius: "10px" }}>
           <div className="flex flex-col lg:flex-row justify-between items-end  gap-3 px-4 pt-4 rounded-t-xl">
-            <div className="flex gap-6 border-b border-[#EAECF0] w-full lg:w-1/2">
-              <button className={`text-sm md:text-base font-semibold text-[#667085] px-4 pb-3 ${showTab === 'all' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('all')}>All Packages</button>
-              <button className={`text-sm md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === 'tour' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('tour')}>Tour Packages</button>
-              <button className={`text-sm md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === 'cruise' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('cruise')}>Cruises Packages</button>
+            <div className="flex md:gap-6 border-b border-[#EAECF0] w-full lg:w-1/2">
+              <button className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3 ${showTab === 'all' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('all')}>All Packages</button>
+              <button className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === 'tour' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('tour')}>Tour Packages</button>
+              <button className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === 'cruise' && 'border-b-2 border-[#EB5B2A] text-[#A7411E]'}`} onClick={() => setShowTab('cruise')}>Cruises Packages</button>
             </div>
             <div className="relative right-0">
               <input
@@ -152,14 +153,18 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
                     >
                         <TableCell style={{ minWidth: "250px" }}>
                           <div className="flex items-center gap-2">
-                            <img src={item.package_Images[0]} alt="" className=" w-28 h-20 rounded-md" />
+                            {item.package_images && item.package_images.length !== 0 ? (
+                              <img src={item.package_images[0]?.image_url} alt={item.package_images[0]?.image_url} className=" w-28 h-20 rounded-md" />
+                            ) : (
+                                <img src={noPreview} alt="" className=" w-28 h-20 rounded-md" />
+                            )}
                             <div className="flex flex-col gap-[5px]">
                               <p className="text-xs font-normal text-[#475467]">#{item.id}</p>
                               <p className="text-xs font-medium text-black">{item.name}</p>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell style={{ minWidth: "200px", color: '#475467', fontSize: '12px' }}>{item.package_category}</TableCell>
+                        <TableCell style={{ minWidth: "200px", color: '#475467', fontSize: '12px' }}>{item.package_categories[0]?.category?.name || 'Not Available'}</TableCell>
                         <TableCell style={{
                             minWidth: "200px",
                             color: '#475467',
@@ -224,10 +229,10 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
                                   ref && actionRefs.current.set(item.id, ref)
                                 }>
                                   <div className="w-4 h-4 bg-white rotate-45 absolute -top-[7px] right-[25px] hidden xl:block shadow-2xl"></div>
-                                  <button className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                  <Link to={`dashboard/edit-package/${item?.id}`} className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
                                     <MdEdit className="text-2xl" /> 
                                     Edit Package Details
-                                  </button>
+                                  </Link>
                                   <button className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
                                     <FaRegTrashAlt className="text-xl" />
                                       Delete Forever

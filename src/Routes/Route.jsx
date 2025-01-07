@@ -98,6 +98,10 @@ export const router = createBrowserRouter([
         element: <AddPackage />,
       },
       {
+        path: "edit-package/:id",
+        element: <AddPackage />,
+      },
+      {
         path: "package-category-&-tag",
         element: <PackageCategoryTag />,
       },
