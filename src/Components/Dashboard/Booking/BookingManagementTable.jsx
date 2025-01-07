@@ -43,7 +43,15 @@ const statusStyles = {
 const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
-  const [selectedStatus, setSelectedStatus] = useState('all status')
+  const [selectedStatus, setSelectedStatus] = useState('All Status')
+  const [isOpen, setIsOpen] = useState(false)
+  const statuses = [
+    'All Status',
+    'Requests',
+    'Pending',
+    'Confirmed',
+    'Canceled'
+  ]
   const navigate = useNavigate()
 
   // Pagination states
@@ -65,23 +73,23 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
     }
   }
 
-  const handleStatusChange = e => {
-    const status = e.target.value
+  const handleStatusChange = status => {
     setSelectedStatus(status)
     setFilteredData(
-      status === 'all status'
+      status === 'All Status'
         ? data
         : data.filter(
             item => item.status.toLowerCase() === status.toLowerCase()
           )
     )
+    setIsOpen(false) // Close the dropdown after selection
   }
 
   return (
-    <div className=''>
-      <div className='flex flex-col md:flex-row justify-between items-center mb-7 '>
+    <div>
+      <div className='flex flex-col md:flex-row justify-between items-center mb-7'>
         <h1 className='font-semibold text-[24px]'>{title}</h1>
-        <div className='flex gap-3 pt-4 rounded-t-xl'>
+        <div className='flex flex-col md:flex-row gap-3 pt-4 rounded-t-xl'>
           <div className='relative md:col-span-1'>
             <input
               type='text'
@@ -92,61 +100,47 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
             />
             <FaSearch className='absolute top-3 left-3 text-zinc-400' />
           </div>
-          <select
-            className='md:col-span-1'
-            style={{
-              padding: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              border: '1px solid #e86731',
-              borderRadius: '4px',
-              color: '#FFFFFF',
-              background: '#EB5B2A'
-            }}
-            value={selectedStatus}
-            onChange={handleStatusChange}
-          >
-            <option
-              value='all status'
-              style={{ backgroundColor: 'white', color: 'black' }}
-            >
-              All Status
-            </option>
-            <option
-              value='Requests'
-              style={{ backgroundColor: 'white', color: 'black' }}
-            >
-              Booking Request
-            </option>
-            <option
-              value='Pending'
-              style={{ backgroundColor: 'white', color: 'black' }}
-            >
-              Pending
-            </option>
-            <option
-              value='Confirmed'
-              style={{ backgroundColor: 'white', color: 'black' }}
-            >
-              Confirmed
-            </option>
-            <option
-              value='Canceled'
-              style={{ backgroundColor: 'white', color: 'black' }}
-            >
-              Cancelled
-            </option>
-          </select>
+
+          {/* Custom Dropdown */}
+          <div className='flex justify-center'>
+            <div className='relative inline-block text-left'>
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className='inline-flex justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
+              >
+                {selectedStatus}
+                <span className='ml-2'>&#9660;</span>
+              </button>
+
+              {isOpen && (
+                <div className='absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200  shadow-lg z-10 right-0'>
+                  <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
+
+                  <div className='bg-white rounded-md'>
+                    {statuses.map(status => (
+                      <button
+                        key={status}
+                        onClick={() => handleStatusChange(status)}
+                        className={`w-full px-5 py-5 text-left text-sm hover:bg-gray-200 ${
+                          selectedStatus === status
+                            ? 'bg-gray-100 font-semibold'
+                            : ''
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
       <Paper style={{ borderRadius: '10px' }}>
         <TableContainer sx={{ padding: '16px' }}>
-          <Table
-            sx={{
-              border: '1px solid #e0e0e0'
-            }}
-          >
+          <Table sx={{ border: '1px solid #e0e0e0' }}>
             <TableHead>
               <TableRow>
                 {columns?.bookingId && (
@@ -210,7 +204,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
               </TableRow>
             </TableHead>
 
-            <TableBody className='text-nowrap '>
+            <TableBody className='text-nowrap'>
               {filteredData
                 ?.filter(item =>
                   item.customerName
@@ -222,7 +216,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                   <TableRow
                     className={`${
                       (tableType === 'user' || tableType === 'blog') &&
-                      'cursor-pointer hover:bg-[#fdf0ea] '
+                      'cursor-pointer hover:bg-[#fdf0ea]'
                     }`}
                     key={item?.bookingId}
                     onClick={() => handleRowClick(item.id)}
@@ -259,7 +253,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
 
                     {columns?.date && (
                       <TableCell style={{ textAlign: 'center' }}>
-                        <p className='text-[#475467]'> {item.date}</p>
+                        <p className='text-[#475467]'>{item.date}</p>
                       </TableCell>
                     )}
                     {columns?.status && (
