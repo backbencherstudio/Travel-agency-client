@@ -40,7 +40,7 @@ const statusStyles = {
   }
 }
 
-const CustomsTable = ({ tableType = '', title, data, columns }) => {
+const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
   const [selectedStatus, setSelectedStatus] = useState('all status')
@@ -332,4 +332,4 @@ const CustomsTable = ({ tableType = '', title, data, columns }) => {
   )
 }
 
-export default CustomsTable
+export default BookingManagementTable

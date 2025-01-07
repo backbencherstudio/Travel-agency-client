@@ -1,7 +1,6 @@
 import { useState } from 'react'
-// import { bookingData } from '../../../data/data'
-import CustomsTable from '../../../Shared/CustomsTable'
 import { booking } from '../../../data/booking'
+import BookingManagementTable from '../../../Components/Dashboard/Booking/BookingManagementTable'
 
 const BookingManagement = () => {
   const [columns] = useState({
@@ -13,7 +12,7 @@ const BookingManagement = () => {
   })
   return (
     <div>
-      <CustomsTable
+      <BookingManagementTable
         title={'Booking Management'}
         data={booking}
         columns={columns}
