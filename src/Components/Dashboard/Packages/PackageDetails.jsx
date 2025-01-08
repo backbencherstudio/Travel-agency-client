@@ -81,7 +81,7 @@ const PackageDetails = () => {
         </div>
         <div className='bg-white p-4 border border-[#EAECF0] rounded-lg grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 pb-5'>
             <div className='flex flex-col gap-5 md:col-span-2 xl:col-span-3'>
-                <img src={singlePackage?.package_images[0].image_url} alt={singlePackage?.package_images[0].image_url} className='h-[281px] object-cover rounded-lg' />
+                <img src={singlePackage?.package_images[0]?.image_url} alt={singlePackage?.package_images[0]?.image_url} className='h-[281px] object-cover rounded-lg' />
                 <div className='flex flex-col gap-2'>
                     <div className="flex justify-between flex-wrap">
                         <h1 className="font-semibold text-[24px]">{singlePackage?.name}</h1>
