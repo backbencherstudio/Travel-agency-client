@@ -13,6 +13,7 @@ import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
 import DashboardLayout from "../Layout/DashboardLayout";
 import DashboardAnalysis from "../Components/Dashboard/Dashboard/DashboardAnalysis";
 import Packages from "../Components/Dashboard/Packages/Packages";
+import Chat from "../Components/Dashboard/chat/Chat";
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
       {
         path: "packages",
         element: <Packages />,
+      },
+      {
+        path: "chat",
+        element: <Chat/>,
       },
     ],
   },
