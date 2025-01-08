@@ -7,7 +7,7 @@ const MainLayout = () => {
   const [showSidebar, setShowSidebar] = useState(false)
 
   return (
-    <div className=' w-full h-full'>
+    <div className=' w-full h-full min-h-screen bg-[#e9f0f9]'>
       <>
         <VendorHeader
           showSidebar={showSidebar}
@@ -18,7 +18,7 @@ const MainLayout = () => {
           setShowSidebar={setShowSidebar}
         />
 
-        <div className='ml-0 lg:ml-[275px] py-[80px] px-5 bg-[#e9f0f9] h-screen '>
+        <div className='ml-0 mt-4 lg:ml-[275px] py-[80px] px-5'>
           <Outlet />
         </div>
       </>
