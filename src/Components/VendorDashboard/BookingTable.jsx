@@ -100,60 +100,59 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
   }, [])
 
   return (
-    <div>
-      <div className='flex flex-col md:flex-row justify-between items-center mb-7'>
-        <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
-        <div className='flex flex-col md:flex-row gap-3 pt-4 rounded-t-xl'>
-          <div className='relative md:col-span-1'>
-            <input
-              type='text'
-              placeholder='Search...'
-              className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-            />
-            <FaSearch className='absolute top-3 left-3 text-zinc-400' />
-          </div>
+    <>
+      <Paper style={{ borderRadius: '10px' }}>
+        <div className='flex flex-col sm:flex-row justify-between items-center px-4 py-2'>
+          <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
+          <div className='flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl'>
+            <div className='relative md:col-span-1'>
+              <input
+                type='text'
+                placeholder='Search...'
+                className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+              />
+              <FaSearch className='absolute top-3 left-3 text-zinc-400' />
+            </div>
 
-          <div className='flex justify-center' ref={dropdownRef}>
-            <div className='relative inline-block text-left'>
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className='inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
-              >
-                {selectedStatus}
-                <span>
-                  <MdKeyboardArrowDown className='text-xl' />
-                </span>
-              </button>
+            <div className='flex justify-center' ref={dropdownRef}>
+              <div className='relative inline-block text-left'>
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className='inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
+                >
+                  {selectedStatus}
+                  <span>
+                    <MdKeyboardArrowDown className='text-xl' />
+                  </span>
+                </button>
 
-              {isOpen && (
-                <div className='absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0'>
-                  <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
+                {isOpen && (
+                  <div className='absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0'>
+                    <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
 
-                  <div className='bg-white rounded-md'>
-                    {statuses.map(status => (
-                      <button
-                        key={status}
-                        onClick={() => handleStatusChange(status)}
-                        className={`w-full px-5 py-5 text-left text-sm hover:bg-gray-200 ${
-                          selectedStatus === status
-                            ? 'bg-gray-100 font-semibold'
-                            : ''
-                        }`}
-                      >
-                        {status}
-                      </button>
-                    ))}
+                    <div className='bg-white rounded-md'>
+                      {statuses.map(status => (
+                        <button
+                          key={status}
+                          onClick={() => handleStatusChange(status)}
+                          className={`w-full px-5 py-5 text-left text-sm hover:bg-gray-200 ${
+                            selectedStatus === status
+                              ? 'bg-gray-100 font-semibold'
+                              : ''
+                          }`}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <Paper style={{ borderRadius: '10px' }}>
         <TableContainer sx={{ padding: '16px' }}>
           <Table sx={{ border: '1px solid #e0e0e0' }}>
             <TableHead>
@@ -343,7 +342,7 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-    </div>
+    </>
   )
 }
 

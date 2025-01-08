@@ -1,20 +1,17 @@
-import { useState, useEffect, useRef } from 'react'
-import { FaRegBell } from 'react-icons/fa'
-import { IoClose, IoMenu, IoSettingsOutline } from 'react-icons/io5'
+import { useEffect, useRef, useState } from 'react'
+import { FaRegSquarePlus } from 'react-icons/fa6'
+import { FiCompass } from 'react-icons/fi'
+import { IoSettingsOutline } from 'react-icons/io5'
 import { LuBookmarkCheck, LuLayoutDashboard } from 'react-icons/lu'
 import { MdOutlineBusinessCenter, MdOutlinePayment } from 'react-icons/md'
-import image from '../../assets/img/logo.png'
-import { useNavigate, useLocation, Outlet } from 'react-router-dom'
-import { CiLogout } from 'react-icons/ci'
-import logo from '../../assets/img/Logo.svg'
-import { FiCompass } from 'react-icons/fi'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { RiArticleLine } from 'react-icons/ri'
-import { FaRegSquarePlus } from 'react-icons/fa6'
-
-const VendorDashboard = () => {
+import logo from '../../assets/img/Logo.svg'
+import { CiLogout } from 'react-icons/ci'
+const VendorSidebar = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const sidebarRef = useRef(null) // Ref for sidebar
+  const sidebarRef = useRef(null)
   const [selectedTab, setSelectedTab] = useState(
     localStorage.getItem('tab') || 'Dashboard'
   )
@@ -70,23 +67,19 @@ const VendorDashboard = () => {
     setSelectedTab(tab)
     navigate(path)
   }
-
   return (
-    <div className='flex min-h-screen bg-[#e9f0f9] relative'>
-      {/* Black overlay */}
-      {isSidebarOpen && (
-        <div
-          className='fixed inset-0 bg-black bg-opacity-50 z-40'
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-      )}
+    <>
+      <div
+        onClick={() => setShowSidebar(false)}
+        className={`fixed duration-200 ${
+          !showSidebar ? 'invisible' : 'visible'
+        } w-screen h-screen bg-[#22292f80] top-0 left-0 z-10`}
+      ></div>
 
-      {/* Sidebar */}
-      <aside
-        ref={sidebarRef}
-        className={`bg-[#061d35] fixed inset-y-0 left-0 transform ${
-          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform lg:translate-x-0 lg:relative w-[280px] border border-[#061D35] p-5 z-50`}
+      <div
+        className={`w-[275px] fixed px-5 pt-4 bg-[#061d35] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/5%)]  transition-all ${
+          showSidebar ? 'left-0' : '-left-[275px] lg:left-0'
+        }`}
       >
         <img src={logo} alt='' className='w-full h-8 mt-3' />
         <nav className='flex flex-col gap-4 text-white mt-11'>
@@ -101,7 +94,6 @@ const VendorDashboard = () => {
             <LuLayoutDashboard className='h-5 w-5' />
             <span>Dashboard</span>
           </button>
-          {/* add package */}
           <button
             onClick={() => setSubmenuOpen(!isSubmenuOpen)}
             className={`flex items-center justify-between w-full p-2 rounded ${
@@ -129,11 +121,11 @@ const VendorDashboard = () => {
               <button
                 onClick={() => handleNavigation('addPackage', 'add-package')}
                 className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded 
-                    ${
-                      selectedTab === 'addPackage'
-                        ? 'bg-[#eb5b2a] text-white font-semibold'
-                        : 'hover:bg-[#0d3055]'
-                    }`}
+                           ${
+                             selectedTab === 'addPackage'
+                               ? 'bg-[#eb5b2a] text-white font-semibold'
+                               : 'hover:bg-[#0d3055]'
+                           }`}
               >
                 <span>Add Package</span>
               </button>
@@ -169,7 +161,6 @@ const VendorDashboard = () => {
               </button>
             </div>
           )}
-
           <button
             onClick={() => handleNavigation('Packages', 'packages')}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -181,7 +172,6 @@ const VendorDashboard = () => {
             <MdOutlineBusinessCenter className='h-5 w-5' />
             <span>Packages</span>
           </button>
-
           <button
             onClick={() => handleNavigation('Booking List', 'booking-list')}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -217,60 +207,14 @@ const VendorDashboard = () => {
             <IoSettingsOutline className='h-5 w-5' />
             <span>Settings</span>
           </button>
-        </nav>
-        <button className='absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white'>
-          <CiLogout className='mt-1' /> Logout
-        </button>
-      </aside>
 
-      {/* Main Content */}
-      <div className='flex flex-col flex-1 overflow-y-auto '>
-        <header className='flex items-center justify-between bg-zinc-50 p-4 shadow-md'>
-          <button
-            onClick={() => setSidebarOpen(!isSidebarOpen)}
-            className='lg:hidden text-2xl text-orange-500'
-          >
-            {isSidebarOpen && showCloseIcon ? <IoClose /> : <IoMenu />}
+          <button className='absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white'>
+            <CiLogout className='mt-1' /> Logout
           </button>
-          <div className='hidden lg:block'>
-            <p className='text-[#1D1F2C] text-[14px] capitalize'>
-              Welcome, vendor name
-            </p>
-          </div>
-
-          <div></div>
-          <div className='flex'>
-            <input
-              type='text'
-              placeholder='Search'
-              className='p-2 border mx-5 rounded-lg hidden md:block'
-            />
-            <div className=' border mr-5 rounded-full h-10 w-10 flex justify-center items-center text-gray-400 cursor-pointer'>
-              <FaRegBell />
-            </div>
-            <div className='flex'>
-              <div className=' border mr-1 rounded-full h-10 w-10 flex justify-center items-center text-gray-400 cursor-pointer'>
-                <img
-                  src={image}
-                  className='h-full w-full rounded-full object-cover'
-                  alt=''
-                />
-              </div>
-              <div>
-                <h1 className='font-semibold text-[16px]'>Tren bold</h1>
-                <p className='text-[12px] text-[#72777F]'>Vendor</p>
-              </div>
-            </div>
-          </div>
-        </header>
-        <main className='flex-1 overflow-y-auto'>
-          <div className='p-5'>
-            <Outlet />
-          </div>
-        </main>
+        </nav>
       </div>
-    </div>
+    </>
   )
 }
 
-export default VendorDashboard
+export default VendorSidebar

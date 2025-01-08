@@ -23,8 +23,8 @@ import BookingManagement from '../Pages/Dashboard/Booking/BookingManagement'
 import BookingRequestDetails from '../Pages/Dashboard/Booking/BookingRequestDetails'
 import Vendor from '../Pages/Dashboard/Vendor/Vendor'
 import VendorDetails from '../Pages/Dashboard/Vendor/VendorDetails'
-import VendorDashboardLayout from '../Layout/VendorDashboardLayout'
 import IndexDashboard from '../Pages/VendorDashboard/IndexDashboard'
+import MainLayout from '../Layout/VendorDashboardLayout/MainLayout'
 
 export const router = createBrowserRouter([
   {
@@ -139,7 +139,7 @@ export const router = createBrowserRouter([
   },
   {
     path: 'vendor/dashboard',
-    element: <VendorDashboardLayout />,
+    element: <MainLayout/>,
     children: [
       {
         index: true,
