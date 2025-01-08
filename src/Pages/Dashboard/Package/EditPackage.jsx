@@ -12,8 +12,9 @@ import axios from "axios";
 import axiosClient from "../../../axiosClient";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import EditTourPlan from "../../../Components/Dashboard/Packages/EditPackage/EditTourPlan";
 
-const AddPackage = () => {
+const EditPackage = () => {
   const {
     register,
     handleSubmit,
@@ -21,6 +22,7 @@ const AddPackage = () => {
     formState: { errors },
   } = useForm();
   const [isDragging, setIsDragging] = useState(false);
+  const [packageName, setPackageName] = useState('');
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
   const [tags, setTags] = useState([]);
@@ -81,6 +83,7 @@ const AddPackage = () => {
           const packageData = resPackage.data.data;
           console.log("packageData", packageData);
           setValue("name", packageData.name);
+          setPackageName(packageData.name);
           setValue("description", packageData.description);
           setValue(
             "package_category",
@@ -106,20 +109,17 @@ const AddPackage = () => {
               ?.filter((tag) => tag?.type === "excluded")
               .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
           );
-          if (
-            packageData.package_trip_plans &&
-            packageData.package_trip_plans.length > 0
-          ) {
-            setTourPlan(
-              packageData.package_trip_plans?.map((plan, index) => ({
-                id: plan?.id,
-                day: index + 1,
-                title: plan?.title || "",
-                description: plan?.description || "",
-                images: plan?.package_trip_plan_images?.map((img) => img),
-              }))
-            );
-          }
+        //   if (packageData.package_trip_plans && packageData.package_trip_plans.length > 0) {
+        //     setTourPlan(
+        //       packageData.package_trip_plans?.map((plan, index) => ({
+        //         id: plan?.id,
+        //         day: index + 1,
+        //         title: plan?.title || "",
+        //         description: plan?.description || "",
+        //         images: plan?.package_trip_plan_images?.map((img) => img),
+        //       }))
+        //     );
+        //   }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -270,18 +270,6 @@ const AddPackage = () => {
             toast.info("Package updated successfully!");
         }
         setLoading(false);
-    } else {
-        toast.info("Creating package...");
-        // Uncomment to send the form data to your API
-        const url = "http://192.168.10.159:4000/api/admin/package";
-        const res = await axiosClient.post(url, form, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
-        console.log("Response:", res.data);
-        if (res.data.success) {
-            toast.info("Package created successfully!");
-        }
-        setLoading(false);
     }
   };
 
@@ -303,7 +291,7 @@ const AddPackage = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="">
         <div className="bg-white min-h-screen pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
           <div className="md:grid md:grid-cols-3 gap-8">
-            <div className="flex flex-col gap-8 col-span-2">
+            <div className="flex flex-col gap-8 col-span-2 justify-between">
               <h3 className="text-2xl font-semibold text-[#080613]">
                 Package Details
               </h3>
@@ -425,14 +413,34 @@ const AddPackage = () => {
                   classNamePrefix="react-select"
                 />
               </div>
-
+            
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+                    <Link
+                    to="/dashboard/packages"
+                    className="border border-[#061D35] px-20 py-3 rounded-full text-base font-normal text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
+                    >
+                    Cancel
+                    </Link>
+                    <button
+                    type="submit"
+                    className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
+                    >
+                        {loading && editId ? 'Updating...' : loading ? 'Creating...' : `${editId ? "Update" : "Add New"} Package` }
+                    
+                    </button>
+                </div>
+                <Link to={`/dashboard/edit-package/${packageName}/tour-plan/${editId}`} className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]">
+                    Edit Trip Plans
+                </Link>
+            </div>
               {/* Tour Plan Section */}
-              <div className="flex flex-col gap-4">
+            {/* <div className="flex flex-col gap-4">
                 <h3 className="text-2xl font-semibold text-[#080613]">
-                  Tour Plan
+                    Tour Plan
                 </h3>
-                <TourPlan tourPlan={tourPlan} setTourPlan={setTourPlan} />
-              </div>
+                <EditTourPlan package_id={editId} />
+            </div> */}
             </div>
             <div className="p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0">
               <div className="flex flex-col gap-4 col-span-2">
@@ -648,25 +656,10 @@ const AddPackage = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-            <Link
-              to="/dashboard/packages"
-              className="border border-[#061D35] px-20 py-3 rounded-full text-base font-normal text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
-            >
-              Cancel
-            </Link>
-            <button
-              type="submit"
-              className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
-            >
-                {loading && editId ? 'Updating...' : loading ? 'Creating...' : `${editId ? "Update" : "Add New"} Package` }
-              
-            </button>
-          </div>
         </div>
       </form>
     </div>
   );
 };
 
-export default AddPackage;
+export default EditPackage;

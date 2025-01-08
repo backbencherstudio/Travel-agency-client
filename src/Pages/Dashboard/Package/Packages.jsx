@@ -54,6 +54,7 @@ console.log('data', data)
           setDateFilter={setTourDateFilter}
           dateFilter={tourDateFilter}
           columns={columns}
+          refetch={refetch}
         />
       )
     }

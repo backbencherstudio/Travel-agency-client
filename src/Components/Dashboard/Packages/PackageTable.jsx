@@ -18,8 +18,10 @@ import { IoIosCheckmark } from "react-icons/io";
 import { RxCross2 } from "react-icons/rx";
 import { BsThreeDots } from "react-icons/bs";
 import noPreview from '../../../assets/dashboard/no-preview.png'
+import axios from "axios";
+import axiosClient from "../../../axiosClient";
 
-const PackageTable = ({ tableType = "", title, data, columns }) => {
+const PackageTable = ({ tableType = "", title, data, columns, refetch }) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isOpenAction, setIsOpenAction] = useState(null);
     const [showTab, setShowTab] = useState('all');
@@ -70,6 +72,22 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
       document.addEventListener("mousedown", handleClickOutside);
       return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handlePackageDelete = async (e, id) => {
+    e.preventDefault();
+    const shouldDelete = window.confirm("Do you want to delete this package");
+    if (shouldDelete) {
+      try {
+          const res = await axiosClient.delete(`api/admin/package/${id}`);
+          refetch();
+          // Optional: Handle success, e.g., refresh list or show a success message
+          console.log("Package deleted successfully:", res);
+      } catch (error) {
+          // Handle errors, e.g., show an error message
+          console.error("Failed to delete package:", error);
+      }
+    }
+  }
 
     return (
       <div className="">
@@ -147,12 +165,12 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map((item, index) => (
                     <TableRow
-                      className={`cursor-pointer hover:bg-[#fdf0ea]`}
+                      className={`hover:bg-[#fdf0ea]`}
                       key={index}
-                      onClick={() => handleRowClick(item.id)}
+                      // onClick={(e) => handleRowClick(item.id)}
                     >
-                        <TableCell style={{ minWidth: "250px" }}>
-                          <div className="flex items-center gap-2">
+                        <TableCell style={{ minWidth: "280px" }}>
+                          <div className="flex items-center gap-2 cursor-pointer" onClick={(e) => handleRowClick(item.id)}>
                             {item.package_images && item.package_images.length !== 0 ? (
                               <img src={item.package_images[0]?.image_url} alt={item.package_images[0]?.image_url} className=" w-28 h-20 rounded-md" />
                             ) : (
@@ -228,12 +246,12 @@ const PackageTable = ({ tableType = "", title, data, columns }) => {
                                 <div className={`bg-white p-4 absolute flex flex-col top-full right-0 mt-2 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50`} ref={(ref) =>
                                   ref && actionRefs.current.set(item.id, ref)
                                 }>
-                                  <div className="w-4 h-4 bg-white rotate-45 absolute -top-[7px] right-[25px] hidden xl:block shadow-2xl"></div>
-                                  <Link to={`dashboard/edit-package/${item?.id}`} className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                  <div className="w-4 h-4 bg-white rotate-45 absolute -top-[7px] right-[45px] hidden xl:block shadow-2xl"></div>
+                                  <Link to={`/dashboard/edit-package/${item?.id}`} className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
                                     <MdEdit className="text-2xl" /> 
                                     Edit Package Details
                                   </Link>
-                                  <button className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                  <button onClick={(e) => handlePackageDelete(e, item.id)} className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
                                     <FaRegTrashAlt className="text-xl" />
                                       Delete Forever
                                   </button>

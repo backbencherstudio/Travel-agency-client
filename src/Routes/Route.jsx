@@ -25,6 +25,8 @@ import Vendor from '../Pages/Dashboard/Vendor/Vendor'
 import VendorDetails from '../Pages/Dashboard/Vendor/VendorDetails'
 import VendorDashboardLayout from '../Layout/VendorDashboardLayout'
 import IndexDashboard from '../Pages/VendorDashboard/IndexDashboard'
+import EditPackage from '../Pages/Dashboard/Package/EditPackage'
+import EditTourPlan from '../Components/Dashboard/Packages/EditPackage/EditTourPlan'
 
 export const router = createBrowserRouter([
   {
@@ -105,7 +107,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "edit-package/:id",
-        element: <AddPackage />,
+        element: <EditPackage />,
+      },
+      {
+        path: "edit-package/:name/tour-plan/:id",
+        element: <EditTourPlan />,
       },
       {
         path: "package-category-&-tag",
