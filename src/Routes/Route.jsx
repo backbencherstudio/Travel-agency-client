@@ -93,7 +93,7 @@ export const router = createBrowserRouter([
         element: <Packages />,
       },
       {
-        path: "chat",
+        path: "chat/:conversationID?",
         element: <Chat/>,
       },
     ],
