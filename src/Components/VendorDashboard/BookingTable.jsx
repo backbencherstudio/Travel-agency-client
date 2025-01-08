@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
+import { LuTrash2 } from 'react-icons/lu'
 
 const statusStyles = {
   Confirmed: {
@@ -41,7 +42,7 @@ const statusStyles = {
   }
 }
 
-const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
+const BookingTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
   const [selectedStatus, setSelectedStatus] = useState('All Status')
@@ -54,10 +55,8 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
     'Canceled'
   ]
   const navigate = useNavigate()
+  const dropdownRef = useRef(null)
 
-  const dropdownRef = useRef(null) // Reference for dropdown
-
-  // Pagination states
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
 
@@ -88,7 +87,6 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
     setIsOpen(false)
   }
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -104,7 +102,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
   return (
     <div>
       <div className='flex flex-col md:flex-row justify-between items-center mb-7'>
-        <h1 className='font-semibold text-[24px]'>{title}</h1>
+        <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
         <div className='flex flex-col md:flex-row gap-3 pt-4 rounded-t-xl'>
           <div className='relative md:col-span-1'>
             <input
@@ -117,7 +115,6 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
             <FaSearch className='absolute top-3 left-3 text-zinc-400' />
           </div>
 
-          {/* Custom Dropdown */}
           <div className='flex justify-center' ref={dropdownRef}>
             <div className='relative inline-block text-left'>
               <button
@@ -172,7 +169,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Travelers Name
+                    Traveler's Name
                   </TableCell>
                 )}
                 {columns?.packageName && (
@@ -206,18 +203,17 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                     Status
                   </TableCell>
                 )}
-                {selectedStatus === 'Requests' && (
-                  <TableCell
-                    sx={{
-                      textAlign: 'center',
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
-                  >
-                    Action
-                  </TableCell>
-                )}
+                {/* Always show the Action column */}
+                <TableCell
+                  sx={{
+                    textAlign: 'center',
+                    color: '#475467',
+                    fontSize: '13px',
+                    fontWeight: 600
+                  }}
+                >
+                  Action
+                </TableCell>
               </TableRow>
             </TableHead>
 
@@ -235,7 +231,10 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                   )
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
-                    <TableRow key={item?.bookingId}   onClick={() => handleRowClick(item.id)} >
+                    <TableRow
+                      key={item?.bookingId}
+                      onClick={() => handleRowClick(item.id)}
+                    >
                       {columns?.bookingId && (
                         <TableCell>
                           <p className='text-[#475467] text-[12px]'>
@@ -297,20 +296,25 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                           </span>
                         </TableCell>
                       )}
-                      {selectedStatus === 'Requests' && (
-                        <TableCell style={{ textAlign: 'center' }}>
+                      <TableCell>
+                        <div className='flex items-center justify-center gap-4'>
+                          {/* Delete Button */}
+                          <button className='text-[#475467] hover:text-red-600 transform duration-300'>
+                            <LuTrash2 className='text-xl' />
+                          </button>
+                          {/* View Button */}
                           <button
+                            // onClick={() =>
+                            //   navigate(
+                            //     `/dashboard/booking-request/${item.bookingId}`
+                            //   )
+                            // }
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
-                            onClick={() =>
-                              navigate(
-                                `/dashboard/booking-request/${item.bookingId}`
-                              )
-                            }
                           >
                             <FaEye className='text-xl' />
                           </button>
-                        </TableCell>
-                      )}
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))
               ) : (
@@ -343,4 +347,4 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
   )
 }
 
-export default BookingManagementTable
+export default BookingTable

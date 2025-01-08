@@ -21,6 +21,10 @@ import PackageDestinationPolicy from '../Pages/Dashboard/Package/PackageDestinat
 import PackageDetails from '../Components/Dashboard/Packages/PackageDetails'
 import BookingManagement from '../Pages/Dashboard/Booking/BookingManagement'
 import BookingRequestDetails from '../Pages/Dashboard/Booking/BookingRequestDetails'
+import Vendor from '../Pages/Dashboard/Vendor/Vendor'
+import VendorDetails from '../Pages/Dashboard/Vendor/VendorDetails'
+import VendorDashboardLayout from '../Layout/VendorDashboardLayout'
+import IndexDashboard from '../Pages/VendorDashboard/IndexDashboard'
 
 export const router = createBrowserRouter([
   {
@@ -121,10 +125,29 @@ export const router = createBrowserRouter([
       },
       {
         path: 'booking-request/:id',
-        element: <BookingRequestDetails/>
+        element: <BookingRequestDetails />
+      },
+      {
+        path: 'vendor',
+        element: <Vendor />
+      },
+      {
+        path: 'vendor-details/:id',
+        element: <VendorDetails />
       }
     ]
   },
+  {
+    path: 'vendor/dashboard',
+    element: <VendorDashboardLayout />,
+    children: [
+      {
+        index: true,
+        element: <IndexDashboard />
+      }
+    ]
+  },
+
   {
     path: 'signup',
     element: <Signup />

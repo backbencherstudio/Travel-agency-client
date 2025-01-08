@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { booking } from '../../../data/booking'
 
@@ -7,8 +7,6 @@ const BookingRequestDetails = () => {
   const navigate = useNavigate()
   const [bookingDetails, setBookingDetails] = useState(null)
   const [loading, setLoading] = useState(true)
-  //   const [isOpen, setIsOpen] = useState(false)
-  //   const [selectedStatus, setSelectedStatus] = useState('All Status')
   useEffect(() => {
     const fetchBookingDetails = () => {
       const requestDetails = booking.find(
@@ -35,55 +33,8 @@ const BookingRequestDetails = () => {
     )
   }
 
-  //   const statuses = [
-  //     'All Status',
-  //     'Booking Request',
-  //     'Pending',
-  //     'Confirmed',
-  //     'Cancelled'
-  //   ]
-
   return (
     <div className='p-8 bg-white shadow-lg rounded-lg w-full  mx-auto'>
-      {/* <div className='flex justify-center '>
-        <div className='relative inline-block text-left'>
-         
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className='inline-flex justify-between w-full px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
-          >
-            {selectedStatus}
-            <span className='ml-2'>&#9660;</span>
-          </button>
-
-      
-          {isOpen && (
-            <div className='absolute mt-5 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10 right-0 '>
-              
-              <div className='absolute top-[-10px] right-4 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
-
-              <div className='bg-white rounded-md'>
-                {statuses.map(status => (
-                  <button
-                    key={status}
-                    onClick={() => {
-                      setSelectedStatus(status)
-                      setIsOpen(false)
-                    }}
-                    className={`block w-full px-4 py-2 text-left text-sm hover:bg-gray-200 ${
-                      selectedStatus === status
-                        ? 'bg-gray-100 font-semibold'
-                        : ''
-                    }`}
-                  >
-                    {status}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div> */}
       <h2 className='text-2xl font-semibold mb-8 text-center'>
         Booking Request Details
       </h2>

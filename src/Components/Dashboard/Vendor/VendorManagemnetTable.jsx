@@ -1,6 +1,5 @@
-import { FaCheckCircle, FaTimesCircle, FaSearch, FaEye } from 'react-icons/fa'
-import { GoDotFill } from 'react-icons/go'
-import { useState, useEffect, useRef } from 'react'
+import { FaEye, FaSearch } from 'react-icons/fa'
+import { useEffect, useRef, useState } from 'react'
 import {
   Table,
   TableBody,
@@ -12,51 +11,23 @@ import {
   TablePagination
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import { LuMailOpen, LuTrash2 } from 'react-icons/lu'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 
-const statusStyles = {
-  Confirmed: {
-    color: '#067647',
-    backgroundColor: '#ECFDF3',
-    border: '1px solid #ABEFC6',
-    icon: <FaCheckCircle />
-  },
-  Pending: {
-    color: '#0A3159',
-    backgroundColor: '#E7ECF2',
-    border: '1px solid #90A9C3',
-    icon: <GoDotFill className='text-lg' />
-  },
-  Canceled: {
-    color: '#B42318',
-    backgroundColor: '#FEF3F2',
-    border: '1px solid #FECDCA',
-    icon: <FaTimesCircle />
-  },
-  Requests: {
-    color: '#067647',
-    backgroundColor: '#ECFDF3',
-    border: '1px solid #ABEFC6',
-    icon: <GoDotFill className='text-lg' />
-  }
-}
-
-const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
+const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
-  const [selectedStatus, setSelectedStatus] = useState('All Status')
+  const navigate = useNavigate()
+  const dropdownRef = useRef(null) // Reference for dropdown
+  const [selectedStatus, setSelectedStatus] = useState('All Vendor')
   const [isOpen, setIsOpen] = useState(false)
   const statuses = [
-    'All Status',
+    'All Vendor',
     'Requests',
     'Pending',
     'Confirmed',
     'Canceled'
   ]
-  const navigate = useNavigate()
-
-  const dropdownRef = useRef(null) // Reference for dropdown
-
   // Pagination states
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -75,19 +46,6 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
       navigate(`${id}`)
     }
   }
-
-  const handleStatusChange = status => {
-    setSelectedStatus(status)
-    setFilteredData(
-      status === 'All Status'
-        ? data
-        : data.filter(
-            item => item.status.toLowerCase() === status.toLowerCase()
-          )
-    )
-    setIsOpen(false)
-  }
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = event => {
@@ -100,7 +58,6 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
-
   return (
     <div>
       <div className='flex flex-col md:flex-row justify-between items-center mb-7'>
@@ -112,7 +69,16 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
               placeholder='Search...'
               className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={e => {
+                setSearchQuery(e.target.value)
+                setFilteredData(
+                  data.filter(item =>
+                    item.travelerName
+                      .toLowerCase()
+                      .includes(e.target.value.toLowerCase())
+                  )
+                )
+              }}
             />
             <FaSearch className='absolute top-3 left-3 text-zinc-400' />
           </div>
@@ -138,7 +104,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                     {statuses.map(status => (
                       <button
                         key={status}
-                        onClick={() => handleStatusChange(status)}
+                        // onClick={() => handleStatusChange(status)}
                         className={`w-full px-5 py-5 text-left text-sm hover:bg-gray-200 ${
                           selectedStatus === status
                             ? 'bg-gray-100 font-semibold'
@@ -161,156 +127,118 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
           <Table sx={{ border: '1px solid #e0e0e0' }}>
             <TableHead>
               <TableRow>
-                {columns?.bookingId && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Booking Id
-                  </TableCell>
-                )}
                 {columns?.name && (
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Travelers Name
+                    Vendor Name
                   </TableCell>
                 )}
-                {columns?.packageName && (
+                {columns?.phone && (
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Package Name
+                    Phone Number
                   </TableCell>
                 )}
-                {columns?.date && (
+                {columns?.address && (
                   <TableCell
-                    sx={{
-                      textAlign: 'center',
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Date
+                    Address
                   </TableCell>
                 )}
-                {columns?.status && (
+                {columns?.expert && (
                   <TableCell
-                    sx={{
-                      textAlign: 'center',
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Status
+                    Expert
                   </TableCell>
                 )}
-                {selectedStatus === 'Requests' && (
-                  <TableCell
-                    sx={{
-                      textAlign: 'center',
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
-                  >
-                    Action
-                  </TableCell>
-                )}
+                <TableCell
+                  sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                >
+                  Action
+                </TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody className='text-nowrap'>
-              {filteredData?.filter(item =>
-                item.customerName
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase())
-              ).length > 0 ? (
+              {filteredData.length > 0 ? (
                 filteredData
-                  ?.filter(item =>
-                    item.customerName
-                      .toLowerCase()
-                      .includes(searchQuery.toLowerCase())
-                  )
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
-                    <TableRow key={item?.bookingId}   onClick={() => handleRowClick(item.id)} >
-                      {columns?.bookingId && (
-                        <TableCell>
-                          <p className='text-[#475467] text-[12px]'>
-                            #{item.bookingId}
-                          </p>
-                        </TableCell>
-                      )}
+                    <TableRow
+                      className={`${
+                        (tableType === 'user' || tableType === 'blog') &&
+                        'cursor-pointer hover:bg-[#fdf0ea]'
+                      }`}
+                      key={item?.id}
+                      onClick={() => handleRowClick(item.id)}
+                    >
                       {columns?.name && (
                         <TableCell style={{ minWidth: '200px' }}>
                           <div className='flex items-center gap-3'>
                             <img
-                              className='rounded-full'
-                              src={item.customerImg}
-                              alt={item.customerName}
-                              style={{ width: '40px', height: '40px' }}
+                              className='rounded-lg'
+                              src={item.travelerImg}
+                              alt={item.travelerName}
+                              style={{ width: '44px', height: '44px' }}
                             />
-                            <span className='truncate text-[#1D1F2C] text-[15px] font-medium'>
-                              {item.customerName}
-                            </span>
+                            <div>
+                              <p className='truncate text-[#1D1F2C] text-[15px] font-medium'>
+                                {item.travelerName}
+                              </p>
+                              <p className='truncate text-[#757D83] text-[14px] font-medium flex  items-center gap-2 mt-1'>
+                                <LuMailOpen />
+                                <span>{item.email}</span>
+                              </p>
+                            </div>
                           </div>
                         </TableCell>
                       )}
-                      {columns?.packageName && (
-                        <TableCell style={{ minWidth: '200px' }}>
+                      {columns?.phone && (
+                        <TableCell>
                           <p className='truncate text-[#475467]'>
-                            {item.packageInformation?.[0]?.packageName || 'N/A'}
+                            {item.phone}
                           </p>
                         </TableCell>
                       )}
-                      {columns?.date && (
-                        <TableCell style={{ textAlign: 'center' }}>
-                          <p className='text-[#475467]'>{item.date}</p>
+                      {columns?.address && (
+                        <TableCell>
+                          <p className='truncate text-[#475467]'>
+                            {item.address}
+                          </p>
                         </TableCell>
                       )}
-                      {columns?.status && (
-                        <TableCell style={{ textAlign: 'center' }}>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '8px',
-                              backgroundColor:
-                                statusStyles[item.status]?.backgroundColor ||
-                                'transparent',
-                              color:
-                                statusStyles[item.status]?.color || 'black',
-                              padding: '1px 14px',
-                              borderRadius: '50px',
-                              fontSize: '12px',
-                              fontWeight: 'bold',
-                              border:
-                                statusStyles[item.status]?.border || 'none',
-                              height: '32px'
-                            }}
-                          >
-                            {statusStyles[item.status]?.icon}
-                            <span>{item.status}</span>
-                          </span>
+                      {columns?.expert && (
+                        <TableCell>
+                          <p>
+                            <span className='bg-[#FDEFEA] truncate text-[#475467] px-4 py-2 rounded-lg'>
+                              {item.expert}
+                            </span>
+                          </p>
                         </TableCell>
                       )}
-                      {selectedStatus === 'Requests' && (
-                        <TableCell style={{ textAlign: 'center' }}>
+                      <TableCell>
+                        <div className='flex gap-4'>
+                          {/* Delete Button */}
+                          <button className='text-[#475467] hover:text-red-600 transform duration-300'>
+                            <LuTrash2 className='text-xl' />
+                          </button>
+                          {/* View Button */}
                           <button
-                            className='text-[#475467] hover:text-blue-700 transform duration-300'
                             onClick={() =>
                               navigate(
-                                `/dashboard/booking-request/${item.bookingId}`
+                                `/dashboard/vendor-details/${item.id}`
                               )
                             }
+                            className='text-[#475467] hover:text-blue-700 transform duration-300'
                           >
                             <FaEye className='text-xl' />
                           </button>
-                        </TableCell>
-                      )}
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ))
               ) : (
@@ -343,4 +271,4 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
   )
 }
 
-export default BookingManagementTable
+export default VendorManagemnetTable
