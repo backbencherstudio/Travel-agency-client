@@ -6,7 +6,10 @@ import { MdOutlineBusinessCenter, MdOutlinePayment } from 'react-icons/md'
 import { useLocation, useNavigate } from 'react-router-dom'
 import logo from '../../assets/img/Logo.svg'
 import { CiLogout } from 'react-icons/ci'
-const VendorSidebar = ({ showSidebar, setShowSidebar }) => {
+import { FiCompass } from 'react-icons/fi'
+import { RiArticleLine } from 'react-icons/ri'
+
+const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const sidebarRef = useRef(null)
@@ -119,11 +122,11 @@ const VendorSidebar = ({ showSidebar, setShowSidebar }) => {
               <button
                 onClick={() => handleNavigation('addPackage', 'add-package')}
                 className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded 
-                           ${
-                             selectedTab === 'addPackage'
-                               ? 'bg-[#eb5b2a] text-white font-semibold'
-                               : 'hover:bg-[#0d3055]'
-                           }`}
+                                   ${
+                                     selectedTab === 'addPackage'
+                                       ? 'bg-[#eb5b2a] text-white font-semibold'
+                                       : 'hover:bg-[#0d3055]'
+                                   }`}
               >
                 <span>Add Package</span>
               </button>
@@ -171,17 +174,27 @@ const VendorSidebar = ({ showSidebar, setShowSidebar }) => {
             <span>Packages</span>
           </button>
           <button
-            onClick={() => handleNavigation('Booking List', 'booking-list')}
+            onClick={() => handleNavigation('Bookings', 'bookings')}
             className={`flex items-center space-x-2 p-2 rounded ${
-              selectedTab === 'Booking List'
+              selectedTab === 'Bookings'
                 ? 'bg-[#eb5b2a] text-white font-semibold'
                 : 'hover:bg-[#0d3055]'
             }`}
           >
             <LuBookmarkCheck className='h-5 w-5' />
-            <span>Booking List</span>
+            <span>Bookings</span>
           </button>
-
+          <button
+            onClick={() => handleNavigation('Vendor', 'vendor')}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === 'Vendor'
+                ? 'bg-[#eb5b2a] text-white font-semibold'
+                : 'hover:bg-[#0d3055]'
+            }`}
+          >
+            <FiCompass className='h-5 w-5' />
+            <span>Vendor</span>
+          </button>
           <button
             onClick={() => handleNavigation('Payment', 'payment')}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -192,6 +205,18 @@ const VendorSidebar = ({ showSidebar, setShowSidebar }) => {
           >
             <MdOutlinePayment className='h-5 w-5' />
             <span>Payment</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation('Blog', 'blog')}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === 'Blog'
+                ? 'bg-[#eb5b2a] text-white font-semibold'
+                : 'hover:bg-[#0d3055]'
+            }`}
+          >
+            <RiArticleLine className='h-5 w-5' />
+            <span>Blog</span>
           </button>
 
           <button
@@ -215,4 +240,4 @@ const VendorSidebar = ({ showSidebar, setShowSidebar }) => {
   )
 }
 
-export default VendorSidebar
+export default AdminSidebar

@@ -25,6 +25,7 @@ import Vendor from '../Pages/Dashboard/Vendor/Vendor'
 import VendorDetails from '../Pages/Dashboard/Vendor/VendorDetails'
 import IndexDashboard from '../Pages/VendorDashboard/IndexDashboard'
 import MainLayout from '../Layout/VendorDashboardLayout/MainLayout'
+import AdminLayout from '../Layout/AdminDashboardLayout/AdminLayout'
 
 export const router = createBrowserRouter([
   {
@@ -93,7 +94,8 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <DashboardLayout />,
+    // element: <DashboardLayout />,
+    element: <AdminLayout />,
     children: [
       {
         index: true,
@@ -139,7 +141,7 @@ export const router = createBrowserRouter([
   },
   {
     path: 'vendor/dashboard',
-    element: <MainLayout/>,
+    element: <MainLayout />,
     children: [
       {
         index: true,
