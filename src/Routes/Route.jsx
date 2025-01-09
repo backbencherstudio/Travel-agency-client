@@ -10,7 +10,7 @@ import Blogs from '../Pages/blogs/Blogs'
 import SingleBlog from '../Pages/blogs/SingleBlog'
 import TourDetails from '../Pages/TourDetails/TourDetails'
 import ReviewPackage from '../Pages/ReviewPackage/ReviewPackage'
-import DashboardLayout from '../Layout/DashboardLayout'
+// import DashboardLayout from '../Layout/DashboardLayout'
 import DashboardAnalysis from '../Components/Dashboard/Dashboard/DashboardAnalysis'
 import Packages from '../Pages/Dashboard/Package/Packages'
 import ChangePassword from '../Pages/Auth/ChangePassword'
@@ -30,6 +30,7 @@ import VendorAddPackage from '../Pages/VendorDashboard/AddPackages/VendorAddPack
 import VendorPackages from '../Components/VendorDashboard/Packages/VendorPackgaesTable'
 import Payments from '../Pages/Dashboard/Payment/Payments'
 import BlogsPost from '../Pages/Dashboard/Blogs/BlogsPost'
+import Settings from '../Pages/Dashboard/Settings/Settings'
 
 export const router = createBrowserRouter([
   {
@@ -148,6 +149,10 @@ export const router = createBrowserRouter([
       {
         path: 'blog',
         element: <BlogsPost />
+      },
+      {
+        path: 'settings',
+        element: <Settings/>
       }
     ]
   },
