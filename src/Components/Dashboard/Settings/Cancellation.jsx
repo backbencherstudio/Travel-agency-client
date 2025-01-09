@@ -34,12 +34,14 @@ const Cancellation = () => {
           </p>
         </div>
         {!isEditing && (
-          <button
-            className='bg-[#061D35] rounded px-4 py-2 text-white text-sm sm:text-[14px] hover:bg-[#050b11] transform duration-300'
-            onClick={handleEdit}
-          >
-            Edit Policy
-          </button>
+          <div className='flex justify-start sm:justify-end items-end'>
+            <button
+              className='bg-[#061D35] rounded px-4 py-2 text-white text-sm sm:text-[14px] hover:bg-[#050b11] transform duration-300'
+              onClick={handleEdit}
+            >
+              Edit Policy
+            </button>
+          </div>
         )}
       </div>
 
@@ -79,7 +81,7 @@ const Cancellation = () => {
             </div>
           </div>
         ) : (
-          <p className='text-gray-500 text-sm sm:text-base'>
+          <p className='text-gray-500 text-sm sm:text-base text-wrap'>
             {policy || 'No cancellation policy set yet.'}
           </p>
         )}
