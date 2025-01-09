@@ -27,6 +27,8 @@ import IndexDashboard from '../Pages/VendorDashboard/IndexDashboard'
 import MainLayout from '../Layout/VendorDashboardLayout/MainLayout'
 import AdminLayout from '../Layout/AdminDashboardLayout/AdminLayout'
 import VendorAddPackage from '../Pages/VendorDashboard/AddPackages/VendorAddPackage'
+import VendorPackages from '../Components/VendorDashboard/Packages/VendorPackgaesTable'
+import Payments from '../Pages/Dashboard/Payment/Payments'
 
 export const router = createBrowserRouter([
   {
@@ -137,6 +139,10 @@ export const router = createBrowserRouter([
       {
         path: 'vendor-details/:id',
         element: <VendorDetails />
+      },
+      {
+        path: 'payment',
+        element: <Payments/>
       }
     ]
   },
@@ -151,6 +157,10 @@ export const router = createBrowserRouter([
       {
         path: 'add-package',
         element: <VendorAddPackage />
+      },
+      {
+        path: 'packages',
+        element: <VendorPackages />
       }
     ]
   },
