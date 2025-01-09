@@ -57,7 +57,7 @@ const Payments = () => {
       </div>
 
       <PaymentHistoryTable
-        title={'Recent Booking'}
+        title={'Payment History'}
         data={paymentHistory}
         columns={columns}
       />

@@ -29,6 +29,7 @@ import AdminLayout from '../Layout/AdminDashboardLayout/AdminLayout'
 import VendorAddPackage from '../Pages/VendorDashboard/AddPackages/VendorAddPackage'
 import VendorPackages from '../Components/VendorDashboard/Packages/VendorPackgaesTable'
 import Payments from '../Pages/Dashboard/Payment/Payments'
+import BlogsPost from '../Pages/Dashboard/Blogs/BlogsPost'
 
 export const router = createBrowserRouter([
   {
@@ -142,7 +143,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'payment',
-        element: <Payments/>
+        element: <Payments />
+      },
+      {
+        path: 'blog',
+        element: <BlogsPost />
       }
     ]
   },

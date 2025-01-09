@@ -1,4 +1,4 @@
-import {  FaSearch, FaEye } from 'react-icons/fa'
+import { FaSearch, FaEye, FaCheckCircle } from 'react-icons/fa'
 import { useState, useEffect, useRef } from 'react'
 import {
   Table,
@@ -13,11 +13,29 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
+import { GoDotFill } from 'react-icons/go'
+import { FiEdit2 } from 'react-icons/fi'
 
-const BookingTable = ({ tableType = '', title, data, columns }) => {
+const statusStyles = {
+  Published: {
+    color: '#067647',
+    backgroundColor: '#ECFDF3',
+    border: '1px solid #ABEFC6',
+    icon: <FaCheckCircle />
+  },
+  Hold: {
+    color: '#0A3159',
+    backgroundColor: '#E7ECF2',
+    border: '1px solid #90A9C3',
+    icon: <GoDotFill className='text-lg' />
+  }
+}
+
+const BlogsTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
   const [isOpen, setIsOpen] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState('All Status')
   const navigate = useNavigate()
   const dropdownRef = useRef(null)
 
@@ -39,6 +57,11 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
     }
   }
 
+  const handleStatusChange = status => {
+    setSelectedStatus(status)
+    setIsOpen(false)
+  }
+
   useEffect(() => {
     const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -51,9 +74,17 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
     }
   }, [])
 
+  useEffect(() => {
+    if (selectedStatus === 'All Status') {
+      setFilteredData(data)
+    } else {
+      setFilteredData(data.filter(item => item.status === selectedStatus))
+    }
+  }, [selectedStatus, data])
+
   return (
     <>
-      <div className='flex flex-col sm:flex-row justify-between items-center  py-5'>
+      <div className='flex flex-col sm:flex-row justify-between items-center py-5'>
         <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
         <div className='flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl'>
           <div className='relative md:col-span-1'>
@@ -73,7 +104,7 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                 onClick={() => setIsOpen(!isOpen)}
                 className='inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
               >
-                {'All Status'}
+                {selectedStatus}
                 <span>
                   <MdKeyboardArrowDown className='text-xl' />
                 </span>
@@ -84,7 +115,20 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                   <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
 
                   <div className='bg-white rounded-md'>
-                    {/* Status Dropdown has been removed */}
+                    {/* Status options */}
+                    {['All Status', 'Published', 'Hold'].map(status => (
+                      <button
+                        key={status}
+                        onClick={() => handleStatusChange(status)}
+                        className={`block w-full px-5 py-5 text-left text-sm text-gray-700 hover:bg-gray-200 ${
+                          selectedStatus === status
+                            ? 'font-bold bg-gray-100'
+                            : ''
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -97,28 +141,28 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
           <Table sx={{ border: '1px solid #e0e0e0' }}>
             <TableHead>
               <TableRow>
-                {columns?.bookingId && (
+                {columns?.title && (
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Booking Id
+                    Title
                   </TableCell>
                 )}
-                {columns?.name && (
+                {columns?.author && (
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Traveler's Name
+                    Author
                   </TableCell>
                 )}
-                {columns?.amount && (
+                {columns?.status && (
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Amount
+                    Status
                   </TableCell>
                 )}
-                {columns?.date && (
+                {columns?.publishedDate && (
                   <TableCell
                     sx={{
                       color: '#475467',
@@ -126,10 +170,20 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                       fontWeight: 600
                     }}
                   >
-                    Date
+                    Published Date
                   </TableCell>
                 )}
-                {/* Removed the Status column */}
+                {columns?.modifiedDate && (
+                  <TableCell
+                    sx={{
+                      color: '#475467',
+                      fontSize: '13px',
+                      fontWeight: 600
+                    }}
+                  >
+                    Modified Date
+                  </TableCell>
+                )}
                 <TableCell
                   sx={{
                     textAlign: 'center',
@@ -144,16 +198,18 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
             </TableHead>
 
             <TableBody className='text-nowrap'>
-              {filteredData?.filter(item =>
-                item.customerName
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase())
+              {filteredData?.filter(
+                item =>
+                  item.title &&
+                  item.title.toLowerCase().includes(searchQuery.toLowerCase())
               ).length > 0 ? (
                 filteredData
-                  ?.filter(item =>
-                    item.customerName
-                      .toLowerCase()
-                      .includes(searchQuery.toLowerCase())
+                  ?.filter(
+                    item =>
+                      item.title &&
+                      item.title
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase())
                   )
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
@@ -161,56 +217,79 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                       key={item?.bookingId}
                       onClick={() => handleRowClick(item.id)}
                     >
-                      {columns?.bookingId && (
-                        <TableCell>
-                          <p className='text-[#475467] text-[12px]'>
-                            #{item.bookingId}
-                          </p>
-                        </TableCell>
-                      )}
-                      {columns?.name && (
+                      {columns?.title && (
                         <TableCell style={{ minWidth: '200px' }}>
                           <div className='flex items-center gap-3'>
                             <img
-                              className='rounded-full'
-                              src={item.customerImg}
-                              alt={item.customerName}
-                              style={{ width: '40px', height: '40px' }}
+                              className='rounded-lg'
+                              src={item.blogImg}
+                              alt={item.title}
+                              style={{ width: '80px', height: '80px' }}
                             />
-                            <span className='truncate text-[#1D1F2C] text-[15px] font-medium'>
-                              {item.customerName}
+                            <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
+                              {item.title}
                             </span>
                           </div>
                         </TableCell>
                       )}
-                      {columns?.amount && (
+                      {columns?.author && (
                         <TableCell style={{ minWidth: '200px' }}>
                           <p className='truncate text-[#475467]'>
-                            {item.amount}
+                            {item.author}
                           </p>
                         </TableCell>
                       )}
-                      {columns?.date && (
-                        <TableCell >
-                          <p className='text-[#475467]'>{item.date}</p>
+                      {columns?.status && (
+                        <TableCell>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '8px',
+                              backgroundColor:
+                                statusStyles[item.status]?.backgroundColor ||
+                                'transparent',
+                              color:
+                                statusStyles[item.status]?.color || 'black',
+                              padding: '1px 14px',
+                              borderRadius: '50px',
+                              fontSize: '12px',
+                              fontWeight: 'bold',
+                              border:
+                                statusStyles[item.status]?.border || 'none',
+                              height: '32px',
+                              minWidth: '120px',
+                              width: '120px',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden'
+                            }}
+                          >
+                            {statusStyles[item.status]?.icon}
+                            <span>{item.status}</span>
+                          </span>
+                        </TableCell>
+                      )}
+
+                      {columns?.publishedDate && (
+                        <TableCell>
+                          <p className='text-[#475467]'>{item.publishedDate}</p>
+                        </TableCell>
+                      )}
+                      {columns?.modifiedDate && (
+                        <TableCell>
+                          <p className='text-[#475467]'>{item.modifiedDate}</p>
                         </TableCell>
                       )}
                       <TableCell>
                         <div className='flex items-center justify-center gap-4'>
-                          {/* Delete Button */}
                           <button className='text-[#475467] hover:text-red-600 transform duration-300'>
                             <LuTrash2 className='text-xl' />
                           </button>
-                          {/* View Button */}
-                          <button
-                            // onClick={() =>
-                            //   navigate(
-                            //     `/dashboard/booking-request/${item.bookingId}` // This can still be useful
-                            //   )
-                            // }
-                            className='text-[#475467] hover:text-blue-700 transform duration-300'
-                          >
-                            <FaEye className='text-xl' />
+                          <button className='text-[#475467] hover:text-blue-700 transform duration-300'>
+                            {/* <FaEye /> */}
+                            <FiEdit2 className='text-xl' />
                           </button>
                         </div>
                       </TableCell>
@@ -246,4 +325,4 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
   )
 }
 
-export default BookingTable
+export default BlogsTable
