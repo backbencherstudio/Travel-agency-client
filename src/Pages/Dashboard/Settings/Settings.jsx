@@ -1,24 +1,30 @@
-
 import { FaSearch } from 'react-icons/fa'
 import CompanyInfo from '../../../Components/Dashboard/Settings/CompanyInfo'
 import Cancellation from '../../../Components/Dashboard/Settings/Cancellation'
 import Permission from '../../../Components/Dashboard/Settings/Permission'
 import Password from '../../../Components/Dashboard/Settings/Password'
-import { IoMdInformationCircleOutline } from "react-icons/io";
+import { IoMdInformationCircleOutline } from 'react-icons/io'
 import { RxCrossCircled } from 'react-icons/rx'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GoShieldLock } from 'react-icons/go'
 import { IoLockOpenOutline } from 'react-icons/io5'
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState('Company Info')
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('activeTab') || 'Company Info'
+  })
 
   const menuItems = [
     { icon: <IoMdInformationCircleOutline className='text-xl' />, label: 'Company Info' },
     { icon: <RxCrossCircled className='text-xl' />, label: 'Cancellation' },
     { icon: <GoShieldLock className='text-lg' />, label: 'Permission' },
-    { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' }
+    { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' },
   ]
+
+  // Save active tab to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab)
+  }, [activeTab])
 
   const renderContent = () => {
     switch (activeTab) {
@@ -75,7 +81,7 @@ const Settings = () => {
         {/* Main Content */}
         <div className='flex flex-col md:flex-row gap-6'>
           {/* Sidebar Navigation - Hidden on Mobile */}
-          <div className='hidden  md:block md:w-[200px] lg:w-[250px] xl:w-[300px] bg-[#FDEFEA] rounded-xl p-4 h-[calc(100vh-220px)]'>
+          <div className='hidden md:block md:w-[200px] lg:w-[250px] xl:w-[300px] bg-[#FDEFEA] rounded-xl p-4 h-[calc(100vh-220px)]'>
             {menuItems.map((item, index) => (
               <button
                 key={index}

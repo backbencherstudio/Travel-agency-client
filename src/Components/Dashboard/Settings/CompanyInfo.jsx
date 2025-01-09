@@ -12,7 +12,7 @@ const CompanyInfo = () => {
     reset
   } = useForm()
   const [imagePreview, setImagePreview] = useState(null)
-  const [imageError, setImageError] = useState(false) // State for image validation
+  const [imageError, setImageError] = useState(false)
 
   // Handle image upload
   const handleImageUpload = e => {
@@ -22,7 +22,7 @@ const CompanyInfo = () => {
       reader.onloadend = () => {
         setImagePreview(reader.result)
         setValue('logo', reader.result)
-        setImageError(false) // Clear image error when valid image is uploaded
+        setImageError(false)
       }
       reader.readAsDataURL(file)
     }
@@ -37,7 +37,7 @@ const CompanyInfo = () => {
   // Handle form submission
   const onSubmit = data => {
     if (!imagePreview) {
-      setImageError(true) // Set image error if no image is uploaded
+      setImageError(true)
       return
     }
     console.log('Form Data:', data)
@@ -51,11 +51,11 @@ const CompanyInfo = () => {
       logo: null
     })
     setImagePreview(null)
-    setImageError(false) // Reset image error state
+    setImageError(false)
   }
 
   return (
-    <div className='flex-1 bg-white rounded-xl p-6 shadow-sm'>
+    <div className='flex-1 p-6'>
       <div className='mb-6'>
         <h2 className='text-xl font-semibold mb-2 text-[#080613]'>
           Manage Company Information
@@ -124,7 +124,7 @@ const CompanyInfo = () => {
               })}
               placeholder='Enter your phone number'
               onInput={e => {
-                e.target.value = e.target.value.replace(/[^0-9]/g, '') 
+                e.target.value = e.target.value.replace(/[^0-9]/g, '')
               }}
               className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
                 errors.phoneNumber ? 'border-red-500' : ''
