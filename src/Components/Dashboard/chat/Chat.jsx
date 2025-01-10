@@ -258,7 +258,7 @@ const Chat = () => {
                       );
                     }
                   })}
-                  ;{/* <Message isLeft={true} /> */}
+                  {/* <Message isLeft={true} /> */}
                 </div>
                 {/* End Chat Conversation */}
               </div>
