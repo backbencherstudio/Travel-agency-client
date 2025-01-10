@@ -34,8 +34,8 @@ const AddPackage = () => {
     ]);
   const [loading, setLoading] = useState(false);
 
-  const { id } = useParams();
-  const editId = id;
+  // const { id } = useParams();
+  // const editId = id;
 //   console.log("editId", editId);
   useEffect(() => {
     const fetchData = async () => {
@@ -74,60 +74,60 @@ const AddPackage = () => {
           }))
         );
 
-        if (editId) {
-          const resPackage = await axiosClient.get(
-            `api/admin/package/${editId}`
-          );
-          const packageData = resPackage.data.data;
-          console.log("packageData", packageData);
-          setValue("name", packageData.name);
-          setValue("description", packageData.description);
-          setValue(
-            "package_category",
-            packageData.package_categories?.map(
-              (category) => category?.category?.id
-            )
-          );
-          setValue("destination_id", packageData.destination?.id);
-          setValue("price", packageData.price);
-          setValue("duration", packageData.duration);
-          setValue("min_capacity", packageData.min_capacity);
-          setValue("max_capacity", packageData.max_capacity);
-          setSelectedPolicy(packageData.cancellation_policy?.id || "");
-          setValue("type", packageData.type);
-          setImages(packageData.package_images);
-          setIncludedPackages(
-            packageData.package_tags
-              ?.filter((tag) => tag?.type === "included")
-              .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
-          );
-          setExcludedPackages(
-            packageData.package_tags
-              ?.filter((tag) => tag?.type === "excluded")
-              .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
-          );
-          if (
-            packageData.package_trip_plans &&
-            packageData.package_trip_plans.length > 0
-          ) {
-            setTourPlan(
-              packageData.package_trip_plans?.map((plan, index) => ({
-                id: plan?.id,
-                day: index + 1,
-                title: plan?.title || "",
-                description: plan?.description || "",
-                images: plan?.package_trip_plan_images?.map((img) => img),
-              }))
-            );
-          }
-        }
+        // if (editId) {
+        //   const resPackage = await axiosClient.get(
+        //     `api/admin/package/${editId}`
+        //   );
+        //   const packageData = resPackage.data.data;
+        //   console.log("packageData", packageData);
+        //   setValue("name", packageData.name);
+        //   setValue("description", packageData.description);
+        //   setValue(
+        //     "package_category",
+        //     packageData.package_categories?.map(
+        //       (category) => category?.category?.id
+        //     )
+        //   );
+        //   setValue("destination_id", packageData.destination?.id);
+        //   setValue("price", packageData.price);
+        //   setValue("duration", packageData.duration);
+        //   setValue("min_capacity", packageData.min_capacity);
+        //   setValue("max_capacity", packageData.max_capacity);
+        //   setSelectedPolicy(packageData.cancellation_policy?.id || "");
+        //   setValue("type", packageData.type);
+        //   setImages(packageData.package_images);
+        //   setIncludedPackages(
+        //     packageData.package_tags
+        //       ?.filter((tag) => tag?.type === "included")
+        //       .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
+        //   );
+        //   setExcludedPackages(
+        //     packageData.package_tags
+        //       ?.filter((tag) => tag?.type === "excluded")
+        //       .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
+        //   );
+        //   if (
+        //     packageData.package_trip_plans &&
+        //     packageData.package_trip_plans.length > 0
+        //   ) {
+        //     setTourPlan(
+        //       packageData.package_trip_plans?.map((plan, index) => ({
+        //         id: plan?.id,
+        //         day: index + 1,
+        //         title: plan?.title || "",
+        //         description: plan?.description || "",
+        //         images: plan?.package_trip_plan_images?.map((img) => img),
+        //       }))
+        //     );
+        //   }
+        // }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, [editId]);
+  }, []);
 
   // console.log('tags', tags)
   // console.log('categories', categories)
@@ -258,19 +258,19 @@ const AddPackage = () => {
       console.log(pair[0], pair[1]);
     }
     setLoading(true);
-    if (editId) {
-        toast.info("Updating package...");
-        // Uncomment to send the form data to your API
-        const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
-        const res = await axiosClient.patch(url, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-        });
-        console.log("Response:", res.data);
-        if (res.data.success) {
-            toast.info("Package updated successfully!");
-        }
-        setLoading(false);
-    } else {
+    // if (editId) {
+    //     toast.info("Updating package...");
+    //     // Uncomment to send the form data to your API
+    //     const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
+    //     const res = await axiosClient.patch(url, form, {
+    //     headers: { "Content-Type": "multipart/form-data" },
+    //     });
+    //     console.log("Response:", res.data);
+    //     if (res.data.success) {
+    //         toast.info("Package updated successfully!");
+    //     }
+    //     setLoading(false);
+    // } else {
         toast.info("Creating package...");
         // Uncomment to send the form data to your API
         const url = "http://192.168.10.159:4000/api/admin/package";
@@ -282,7 +282,7 @@ const AddPackage = () => {
             toast.info("Package created successfully!");
         }
         setLoading(false);
-    }
+    // }
   };
 
   const handleIncludedPackagesChange = (selected) => {
@@ -298,7 +298,7 @@ const AddPackage = () => {
   return (
     <div className="flex flex-col gap-4">
       <h3 className="text-2xl font-semibold text-[#080613]">
-        {editId ? "Edit" : "Add New"} Travel Package
+        Add New Travel Package
       </h3>
       <form onSubmit={handleSubmit(onSubmit)} className="">
         <div className="bg-white min-h-screen pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
@@ -626,8 +626,31 @@ const AddPackage = () => {
                     ))}
                   </select>
                   {/* {errors.cancelation_policy && (
-                                        <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
-                                    )} */}
+                          <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
+                      )} */}
+                </div>
+                <div>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Cancellation Policy
+                  </label>
+                  <select
+                    type="text"
+                    placeholder="Enter cancellation policy"
+                    {...register("cancellation_policy_id")}
+                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  >
+                    <option value="" className="text-base text-[#C9C9C9]">
+                      Select a policy
+                    </option>
+                    {policies.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option> // Ensure a return for each <option>
+                    ))}
+                  </select>
+                  {/* {errors.cancelation_policy && (
+                          <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
+                      )} */}
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
@@ -659,7 +682,7 @@ const AddPackage = () => {
               type="submit"
               className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
             >
-                {loading && editId ? 'Updating...' : loading ? 'Creating...' : `${editId ? "Update" : "Add New"} Package` }
+                {loading ? 'Creating...' : `"Add New"} Package` }
               
             </button>
           </div>

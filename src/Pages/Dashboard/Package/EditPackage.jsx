@@ -96,7 +96,8 @@ const EditPackage = () => {
           setValue("duration", packageData.duration);
           setValue("min_capacity", packageData.min_capacity);
           setValue("max_capacity", packageData.max_capacity);
-          setSelectedPolicy(packageData.cancellation_policy?.id || "");
+          // setSelectedPolicy(packageData.cancellation_policy?.id || "");
+          setValue("cancellation_policy_id", packageData.cancellation_policy?.id)
           setValue("type", packageData.type);
           setImages(packageData.package_images);
           setIncludedPackages(
@@ -109,17 +110,17 @@ const EditPackage = () => {
               ?.filter((tag) => tag?.type === "excluded")
               .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
           );
-        //   if (packageData.package_trip_plans && packageData.package_trip_plans.length > 0) {
-        //     setTourPlan(
-        //       packageData.package_trip_plans?.map((plan, index) => ({
-        //         id: plan?.id,
-        //         day: index + 1,
-        //         title: plan?.title || "",
-        //         description: plan?.description || "",
-        //         images: plan?.package_trip_plan_images?.map((img) => img),
-        //       }))
-        //     );
-        //   }
+          if (packageData.package_trip_plans && packageData.package_trip_plans.length > 0) {
+            setTourPlan(
+              packageData.package_trip_plans?.map((plan, index) => ({
+                id: plan?.id,
+                day: index + 1,
+                title: plan?.title || "",
+                description: plan?.description || "",
+                images: plan?.package_trip_plan_images?.map((img) => img),
+              }))
+            );
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -179,7 +180,7 @@ const EditPackage = () => {
       includedPackages,
       excludedPackages,
       package_images: images.map((image) => (image.file ? image.file : image)),
-      tourPlan,
+      // tourPlan,
     };
 
     const package_images = [];
@@ -291,7 +292,7 @@ const EditPackage = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="">
         <div className="bg-white min-h-screen pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
           <div className="md:grid md:grid-cols-3 gap-8">
-            <div className="flex flex-col gap-8 col-span-2 justify-between">
+            <div className="flex flex-col gap-8 col-span-2 ">
               <h3 className="text-2xl font-semibold text-[#080613]">
                 Package Details
               </h3>
@@ -414,33 +415,26 @@ const EditPackage = () => {
                 />
               </div>
             
-            <div className="flex flex-col md:flex-row justify-between items-end gap-4">
-                <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+            {/* <div className="flex flex-col md:flex-row justify-between items-end gap-4"> */}
+                <div className="flex flex-col md:flex-row justify-center  md:items-end gap-4 h-full">
                     <Link
                     to="/dashboard/packages"
-                    className="border border-[#061D35] px-20 py-3 rounded-full text-base font-normal text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
+                    className="border border-[#061D35] px-8 xl:px-20 py-3 rounded-full text-base font-normal text-center text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
                     >
                     Cancel
                     </Link>
                     <button
                     type="submit"
-                    className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
+                    className="border border-[#061D35] px-8 xl:px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
                     >
                         {loading && editId ? 'Updating...' : loading ? 'Creating...' : `${editId ? "Update" : "Add New"} Package` }
                     
                     </button>
                 </div>
-                <Link to={`/dashboard/edit-package/${packageName}/tour-plan/${editId}`} className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]">
+                {/* <Link to={`/dashboard/edit-package/${packageName}/tour-plan/${editId}`} className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]">
                     Edit Trip Plans
-                </Link>
-            </div>
-              {/* Tour Plan Section */}
-            {/* <div className="flex flex-col gap-4">
-                <h3 className="text-2xl font-semibold text-[#080613]">
-                    Tour Plan
-                </h3>
-                <EditTourPlan package_id={editId} />
-            </div> */}
+                </Link> */}
+            {/* </div> */}
             </div>
             <div className="p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0">
               <div className="flex flex-col gap-4 col-span-2">
@@ -622,7 +616,7 @@ const EditPackage = () => {
                     placeholder="Enter cancellation policy"
                     {...register("cancellation_policy_id")}
                     className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                    defaultChecked={selectedPolicy ? selectedPolicy : ''}
+                    // defaultChecked={selectedPolicy ? selectedPolicy : ''}
                   >
                     <option value="" className="text-base text-[#C9C9C9]">
                       Select a policy
@@ -655,6 +649,13 @@ const EditPackage = () => {
                 </div>
               </div>
             </div>
+          </div>
+          {/* Tour Plan Section */}
+          <div className="flex flex-col gap-4 mt-4">
+            <h3 className="text-2xl font-semibold text-[#080613]">
+                Tour Plan
+            </h3>
+            <EditTourPlan package_id={editId} tourPlan={tourPlan} setTourPlan={setTourPlan} />
           </div>
         </div>
       </form>

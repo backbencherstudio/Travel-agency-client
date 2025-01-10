@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import uploadIcon from '../../../../assets/dashboard/upload-icon.svg';
+import axiosClient from '../../../../axiosClient';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -61,10 +64,9 @@ const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
     );
 };
 
-const EditTourPlan = () => {
-    const [tourPlan, setTourPlan] = useState([
-        { id: null, day: 1, title: "", description: "", images: [] },
-    ]);
+const EditTourPlan = ({ package_id, tourPlan, setTourPlan }) => {
+    const [loading, setLoading] =  useState(false);
+    const navigate = useNavigate();
 
     const handleInputChange = (index, field, value) => {
         setTourPlan((prev) => {
@@ -100,11 +102,27 @@ const EditTourPlan = () => {
         ]);
     };
 
-    const deleteDay = (index) => {
-        setTourPlan((prev) => {
-            const updatedPlan = prev.filter((_, idx) => idx !== index);
-            return updatedPlan.map((day, idx) => ({ ...day, day: idx + 1 })); // Reorder days
-        });
+    const editDay = (dayId) => {
+        navigate(`/dashboard/package/${package_id}/tour-plan/${dayId}`)
+    }
+    
+    const deleteDay = async (index, dayId) => {
+        const shouldDelete = window.confirm("Do you want to delete this package");
+        if (shouldDelete) {
+            setLoading(true);
+            try {
+                // API call to delete the day
+                await axiosClient.delete(`/api/admin/package/${package_id}/package-trip-plan/${dayId}`);
+                setTourPlan((prev) => {
+                    const updatedPlan = prev.filter((_, idx) => idx !== index);
+                    return updatedPlan.map((day, idx) => ({ ...day, day: idx + 1 })); // Reorder days
+                });
+                toast.info("Deleted Succesfully...")
+            } catch (error) {
+                console.error('Error deleting day:', error);
+            }
+            setLoading(false);
+        }
     };
 
     console.log('tourPlan', tourPlan)
@@ -116,16 +134,35 @@ const EditTourPlan = () => {
                     <div key={index} className=' flex flex-col gap-3 mb-4'>
                         <div className='flex justify-between'>
                             <h3 className="text-2xl font-medium text-[#4A4C56]">Day {dayPlan.day}</h3>
-                            {/* Delete Day Button */}
-                            {tourPlan.length > 1 && index > 0 && (
+                            <div className='flex gap-4'>
                                 <button
-                                    onClick={() => deleteDay(index)}
-                                    className=" bg-red-500 text-white p-2 rounded-full"
-                                    title="Delete Day"
+                                    onClick={() => editDay(dayPlan.id)}
+                                    className=" bg-blue-500 text-white p-2 rounded-full"
+                                    title="Edit Day"
                                 >
-                                    <FaTrash />
+                                    <FaEdit />
                                 </button>
-                            )}
+                                {loading ? (
+                                    <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-600 border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+                                        role="status">
+                                        <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+                                    >Loading...</span>
+                                    </div>
+                                ) : (
+                                // {/* Delete Day Button */}
+                                <div>
+                                    {tourPlan && (
+                                        <button
+                                        onClick={() => deleteDay(index, dayPlan.id)}
+                                        className=" bg-red-500 text-white p-2 rounded-full"
+                                        title="Delete Day"
+                                        >
+                                        <FaTrash />
+                                        </button>
+                                    )}
+                                </div>
+                                )}
+                            </div>
                         </div>
                         <div className="p-4 bg-[#F0F4F9] rounded-lg flex flex-col gap-3">
                             {/* Trip Title */}
@@ -177,13 +214,9 @@ const EditTourPlan = () => {
                             </div>
                         </div>
                         {index === tourPlan.length -1 && (
-
-                            <button
-                            onClick={addDay}
-                            className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded"
-                            >
-                            <FaPlus className="w-3 h-3" /> Add Another Day
-                        </button>
+                            <Link to={`/dashboard/package/${package_id}/tour-plan`} className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded">
+                                <FaPlus className="w-3 h-3" /> Add Another Day
+                            </Link>
                         )}
                     </div>
                 ))}
