@@ -9,15 +9,16 @@ import {
   TableRow,
   Paper,
   TablePagination,
-  CircularProgress
+  CircularProgress,
+  Dialog,
+  DialogContent
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { LuTrash2 } from 'react-icons/lu'
 import { FiEdit2, FiPlus } from 'react-icons/fi'
-import { Dialog, DialogContent } from '@mui/material'
 import { useForm } from 'react-hook-form'
 import { IoMdClose } from 'react-icons/io'
 import { CiImageOn } from 'react-icons/ci'
+import { FaRegSquarePlus } from 'react-icons/fa6'
 
 const AdminMembersAddTable = ({
   tableType = '',
@@ -32,6 +33,8 @@ const AdminMembersAddTable = ({
   const [openModal, setOpenModal] = useState(false)
   const [imagePreview, setImagePreview] = useState(null)
   const [imageError, setImageError] = useState(false)
+  const [mode, setMode] = useState('add')
+  const [selectedMember, setSelectedMember] = useState(null)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
@@ -53,17 +56,30 @@ const AdminMembersAddTable = ({
   }
 
   const handleRowClick = id => {
-    if (['user', 'blog'].includes(tableType)) {
-      navigate(`${id}`)
+    const memberToEdit = data.find(member => member.id === id)
+    if (memberToEdit) {
+      setSelectedMember(memberToEdit)
+      setMode('edit')
+      setOpenModal(true)
     }
   }
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (member = null) => {
+    if (member) {
+      setMode('edit')
+      setSelectedMember(member)
+    } else {
+      setMode('add')
+      setSelectedMember(null)
+    }
     setOpenModal(true)
+    reset('')
   }
 
   const handleCloseModal = () => {
     setOpenModal(false)
+    setImagePreview(null)
+    setImageError(false)
   }
 
   const {
@@ -73,6 +89,16 @@ const AdminMembersAddTable = ({
     setValue,
     formState: { errors }
   } = useForm()
+
+  useEffect(() => {
+    if (mode === 'edit' && selectedMember) {
+      // Populate form with selected member's data
+      setValue('name', selectedMember.name)
+      setValue('email', selectedMember.email)
+      setValue('status', selectedMember.status)
+      setImagePreview(selectedMember.image || null)
+    }
+  }, [mode, selectedMember, setValue])
 
   // Handle image upload
   const handleImageUpload = e => {
@@ -112,6 +138,15 @@ const AdminMembersAddTable = ({
       setImageError(false)
       setOpenModal(false)
       setLoading(false)
+
+      // For now, just log the data
+      if (mode === 'edit') {
+        console.log('Editing Member', selectedMember.id)
+        // Make API call to update the member
+      } else {
+        console.log('Adding new member')
+        // Make API call to add the new member
+      }
     }, 2000)
   }
 
@@ -141,10 +176,10 @@ const AdminMembersAddTable = ({
               <FaSearch className='absolute top-3 left-3 text-zinc-400' />
             </div>
             <button
-              onClick={handleOpenModal}
+              onClick={() => handleOpenModal()}
               className='flex text-[14px] items-center gap-1 bg-[#EB5B2A] hover:bg-[#eb5a2ae0] transform duration-300 text-white px-3 py-2 rounded-lg whitespace-nowrap'
             >
-              <FiPlus className='text-white text-xl' />
+              <FaRegSquarePlus className='text-white text-xl' />
               Admin Member
             </button>
           </div>
@@ -228,10 +263,13 @@ const AdminMembersAddTable = ({
                       )}
                       <TableCell>
                         <div className='flex items-center justify-center gap-4'>
-                          <button className='text-[#475467] hover:text-red-600 transform duration-300'>
-                            <LuTrash2 className='text-xl' />
-                          </button>
-                          <button className='text-[#475467] hover:text-blue-700 transform duration-300'>
+                          <button
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleOpenModal(item)
+                            }}
+                            className='text-[#475467] hover:text-blue-700 transform duration-300'
+                          >
                             <FiEdit2 className='text-xl' />
                           </button>
                         </div>
@@ -266,7 +304,9 @@ const AdminMembersAddTable = ({
 
       {/* Modal */}
       <Dialog open={openModal} onClose={handleCloseModal}>
-        <h1 className='text-center text-[#080613] text-lg my-4'>Add Member</h1>
+        <h1 className='text-center text-[#080613] text-lg my-4'>
+          {mode === 'edit' ? 'Edit Member' : 'Add Member'}
+        </h1>
         <DialogContent className={`transition-all ${loading ? '' : ''}`}>
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             {/* Name and Email in same line */}
@@ -328,7 +368,7 @@ const AdminMembersAddTable = ({
                 >
                   <option value=''>Select Status</option>
                   <option value='Manager'>Manager</option>
-                  <option value='Co-member'>Co-member</option>
+                  <option value='Co-Member'>Co-Member</option>
                 </select>
                 {errors.status && (
                   <span className='text-red-500 text-sm'>

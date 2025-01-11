@@ -39,7 +39,7 @@ const Cancellation = () => {
               className='bg-[#061D35] rounded px-4 py-2 text-white text-sm sm:text-[14px] hover:bg-[#050b11] transform duration-300'
               onClick={handleEdit}
             >
-              Edit Policy
+              Add Policy
             </button>
           </div>
         )}

@@ -34,6 +34,7 @@ import VendorPackages from '../Components/VendorDashboard/Packages/VendorPackgae
 import Payments from '../Pages/Dashboard/Payment/Payments'
 import BlogsPost from '../Pages/Dashboard/Blogs/BlogsPost'
 import Settings from '../Pages/Dashboard/Settings/Settings'
+import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
 
 export const router = createBrowserRouter([
   {
@@ -168,6 +169,10 @@ export const router = createBrowserRouter([
       {
         path: 'blog',
         element: <BlogsPost />
+      },
+      {
+        path: 'add-blog',
+        element: <AddBlog/>
       },
       {
         path: 'settings',

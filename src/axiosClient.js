@@ -1,14 +1,13 @@
-import axios from "axios";
-
+import axios from 'axios'
 
 const axiosClient = axios.create({
-    baseURL : `${import.meta.env.VITE_API_BASE_URL}`,
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}`
 })
 
-axiosClient.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    config.headers.Authorization = `Bearer ${token}`
-    return config;
+axiosClient.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  config.headers.Authorization = `Bearer ${token}`
+  return config
 })
 
-export default axiosClient;
+export default axiosClient
