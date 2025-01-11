@@ -1,5 +1,6 @@
-import { FaSearch, FaEye, FaCheckCircle } from 'react-icons/fa'
-import { useState, useEffect, useRef } from 'react'
+import { FaSearch, FaCheckCircle } from 'react-icons/fa';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
 import {
   Table,
   TableBody,
@@ -9,12 +10,14 @@ import {
   TableRow,
   Paper,
   TablePagination
-} from '@mui/material'
-import { useNavigate } from 'react-router-dom'
-import { MdKeyboardArrowDown } from 'react-icons/md'
-import { LuTrash2 } from 'react-icons/lu'
-import { GoDotFill } from 'react-icons/go'
-import { FiEdit2 } from 'react-icons/fi'
+} from '@mui/material';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { MdKeyboardArrowDown } from 'react-icons/md';
+import { LuTrash2 } from 'react-icons/lu';
+import { GoDotFill } from 'react-icons/go';
+import { FiEdit2, FiPlus } from 'react-icons/fi';
+import { debounce } from '../../../Shared/debounce';
+import { FaRegSquarePlus } from 'react-icons/fa6';
 
 const statusStyles = {
   Published: {
@@ -29,58 +32,113 @@ const statusStyles = {
     border: '1px solid #90A9C3',
     icon: <GoDotFill className='text-lg' />
   }
-}
+};
 
 const BlogsTable = ({ tableType = '', title, data, columns }) => {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredData, setFilteredData] = useState(data)
-  const [isOpen, setIsOpen] = useState(false)
-  const [selectedStatus, setSelectedStatus] = useState('All Status')
-  const navigate = useNavigate()
-  const dropdownRef = useRef(null)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState(data);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('All Status');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dropdownRef = useRef(null);
 
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleRowClick = id => {
     if (tableType === 'user' || tableType === 'blog') {
-      navigate(`${id}`)
+      navigate(`${id}`);
     }
-  }
+  };
 
   const handleStatusChange = status => {
-    setSelectedStatus(status)
-    setIsOpen(false)
-  }
+    setSelectedStatus(status);
+    setIsOpen(false);
+    // Update URL with selected status
+    navigate({
+      pathname: location.pathname,
+      search: `?search=${searchQuery}&status=${status}`
+    });
+  };
+
+  const handleSearchChange = e => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    // console.log('Search query updated:', value);  
+    // Update URL with the search query
+    navigate({
+      pathname: location.pathname,
+      search: `?search=${value}&status=${selectedStatus}`
+    });
+  };
+
+  // Debounce the handleSearchChange function to optimize search performance
+  const debouncedSearchChange = useCallback(
+    debounce((value) => handleSearchChange({ target: { value }}), 100),  
+    [handleSearchChange]  
+  );
+
+  const handleSearchInputChange = (e) => {
+    debouncedSearchChange(e.target.value); 
+  };
 
   useEffect(() => {
     const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
+    };
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
-    if (selectedStatus === 'All Status') {
-      setFilteredData(data)
-    } else {
-      setFilteredData(data.filter(item => item.status === selectedStatus))
+    const queryParams = new URLSearchParams(location.search);
+    const statusFromQuery = queryParams.get('status');
+    const searchFromQuery = queryParams.get('search');
+
+    if (statusFromQuery) {
+      setSelectedStatus(statusFromQuery);
     }
-  }, [selectedStatus, data])
+
+    if (searchFromQuery) {
+      setSearchQuery(searchFromQuery);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    let filtered = data;
+
+    // Apply search filter
+    if (searchQuery) {
+      filtered = filtered.filter(item =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (selectedStatus && selectedStatus !== 'All Status') {
+      filtered = filtered.filter(item => item.status === selectedStatus);
+    }
+
+    setFilteredData(filtered);
+  }, [searchQuery, selectedStatus, data]);
+
+  const handleAddBlogClick = () => {
+    navigate('/dashboard/add-blog'); // Navigate to the 'add-blog' page
+  };
 
   return (
     <>
@@ -93,7 +151,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
               placeholder='Search...'
               className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={handleSearchInputChange}  // Use debounced handler here
             />
             <FaSearch className='absolute top-3 left-3 text-zinc-400' />
           </div>
@@ -136,7 +194,19 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
           </div>
         </div>
       </div>
+
       <Paper style={{ borderRadius: '10px' }}>
+        {/* add blog  */}
+        <div className='flex justify-end p-5'>
+          <button
+            onClick={handleAddBlogClick} // Add the click handler
+            className='flex text-[14px] items-center gap-1 bg-[#EB5B2A] hover:bg-[#eb5a2ae0] transform duration-300 text-white px-3 py-2 rounded-lg whitespace-nowrap'
+          >
+            <FaRegSquarePlus className='text-white text-xl' />
+            Create Blog
+          </button>
+        </div>
+
         <TableContainer sx={{ padding: '16px' }}>
           <Table sx={{ border: '1px solid #e0e0e0' }}>
             <TableHead>
@@ -198,19 +268,8 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
             </TableHead>
 
             <TableBody className='text-nowrap'>
-              {filteredData?.filter(
-                item =>
-                  item.title &&
-                  item.title.toLowerCase().includes(searchQuery.toLowerCase())
-              ).length > 0 ? (
+              {filteredData?.length > 0 ? (
                 filteredData
-                  ?.filter(
-                    item =>
-                      item.title &&
-                      item.title
-                        .toLowerCase()
-                        .includes(searchQuery.toLowerCase())
-                  )
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
                     <TableRow
@@ -288,7 +347,6 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                             <LuTrash2 className='text-xl' />
                           </button>
                           <button className='text-[#475467] hover:text-blue-700 transform duration-300'>
-                            {/* <FaEye /> */}
                             <FiEdit2 className='text-xl' />
                           </button>
                         </div>
@@ -322,7 +380,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
         />
       </Paper>
     </>
-  )
-}
+  );
+};
 
-export default BlogsTable
+export default BlogsTable;

@@ -8,23 +8,32 @@ import { RxCrossCircled } from 'react-icons/rx'
 import { useState, useEffect } from 'react'
 import { GoShieldLock } from 'react-icons/go'
 import { IoLockOpenOutline } from 'react-icons/io5'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('activeTab') || 'Company Info'
-  })
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  // Retrieve active tab from URL (query parameter)
+  const queryParams = new URLSearchParams(location.search)
+  const defaultTab = queryParams.get('tab') || 'Company Info'
+  const [activeTab, setActiveTab] = useState(defaultTab)
 
   const menuItems = [
-    { icon: <IoMdInformationCircleOutline className='text-xl' />, label: 'Company Info' },
+    {
+      icon: <IoMdInformationCircleOutline className='text-xl' />,
+      label: 'Company Info'
+    },
     { icon: <RxCrossCircled className='text-xl' />, label: 'Cancellation' },
     { icon: <GoShieldLock className='text-lg' />, label: 'Permission' },
-    { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' },
+    { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' }
   ]
 
-  // Save active tab to localStorage when it changes
+  // Save active tab to localStorage and update the URL when it changes
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab)
-  }, [activeTab])
+    navigate(`?tab=${activeTab}`, { replace: true }) 
+  }, [activeTab, navigate])
 
   const renderContent = () => {
     switch (activeTab) {
