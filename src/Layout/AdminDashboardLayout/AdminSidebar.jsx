@@ -59,7 +59,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
     if (
       tab === 'addPackage' ||
       tab === 'packageCategory&Tag' ||
-      tab === 'packageDestination&Policy'
+      tab === 'packageDestination&Policy' ||
+      tab === 'packageExtraService'
     ) {
       setSubmenuOpen(true)
     } else {
@@ -100,7 +101,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             className={`flex items-center justify-between w-full p-2 rounded ${
               selectedTab === 'addPackage' ||
               selectedTab === 'packageCategory&Tag' ||
-              selectedTab === 'packageDestination&Policy'
+              selectedTab === 'packageDestination&Policy' ||
+              selectedTab === 'packageExtraService'
                 ? 'bg-[#eb5b2a] text-white font-semibold'
                 : 'hover:bg-[#0d3055]'
             }`}
@@ -159,6 +161,21 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 }`}
               >
                 <span>Package Destinations & Policies</span>
+              </button>
+              <button
+                onClick={() =>
+                  handleNavigation(
+                    'packageExtraService',
+                    'package-extra-service'
+                  )
+                }
+                className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${
+                  selectedTab === 'packageExtraService'
+                    ? 'bg-[#eb5b2a] text-white font-semibold'
+                    : 'hover:bg-[#0d3055]'
+                }`}
+              >
+                <span>Package Extra Service</span>
               </button>
             </div>
           )}

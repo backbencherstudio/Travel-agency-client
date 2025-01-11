@@ -34,6 +34,7 @@ import VendorPackages from '../Components/VendorDashboard/Packages/VendorPackgae
 import Payments from '../Pages/Dashboard/Payment/Payments'
 import BlogsPost from '../Pages/Dashboard/Blogs/BlogsPost'
 import Settings from '../Pages/Dashboard/Settings/Settings'
+import PackageExtraService from '../Pages/Dashboard/Package/PackageExtraService'
 
 export const router = createBrowserRouter([
   {
@@ -136,6 +137,10 @@ export const router = createBrowserRouter([
       {
         path: 'package-destination-&-policy',
         element: <PackageDestinationPolicy />
+      },
+      {
+        path: 'package-extra-service',
+        element: <PackageExtraService />
       },
       {
         path: 'packages',

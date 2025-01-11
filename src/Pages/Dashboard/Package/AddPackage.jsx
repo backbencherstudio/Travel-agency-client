@@ -14,12 +14,7 @@ import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const AddPackage = () => {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors }, } = useForm();
   const [isDragging, setIsDragging] = useState(false);
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
@@ -28,7 +23,8 @@ const AddPackage = () => {
   const [policies, setPolicies] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [images, setImages] = useState([]);
-  const [selectedPolicy, setSelectedPolicy] = useState("");
+  const [extraServices, setExtraServices] = useState([]);
+  const [serviceIds, setServicesIds] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
@@ -74,6 +70,9 @@ const AddPackage = () => {
           }))
         );
 
+        const resServices = await axiosClient.get("api/admin/extra-service");
+        setExtraServices(resServices.data?.data);
+
         // if (editId) {
         //   const resPackage = await axiosClient.get(
         //     `api/admin/package/${editId}`
@@ -93,7 +92,6 @@ const AddPackage = () => {
         //   setValue("duration", packageData.duration);
         //   setValue("min_capacity", packageData.min_capacity);
         //   setValue("max_capacity", packageData.max_capacity);
-        //   setSelectedPolicy(packageData.cancellation_policy?.id || "");
         //   setValue("type", packageData.type);
         //   setImages(packageData.package_images);
         //   setIncludedPackages(
@@ -178,9 +176,11 @@ const AddPackage = () => {
       ...data,
       includedPackages,
       excludedPackages,
+      serviceIds,
       package_images: images.map((image) => (image.file ? image.file : image)),
       tourPlan,
     };
+    console.log('formDataObject', formDataObject)
 
     const package_images = [];
     const imagesArray = [];
@@ -249,6 +249,8 @@ const AddPackage = () => {
             : "excluded_packages",
           JSON.stringify(packages)
         );
+      } else if (key === "serviceIds") {
+        form.append("extra_services", JSON.stringify(serviceIds));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -293,6 +295,17 @@ const AddPackage = () => {
     setExcludedPackages(selected || []); // Store the selected objects in state
   };
 
+  const handleExtraServices = (serviceId, isChecked) => {
+    if (isChecked) {
+      // Add the ID to the array if checked
+      setServicesIds((prev) => [...prev, {id: serviceId}]);
+    } else {
+      // Remove the ID from the array if unchecked
+      setServicesIds((prev) => prev.filter((id) => id !== serviceId));
+    }
+  };
+
+  console.log("serviceIds", serviceIds);
   console.log("includedPackages", includedPackages);
 
   return (
@@ -614,7 +627,6 @@ const AddPackage = () => {
                     placeholder="Enter cancellation policy"
                     {...register("cancellation_policy_id")}
                     className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                    defaultChecked={selectedPolicy ? selectedPolicy : ''}
                   >
                     <option value="" className="text-base text-[#C9C9C9]">
                       Select a policy
@@ -630,27 +642,39 @@ const AddPackage = () => {
                       )} */}
                 </div>
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Cancellation Policy
-                  </label>
-                  <select
-                    type="text"
-                    placeholder="Enter cancellation policy"
-                    {...register("cancellation_policy_id")}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select a policy
-                    </option>
-                    {policies.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option> // Ensure a return for each <option>
-                    ))}
-                  </select>
-                  {/* {errors.cancelation_policy && (
-                          <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
-                      )} */}
+                  <ul class="flex flex-col gap-2 max-w-full mx-auto text-base text-[#C9C9C9] w-full p-4 rounded-md border border-gray-200 bg-white">
+                    <li>
+                        <details class="group">
+                            <summary
+                                class="flex items-center justify-between gap-2 font-medium marker:content-none hover:cursor-pointer">
+                                <span class="flex gap-2 text-gray-500 text-base font-medium">
+                                    Extra Service
+                                </span>
+                                <svg class="w-4 h-4 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg"
+                                    width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z">
+                                    </path>
+                                </svg>
+                            </summary>
+                            <article class="">
+                                <ul class="flex flex-col gap-4 mt-4">
+                                  {extraServices?.map(service => 
+                                    <li class="flex gap-2" key={service.id}>
+                                      <input
+                                        type="checkbox"
+                                        value={service.id}
+                                        onClick={(e) => handleExtraServices(service.id, e.target.checked)}
+                                        className="w-4 text-[#49556D]"
+                                      />
+                                      <p className="text-base text-[#49556D]">{service.name}</p>
+                                    </li>
+                                  )}
+                                </ul>
+                            </article>
+                        </details>
+                    </li>
+                  </ul>
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
@@ -682,7 +706,7 @@ const AddPackage = () => {
               type="submit"
               className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
             >
-                {loading ? 'Creating...' : `"Add New"} Package` }
+                {loading ? 'Creating...' : "Add New"} Package
               
             </button>
           </div>
