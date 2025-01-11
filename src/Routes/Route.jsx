@@ -10,7 +10,7 @@ import Blogs from '../Pages/blogs/Blogs'
 import SingleBlog from '../Pages/blogs/SingleBlog'
 import TourDetails from '../Pages/TourDetails/TourDetails'
 import ReviewPackage from '../Pages/ReviewPackage/ReviewPackage'
-import DashboardLayout from '../Layout/DashboardLayout'
+// import DashboardLayout from '../Layout/DashboardLayout'
 import DashboardAnalysis from '../Components/Dashboard/Dashboard/DashboardAnalysis'
 import Packages from '../Pages/Dashboard/Package/Packages'
 import ChangePassword from '../Pages/Auth/ChangePassword'
@@ -23,11 +23,17 @@ import BookingManagement from '../Pages/Dashboard/Booking/BookingManagement'
 import BookingRequestDetails from '../Pages/Dashboard/Booking/BookingRequestDetails'
 import Vendor from '../Pages/Dashboard/Vendor/Vendor'
 import VendorDetails from '../Pages/Dashboard/Vendor/VendorDetails'
-import VendorDashboardLayout from '../Layout/VendorDashboardLayout'
 import IndexDashboard from '../Pages/VendorDashboard/IndexDashboard'
 import EditPackage from '../Pages/Dashboard/Package/EditPackage'
 import EditTourPlan from '../Components/Dashboard/Packages/EditPackage/EditTourPlan'
 import TourPlanForm from '../Components/Dashboard/Packages/EditPackage/TourPlanForm'
+import MainLayout from '../Layout/VendorDashboardLayout/MainLayout'
+import AdminLayout from '../Layout/AdminDashboardLayout/AdminLayout'
+import VendorAddPackage from '../Pages/VendorDashboard/AddPackages/VendorAddPackage'
+import VendorPackages from '../Components/VendorDashboard/Packages/VendorPackgaesTable'
+import Payments from '../Pages/Dashboard/Payment/Payments'
+import BlogsPost from '../Pages/Dashboard/Blogs/BlogsPost'
+import Settings from '../Pages/Dashboard/Settings/Settings'
 
 export const router = createBrowserRouter([
   {
@@ -96,7 +102,8 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <DashboardLayout />,
+    // element: <DashboardLayout />,
+    element: <AdminLayout />,
     children: [
       {
         index: true,
@@ -153,16 +160,36 @@ export const router = createBrowserRouter([
       {
         path: 'vendor-details/:id',
         element: <VendorDetails />
+      },
+      {
+        path: 'payment',
+        element: <Payments />
+      },
+      {
+        path: 'blog',
+        element: <BlogsPost />
+      },
+      {
+        path: 'settings',
+        element: <Settings/>
       }
     ]
   },
   {
     path: 'vendor/dashboard',
-    element: <VendorDashboardLayout />,
+    element: <MainLayout />,
     children: [
       {
         index: true,
         element: <IndexDashboard />
+      },
+      {
+        path: 'add-package',
+        element: <VendorAddPackage />
+      },
+      {
+        path: 'packages',
+        element: <VendorPackages />
       }
     ]
   },

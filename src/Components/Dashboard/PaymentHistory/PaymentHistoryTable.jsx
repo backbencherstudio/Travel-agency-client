@@ -1,5 +1,4 @@
-import { FaCheckCircle, FaTimesCircle, FaSearch, FaEye } from 'react-icons/fa'
-import { GoDotFill } from 'react-icons/go'
+import {  FaSearch, FaEye } from 'react-icons/fa'
 import { useState, useEffect, useRef } from 'react'
 import {
   Table,
@@ -15,45 +14,10 @@ import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
 
-const statusStyles = {
-  Confirmed: {
-    color: '#067647',
-    backgroundColor: '#ECFDF3',
-    border: '1px solid #ABEFC6',
-    icon: <FaCheckCircle />
-  },
-  Pending: {
-    color: '#0A3159',
-    backgroundColor: '#E7ECF2',
-    border: '1px solid #90A9C3',
-    icon: <GoDotFill className='text-lg' />
-  },
-  Canceled: {
-    color: '#B42318',
-    backgroundColor: '#FEF3F2',
-    border: '1px solid #FECDCA',
-    icon: <FaTimesCircle />
-  },
-  Requests: {
-    color: '#067647',
-    backgroundColor: '#ECFDF3',
-    border: '1px solid #ABEFC6',
-    icon: <GoDotFill className='text-lg' />
-  }
-}
-
 const BookingTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
-  const [selectedStatus, setSelectedStatus] = useState('All Status')
   const [isOpen, setIsOpen] = useState(false)
-  const statuses = [
-    'All Status',
-    'Requests',
-    'Pending',
-    'Confirmed',
-    'Canceled'
-  ]
   const navigate = useNavigate()
   const dropdownRef = useRef(null)
 
@@ -75,18 +39,6 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
     }
   }
 
-  const handleStatusChange = status => {
-    setSelectedStatus(status)
-    setFilteredData(
-      status === 'All Status'
-        ? data
-        : data.filter(
-            item => item.status.toLowerCase() === status.toLowerCase()
-          )
-    )
-    setIsOpen(false)
-  }
-
   useEffect(() => {
     const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -101,58 +53,46 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
 
   return (
     <>
-      <Paper style={{ borderRadius: '10px' }}>
-        <div className='flex flex-col sm:flex-row justify-between items-center px-4 py-2'>
-          <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
-          <div className='flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl'>
-            <div className='relative md:col-span-1'>
-              <input
-                type='text'
-                placeholder='Search...'
-                className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-              />
-              <FaSearch className='absolute top-3 left-3 text-zinc-400' />
-            </div>
+      <div className='flex flex-col sm:flex-row justify-between items-center  py-5'>
+        <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
+        <div className='flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl'>
+          <div className='relative md:col-span-1'>
+            <input
+              type='text'
+              placeholder='Search...'
+              className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            <FaSearch className='absolute top-3 left-3 text-zinc-400' />
+          </div>
 
-            <div className='flex justify-center' ref={dropdownRef}>
-              <div className='relative inline-block text-left'>
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className='inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
-                >
-                  {selectedStatus}
-                  <span>
-                    <MdKeyboardArrowDown className='text-xl' />
-                  </span>
-                </button>
+          <div className='flex justify-center' ref={dropdownRef}>
+            <div className='relative inline-block text-left'>
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className='inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
+              >
+                {'All Status'}
+                <span>
+                  <MdKeyboardArrowDown className='text-xl' />
+                </span>
+              </button>
 
-                {isOpen && (
-                  <div className='absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0'>
-                    <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
+              {isOpen && (
+                <div className='absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0'>
+                  <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
 
-                    <div className='bg-white rounded-md'>
-                      {statuses.map(status => (
-                        <button
-                          key={status}
-                          onClick={() => handleStatusChange(status)}
-                          className={`w-full px-5 py-5 text-left text-sm hover:bg-gray-200 ${
-                            selectedStatus === status
-                              ? 'bg-gray-100 font-semibold'
-                              : ''
-                          }`}
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
+                  <div className='bg-white rounded-md'>
+                    {/* Status Dropdown has been removed */}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
+      </div>
+      <Paper style={{ borderRadius: '10px' }}>
         <TableContainer sx={{ padding: '16px' }}>
           <Table sx={{ border: '1px solid #e0e0e0' }}>
             <TableHead>
@@ -171,17 +111,16 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                     Traveler's Name
                   </TableCell>
                 )}
-                {columns?.packageName && (
+                {columns?.amount && (
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Package Name
+                    Amount
                   </TableCell>
                 )}
                 {columns?.date && (
                   <TableCell
                     sx={{
-                      textAlign: 'center',
                       color: '#475467',
                       fontSize: '13px',
                       fontWeight: 600
@@ -190,19 +129,7 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                     Date
                   </TableCell>
                 )}
-                {columns?.status && (
-                  <TableCell
-                    sx={{
-                      textAlign: 'center',
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
-                  >
-                    Status
-                  </TableCell>
-                )}
-                {/* Always show the Action column */}
+                {/* Removed the Status column */}
                 <TableCell
                   sx={{
                     textAlign: 'center',
@@ -256,43 +183,16 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                           </div>
                         </TableCell>
                       )}
-                      {columns?.packageName && (
+                      {columns?.amount && (
                         <TableCell style={{ minWidth: '200px' }}>
                           <p className='truncate text-[#475467]'>
-                            {item.packageInformation?.[0]?.packageName || 'N/A'}
+                            {item.amount}
                           </p>
                         </TableCell>
                       )}
                       {columns?.date && (
-                        <TableCell style={{ textAlign: 'center' }}>
+                        <TableCell >
                           <p className='text-[#475467]'>{item.date}</p>
-                        </TableCell>
-                      )}
-                      {columns?.status && (
-                        <TableCell style={{ textAlign: 'center' }}>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '8px',
-                              backgroundColor:
-                                statusStyles[item.status]?.backgroundColor ||
-                                'transparent',
-                              color:
-                                statusStyles[item.status]?.color || 'black',
-                              padding: '1px 14px',
-                              borderRadius: '50px',
-                              fontSize: '12px',
-                              fontWeight: 'bold',
-                              border:
-                                statusStyles[item.status]?.border || 'none',
-                              height: '32px'
-                            }}
-                          >
-                            {statusStyles[item.status]?.icon}
-                            <span>{item.status}</span>
-                          </span>
                         </TableCell>
                       )}
                       <TableCell>
@@ -305,7 +205,7 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                           <button
                             // onClick={() =>
                             //   navigate(
-                            //     `/dashboard/booking-request/${item.bookingId}`
+                            //     `/dashboard/booking-request/${item.bookingId}` // This can still be useful
                             //   )
                             // }
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
