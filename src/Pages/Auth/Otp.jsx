@@ -2,16 +2,23 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import image from "../../assets/img/form-img/otp-img.png";
 import logo from '../../assets/img/form-img/logo.png';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import SuccessPopup from "../../Components/Auth/SuccessPopUp";
+import axiosClient from "../../axiosClient";
+import { toast } from "react-toastify";
 
 const Otp = () => {
     const { register, handleSubmit, setFocus, formState: { errors } } = useForm();
     const [isPopupVisible, setPopupVisible] = useState(false);
-
-    const onSubmit = (data) => {
+    const { email } = useParams();
+    console.log('email', email)
+    const onSubmit = async (data) => {
         const otp = Object.values(data).join('');
         console.log("Entered OTP:", otp);
+        const res = await axiosClient.post(`/api/auth/verify-email`, {email: email, token: otp})
+        if (res.success) {
+            toast.success(res.message.message);
+        }
         setPopupVisible(true);
     };
 

@@ -217,7 +217,7 @@ export const router = createBrowserRouter([
     element: <ForgetPassword />
   },
   {
-    path: 'otp',
+    path: 'otp/:email',
     element: <Otp />
   },
   {

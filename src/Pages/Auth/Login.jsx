@@ -4,6 +4,7 @@ import image from "../../assets/img/form-img/login-img.png";
 import logo from '../../assets/img/form-img/logo.png';
 import { Link, useNavigate } from "react-router-dom";
 import AuthApis from "../../Apis/AuthApis";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors, isLoading } } = useForm();
@@ -13,11 +14,14 @@ const Login = () => {
   const onSubmit = async (data) => {
     const res = await AuthApis.login(data);
     if (res.success) {
-        // console.log('res', res)
-        localStorage.token = res.authorization.token;
+      // console.log('res', res)
+      localStorage.token = res.authorization.token;
         // window.location.reload();
+        toast.success(res.message)
         navigate('/')
-    } else {
+      } else {
+        console.log('res', res)
+        toast.error(res.message.message)
         setResMessage(res);
         setTimeout(() => {
             setResMessage('');
@@ -85,8 +89,8 @@ const Login = () => {
                 </div>
                 <Link to='/forget-password' className="text-sm font-semibold text-[#EB5B2A]">Forget password</Link>
               </div>
-              {resMessage && resMessage.statusCode === 401 && (
-                  <p className="text-red-500 mb-4">{resMessage.message}</p>
+              {resMessage && resMessage.message.statusCode === 401 && (
+                  <p className="text-red-500 mb-4">{resMessage.message.message}</p>
               )}
               {/* Submit Button */}
               <div className="flex flex-col gap-4">

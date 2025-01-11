@@ -114,9 +114,11 @@ const EditPackage = () => {
               ?.filter((tag) => tag?.type === "excluded")
               .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
           );
-          setServicesIds(packageData.package_extra_services?.map(service => 
-            service.extra_service?.id
-          ))
+          setServicesIds(
+            packageData.package_extra_services?.map((service) => ({
+              id: service.extra_service?.id, // Extract `id` and wrap it in an object
+            }))
+          )
           if (packageData.package_trip_plans && packageData.package_trip_plans.length > 0) {
             setTourPlan(
               packageData.package_trip_plans?.map((plan, index) => ({
@@ -296,12 +298,14 @@ const EditPackage = () => {
   console.log("includedPackages", includedPackages);
 
   const handleExtraServices = (serviceId, isChecked) => {
+    console.log('serviceId', serviceId)
+    console.log('isChecked', isChecked)
     if (isChecked) {
-      // Add the ID to the array if checked
-      setServicesIds((prev) => [...prev, {id: serviceId}]);
+      // Add the service ID as an object if checked
+      setServicesIds((prev) => [...prev, { id: serviceId }]);
     } else {
-      // Remove the ID from the array if unchecked
-      setServicesIds((prev) => prev.filter((id) => id !== serviceId));
+      // Remove the service ID object if unchecked
+      setServicesIds((prev) => prev.filter((service) => service.id !== serviceId));
     }
   };
 
@@ -675,6 +679,7 @@ const EditPackage = () => {
                                       <input
                                         type="checkbox"
                                         value={service.id}
+                                        checked={serviceIds.some((s) => s.id === service?.id)}
                                         onClick={(e) => handleExtraServices(service.id, e.target.checked)}
                                         className="w-4 text-[#49556D]"
                                       />
