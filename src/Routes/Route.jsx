@@ -24,6 +24,9 @@ import BookingRequestDetails from '../Pages/Dashboard/Booking/BookingRequestDeta
 import Vendor from '../Pages/Dashboard/Vendor/Vendor'
 import VendorDetails from '../Pages/Dashboard/Vendor/VendorDetails'
 import IndexDashboard from '../Pages/VendorDashboard/IndexDashboard'
+import EditPackage from '../Pages/Dashboard/Package/EditPackage'
+import EditTourPlan from '../Components/Dashboard/Packages/EditPackage/EditTourPlan'
+import TourPlanForm from '../Components/Dashboard/Packages/EditPackage/TourPlanForm'
 import MainLayout from '../Layout/VendorDashboardLayout/MainLayout'
 import AdminLayout from '../Layout/AdminDashboardLayout/AdminLayout'
 import VendorAddPackage from '../Pages/VendorDashboard/AddPackages/VendorAddPackage'
@@ -111,8 +114,24 @@ export const router = createBrowserRouter([
         element: <AddPackage />
       },
       {
-        path: 'package-category-&-tag',
-        element: <PackageCategoryTag />
+        path: "edit-package/:id",
+        element: <EditPackage />,
+      },
+      {
+        path: "edit-package/:name/tour-plan/:id",
+        element: <EditTourPlan />,
+      },
+      {
+        path: "package/:packageId/tour-plan",
+        element: <TourPlanForm />,
+      },
+      {
+        path: "package/:packageId/tour-plan/:planId",
+        element: <TourPlanForm />,
+      },
+      {
+        path: "package-category-&-tag",
+        element: <PackageCategoryTag />,
       },
       {
         path: 'package-destination-&-policy',

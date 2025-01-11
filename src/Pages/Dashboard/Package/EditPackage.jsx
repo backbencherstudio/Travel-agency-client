@@ -12,8 +12,9 @@ import axios from "axios";
 import axiosClient from "../../../axiosClient";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import EditTourPlan from "../../../Components/Dashboard/Packages/EditPackage/EditTourPlan";
 
-const AddPackage = () => {
+const EditPackage = () => {
   const {
     register,
     handleSubmit,
@@ -21,6 +22,7 @@ const AddPackage = () => {
     formState: { errors },
   } = useForm();
   const [isDragging, setIsDragging] = useState(false);
+  const [packageName, setPackageName] = useState('');
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
   const [tags, setTags] = useState([]);
@@ -34,8 +36,8 @@ const AddPackage = () => {
     ]);
   const [loading, setLoading] = useState(false);
 
-  // const { id } = useParams();
-  // const editId = id;
+  const { id } = useParams();
+  const editId = id;
 //   console.log("editId", editId);
   useEffect(() => {
     const fetchData = async () => {
@@ -74,60 +76,59 @@ const AddPackage = () => {
           }))
         );
 
-        // if (editId) {
-        //   const resPackage = await axiosClient.get(
-        //     `api/admin/package/${editId}`
-        //   );
-        //   const packageData = resPackage.data.data;
-        //   console.log("packageData", packageData);
-        //   setValue("name", packageData.name);
-        //   setValue("description", packageData.description);
-        //   setValue(
-        //     "package_category",
-        //     packageData.package_categories?.map(
-        //       (category) => category?.category?.id
-        //     )
-        //   );
-        //   setValue("destination_id", packageData.destination?.id);
-        //   setValue("price", packageData.price);
-        //   setValue("duration", packageData.duration);
-        //   setValue("min_capacity", packageData.min_capacity);
-        //   setValue("max_capacity", packageData.max_capacity);
-        //   setSelectedPolicy(packageData.cancellation_policy?.id || "");
-        //   setValue("type", packageData.type);
-        //   setImages(packageData.package_images);
-        //   setIncludedPackages(
-        //     packageData.package_tags
-        //       ?.filter((tag) => tag?.type === "included")
-        //       .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
-        //   );
-        //   setExcludedPackages(
-        //     packageData.package_tags
-        //       ?.filter((tag) => tag?.type === "excluded")
-        //       .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
-        //   );
-        //   if (
-        //     packageData.package_trip_plans &&
-        //     packageData.package_trip_plans.length > 0
-        //   ) {
-        //     setTourPlan(
-        //       packageData.package_trip_plans?.map((plan, index) => ({
-        //         id: plan?.id,
-        //         day: index + 1,
-        //         title: plan?.title || "",
-        //         description: plan?.description || "",
-        //         images: plan?.package_trip_plan_images?.map((img) => img),
-        //       }))
-        //     );
-        //   }
-        // }
+        if (editId) {
+          const resPackage = await axiosClient.get(
+            `api/admin/package/${editId}`
+          );
+          const packageData = resPackage.data.data;
+          console.log("packageData", packageData);
+          setValue("name", packageData.name);
+          setPackageName(packageData.name);
+          setValue("description", packageData.description);
+          setValue(
+            "package_category",
+            packageData.package_categories?.map(
+              (category) => category?.category?.id
+            )
+          );
+          setValue("destination_id", packageData.destination?.id);
+          setValue("price", packageData.price);
+          setValue("duration", packageData.duration);
+          setValue("min_capacity", packageData.min_capacity);
+          setValue("max_capacity", packageData.max_capacity);
+          // setSelectedPolicy(packageData.cancellation_policy?.id || "");
+          setValue("cancellation_policy_id", packageData.cancellation_policy?.id)
+          setValue("type", packageData.type);
+          setImages(packageData.package_images);
+          setIncludedPackages(
+            packageData.package_tags
+              ?.filter((tag) => tag?.type === "included")
+              .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
+          );
+          setExcludedPackages(
+            packageData.package_tags
+              ?.filter((tag) => tag?.type === "excluded")
+              .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
+          );
+          if (packageData.package_trip_plans && packageData.package_trip_plans.length > 0) {
+            setTourPlan(
+              packageData.package_trip_plans?.map((plan, index) => ({
+                id: plan?.id,
+                day: index + 1,
+                title: plan?.title || "",
+                description: plan?.description || "",
+                images: plan?.package_trip_plan_images?.map((img) => img),
+              }))
+            );
+          }
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [editId]);
 
   // console.log('tags', tags)
   // console.log('categories', categories)
@@ -179,7 +180,7 @@ const AddPackage = () => {
       includedPackages,
       excludedPackages,
       package_images: images.map((image) => (image.file ? image.file : image)),
-      tourPlan,
+      // tourPlan,
     };
 
     const package_images = [];
@@ -258,31 +259,19 @@ const AddPackage = () => {
       console.log(pair[0], pair[1]);
     }
     setLoading(true);
-    // if (editId) {
-    //     toast.info("Updating package...");
-    //     // Uncomment to send the form data to your API
-    //     const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
-    //     const res = await axiosClient.patch(url, form, {
-    //     headers: { "Content-Type": "multipart/form-data" },
-    //     });
-    //     console.log("Response:", res.data);
-    //     if (res.data.success) {
-    //         toast.info("Package updated successfully!");
-    //     }
-    //     setLoading(false);
-    // } else {
-        toast.info("Creating package...");
+    if (editId) {
+        toast.info("Updating package...");
         // Uncomment to send the form data to your API
-        const url = "http://192.168.10.159:4000/api/admin/package";
-        const res = await axiosClient.post(url, form, {
-            headers: { "Content-Type": "multipart/form-data" },
+        const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
+        const res = await axiosClient.patch(url, form, {
+        headers: { "Content-Type": "multipart/form-data" },
         });
         console.log("Response:", res.data);
         if (res.data.success) {
-            toast.info("Package created successfully!");
+            toast.info("Package updated successfully!");
         }
         setLoading(false);
-    // }
+    }
   };
 
   const handleIncludedPackagesChange = (selected) => {
@@ -298,12 +287,12 @@ const AddPackage = () => {
   return (
     <div className="flex flex-col gap-4">
       <h3 className="text-2xl font-semibold text-[#080613]">
-        Add New Travel Package
+        {editId ? "Edit" : "Add New"} Travel Package
       </h3>
       <form onSubmit={handleSubmit(onSubmit)} className="">
         <div className="bg-white min-h-screen pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
           <div className="md:grid md:grid-cols-3 gap-8">
-            <div className="flex flex-col gap-8 col-span-2">
+            <div className="flex flex-col gap-8 col-span-2 ">
               <h3 className="text-2xl font-semibold text-[#080613]">
                 Package Details
               </h3>
@@ -425,14 +414,27 @@ const AddPackage = () => {
                   classNamePrefix="react-select"
                 />
               </div>
-
-              {/* Tour Plan Section */}
-              <div className="flex flex-col gap-4">
-                <h3 className="text-2xl font-semibold text-[#080613]">
-                  Tour Plan
-                </h3>
-                <TourPlan tourPlan={tourPlan} setTourPlan={setTourPlan} />
-              </div>
+            
+            {/* <div className="flex flex-col md:flex-row justify-between items-end gap-4"> */}
+                <div className="flex flex-col md:flex-row justify-center  md:items-end gap-4 h-full">
+                    <Link
+                    to="/dashboard/packages"
+                    className="border border-[#061D35] px-8 xl:px-20 py-3 rounded-full text-base font-normal text-center text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
+                    >
+                    Cancel
+                    </Link>
+                    <button
+                    type="submit"
+                    className="border border-[#061D35] px-8 xl:px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
+                    >
+                        {loading && editId ? 'Updating...' : loading ? 'Creating...' : `${editId ? "Update" : "Add New"} Package` }
+                    
+                    </button>
+                </div>
+                {/* <Link to={`/dashboard/edit-package/${packageName}/tour-plan/${editId}`} className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]">
+                    Edit Trip Plans
+                </Link> */}
+            {/* </div> */}
             </div>
             <div className="p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0">
               <div className="flex flex-col gap-4 col-span-2">
@@ -614,7 +616,7 @@ const AddPackage = () => {
                     placeholder="Enter cancellation policy"
                     {...register("cancellation_policy_id")}
                     className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                    defaultChecked={selectedPolicy ? selectedPolicy : ''}
+                    // defaultChecked={selectedPolicy ? selectedPolicy : ''}
                   >
                     <option value="" className="text-base text-[#C9C9C9]">
                       Select a policy
@@ -626,31 +628,8 @@ const AddPackage = () => {
                     ))}
                   </select>
                   {/* {errors.cancelation_policy && (
-                          <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
-                      )} */}
-                </div>
-                <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Cancellation Policy
-                  </label>
-                  <select
-                    type="text"
-                    placeholder="Enter cancellation policy"
-                    {...register("cancellation_policy_id")}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select a policy
-                    </option>
-                    {policies.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option> // Ensure a return for each <option>
-                    ))}
-                  </select>
-                  {/* {errors.cancelation_policy && (
-                          <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
-                      )} */}
+                                        <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
+                                    )} */}
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
@@ -671,20 +650,12 @@ const AddPackage = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-            <Link
-              to="/dashboard/packages"
-              className="border border-[#061D35] px-20 py-3 rounded-full text-base font-normal text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
-            >
-              Cancel
-            </Link>
-            <button
-              type="submit"
-              className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
-            >
-                {loading ? 'Creating...' : `"Add New"} Package` }
-              
-            </button>
+          {/* Tour Plan Section */}
+          <div className="flex flex-col gap-4 mt-4">
+            <h3 className="text-2xl font-semibold text-[#080613]">
+                Tour Plan
+            </h3>
+            <EditTourPlan package_id={editId} tourPlan={tourPlan} setTourPlan={setTourPlan} />
           </div>
         </div>
       </form>
@@ -692,4 +663,4 @@ const AddPackage = () => {
   );
 };
 
-export default AddPackage;
+export default EditPackage;
