@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import lock from '../../assets/img/form-img/lock.svg'
 import { Link } from "react-router-dom";
 
-const SuccessPopup = ({ show, onClose }) => {
+const SuccessPopup = ({ show, onClose, queryParams, verifyData }) => {
   if (!show) return null;
 
   return (
@@ -21,15 +21,28 @@ const SuccessPopup = ({ show, onClose }) => {
           Your password has been updated successfully
         </p>
 
-        {/* Button */}
-        <Link to="/login">
-            <button
-            onClick={onClose}
-            className="mt-4 w-full bg-[#EB5B2A] text-white py-2 rounded-full text-base font-medium hover:bg-[#D9531D] transition"
-            >
-            Back to Log in
-            </button>
-        </Link>
+        {queryParams?.changePassword && (
+          // {/* Button */}
+          <Link to={`/change-password/${verifyData.email}/${verifyData.otp}`}>
+              <button
+              onClick={onClose}
+              className="mt-4 w-full bg-[#EB5B2A] text-white py-2 rounded-full text-base font-medium hover:bg-[#D9531D] transition"
+              >
+              Back to Change password
+              </button>
+          </Link>
+        )}
+        {queryParams?.register && (
+          // {/* Button */}
+          <Link to="/login">
+              <button
+              onClick={onClose}
+              className="mt-4 w-full bg-[#EB5B2A] text-white py-2 rounded-full text-base font-medium hover:bg-[#D9531D] transition"
+              >
+              Back to Log in
+              </button>
+          </Link>
+        )}
       </div>
     </div>
   );

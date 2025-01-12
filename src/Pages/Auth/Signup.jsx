@@ -17,7 +17,7 @@ const Signup = () => {
       console.log('res', res)
       if (res.success) {
         toast.success(res.message);
-        navigate(`/otp/${data.email}`)
+        navigate(`/otp/${data.email}?register=true`)
       } else {
         setResMessage(res);
         toast.error(res.message.message[0]);

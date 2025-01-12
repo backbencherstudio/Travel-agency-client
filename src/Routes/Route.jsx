@@ -39,6 +39,7 @@ import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
 import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
 import Chat from "../Components/Dashboard/chat/Chat";
 import Contacts from '../Pages/Contacts/Contacts'
+import PrivateRoute from './Private/PrivateRoute'
 
 export const router = createBrowserRouter([
   {
@@ -111,7 +112,7 @@ export const router = createBrowserRouter([
   {
     path: '/dashboard',
     // element: <DashboardLayout />,
-    element: <AdminLayout />,
+    element: <PrivateRoute role={["admin"]}><AdminLayout /></PrivateRoute>,
     children: [
       {
         index: true,
@@ -280,6 +281,10 @@ export const router = createBrowserRouter([
     element: <Login />
   },
   {
+    path: 'admin-login',
+    element: <AdminLogin />
+  },
+  {
     path: 'forget-password',
     element: <ForgetPassword />
   },
@@ -288,7 +293,7 @@ export const router = createBrowserRouter([
     element: <Otp />
   },
   {
-    path: 'change-password',
+    path: 'change-password/:email/:otp',
     element: <ChangePassword />
   }
 ])

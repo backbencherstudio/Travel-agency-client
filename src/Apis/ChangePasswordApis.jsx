@@ -1,9 +1,9 @@
 import axiosClient from "../axiosClient";
 
-const AuthApis = {};
+const ChangePasswordApis = {};
 
-AuthApis.save = async (data) => {
-    let url = "/api/auth/register";
+ChangePasswordApis.send = async (data) => {
+    let url = "/api/auth/forgot-password";
     const res = await axiosClient.post(url, data)
         .then(response => {
             return response.data;
@@ -26,12 +26,12 @@ AuthApis.save = async (data) => {
     return res;
 }
 
-AuthApis.login = async (data) => {
-    let url = "/api/auth/login";
+ChangePasswordApis.reset = async (data) => {
+    let url = "/api/auth/reset-password";
     const res = await axiosClient.post(url, data)
         .then(response => {
             return response.data;
-        }).catch(error => { 
+        }).catch(error => {
             if (error.response) {
                 return {
                     errors: error.response.data.errors,
@@ -45,20 +45,9 @@ AuthApis.login = async (data) => {
                 return {
                     message: "An error occurred while processing the request."
                 };
-            } 
-        });
+            }  
+            });
     return res;
 }
 
-AuthApis.logout = async (data) => {
-    let url = "/api/logout";
-    const res = await axiosClient.post(url, data)
-        .then(response => {
-            return response.data;
-        }).catch(error => { 
-            return error;
-        });
-    return res;
-}
-
-export default AuthApis;
+export default ChangePasswordApis;

@@ -1,21 +1,29 @@
-import  { useEffect, useRef, useState } from 'react';
+import  { useContext, useEffect, useRef, useState } from 'react';
 import logo from '../assets/img/Logo.svg';
 import languageLogo from '../assets/img/Language.svg';
 import './nav.css';
 import { Link, NavLink } from 'react-router-dom';
 import avatar from "../assets/img/avatar/avatar-1.jpg";
+import { AuthContext } from '../AuthProvider/AuthProvider';
+import ProfileNameImg from './ProfileNameImg';
 
 const Navbar = () => {
     const [contactDropDown, setContactDropDown] = useState(false);
     const [languageDropDown, setLanguageDropDown] = useState(false);
+    const [userDropDown, setUserDropDown] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isloginOpen, setLoginOpen] = useState(false)
+    const [token, setToken] = useState('')
+    const { user } = useContext(AuthContext)
     const menuRef = useRef();
     const buttonRef = useRef();
     const ProfileRef = useRef();
-
-    const isLogin = false;
-
+console.log('user', user)
+    useEffect(() => {
+        const getToken = localStorage.getItem('token');
+        setToken(getToken);
+    }, [token])
+    
     const toggloginOpen = () => {
         setLoginOpen(!isloginOpen)
     }
@@ -25,6 +33,7 @@ const Navbar = () => {
     const handleClickOutside = () => {
       setContactDropDown(false);
       setLanguageDropDown(false);
+      setUserDropDown(false);
     };
     document.addEventListener('click', handleClickOutside);
 
@@ -64,11 +73,22 @@ const Navbar = () => {
     if (dropdownType === 'contact') {
       setContactDropDown(!contactDropDown);
       setLanguageDropDown(false); // Close other dropdown
+      setUserDropDown(false); // Close other dropdown
     } else if (dropdownType === 'language') {
       setLanguageDropDown(!languageDropDown);
       setContactDropDown(false); // Close other dropdown
+      setUserDropDown(false); // Close other dropdown
+    } else if (dropdownType === 'user') {
+        setUserDropDown(!userDropDown);
+        setLanguageDropDown(false);
+        setContactDropDown(false);
     }
   };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken('');
+  }
 
   return (
     <header className="z-10 bg-white nav-style">
@@ -85,27 +105,27 @@ const Navbar = () => {
                     <nav aria-label="Global">
                     <ul className="flex items-center gap-6 text-base">
                         <li>
-                        <NavLink to="/" className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Home </NavLink>
+                        <NavLink to="/" className={({ isActive }) => isActive ? "active !bg-transparent" : "text-[#475467]"}> Home </NavLink>
                         </li>
 
                         <li>
-                        <NavLink to="/tours" className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Tours </NavLink>
+                        <NavLink to="/tours" className={({ isActive }) => isActive ? "active !bg-transparent" : "text-[#475467]"}> Tours </NavLink>
                         </li>
 
                         <li>
-                        <NavLink to="/cruises" className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Cruises </NavLink>
+                        <NavLink to="/cruises" className={({ isActive }) => isActive ? "active !bg-transparent" : "text-[#475467]"}> Cruises </NavLink>
                         </li>
 
                         <li>
-                        <NavLink to="/packages"  className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Packages </NavLink>
+                        <NavLink to="/packages"  className={({ isActive }) => isActive ? "active !bg-transparent" : "text-[#475467]"}> Packages </NavLink>
                         </li>
 
                         <li>
-                        <NavLink to="/reservations"  className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Reservations </NavLink>
+                        <NavLink to="/reservations"  className={({ isActive }) => isActive ? "active !bg-transparent" : "text-[#475467]"}> Reservations </NavLink>
                         </li>
 
                         <li>
-                        <NavLink to="/blogs"  className={({ isActive }) => isActive ? "active" : "text-[#475467]"}> Blogs </NavLink>
+                        <NavLink to="/blogs"  className={({ isActive }) => isActive ? "active !bg-transparent" : "text-[#475467]"}> Blogs </NavLink>
                         </li>
 
                         <li>
@@ -161,16 +181,16 @@ const Navbar = () => {
                                 </div>
                             )}
                         </div>
-                        <div className=' hidden lg:block'>
-                            {isLogin ? (
+                        <div className='hidden lg:block'>
+                            {token ? (
                                 <div className="relative">
                                     <div className='flex items-center'>
-                                        <button onClick={toggloginOpen} className="w-10 h-10 text-lg bg-[#EB5B2A] flex justify-center items-center rounded-full">
-                                            {avatar ? (
+                                        <button onClick={handleDropdownToggle('user')} className="w-10 h-10 text-lg bg-[#EB5B2A] flex justify-center items-center rounded-full">
+                                            {user?.avatar ? (
                                                 <img src={avatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />
                                             ) : (
                                                 <span className="text-white font-bold">
-                                                {`${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`}
+                                                    <ProfileNameImg name={user?.name} />
                                                 </span>
                                             )}
                                         </button>
@@ -180,10 +200,9 @@ const Navbar = () => {
                                             </svg>
                                         </div>
                                     </div>
-                                    {isloginOpen && (
+                                    {userDropDown && (
                                     <div
                                         className={`bg-white p-6 absolute flex flex-col top-full -right-12 mt-2 space-y-1 border rounded shadow popup w-60`}
-                                        ref={ProfileRef}
                                     >
                                         <div className="w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block"></div>
                                         <Link
@@ -193,7 +212,7 @@ const Navbar = () => {
                                         My Account
                                         </Link>
                                         <Link
-                                        onClick={"handleLogout"}
+                                        onClick={handleLogout}
                                         className="text-base xl:text-xl text-red-400 hover:text-[#b24b7d] duration-300"
                                         >
                                         Logout
@@ -349,18 +368,37 @@ const Navbar = () => {
                     </li>
                 </ul>
                 <div className="flex flex-col gap-4 mt-6">
-                    <Link
-                    to="login"
-                    className="block px-6 py-3 text-center text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
-                    >
-                    Login
-                    </Link>
-                    <Link
-                    to="/signup"
-                    className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
-                    >
-                    Sign Up
-                    </Link>
+                    {token ? (
+                        <>
+                            <div
+                                to="login"
+                                className="block px-6 py-3 text-center text-gray-800"
+                            >
+                                {user?.name}
+                            </div>
+                            <button
+                                onClick={handleLogout}
+                                className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
+                            >
+                                Log out
+                            </button>
+                        </>
+                    ) : (
+                        <>
+                            <Link
+                                to="login"
+                                className="block px-6 py-3 text-center text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
+                            >
+                                Login
+                            </Link>
+                            <Link
+                                to="/signup"
+                                className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
+                            >
+                                Sign Up
+                            </Link>
+                        </>
+                    )}
                 </div>
                 </nav>
             </div>
