@@ -1,7 +1,7 @@
 import image1 from '../../assets/img/blogs/image-1.png';
 import image2 from '../../assets/img/blogs/image-2.png';
 import image3 from '../../assets/img/blogs/image-3.png';
-import avatar3 from '../../assets/img/avatar/avatar-3.png';
+import avatar3 from '../../assets/img/avatar/avatar-1.jpg';
 import { Link } from 'react-router-dom';
 import CardComponent from '../CardComponent/CardComponent';
 
@@ -45,7 +45,7 @@ const Blogs = () => {
     // console.log('blogs', blogs)
 
   return (
-    <div className='max-w-[1216px] mx-auto px-5'>
+    <div className='max-w-[1216px] mx-auto px-5 xl:px-0'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Travel Inspiration & Tips</div>
         <div className=' grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8 py-12'>
             {

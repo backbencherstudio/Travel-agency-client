@@ -54,8 +54,8 @@ const Hero = () => {
         <div className='rectangular-2'></div>
         <div className='container mx-auto'>
             <div className='max-w-7xl mx-2 md:mx-auto mt-12'>
-                <div className='text-[23px] md:text-7xl font-bold text-center'>Explore the World with Our Curated Travel Experiences</div>
-                <div className='max-w-[768px] md:w-[722px] mx-auto mt-4'>
+                <div className='text-[23px] md:text-4xl lg:text-6xl leading-5 font-bold text-center md:mx-2 lg:mx-0 xl:mx-16'>Explore the World with Our Curated Travel Experiences</div>
+                <div className='max-w-[768px] md:w-[722px] mx-auto mt-8'>
                     <div className='text-lg text-center text-[#475467]'>From serene beaches to majestic mountains, discover tailor-made travel experiences designed just for you.</div>
                     <div className='relative grid md:flex gap-6 items-center py-5 px-6 rounded-3xl md:rounded-full bg-white mt-8 shadow'>
                         <div className="w-full max-w-sm min-w-[200px]">

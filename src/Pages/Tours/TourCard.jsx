@@ -23,8 +23,8 @@ function TourCard({ tour }) {
     };
 
     return (
-        <div key={tour.id} className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-lg">
-            <div className="relative h-56 overflow-hidden text-white rounded-t-md">
+        <div key={tour.id} className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]">
+            <div className="relative h-56 overflow-hidden text-white rounded-t-[10px]">
                 <img src={tour.images[0]} alt="card-image" />
             </div>
             <div className="p-4">

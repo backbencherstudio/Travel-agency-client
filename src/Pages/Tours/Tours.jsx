@@ -2,6 +2,7 @@ import React from 'react';
 import bgImg from './../../assets/img/banner/tour.png'
 import './Tour.css'
 import AllTours from './AllTours';
+import TravelWithUs from '../../Components/Home/TravelWithUs';
 function Tours() {
     return (
         <div>
@@ -26,7 +27,7 @@ function Tours() {
 
             {/* Main Content Section */}
             <div className="  lg:my-20 my-10">
-                <h1 className="why lg:mb-12 mb-5">Why Travel with Us</h1>
+                {/* <h1 className="why lg:mb-12 mb-5">Why Travel with Us</h1>
                 <div className=" max-w-7xl mx-auto  grid lg:grid-cols-4 place-items-center gap-3 px-4">
                     <div className=' w-full border flex flex-col items-center justify-center text-center lg:p-3 p-2 lg:gap-2 lg:h-64 shadow-md rounded-md'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
@@ -66,7 +67,8 @@ function Tours() {
                         <h4 className='lg:text-2xl  font-bold'>Trusted Partners Worldwide</h4>
                         <p className='text-[#49556D]'>Connecting you with reliable partners to enhance your travel experience.</p>
                     </div>
-                </div>
+                </div> */}
+                <TravelWithUs />
             </div>
             <div className='bg-[#F0F4F9] lg:min-h-screen'>
                 <AllTours />

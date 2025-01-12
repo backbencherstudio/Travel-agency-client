@@ -11,7 +11,7 @@ import {
   TablePagination,
 } from "@mui/material";
 import { FaSearch } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiEdit3 } from "react-icons/fi";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaRegSquarePlus } from "react-icons/fa6";
@@ -45,13 +45,14 @@ const CustomTable = ({ tableType = "", title, data, columns }) => {
       <div className="flex my-5 justify-between flex-wrap">
         <h1 className="font-semibold text-[24px]">{title}</h1>{" "}
         {(tableType === "blog" || tableType === "package") && (
-          <button
-            onClick={() => navigate("create/new")}
+          <Link
+            // onClick={() => navigate("/dashboard/add-package")}
+            to="/dashboard/add-package"
             className="text-[16px] font-medium px-4 py-2 bg-[#eb5b2a] text-white rounded-md flex  items-center gap-1.5 hover:bg-opacity-90"
           >
             <FaRegSquarePlus className="text-xl" /> Add{" "}
             {tableType.charAt(0).toUpperCase() + tableType.slice(1)}
-          </button>
+          </Link>
         )}
       </div>
       <Paper style={{ borderRadius: "10px" }}>

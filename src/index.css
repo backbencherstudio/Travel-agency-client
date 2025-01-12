@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  font-family: "Inter", serif;
+}
 .inter {
   font-family: "Inter", serif;
 }
@@ -54,4 +57,40 @@ input[type="range"]::-ms-thumb {
   width: 20px;
   border-radius: 50%;
   cursor: pointer;
+}
+
+.animate-dropdown {
+  animation: animates 1s ease-in-out forwards;
+}
+
+@keyframes animates {
+  0% {
+    opacity: 0;
+    transform: translateY(-20%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(5%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup {
+  animation: fade-up .8s cubic-bezier(0, .84, .01, 1.4) forwards;
+  opacity: 0;
+}
+
+@keyframes fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(0rem) scale(.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
 }

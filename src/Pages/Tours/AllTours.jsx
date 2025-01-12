@@ -147,9 +147,9 @@ function AllTours() {
 
     return (
         <div className='max-w-[1200px] mx-auto'>
-            <div className='lg:py-20 flex items-start justify-start lg:gap-6 flex-col lg:flex-row'>
+            <div className='px-4 xl:px-0 py-10 xl:py-20 flex items-start justify-start lg:gap-6 flex-col lg:flex-row'>
                 {/* Filter Section */}
-                <div className='p-6 max-w-[300px] bg-white  rounded-xl shadow-md  flex flex-col  w-full gap-3'>
+                <div className='p-6 lg:max-w-[300px] mb-6 lg:mb-0 bg-white  rounded-xl shadow-md  flex flex-col  w-full gap-3'>
                     {/* Search Input */}
                     <div className='flex gap-2 border items-center py-2 px-5 rounded-md'>
                         <CiSearch className='text-3xl' />
@@ -166,7 +166,7 @@ function AllTours() {
                     {/* Duration Section */}
                     <div>
                         <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleDuration}
                         >
                             Duration
@@ -238,7 +238,7 @@ function AllTours() {
                     {/* Budget Section */}
                     <div className=''>
                         <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleBudget}
                         >
                             Budget
@@ -313,7 +313,7 @@ function AllTours() {
                     {/* Rating Section */}
                     <div>
                         <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleRating}
                         >
                             Rating
@@ -444,7 +444,7 @@ function AllTours() {
                     {/* Cancellation Section */}
                     <div>
                         <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleCancellation}
                         >
                             Free Cancellation options
@@ -482,7 +482,7 @@ function AllTours() {
                     {/* Destination Section */}
                     <div>
                         <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleDestination}
                         >
                             Popular Destination
@@ -590,7 +590,7 @@ function AllTours() {
                     {/* residence Section */}
                     <div>
                         <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleResidence}
                         >
                             Type of residence
@@ -711,7 +711,7 @@ function AllTours() {
                     {/* Meal Plan Section */}
                     <div>
                         <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleMealPlan}
                         >
                             Meal plans available
@@ -793,7 +793,7 @@ function AllTours() {
                     {/* Popular Area Section */}
                     <div>
                         <h5
-                            className='flex text-lg font-bold my-3 border-b-2 pb-2 justify-between items-center cursor-pointer'
+                            className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={togglePopularArea}
                         >
                             Popular Area
@@ -943,7 +943,7 @@ function AllTours() {
                     <div className=' '>
 
                         {/* Tour Display Section */}
-                        <div className=' '>
+                        <div className=''>
                             {loading && <div>Loading tours...</div>}
                             {error && <div className="text-red-500">{error}</div>}
 

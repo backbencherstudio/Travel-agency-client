@@ -11,6 +11,8 @@ import { CiSearch } from "react-icons/ci";
 
 const SingleBlog = () => {
 
+    const links = [{name: "Home", path: "/"}, {name: "Blogs", path: "/blogs"}, {name: "Blog Details", path: ""},]
+
     const comments = [
         {
             id: 1,
@@ -38,7 +40,7 @@ const SingleBlog = () => {
     return (
         <div>
 
-            <HeroSection bgImg={blogImage} pageName="Our Blogs" dynamicData="Dynamic Data" pathName1="/" pathName2="blogs" pageName1="Home" pageName2="Blog" description="Explore our blog for the latest travel tips, destination guides, and inspiring stories to fuel your wanderlust. From must-see locations to insider advice, we’re here to make your journey unforgettable." />
+            <HeroSection bgImg={blogImage} pageName="Our Blogs" dynamicData="Dynamic Data" links={links} pathName1="/" pathName2="blogs" pageName1="Home" pageName2="Blog" description="Explore our blog for the latest travel tips, destination guides, and inspiring stories to fuel your wanderlust. From must-see locations to insider advice, we’re here to make your journey unforgettable." />
 
 
             <ParentComponent >

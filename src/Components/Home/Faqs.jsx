@@ -34,7 +34,7 @@ const Faqs = () => {
   ];
 
   return (
-    <div className="max-w-[1216px] px-4 sm:px-6 lg:px-8 mx-auto">
+    <div className="max-w-[1216px] px-4 sm:px-6 lg:px-8 xl:px-0 mx-auto">
       <div className="flex flex-col md:flex-row">
         <div className="text-center md:text-left">
           <h2 className="text-2xl font-bold md:text-5xl md:leading-tight text-[#252D3C]">
@@ -50,7 +50,7 @@ const Faqs = () => {
           </div>
         </div>
         <div>
-          <div className="grid gap-4 divide-y divide-gray-200">
+          <div className="grid gap-4 divide-gray-200">
             {faqs.map((faq, index) => (
               <div
                 key={index}
@@ -67,38 +67,40 @@ const Faqs = () => {
                   >
                     {faq.question}
                   </h5>
-                  <svg
-                    className={`w-6 h-6 text-gray-900 transition duration-500 ${
-                      activeIndex === index ? "hidden" : "block"
-                    }`}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 12H18M12 18V6"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </svg>
-                  <svg
-                    className={`w-6 h-6 text-gray-900 transition duration-500 ${
-                      activeIndex === index ? "block" : "hidden"
-                    }`}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 12H18"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </svg>
+                  <div className="p-1 border rounded-full">
+                    <svg
+                      className={`w-6 h-6 text-gray-900 transition duration-500 ${
+                        activeIndex === index ? "hidden" : "block"
+                      }`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 12H18M12 18V6"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>
+                    </svg>
+                    <svg
+                      className={`w-6 h-6 text-gray-900 transition duration-500 ${
+                        activeIndex === index ? "block" : "hidden"
+                      }`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6 12H18"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      ></path>
+                    </svg>
+                  </div>
                 </button>
                 <div
                   ref={(el) => (contentRefs.current[index] = el)}
