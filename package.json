@@ -33,8 +33,9 @@
     "react-slick": "^0.30.2",
     "react-toastify": "^11.0.2",
     "slick-carousel": "^1.8.1",
-    "sort-by": "^0.0.2",
-    "styled-components": "^6.1.13"
+    "sort-by": "^1.2.0",
+    "styled-components": "^6.1.13",
+    "sweetalert2": "^11.15.10"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

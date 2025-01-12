@@ -8,7 +8,9 @@ import { RxCrossCircled } from 'react-icons/rx'
 import { useState, useEffect } from 'react'
 import { GoShieldLock } from 'react-icons/go'
 import { IoLockOpenOutline } from 'react-icons/io5'
+import { RiQuestionAnswerLine } from 'react-icons/ri'
 import { useNavigate, useLocation } from 'react-router-dom'
+import FaqAdded from '../Faq/FaqAdded'
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -26,13 +28,17 @@ const Settings = () => {
     },
     { icon: <RxCrossCircled className='text-xl' />, label: 'Cancellation' },
     { icon: <GoShieldLock className='text-lg' />, label: 'Permission' },
-    { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' }
+    { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' },
+    {
+      icon: <RiQuestionAnswerLine className='text-xl' />,
+      label: 'FAQ'
+    }
   ]
 
   // Save active tab to localStorage and update the URL when it changes
   useEffect(() => {
     localStorage.setItem('activeTab', activeTab)
-    navigate(`?tab=${activeTab}`, { replace: true }) 
+    navigate(`?tab=${activeTab}`, { replace: true })
   }, [activeTab, navigate])
 
   const renderContent = () => {
@@ -45,6 +51,8 @@ const Settings = () => {
         return <Permission />
       case 'Password':
         return <Password />
+      case 'FAQ':
+        return <FaqAdded />
       default:
         return <CompanyInfo />
     }
