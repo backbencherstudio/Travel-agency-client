@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Editor } from '@tinymce/tinymce-react';
 
 const TinyMCE = ({ value, onChange, height, plugins, toolbar }) => {
@@ -6,10 +6,10 @@ const TinyMCE = ({ value, onChange, height, plugins, toolbar }) => {
     <Editor
       apiKey="87cg1pufq9d14fzlappe5kgmjxsm6u6zsgwvxigogwe80ogu"
       value={value}
-      onEditorChange={onChange} // Handle changes
+      onEditorChange={onChange}
       init={{
-        height: height || 500, // Editor height
-        menubar: true, // Enable menu
+        height: height || 500, 
+        menubar: true, 
         plugins: plugins || [
           'advlist autolink lists link image charmap print preview anchor',
           'searchreplace visualblocks code fullscreen',

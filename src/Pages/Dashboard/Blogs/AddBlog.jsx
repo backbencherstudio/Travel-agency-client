@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDropzone } from 'react-dropzone'
 import TinyMCE from '../../../Shared/TinyMCE'
-import BlogApis from '../../../Apis/CreateBlogApi'
+import BlogApis from '../../../Apis/BlogApi'
 import { toast } from 'react-toastify'
 import { CircularProgress } from '@mui/material'
 
