@@ -13,7 +13,7 @@ import avatar3 from '../../assets/img/avatar/avatar-1.jpg';
 import Faqs from "../../Components/Home/Faqs";
 
 const Blogs = () => {
-    const links = [{name: "Home", path: "/"}, {name: "Blogs", path: "/tours"}]
+    const links = [{name: "Home", path: "/"}, {name: "Blogs", path: "/Blogs"}]
 
     const blogsArray = [
         {

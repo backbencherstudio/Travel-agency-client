@@ -38,6 +38,7 @@ import PackageExtraService from '../Pages/Dashboard/Package/PackageExtraService'
 import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
 import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
 import Chat from "../Components/Dashboard/chat/Chat";
+import Contacts from '../Pages/Contacts/Contacts'
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +94,9 @@ export const router = createBrowserRouter([
       {
         path: '/tours',
         element: <Tours />
+      },      {
+        path: '/contacts',
+        element: <Contacts />
       },
       {
         path: '/blogs',
