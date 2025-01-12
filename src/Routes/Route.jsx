@@ -36,6 +36,7 @@ import BlogsPost from '../Pages/Dashboard/Blogs/BlogsPost'
 import Settings from '../Pages/Dashboard/Settings/Settings'
 import PackageExtraService from '../Pages/Dashboard/Package/PackageExtraService'
 import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
+import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
 
 export const router = createBrowserRouter([
   {
@@ -215,6 +216,10 @@ export const router = createBrowserRouter([
   {
     path: 'login',
     element: <Login />
+  },
+  {
+    path: 'admin-login',
+    element: <AdminLogin />
   },
   {
     path: 'forget-password',
