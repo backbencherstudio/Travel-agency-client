@@ -8,6 +8,7 @@ import logo from '../../assets/img/Logo.svg'
 import { CiLogout } from 'react-icons/ci'
 import { FiCompass } from 'react-icons/fi'
 import { RiArticleLine } from 'react-icons/ri'
+import { LuMessageSquareText } from "react-icons/lu";
 
 const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate()
@@ -234,6 +235,18 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
           >
             <RiArticleLine className='h-5 w-5' />
             <span>Blog</span>
+          </button>
+
+          <button
+            onClick={() => handleNavigation('Chat', 'chat')}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === 'Chat'
+                ? 'bg-[#eb5b2a] text-white font-semibold'
+                : 'hover:bg-[#0d3055]'
+            }`}
+          >
+            <LuMessageSquareText className='h-5 w-5' />
+            <span>Messages</span>
           </button>
 
           <button
