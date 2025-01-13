@@ -677,6 +677,33 @@ const AddPackage = () => {
                   </ul>
                 </div>
                 <div>
+                  <select
+                    type="text"
+                    placeholder="Language"
+                    {...register("language")}
+                    className="text-base text-black w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  >
+                    <option value="" className="text-base text-black">
+                      Language
+                    </option>
+                    <option value="eng" className="text-base text-black">
+                      English
+                    </option>
+                    <option value="" className="text-base text-black">
+                      Spanish
+                    </option>
+                    <option value="" className="text-base text-black">
+                      German
+                    </option>
+                    <option value="" className="text-base text-black">
+                      French
+                    </option>
+                  </select>
+                  {/* {errors.language && (
+                          <p className="text-red-500 text-xs mt-1">{errors.language.message}</p>
+                      )} */}
+                </div>
+                <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Image Gallery
                   </label>
