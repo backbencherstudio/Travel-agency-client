@@ -39,7 +39,11 @@ import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
 import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
 import Chat from "../Components/Dashboard/chat/Chat";
 import Contacts from '../Pages/Contacts/Contacts'
+<<<<<<< HEAD
 import Cancellation from '../Pages/Contacts/Cancellation'
+=======
+import PrivateRoute from './Private/PrivateRoute'
+>>>>>>> da71061f260322952e6979d2857e2407212c0fe0
 
 export const router = createBrowserRouter([
   {
@@ -117,7 +121,7 @@ export const router = createBrowserRouter([
   {
     path: '/dashboard',
     // element: <DashboardLayout />,
-    element: <AdminLayout />,
+    element: <PrivateRoute role={["admin"]}><AdminLayout /></PrivateRoute>,
     children: [
       {
         index: true,
@@ -286,6 +290,10 @@ export const router = createBrowserRouter([
     element: <Login />
   },
   {
+    path: 'admin-login',
+    element: <AdminLogin />
+  },
+  {
     path: 'forget-password',
     element: <ForgetPassword />
   },
@@ -294,7 +302,7 @@ export const router = createBrowserRouter([
     element: <Otp />
   },
   {
-    path: 'change-password',
+    path: 'change-password/:email/:otp',
     element: <ChangePassword />
   }
 ])

@@ -2,13 +2,24 @@ import React from 'react'
 import { useForm } from 'react-hook-form';
 import image from "../../assets/img/form-img/otp-img.png";
 import logo from '../../assets/img/form-img/logo.png';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import ChangePasswordApis from '../../Apis/ChangePasswordApis';
+import { toast } from 'react-toastify';
 
 const ChangePassword = () => {
     const { register, handleSubmit, watch, formState: { errors }, } = useForm();
+    const { email, otp } = useParams();
+    console.log('email', email)
+    console.log('otp', otp)
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
         console.log(data);
+        const formData = {...data, email: email, token: otp}
+        console.log('formData', formData)
+        const res = await ChangePasswordApis.reset(formData);
+        if (res.success) {
+            toast.success(res.message);
+        }
     };
 
   return (
@@ -40,15 +51,15 @@ const ChangePassword = () => {
                 </label>
                 <input
                   type="password"
-                  id="newPassword"
-                  {...register("newPassword", { required: "New password is required" })}
+                  id="password"
+                  {...register("password", { required: "password is required" })}
                   className={`mt-1 px-3 py-2 w-full border rounded-lg ${
                     errors.newPassword ? "border-red-500" : "shadow-sm"
                   }`}
                   placeholder="New Password"
                 />
-                {errors.newPassword && (
-                  <p className="text-red-500 text-sm">{errors.newPassword.message}</p>
+                {errors.password && (
+                  <p className="text-red-500 text-sm">{errors.password.message}</p>
                 )}
               </div>
 
@@ -62,7 +73,7 @@ const ChangePassword = () => {
                   id="confirmPassword"
                   {...register("confirmPassword", { 
                     required: "Confirm password is required", 
-                    validate: (value) => value === watch('newPassword') || "Passwords do not match" 
+                    validate: (value) => value === watch('password') || "Passwords do not match" 
                   })}
                   className={`mt-1 px-3 py-2 w-full border rounded-lg ${
                     errors.confirmPassword ? "border-red-500" : "shadow-sm"

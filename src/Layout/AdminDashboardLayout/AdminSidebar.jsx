@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import { IoSettingsOutline } from 'react-icons/io5'
 import { LuBookmarkCheck, LuLayoutDashboard } from 'react-icons/lu'
@@ -9,6 +9,7 @@ import { CiLogout } from 'react-icons/ci'
 import { FiCompass } from 'react-icons/fi'
 import { RiArticleLine } from 'react-icons/ri'
 import { LuMessageSquareText } from "react-icons/lu";
+import { AuthContext } from '../../AuthProvider/AuthProvider'
 
 const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate()
@@ -20,6 +21,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [showCloseIcon, setShowCloseIcon] = useState(false)
   const [isSubmenuOpen, setSubmenuOpen] = useState(false)
+  const { logout } = useContext(AuthContext);
 
   useEffect(() => {
     localStorage.setItem('tab', selectedTab)
@@ -70,6 +72,16 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
     setSelectedTab(tab)
     navigate(path)
   }
+
+  const handleLogOut = (e) => {
+    e.preventDefault();
+    logout();
+    const token = localStorage.getItem('token');
+    if (!token) {
+        navigate('/admin-login');
+    }
+  }
+
   return (
     <>
       <div
@@ -84,7 +96,9 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
           showSidebar ? 'left-0' : '-left-[275px] lg:left-0'
         }`}
       >
-        <img src={logo} alt='' className='w-full h-8 mt-3' />
+        <a href='/'>
+          <img src={logo} alt='' className='w-full h-8 mt-3' />
+        </a>
         <nav className='flex flex-col gap-4 text-white mt-11'>
           <button
             onClick={() => handleNavigation('Dashboard', '')}
@@ -261,7 +275,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             <span>Settings</span>
           </button>
 
-          <button className='absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white'>
+          <button onClick={(e) => handleLogOut(e)} className='absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white'>
             <CiLogout className='mt-1' /> Logout
           </button>
         </nav>

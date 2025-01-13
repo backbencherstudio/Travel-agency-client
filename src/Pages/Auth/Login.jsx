@@ -1,32 +1,54 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import image from "../../assets/img/form-img/login-img.png";
 import logo from '../../assets/img/form-img/logo.png';
 import { Link, useNavigate } from "react-router-dom";
 import AuthApis from "../../Apis/AuthApis";
 import { toast } from "react-toastify";
+import { AuthContext } from "../../AuthProvider/AuthProvider";
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors, isLoading } } = useForm();
   const [resMessage, setResMessage] = useState();
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   
   const onSubmit = async (data) => {
-    const res = await AuthApis.login(data);
-    if (res.success) {
-      // console.log('res', res)
-      localStorage.token = res.authorization.token;
-        // window.location.reload();
-        toast.success(res.message)
-        navigate('/')
-      } else {
-        console.log('res', res)
-        toast.error(res.message.message)
-        setResMessage(res);
-        setTimeout(() => {
-            setResMessage('');
-        }, 5000);
-    }
+    // const res = await AuthApis.login(data);
+    // if (res.success) {
+    //     // console.log('res', res)
+    //     localStorage.token = res.authorization.token;
+    //     // window.location.reload();
+    //     toast.success(res.message)
+    //     navigate('/')
+    //   } else {
+    //     console.log('res', res)
+    //     toast.error(res.message.message)
+    //     setResMessage(res);
+    //     setTimeout(() => {
+    //         setResMessage('');
+    //     }, 5000);
+    // }
+    try {
+     const res = await login({
+        email: data.email,
+        password: data.password
+      })
+      console.log('res', res)
+      // toast.success('Loging Successful.');
+      const role = localStorage.getItem('role');
+      console.log('token', role)
+      setTimeout(() => {
+        if (role === 'user') {
+          navigate('/')
+        } else {
+          navigate('/dashboard')
+        }
+      }, 500);
+    } catch (error) {
+      console.error('Login error:', error.response?.data?.message || error.message);
+      toast.error('Login failed. Please try again.');
+    } 
   };
 
   return (
@@ -37,7 +59,9 @@ const Login = () => {
         </div>
         <div className="w-full xl:w-1/2 h-full p-6 md:p-0">
           <div className="max-w-xl mx-auto ">
-            <img src={logo} className="w-[89px] h-12" alt="" />
+            <Link to="/">
+              <img src={logo} className="w-[89px] h-12" alt="" />
+            </Link>
           </div>
           <div className="w-full max-w-xl mx-auto  flex flex-col gap-8">
             <div className="flex flex-col gap-3 mt-8">

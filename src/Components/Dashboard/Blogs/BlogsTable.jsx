@@ -18,6 +18,8 @@ import { GoDotFill } from 'react-icons/go'
 import { FiEdit2 } from 'react-icons/fi'
 import { debounce } from '../../../Shared/debounce'
 import { FaRegSquarePlus } from 'react-icons/fa6'
+import BlogApis from '../../../Apis/BlogApi'
+import Swal from 'sweetalert2'
 
 const statusStyles = {
   Published: {
@@ -143,7 +145,35 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
   // Function to handle edit button click
 
   const handleEditClick = id => {
+    console.log('Edit clicked with id:', id)
     navigate(`/dashboard/add-blog/${id}`)
+  }
+
+  const handleDeleteClick = async id => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You won’t be able to undo this action!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    })
+
+    if (result.isConfirmed) {
+      try {
+        const response = await BlogApis.deleteBlogPost(id)
+        if (response.errors) {
+          await Swal.fire('Error', response.message, 'error')
+        } else {
+          await Swal.fire('Deleted!', 'Your blog has been deleted.', 'success')
+          setFilteredData(prevData => prevData.filter(item => item.id !== id))
+        }
+      } catch (error) {
+        await Swal.fire('Error', 'An unexpected error occurred.', 'error')
+        console.error(error)
+      }
+    }
   }
 
   return (
@@ -388,12 +418,21 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                       )}
                       <TableCell>
                         <div className='flex items-center justify-center gap-4'>
-                          <button className='text-[#475467] hover:text-red-600 transform duration-300'>
+                          <button
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleDeleteClick(item.id)
+                            }}
+                            className='text-[#475467] hover:text-red-600 transform duration-300'
+                          >
                             <LuTrash2 className='text-xl' />
                           </button>
                           <button
-                            onClick={() => handleEditClick(item.id)}
-                            className='text-[#475467] hover:text-blue-700 transform duration-300'
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleEditClick(item.id)
+                            }}
+                            className='text-blue-600'
                           >
                             <FiEdit2 className='text-xl' />
                           </button>

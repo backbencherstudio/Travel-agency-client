@@ -103,6 +103,7 @@ const EditPackage = () => {
           // setSelectedPolicy(packageData.cancellation_policy?.id || "");
           setValue("cancellation_policy_id", packageData.cancellation_policy?.id)
           setValue("type", packageData.type);
+          setValue("language", packageData.language);
           setImages(packageData.package_images);
           setIncludedPackages(
             packageData.package_tags
@@ -691,6 +692,33 @@ const EditPackage = () => {
                         </details>
                     </li>
                   </ul>
+                </div>
+                <div>
+                  <select
+                    type="text"
+                    placeholder="Language"
+                    {...register("language")}
+                    className="text-base text-black w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  >
+                    <option value="" className="text-base text-black">
+                      Language
+                    </option>
+                    <option value="en" className="text-base text-black">
+                      English
+                    </option>
+                    <option value="es" className="text-base text-black">
+                      Spanish
+                    </option>
+                    <option value="de" className="text-base text-black">
+                      German
+                    </option>
+                    <option value="fr" className="text-base text-black">
+                      French
+                    </option>
+                  </select>
+                  {/* {errors.language && (
+                          <p className="text-red-500 text-xs mt-1">{errors.language.message}</p>
+                      )} */}
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
