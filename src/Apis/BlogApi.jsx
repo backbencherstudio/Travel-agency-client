@@ -144,4 +144,32 @@ BlogApis.searchBlogs = async (query) => {
 };
 
 
+// search blog with multiple parameters
+BlogApis.searchBlogs = async (query, status = '') => {
+  // Construct query parameters
+  const params = new URLSearchParams();
+  
+  if (query) params.append('q', query);
+  if (status) params.append('status', status);
+
+  const url = `/api/admin/blog?${params.toString()}`;
+
+  const res = await axiosClient
+    .get(url)
+    .then(response => response.data)
+    .catch(error => {
+      if (error.response) {
+        return {
+          errors: error.response.data.errors,
+          message: error.response.data.message
+        };
+      } else {
+        return { message: 'An error occurred while searching for blogs.' };
+      }
+    });
+
+  return res;
+};
+
+
 export default BlogApis

@@ -2,16 +2,24 @@
 import { Avatar } from '@mui/material'
 import HeroSection from '../../Components/HeroSection/HeroSection'
 import ParentComponent from '../../Components/ParentComponent/ParentComponent'
-
 import blogImage from '../../assets/img/blogs/blogImage.png'
 import Faqs from '../../Components/Home/Faqs'
 import { FaRegComments } from 'react-icons/fa'
 import { SlLike } from 'react-icons/sl'
 import { CiSearch } from 'react-icons/ci'
 import { useContext, useEffect, useState } from 'react'
-import { getBlogDetails } from '../../Apis/clientApi/ClientBlogApi'
+import {
+  getBlogDetails,
+  postCommentOnBlog,
+  deleteCommentOnBlog,
+  postLikeOnBlog
+} from '../../Apis/clientApi/ClientBlogApi'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AuthContext } from '../../AuthProvider/AuthProvider'
+import Swal from 'sweetalert2'
+import { RiDeleteBin6Line } from 'react-icons/ri'
+import { toast } from 'react-toastify'
+import { BiSolidLike } from 'react-icons/bi'
 
 const SingleBlog = () => {
   const links = [
@@ -25,6 +33,12 @@ const SingleBlog = () => {
   const [blog, setBlog] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [comment, setComment] = useState('')
+  const [commentError, setCommentError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLiking, setIsLiking] = useState(false) // New state for like button
+  const [isLiked, setIsLiked] = useState(false)
+
   useEffect(() => {
     const fetchBlogDetails = async () => {
       try {
@@ -35,9 +49,10 @@ const SingleBlog = () => {
           setError(response.message || 'Failed to fetch blog details')
         } else {
           setBlog(response)
+          setIsLiked(response.data?.is_liked_by_user || false)
         }
       } catch (err) {
-        console.error('Error fetching blog details:', err)
+        // console.error('Error fetching blog details:', err)
         setError('An unexpected error occurred')
       } finally {
         setLoading(false)
@@ -63,35 +78,100 @@ const SingleBlog = () => {
     navigate('/login')
   }
 
-  const comments = [
-    {
-      id: 1,
-      image:
-        'https://static.artzone.ai/media/62077/conversions/22yojXNhcyfLN9S4fsdjFXkjvxK7UcGKiIw92ybU-w768.webp',
-      name: 'Mark Williams',
-      data: '11 jun, 2024',
-      description:
-        'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'
-    },
-    {
-      id: 2,
-      image:
-        'https://static.artzone.ai/media/62077/conversions/22yojXNhcyfLN9S4fsdjFXkjvxK7UcGKiIw92ybU-w768.webp',
-      name: 'Mark Williams',
-      data: '11 jun, 2024',
-      description:
-        'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'
-    },
-    {
-      id: 3,
-      image:
-        'https://static.artzone.ai/media/62077/conversions/22yojXNhcyfLN9S4fsdjFXkjvxK7UcGKiIw92ybU-w768.webp',
-      name: 'Mark Williams',
-      data: '11 jun, 2024',
-      description:
-        'It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.'
+  const handleCommentSubmit = async () => {
+    if (!comment.trim()) {
+      setCommentError('Comment cannot be empty.')
+      return
     }
-  ]
+
+    setCommentError('')
+    setIsSubmitting(true)
+
+    try {
+      const response = await postCommentOnBlog(id, comment)
+      if (response.success) {
+        const updatedBlog = await getBlogDetails(id)
+        setBlog(updatedBlog)
+        setComment('')
+        toast.success('Comment posted successfully!')
+      } else {
+        setCommentError(response.message || 'Failed to post comment')
+        toast.error(response.message || 'Failed to post comment')
+      }
+    } catch (error) {
+      console.error('Error submitting comment:', error)
+      setCommentError('An unexpected error occurred while posting the comment.')
+      toast.error('An unexpected error occurred.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleLikeClick = async () => {
+    if (!user) {
+      toast.error('Please log in to like the post.')
+      return
+    }
+
+    setIsLiking(true)
+    try {
+      const response = await postLikeOnBlog(id)
+      if (response.success) {
+        const updatedBlog = await getBlogDetails(id)
+        setBlog(updatedBlog)
+        setIsLiked(!isLiked)
+        toast.success(isLiked ? 'You unliked the post!' : 'You liked the post!')
+      } else {
+        toast.error(response.message || 'Failed to like/unlike the post.')
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred while liking the post.')
+    } finally {
+      setIsLiking(false)
+    }
+  }
+
+  const handleDeleteComment = async commentId => {
+    // Show SweetAlert confirmation dialog
+    const result = await Swal.fire({
+      title: 'Are you sure you want to delete this comment?',
+      text: 'You won’t be able to undo this action!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    })
+
+    if (result.isConfirmed) {
+      try {
+        const response = await deleteCommentOnBlog(id, commentId)
+        if (response.errors) {
+          await Swal.fire(
+            'Error',
+            response.message || 'Failed to delete the comment.',
+            'error'
+          )
+        } else {
+          // Success case
+          await Swal.fire(
+            'Deleted!',
+            'Your comment has been deleted.',
+            'success'
+          )
+          const updatedBlog = await getBlogDetails(id)
+          setBlog(updatedBlog)
+        }
+      } catch (error) {
+        await Swal.fire(
+          'Error',
+          'An unexpected error occurred while deleting the comment.',
+          'error'
+        )
+        console.error(error)
+      }
+    }
+  }
 
   return (
     <div className='bg-[#F0F4F9]'>
@@ -108,23 +188,32 @@ const SingleBlog = () => {
       />
 
       <ParentComponent>
-        <div className='blog-details grid grid-cols-12 gap-6 '>
-          <div className=' col-span-12 lg:col-span-8'>
+        <div className='blog-details grid grid-cols-12 gap-6'>
+          <div className='col-span-12 lg:col-span-8'>
             <div>
               <img
                 className='rounded-2xl'
-                src='https://letsenhance.io/static/a31ab775f44858f1d1b80ee51738f4f3/11499/EnhanceAfter.jpg'
-                alt=''
+                src={blog.data?.blog_images[0]?.image_url}
+                alt={blog.data?.title}
               />
             </div>
             <span className='flex items-center mt-5 mb-6 gap-2'>
+              <button
+                className='flex items-center gap-1'
+                onClick={handleLikeClick}
+                disabled={isLiking}
+              >
+                <SlLike
+                  className={`text-xl ${
+                    isLiked ? 'text-orange-500' : 'text-orange-500'
+                  } cursor-pointer`}
+                />
+
+                {isLiking ? 'Liking...' : `${blog.data?.like_count} Likes`}
+              </button>
+
               <h2 className='flex items-center mr-2'>
-                {' '}
-                <SlLike className='text-orange-500 mr-1 text-xl ' />{' '}
-                {blog.data?.like_count} Likes
-              </h2>
-              <h2 className='flex items-center mr-2'>
-                <FaRegComments className='text-orange-500 mr-1 text-xl ' />{' '}
+                <FaRegComments className='text-orange-500 mr-1 text-xl' />
                 {blog.data?.blog_comments.length} Comments
               </h2>
             </span>
@@ -145,24 +234,34 @@ const SingleBlog = () => {
             <div className='max-w-2xl w-full mt-10'>
               <h2 className='text-xl font-semibold mb-4'>Comments</h2>
 
-              {/* Conditional Rendering */}
               {user ? (
-                <div className='relative'>
-                  <input
-                    type='text'
-                    placeholder='Leave a comment...'
-                    className='w-full px-4 py-4 pr-28 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#EB5B2A] focus:border-transparent'
-                  />
-                  <button className='absolute right-2 top-1/2 transform -translate-y-1/2 px-5 py-3 bg-[#0E457D] text-white rounded-lg font-medium hover:bg-[#0e457de4] text-[15px] duration-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'>
-                    Submit
-                  </button>
+                <div>
+                  <div className='relative'>
+                    <input
+                      type='text'
+                      value={comment}
+                      onChange={e => setComment(e.target.value)}
+                      placeholder='Leave a comment...'
+                      className='w-full px-4 py-4 pr-28 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#EB5B2A] focus:border-transparent'
+                    />
+                    <button
+                      onClick={handleCommentSubmit}
+                      disabled={isSubmitting}
+                      className='absolute right-2 top-1/2 transform -translate-y-1/2 px-5 py-3 bg-[#0E457D] text-white rounded-lg font-medium hover:bg-[#0e457de4] text-[15px] duration-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Submit'}
+                    </button>
+                  </div>
+                  {commentError && (
+                    <p className='text-red-500 mt-2'>{commentError}</p>
+                  )}
                 </div>
               ) : (
                 <div className='mt-4'>
                   <p>
                     Please{' '}
                     <button
-                      className='text-[#EB5B2A]  font-bold underline'
+                      className='text-[#EB5B2A] font-bold underline'
                       onClick={handleLoginRedirect}
                     >
                       log in
@@ -174,65 +273,80 @@ const SingleBlog = () => {
             </div>
 
             <div className='mt-12'>
-              <h2 className='font-inter text-[24px] font-semibold leading-[1.3] tracking-[0.12px] mb-7 '>
-                {comments?.length} Comments
+              <h2 className='font-inter text-[24px] font-semibold leading-[1.3] tracking-[0.12px] mb-7'>
+                {blog.data?.blog_comments.length} Comments
               </h2>
 
-              {comments?.map(item => (
-                <div key={item.id}>
-                  <div className='mb-5 border-b pb-5 '>
-                    <div className='flex items-center'>
-                      <Avatar alt='Travis Howard' src={item.image} />
+              {blog.data?.blog_comments.map(comment => (
+                <div key={comment.id} className='mb-5 border-b pb-5'>
+                  <div className='flex items-center'>
+                    <div className='flex '>
+                      {/* img */}
+                      <Avatar
+                        alt={comment.user.name}
+                        src={comment.user.avatar}
+                      />
+
                       <span className='ml-2'>
-                        <h2 className='font-inter text-[16px] font-bold leading-[1.6] tracking-[0.08px]'>
-                          {item.name}
+                        <h2 className='font-inter text-[16px] text-[#0F1416] capitalize font-bold '>
+                          {comment.user.name}
                         </h2>
-                        <p className='mt-2'>{item.data}</p>
+                        <p className='mt-1 text-[14px] text-[#0F1416]'>
+                          {new Date(comment.created_at).toLocaleString()}
+                        </p>
                       </span>
                     </div>
 
-                    <p>{item.description}</p>
+                    {/* Show delete button if the comment belongs to the logged-in user */}
+                    {user && comment.user.id === user.id && (
+                      <button
+                        onClick={() => handleDeleteComment(comment.id)}
+                        className='ml-auto text-red-500 hover:underline'
+                      >
+                        <RiDeleteBin6Line className='text-2xl' />
+                      </button>
+                    )}
                   </div>
+                  <p className='mt-5 text-[16px] text-[#0F1416] leading-6'>
+                    {comment.comment}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className=' col-span-12 lg:col-span-4'>
-            <div className='flex border rounded-lg items-center px-2 '>
-              <CiSearch className='text-3xl cursor-pointer ' />
-              <input type='text' className=' w-full p-2 focus:outline-none ' />
+          <div className='col-span-12 lg:col-span-4 '>
+            <div className='flex border rounded-lg items-center px-2 bg-white'>
+              <CiSearch className='text-3xl cursor-pointer' />
+              <input type='text' placeholder='Search blog...' className='w-full p-2 focus:outline-none' />
             </div>
 
-            <div className='bg-[#f0f4f9] mt-4 px-6 py-5 rounded-lg '>
-              <h2 className='font-inter text-[20px] font-bold leading-[1.3] tracking-[0.1px]'>
-                {' '}
-                Recent Post{' '}
-              </h2>
-
+            <div className='bg-[#f0f4f9] mt-4 px-6 py-5 rounded-lg'>
+              <h2 className='font-inter text-[20px] font-bold'>Recent Posts</h2>
               <div className='mt-5'>
-                {comments?.map((item, index) => (
-                  <div key={item.id}>
-                    <div
-                      className={`mb-5 pb-5 ${
-                        comments.length === index + 1
-                          ? 'border-none'
-                          : 'border-b'
-                      } `}
-                    >
-                      <div className='flex items-center'>
-                        <img
-                          src='https://create.microsoft.com/_next/image?url=https%3A%2F%2Fdsgrcdnblobprod5u3.azureedge.net%2Fimages%2Fimage-creator-T03_cat.webp&w=1920&q=90'
-                          className='w-[100px] h-[80px] rounded-xl '
-                          alt=''
-                        />
-                        <span className='ml-2'>
-                          <h2 className='font-inter text-[16px] font-bold leading-[1.6] tracking-[0.08px]'>
-                            {item.name}
-                          </h2>
-                          <p className='mt-2'>{item.data}</p>
-                        </span>
-                      </div>
+                {blog.data?.recent_blogs.map(item => (
+                  <div key={item.id} className='mb-5 pb-5 border-b'>
+                    <div className='flex items-center'>
+                      <img
+                        src={item.blog_images[0]?.image_url}
+                        className='w-[100px] h-[80px] rounded-xl'
+                        alt={item.title}
+                      />
+                      <span className='ml-2'>
+                        <h2 className='font-inter text-[16px] font-bold'>
+                          {item.title}
+                        </h2>
+                        <p className='mt-2'>
+                          {new Date(item.created_at).toLocaleDateString(
+                            'en-GB',
+                            {
+                              day: '2-digit',
+                              month: 'long',
+                              year: 'numeric'
+                            }
+                          )}
+                        </p>
+                      </span>
                     </div>
                   </div>
                 ))}
