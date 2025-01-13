@@ -39,6 +39,7 @@ import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
 import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
 import Chat from "../Components/Dashboard/chat/Chat";
 import Contacts from '../Pages/Contacts/Contacts'
+import Cancellation from '../Pages/Contacts/Cancellation'
 
 export const router = createBrowserRouter([
   {
@@ -94,9 +95,14 @@ export const router = createBrowserRouter([
       {
         path: '/tours',
         element: <Tours />
-      },      {
+      },
+      {
         path: '/contacts',
         element: <Contacts />
+      },
+      {
+        path: '/cancellation',
+        element: <Cancellation />
       },
       {
         path: '/blogs',
