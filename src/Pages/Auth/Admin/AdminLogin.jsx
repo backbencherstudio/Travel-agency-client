@@ -43,7 +43,7 @@ const AdminLogin = () => {
         } else {
           navigate('/');
         }
-      }, 2000);
+      }, 500);
     } catch (error) {
       console.error('Login error:', error.response?.data?.message || error.message);
       toast.error('Login failed. Please try again.');
@@ -58,7 +58,9 @@ const AdminLogin = () => {
         </div> */}
         <div className="w-full h-full p-6 md:p-0">
           <div className="max-w-xl mx-auto ">
-            <img src={logo} className="w-[89px] h-12" alt="" />
+            <Link to="/">
+              <img src={logo} className="w-[89px] h-12" alt="" />
+            </Link>
           </div>
           <div className="w-full max-w-xl mx-auto  flex flex-col gap-8">
             <div className="flex flex-col gap-3 mt-8">

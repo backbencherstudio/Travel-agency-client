@@ -63,26 +63,33 @@ const AuthProvider = ({ children }) => {
             console.log('error', error)
             toast.error(resMessage);
             // handleError(error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    // const logout = async () => {
-    //     try {
-    //         await axiosClient.post("/auth/logout", {}, { withCredentials: true });
-    //         setUser(null);
-    //         console.log("Logout successful");
-    //     } catch (error) {
-    //         console.error("Logout failed:", error);
-    //         alert("Logout failed. Please try again.");
-    //     }
-    // };
+    const logout = async () => {
+        localStorage.removeItem('token');
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.warning('Logged out!');
+        }
+        // try {
+        //     await axiosClient.post("/auth/logout", {}, { withCredentials: true });
+        //     setUser(null);
+        //     console.log("Logout successful");
+        // } catch (error) {
+        //     console.error("Logout failed:", error);
+        //     alert("Logout failed. Please try again.");
+        // }
+    };
 
     const userInfo = {
         user,
         loading,
         signup,
         login,
-        // logout,
+        logout,
     };
 
     return (

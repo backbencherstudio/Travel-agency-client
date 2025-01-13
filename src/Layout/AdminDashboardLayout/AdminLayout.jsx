@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import AdminHeader from './AdminHeader'
 import AdminSidebar from './AdminSidebar'
+import { AuthContext } from '../../AuthProvider/AuthProvider'
+import Loading from '../../Shared/Loading'
 
 const AdminLayout = () => {
   const [showSidebar, setShowSidebar] = useState(false)
+  const { loading } = useContext(AuthContext);
 
   return (
     <div className=' w-full h-full  min-h-screen bg-[#e9f0f9]'>
+      {loading && (
+        <Loading />
+      )}
       <>
         <AdminHeader
           showSidebar={showSidebar}
