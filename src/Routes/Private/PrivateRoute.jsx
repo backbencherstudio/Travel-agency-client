@@ -10,7 +10,7 @@ const PrivateRoute = ({ children, role }) => {
     if (loading) {
         return <Loading />;
     }
-    console.log('private user', user)
+    // console.log('private user', user)
     if (!user) {
         return <Navigate to="/login" state={{ from: location }} />;
     }

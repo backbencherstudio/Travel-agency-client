@@ -4,11 +4,16 @@ import { FaSearch } from "react-icons/fa";
 import MessageLeft from "./Components/MessageLeft";
 import MessageRight from "./Components/MessageRight";
 import User from "./Components/User";
+import { useContext, useEffect, useState } from "react";
+import axiosClient from "../../../axiosClient";
+import { AuthContext } from "../../../AuthProvider/AuthProvider";
 
 const Chat = () => {
-  const { conversationID } = useParams();
+  const [usersData, setUsersData] = useState([]);
 
-  console.log(conversationID);
+  const { conversationID } = useParams();
+  const { user } = useContext(AuthContext);
+  console.log("user", user);
 
   const messages = [
     {
@@ -130,6 +135,22 @@ const Chat = () => {
     },
   ];
 
+  // API call inside useEffect
+  useEffect(() => {
+    const fetchConversation = async () => {
+      try {
+        const response = await axiosClient.get("/api/chat/conversation");
+        const data = response.data.data;
+        setUsersData(data);
+        console.log("Fetched userData:", data);
+      } catch (error) {
+        console.error("Error fetching conversation data:", error);
+      }
+    };
+
+    fetchConversation(); // Call the fetch function
+  }, []); // Empty dependency array to run only once on mount
+
   return (
     <>
       <div className="grid grid-cols-12 gap-5">
@@ -158,34 +179,51 @@ const Chat = () => {
                 </div>
                 {/* Search Bar Ends */}
 
-                {/* Start Chat Message List */}
+                {/* Start Chat people Message List */}
                 <div>
                   <h5 className="px-6 mb-4 text-xl">Recent</h5>
 
                   {/* Scrollable Chat List */}
                   <div className="h-full px-2 " data-simplebar>
-
-
                     <ul className="chat-user-list">
-                      {/* Chat User List Item */}
-                      {users.map((data, index) => (
-                        <User
-                          key={index}
-                          active={conversationID == data.id ? true : false}
-                          id={data.id}
-                          image={data.image}
-                          name={data.name}
-                          hint={data.hint}
-                          time={data.time}
-                        />
-                      ))}
+                      {usersData.length > 0 ? (
+                        usersData.map((data, index) => {
+                          const chatUser =
+                            user.id === data.participant_id ? data.creator : data.participant;
+
+                          // Get the last message from the messages array
+                          const lastMessage =
+                            data.messages?.[0]?.message || "No recent messages";
+
+                          return (
+                            <User
+                              key={index}
+                              active={conversationID === data.id}
+                              id={chatUser.id}
+                              image={
+                                chatUser.avatar_url ||
+                                "https://via.placeholder.com/150"
+                              } // Placeholder if no avatar
+                              name={chatUser.name}
+                              hint={lastMessage} // Show last message hint if available
+                              time={new Date(
+                                data.updated_at
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })} // Convert updated_at to readable time
+                            />
+                          );
+                        })
+                      ) : (
+                        <p className="text-gray-500 p-4">
+                          No conversations found.
+                        </p>
+                      )}
                     </ul>
-
-
-
                   </div>
                 </div>
-                {/* End Chat Message List */}
+                {/* End Chat people Message List */}
               </div>
               {/* End Chat Content */}
             </div>
