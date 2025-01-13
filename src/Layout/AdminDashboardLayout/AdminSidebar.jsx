@@ -96,7 +96,9 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
           showSidebar ? 'left-0' : '-left-[275px] lg:left-0'
         }`}
       >
-        <img src={logo} alt='' className='w-full h-8 mt-3' />
+        <a href='/'>
+          <img src={logo} alt='' className='w-full h-8 mt-3' />
+        </a>
         <nav className='flex flex-col gap-4 text-white mt-11'>
           <button
             onClick={() => handleNavigation('Dashboard', '')}

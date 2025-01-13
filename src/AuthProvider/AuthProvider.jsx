@@ -84,12 +84,25 @@ const AuthProvider = ({ children }) => {
         // }
     };
 
+    const changePassword = async (data) => {
+        try {
+            const res = await axiosClient.post("/api/auth/change-password", data);
+            const message = res?.data?.message;
+            console.log('res', res)
+            toast.success(message);
+        } catch (error) {
+            console.error("Logout failed:", error);
+            alert("Logout failed. Please try again.");
+        }
+    };
+
     const userInfo = {
         user,
         loading,
         signup,
         login,
         logout,
+        changePassword,
     };
 
     return (
