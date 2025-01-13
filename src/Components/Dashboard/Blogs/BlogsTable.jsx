@@ -1,6 +1,5 @@
 import { FaSearch, FaCheckCircle } from 'react-icons/fa'
-import { useState, useEffect, useRef, useCallback } from 'react'
-
+import { useState, useEffect, useRef } from 'react'
 import {
   Table,
   TableBody,
@@ -16,10 +15,10 @@ import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
 import { GoDotFill } from 'react-icons/go'
 import { FiEdit2 } from 'react-icons/fi'
-import { debounce } from '../../../Shared/debounce'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import BlogApis from '../../../Apis/BlogApi'
 import Swal from 'sweetalert2'
+import useDebounce from '../../../Shared/debounce'
 
 const statusStyles = {
   Published: {
@@ -41,13 +40,50 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
   const [filteredData, setFilteredData] = useState(data)
   const [isOpen, setIsOpen] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('All Status')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const dropdownRef = useRef(null)
+  // const searchTimeout = useRef(null)
 
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
 
+  const fetchSearchResults = async (query, status) => {
+    setIsLoading(true)
+    try {
+      const response = await BlogApis.searchBlogs(
+        query,
+        status !== 'All Status' ? status : ''
+      )
+      if (!response.errors) {
+        setFilteredData(response.data || [])
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  // Apply the debounce hook
+  const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 500)
+  const handleSearchChange = e => {
+    const value = e.target.value
+    setSearchQuery(value)
+    debouncedFetchSearchResults(value, selectedStatus)
+  }
+
+  const handleStatusChange = status => {
+    setSelectedStatus(status)
+    setIsOpen(false)
+    fetchSearchResults(searchQuery, status)
+    navigate({
+      pathname: location.pathname,
+      search: `?status=${status}&search=${searchQuery}`
+    })
+  }
+
+  // Other handlers remain the same
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
@@ -61,37 +97,6 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
     if (tableType === 'user' || tableType === 'blog') {
       navigate(`${id}`)
     }
-  }
-
-  const handleStatusChange = status => {
-    setSelectedStatus(status)
-    setIsOpen(false)
-    // Update URL with selected status
-    navigate({
-      pathname: location.pathname,
-      search: `?search=${searchQuery}&status=${status}`
-    })
-  }
-
-  const handleSearchChange = e => {
-    const value = e.target.value
-    setSearchQuery(value)
-    console.log('Search query updated:', value);
-    // Update URL with the search query
-    navigate({
-      pathname: location.pathname,
-      search: `?search=${value}&status=${selectedStatus}`
-    })
-  }
-
-  const debouncedSearchChange = useCallback(
-    debounce(value => handleSearchChange({ target: { value } }), 20),
-    [handleSearchChange]
-  )
-  
-
-  const handleSearchInputChange = e => {
-    debouncedSearchChange(e.target.value)
   }
 
   useEffect(() => {
@@ -114,45 +119,35 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
     if (statusFromQuery) {
       setSelectedStatus(statusFromQuery)
     }
-
     if (searchFromQuery) {
       setSearchQuery(searchFromQuery)
+      fetchSearchResults(searchFromQuery, statusFromQuery || 'All Status')
     }
   }, [location.search])
 
   useEffect(() => {
     let filtered = data
 
-    // Apply search filter
-    if (searchQuery) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
-
-    // Apply status filter
+    // Apply status filter only
     if (selectedStatus && selectedStatus !== 'All Status') {
       filtered = filtered.filter(item => item.status === selectedStatus)
     }
 
     setFilteredData(filtered)
-  }, [searchQuery, selectedStatus, data])
+  }, [selectedStatus, data])
 
   const handleAddBlogClick = () => {
     navigate('/dashboard/add-blog')
   }
 
-  // Function to handle edit button click
-
   const handleEditClick = id => {
-    console.log('Edit clicked with id:', id)
     navigate(`/dashboard/add-blog/${id}`)
   }
 
   const handleDeleteClick = async id => {
     const result = await Swal.fire({
       title: 'Are you sure?',
-      text: 'You won’t be able to undo this action!',
+      text: 'You wont be able to undo this action!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -187,7 +182,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
               placeholder='Search...'
               className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
-              onChange={handleSearchInputChange}
+              onChange={handleSearchChange}
             />
             <FaSearch className='absolute top-3 left-3 text-zinc-400' />
           </div>
@@ -209,7 +204,6 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                   <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
 
                   <div className='bg-white rounded-md'>
-                    {/* Status options */}
                     {['All Status', 'Published', 'Hold'].map(status => (
                       <button
                         key={status}
@@ -232,7 +226,6 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
       </div>
 
       <Paper style={{ borderRadius: '10px' }}>
-        {/* add blog  */}
         <div className='flex justify-end p-5'>
           <button
             onClick={handleAddBlogClick}
@@ -268,25 +261,16 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                     Status
                   </TableCell>
                 )}
-
                 {columns?.created_at && (
                   <TableCell
-                    sx={{
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
                     Published Date
                   </TableCell>
                 )}
                 {columns?.approved_at && (
                   <TableCell
-                    sx={{
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
                     Modified Date
                   </TableCell>
@@ -318,7 +302,6 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                           <div className='flex items-center gap-3'>
                             <img
                               className='rounded-lg'
-                              // src={item.blog_images?.blog_images[0].image_url}
                               alt={item.title}
                               style={{ width: '80px', height: '80px' }}
                             />
@@ -369,13 +352,12 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                             ) : (
                               <>
                                 {statusStyles.Hold.icon}
-                                <span>{'Hold'}</span>
+                                <span>{'Pending'}</span>
                               </>
                             )}
                           </span>
                         </TableCell>
                       )}
-
                       {columns?.created_at && (
                         <TableCell>
                           <p className='text-[#475467]'>
