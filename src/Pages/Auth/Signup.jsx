@@ -2,21 +2,25 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import image from "../../assets/img/form-img/signup-img.png";
 import logo from '../../assets/img/form-img/logo.png';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthApis from "../../Apis/AuthApis";
+import { toast } from "react-toastify";
 
 const Signup = () => {
   const { register, handleSubmit, formState: { errors, isLoading } } = useForm();
   const [resMessage, setResMessage] = useState();
+  const navigate = useNavigate();
   
   const onSubmit = async (data) => {
       console.log('data', data)
       const res = await AuthApis.save(data);
       console.log('res', res)
       if (res.success) {
-
+        toast.success(res.message);
+        navigate(`/otp/${data.email}?register=true`)
       } else {
         setResMessage(res);
+        toast.error(res.message.message[0]);
         setTimeout(() => {
           setResMessage();
         }, 4000)

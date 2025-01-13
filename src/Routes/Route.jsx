@@ -34,7 +34,12 @@ import VendorPackages from '../Components/VendorDashboard/Packages/VendorPackgae
 import Payments from '../Pages/Dashboard/Payment/Payments'
 import BlogsPost from '../Pages/Dashboard/Blogs/BlogsPost'
 import Settings from '../Pages/Dashboard/Settings/Settings'
+import PackageExtraService from '../Pages/Dashboard/Package/PackageExtraService'
 import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
+import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
+import Chat from "../Components/Dashboard/chat/Chat";
+import Contacts from '../Pages/Contacts/Contacts'
+import PrivateRoute from './Private/PrivateRoute'
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +95,9 @@ export const router = createBrowserRouter([
       {
         path: '/tours',
         element: <Tours />
+      },      {
+        path: '/contacts',
+        element: <Contacts />
       },
       {
         path: '/blogs',
@@ -104,7 +112,7 @@ export const router = createBrowserRouter([
   {
     path: '/dashboard',
     // element: <DashboardLayout />,
-    element: <AdminLayout />,
+    element: <PrivateRoute role={["admin"]}><AdminLayout /></PrivateRoute>,
     children: [
       {
         index: true,
@@ -115,7 +123,10 @@ export const router = createBrowserRouter([
         element: <AddPackage />
       },
       {
-        path: "edit-package/:id",
+        path: "chat/:conversationID?",
+        element: <Chat/>,
+      },
+      { path: "edit-package/:id",
         element: <EditPackage />,
       },
       {
@@ -137,6 +148,10 @@ export const router = createBrowserRouter([
       {
         path: 'package-destination-&-policy',
         element: <PackageDestinationPolicy />
+      },
+      {
+        path: 'package-extra-service',
+        element: <PackageExtraService />
       },
       {
         path: 'packages',
@@ -182,7 +197,7 @@ export const router = createBrowserRouter([
         path: 'settings',
         element: <Settings/>
       }
-    ]
+    ],
   },
   {
     path: 'vendor/dashboard',
@@ -212,11 +227,15 @@ export const router = createBrowserRouter([
     element: <Login />
   },
   {
+    path: 'admin-login',
+    element: <AdminLogin />
+  },
+  {
     path: 'forget-password',
     element: <ForgetPassword />
   },
   {
-    path: 'otp',
+    path: 'otp/:email',
     element: <Otp />
   },
   {
@@ -262,6 +281,10 @@ export const router = createBrowserRouter([
     element: <Login />
   },
   {
+    path: 'admin-login',
+    element: <AdminLogin />
+  },
+  {
     path: 'forget-password',
     element: <ForgetPassword />
   },
@@ -270,7 +293,7 @@ export const router = createBrowserRouter([
     element: <Otp />
   },
   {
-    path: 'change-password',
+    path: 'change-password/:email/:otp',
     element: <ChangePassword />
   }
 ])

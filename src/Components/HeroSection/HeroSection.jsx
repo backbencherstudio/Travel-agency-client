@@ -7,7 +7,7 @@ const HeroSection = ({ bgImg, pageName, links, description }) => {
     return (
         <div>
             <div
-                className="flex items-center justify-center h-[700px] w-full"
+                className="flex items-center justify-center h-[483px] w-full"
                 style={{
                     backgroundImage: `url(${bgImg})`,
                     backgroundSize: 'cover',

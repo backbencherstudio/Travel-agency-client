@@ -30,7 +30,8 @@ const EditPackage = () => {
   const [policies, setPolicies] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [images, setImages] = useState([]);
-  const [selectedPolicy, setSelectedPolicy] = useState("");
+    const [extraServices, setExtraServices] = useState([]);
+  const [serviceIds, setServicesIds] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
@@ -76,6 +77,9 @@ const EditPackage = () => {
           }))
         );
 
+        const resServices = await axiosClient.get("api/admin/extra-service");
+        setExtraServices(resServices.data?.data);
+
         if (editId) {
           const resPackage = await axiosClient.get(
             `api/admin/package/${editId}`
@@ -110,6 +114,11 @@ const EditPackage = () => {
               ?.filter((tag) => tag?.type === "excluded")
               .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
           );
+          setServicesIds(
+            packageData.package_extra_services?.map((service) => ({
+              id: service.extra_service?.id, // Extract `id` and wrap it in an object
+            }))
+          )
           if (packageData.package_trip_plans && packageData.package_trip_plans.length > 0) {
             setTourPlan(
               packageData.package_trip_plans?.map((plan, index) => ({
@@ -130,6 +139,7 @@ const EditPackage = () => {
     fetchData();
   }, [editId]);
 
+  console.log('service ids', serviceIds)
   // console.log('tags', tags)
   // console.log('categories', categories)
 
@@ -179,6 +189,7 @@ const EditPackage = () => {
       ...data,
       includedPackages,
       excludedPackages,
+      serviceIds,
       package_images: images.map((image) => (image.file ? image.file : image)),
       // tourPlan,
     };
@@ -250,6 +261,8 @@ const EditPackage = () => {
             : "excluded_packages",
           JSON.stringify(packages)
         );
+      } else if (key === "serviceIds") {
+        form.append("extra_services", JSON.stringify(serviceIds));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -283,6 +296,18 @@ const EditPackage = () => {
   };
 
   console.log("includedPackages", includedPackages);
+
+  const handleExtraServices = (serviceId, isChecked) => {
+    console.log('serviceId', serviceId)
+    console.log('isChecked', isChecked)
+    if (isChecked) {
+      // Add the service ID as an object if checked
+      setServicesIds((prev) => [...prev, { id: serviceId }]);
+    } else {
+      // Remove the service ID object if unchecked
+      setServicesIds((prev) => prev.filter((service) => service.id !== serviceId));
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -630,6 +655,42 @@ const EditPackage = () => {
                   {/* {errors.cancelation_policy && (
                                         <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
                                     )} */}
+                </div>
+                <div>
+                  <ul class="flex flex-col gap-2 max-w-full mx-auto text-base text-[#C9C9C9] w-full p-4 rounded-md border border-gray-200 bg-white">
+                    <li>
+                        <details class="group">
+                            <summary
+                                class="flex items-center justify-between gap-2 font-medium marker:content-none hover:cursor-pointer">
+                                <span class="flex gap-2 text-gray-500 text-base font-medium">
+                                    Extra Service
+                                </span>
+                                <svg class="w-4 h-4 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg"
+                                    width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd"
+                                        d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z">
+                                    </path>
+                                </svg>
+                            </summary>
+                            <article class="">
+                                <ul class="flex flex-col gap-4 mt-4">
+                                  {extraServices?.map(service => 
+                                    <li class="flex gap-2" key={service.id}>
+                                      <input
+                                        type="checkbox"
+                                        value={service.id}
+                                        checked={serviceIds.some((s) => s.id === service?.id)}
+                                        onClick={(e) => handleExtraServices(service.id, e.target.checked)}
+                                        className="w-4 text-[#49556D]"
+                                      />
+                                      <p className="text-base text-[#49556D]">{service.name}</p>
+                                    </li>
+                                  )}
+                                </ul>
+                            </article>
+                        </details>
+                    </li>
+                  </ul>
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">

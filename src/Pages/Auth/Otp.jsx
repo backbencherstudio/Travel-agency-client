@@ -2,19 +2,37 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import image from "../../assets/img/form-img/otp-img.png";
 import logo from '../../assets/img/form-img/logo.png';
-import { Link } from "react-router-dom";
+import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import SuccessPopup from "../../Components/Auth/SuccessPopUp";
+import axiosClient from "../../axiosClient";
+import { toast } from "react-toastify";
 
 const Otp = () => {
     const { register, handleSubmit, setFocus, formState: { errors } } = useForm();
     const [isPopupVisible, setPopupVisible] = useState(false);
+    const [verifyData, setVerifyData] = useState({});
+    const { email } = useParams();
+    const location = useLocation();
 
-    const onSubmit = (data) => {
-        const otp = Object.values(data).join('');
-        console.log("Entered OTP:", otp);
-        setPopupVisible(true);
+    const getQueryParams = () => {
+        const searchParams = new URLSearchParams(location.search);
+        return Object.fromEntries(searchParams.entries());
     };
 
+    const queryParams = getQueryParams();
+    console.log('queryParams', queryParams.changePassword)
+    console.log('email', email)
+    const onSubmit = async (data) => {
+        const otp = Object.values(data).join('');
+        setVerifyData({ otp: otp, email: email });
+        console.log("Entered OTP:", otp);
+        const res = await axiosClient.post(`/api/auth/verify-email`, {email: email, token: otp})
+        if (res.success) {
+            toast.success(res.message.message);
+        }
+        setPopupVisible(true);
+    };
+    console.log('verifyData', verifyData)
     const handleKeyUp = (e, index) => {
         if (e.target.value.length === 1 && index < 5) {
             setFocus(`otp${index + 1}`);
@@ -70,7 +88,7 @@ const Otp = () => {
                     </div>
                 </div>
             </div>
-            <SuccessPopup show={isPopupVisible} onClose={() => setPopupVisible(false)} />
+            <SuccessPopup show={isPopupVisible} onClose={() => setPopupVisible(false)} queryParams={queryParams} verifyData={verifyData} />
         </>
     );
 };

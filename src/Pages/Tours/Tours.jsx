@@ -1,33 +1,60 @@
-import React from 'react';
-import bgImg from './../../assets/img/banner/tour.png'
-import './Tour.css'
-import AllTours from './AllTours';
-import TravelWithUs from '../../Components/Home/TravelWithUs';
+import React from "react";
+import bgImg from "./../../assets/img/banner/tour.png";
+import "./Tour.css";
+import AllTours from "./AllTours";
+import TravelWithUs from "../../Components/Home/TravelWithUs";
 function Tours() {
-    return (
-        <div>
-            {/* Banner Section with Background Image */}
-            <div className="flex items-center justify-center h-[700px]" style={{ backgroundImage: `url(${bgImg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-                <div style={{ background: "linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.60) 100%)", height: "100%", width: "100%" }} className="text-center flex items-center justify-center flex-col text-white">
-                    <h3 className="flex gap-2 justify-center items-center text-lg">
-                        Home
-                        <span className="mx-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="5" height="10" viewBox="0 0 5 10" fill="none">
-                                <path fillRule="evenodd" clipRule="evenodd" d="M0.442596 0.344988C0.173058 0.560619 0.129357 0.953926 0.344988 1.22347L3.36597 4.9997L0.344987 8.77593C0.129356 9.04547 0.173057 9.43878 0.442596 9.65441C0.712135 9.87004 1.10544 9.82634 1.32107 9.5568L4.65441 5.39013C4.83702 5.16187 4.83702 4.83753 4.65441 4.60926L1.32107 0.442596C1.10544 0.173058 0.712135 0.129357 0.442596 0.344988Z" fill="white" />
-                            </svg>
-                        </span>
-                        Tours
-                    </h3>
-                    <h4 className="pageTitle">Our Tours</h4>
-                    <p className="mt-4 text-lg px-24 max-w-[622px]">
-                        Explore our diverse range of guided tours, each designed to immerse you in captivating destinations and unforgettable experiences.
-                    </p>
-                </div>
-            </div>
+  return (
+    <div>
+      {/* Banner Section with Background Image */}
+      <div
+        className="flex items-center justify-center h-[700px]"
+        style={{
+          backgroundImage: `url(${bgImg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div
+          style={{
+            background:
+              "linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.60) 100%)",
+            height: "100%",
+            width: "100%",
+          }}
+          className="text-center flex items-center justify-center flex-col text-white"
+        >
+          <h3 className="flex gap-2 justify-center items-center text-lg">
+            Home
+            <span className="mx-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="5"
+                height="10"
+                viewBox="0 0 5 10"
+                fill="none"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M0.442596 0.344988C0.173058 0.560619 0.129357 0.953926 0.344988 1.22347L3.36597 4.9997L0.344987 8.77593C0.129356 9.04547 0.173057 9.43878 0.442596 9.65441C0.712135 9.87004 1.10544 9.82634 1.32107 9.5568L4.65441 5.39013C4.83702 5.16187 4.83702 4.83753 4.65441 4.60926L1.32107 0.442596C1.10544 0.173058 0.712135 0.129357 0.442596 0.344988Z"
+                  fill="white"
+                />
+              </svg>
+            </span>
+            Tours
+          </h3>
+          <h4 className="pageTitle">Our Tours</h4>
+          <p className="mt-4 text-lg px-24 max-w-[622px]">
+            Explore our diverse range of guided tours, each designed to immerse
+            you in captivating destinations and unforgettable experiences.
+          </p>
+        </div>
+      </div>
 
-            {/* Main Content Section */}
-            <div className="  lg:my-20 my-10">
-                {/* <h1 className="why lg:mb-12 mb-5">Why Travel with Us</h1>
+      {/* Main Content Section */}
+      <div className="  lg:my-20 my-10">
+        {/* <h1 className="why lg:mb-12 mb-5">Why Travel with Us</h1>
                 <div className=" max-w-7xl mx-auto  grid lg:grid-cols-4 place-items-center gap-3 px-4">
                     <div className=' w-full border flex flex-col items-center justify-center text-center lg:p-3 p-2 lg:gap-2 lg:h-64 shadow-md rounded-md'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" fill="none">
@@ -68,13 +95,13 @@ function Tours() {
                         <p className='text-[#49556D]'>Connecting you with reliable partners to enhance your travel experience.</p>
                     </div>
                 </div> */}
-                <TravelWithUs />
-            </div>
-            <div className='bg-[#F0F4F9] lg:min-h-screen'>
-                <AllTours />
-            </div>
-        </div >
-    );
+        <TravelWithUs />
+      </div>
+      <div className="bg-[#F0F4F9] lg:min-h-screen">
+        <AllTours />
+      </div>
+    </div>
+  );
 }
 
 export default Tours;

@@ -4,14 +4,27 @@ import image from "../../assets/img/form-img/forget-img.png";
 import leftArrow from "../../assets/img/form-img/arrow-left.svg";
 import logo from '../../assets/img/form-img/logo.png';
 import { Link, useNavigate } from "react-router-dom";
+import ChangePasswordApis from "../../Apis/ChangePasswordApis";
+import { toast } from "react-toastify";
 
 const ForgetPassword = () => {
     const { register, handleSubmit, formState: { errors }, } = useForm();
     const navigate = useNavigate();
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
       console.log(data);
-      navigate('/otp')
+      const res = await ChangePasswordApis.send(data);
+      console.log('res', res)
+      if (res.success) {
+        toast.success(res.message);
+        navigate(`/otp/${data.email}?changePassword=true`)
+      } else {
+        setResMessage(res);
+        toast.error(res.message.message[0]);
+        setTimeout(() => {
+          setResMessage();
+        }, 4000)
+      }
     };
   
     return (

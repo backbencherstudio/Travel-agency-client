@@ -1,23 +1,23 @@
 import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import image from "../../assets/img/form-img/login-img.png";
-import logo from '../../assets/img/form-img/logo.png';
+import image from "../../../assets/img/form-img/login-img.png";
+import logo from '../../../assets/img/form-img/logo.png';
 import { Link, useNavigate } from "react-router-dom";
-import AuthApis from "../../Apis/AuthApis";
 import { toast } from "react-toastify";
-import { AuthContext } from "../../AuthProvider/AuthProvider";
+import AuthApis from "../../../Apis/AuthApis";
+import { AuthContext } from "../../../AuthProvider/AuthProvider";
 
-const Login = () => {
+const AdminLogin = () => {
   const { register, handleSubmit, formState: { errors, isLoading } } = useForm();
   const [resMessage, setResMessage] = useState();
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   
   const onSubmit = async (data) => {
     // const res = await AuthApis.login(data);
     // if (res.success) {
-    //     // console.log('res', res)
-    //     localStorage.token = res.authorization.token;
+    //   // console.log('res', res)
+    //   localStorage.token = res.authorization.token;
     //     // window.location.reload();
     //     toast.success(res.message)
     //     navigate('/')
@@ -29,20 +29,19 @@ const Login = () => {
     //         setResMessage('');
     //     }, 5000);
     // }
-    try {
-     const res = await login({
+     try {
+      await login({
         email: data.email,
         password: data.password
       })
-      console.log('res', res)
       // toast.success('Loging Successful.');
       const role = localStorage.getItem('role');
-      console.log('token', role)
+      // console.log('token', token)
       setTimeout(() => {
-        if (role === 'user') {
-          navigate('/')
-        } else {
+        if (role === 'admin') {
           navigate('/dashboard')
+        } else {
+          navigate('/');
         }
       }, 2000);
     } catch (error) {
@@ -53,11 +52,11 @@ const Login = () => {
 
   return (
     <>
-    <div className='flex flex-col lg:flex-row items-center'>
-        <div className='hidden md:block'>
+    <div className='my-24 xl:my-40'>
+        {/* <div className='hidden md:block'>
             <img src={image} className='md:w-0 md:h-0 lg:h-[1024px] lg:w-[432px] xl:w-[732px] lg:rounded-r-[80px] object-cover max-h-screen' alt="" />
-        </div>
-        <div className="w-full xl:w-1/2 h-full p-6 md:p-0">
+        </div> */}
+        <div className="w-full h-full p-6 md:p-0">
           <div className="max-w-xl mx-auto ">
             <img src={logo} className="w-[89px] h-12" alt="" />
           </div>
@@ -135,4 +134,4 @@ const Login = () => {
   );
 }
 
-export default Login
+export default AdminLogin
