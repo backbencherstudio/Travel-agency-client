@@ -90,6 +90,7 @@ const AuthProvider = ({ children }) => {
     // }
   };
 
+<<<<<<< HEAD
   const userInfo = {
     user,
     loading,
@@ -97,6 +98,28 @@ const AuthProvider = ({ children }) => {
     login,
     logout,
   };
+=======
+    const changePassword = async (data) => {
+        try {
+            const res = await axiosClient.post("/api/auth/change-password", data);
+            const message = res?.data?.message;
+            console.log('res', res)
+            toast.success(message);
+        } catch (error) {
+            console.error("Logout failed:", error);
+            alert("Logout failed. Please try again.");
+        }
+    };
+
+    const userInfo = {
+        user,
+        loading,
+        signup,
+        login,
+        logout,
+        changePassword,
+    };
+>>>>>>> da71061f260322952e6979d2857e2407212c0fe0
 
   return (
     <AuthContext.Provider value={userInfo}>{children}</AuthContext.Provider>

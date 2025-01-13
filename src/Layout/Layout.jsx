@@ -12,12 +12,14 @@ const Layout = () => {
       {loading && (
         <Loading />
       )}
-      <Navbar />
-      <div className="flex-grow">
-        <Outlet />
-      </div>
-      <div className="bg-[#061D35]">
-        <Footer />
+      <div className="animate-from-middle">
+        <Navbar />
+        <div className="flex-grow">
+          <Outlet />
+        </div>
+        <div className="bg-[#061D35]">
+          <Footer />
+        </div>
       </div>
     </div>
   );
