@@ -121,4 +121,27 @@ BlogApis.deleteBlogPost = async id => {
   return res
 }
 
+
+// search api
+
+// search blog
+BlogApis.searchBlogs = async (query) => {
+  const url = `/api/admin/blog?q=${encodeURIComponent(query)}`;
+  const res = await axiosClient
+    .get(url)
+    .then(response => response.data)
+    .catch(error => {
+      if (error.response) {
+        return {
+          errors: error.response.data.errors,
+          message: error.response.data.message
+        };
+      } else {
+        return { message: 'An error occurred while searching for blogs.' };
+      }
+    });
+  return res;
+};
+
+
 export default BlogApis

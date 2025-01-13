@@ -76,7 +76,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
   const handleSearchChange = e => {
     const value = e.target.value
     setSearchQuery(value)
-    // console.log('Search query updated:', value);
+    console.log('Search query updated:', value);
     // Update URL with the search query
     navigate({
       pathname: location.pathname,
@@ -84,11 +84,11 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
     })
   }
 
-  // Debounce the handleSearchChange function to optimize search performance
   const debouncedSearchChange = useCallback(
-    debounce(value => handleSearchChange({ target: { value } }), 100),
+    debounce(value => handleSearchChange({ target: { value } }), 20),
     [handleSearchChange]
   )
+  
 
   const handleSearchInputChange = e => {
     debouncedSearchChange(e.target.value)
