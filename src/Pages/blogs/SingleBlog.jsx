@@ -8,9 +8,10 @@ import Faqs from '../../Components/Home/Faqs'
 import { FaRegComments } from 'react-icons/fa'
 import { SlLike } from 'react-icons/sl'
 import { CiSearch } from 'react-icons/ci'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { getBlogDetails } from '../../Apis/clientApi/ClientBlogApi'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { AuthContext } from '../../AuthProvider/AuthProvider'
 
 const SingleBlog = () => {
   const links = [
@@ -18,12 +19,12 @@ const SingleBlog = () => {
     { name: 'Blogs', path: '/blogs' },
     { name: 'Blog Details', path: '' }
   ]
-
+  const { user } = useContext(AuthContext)
+  const navigate = useNavigate()
   const { id } = useParams()
   const [blog, setBlog] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-
   useEffect(() => {
     const fetchBlogDetails = async () => {
       try {
@@ -58,7 +59,9 @@ const SingleBlog = () => {
     return <p>No blog found!</p>
   }
 
-  // console.log()
+  const handleLoginRedirect = () => {
+    navigate('/login')
+  }
 
   const comments = [
     {
@@ -91,7 +94,7 @@ const SingleBlog = () => {
   ]
 
   return (
-    <div>
+    <div className='bg-[#F0F4F9]'>
       <HeroSection
         bgImg={blogImage}
         pageName='Our Blogs'
@@ -121,7 +124,8 @@ const SingleBlog = () => {
                 {blog.data?.like_count} Likes
               </h2>
               <h2 className='flex items-center mr-2'>
-                <FaRegComments className='text-orange-500 mr-1 text-xl ' /> {blog.data?.blog_comments.length} Comments
+                <FaRegComments className='text-orange-500 mr-1 text-xl ' />{' '}
+                {blog.data?.blog_comments.length} Comments
               </h2>
             </span>
 
@@ -129,101 +133,44 @@ const SingleBlog = () => {
               <h2 className='font-inter text-[30px] md:text-[40px] font-semibold leading-[130%]'>
                 {blog.data?.title}
               </h2>
-              <p className='mt-5'>
-                Bali is a paradise that promises breathtaking scenery, rich
-                cultural heritage, and unforgettable experiences. From serene
-                beaches and ancient temples to majestic waterfalls hidden in
-                lush landscapes, Bali has something for every traveler. This
-                guide takes you through the must-see spots in Bali for an
-                adventure you'll treasure forever.
-              </p>
 
-              <div>
-                <h2 className='font-inter text-[24px] font-semibold leading-[130%] tracking-[0.12px] mt-6'>
-                  Blissful Beaches
-                </h2>
-                <p className='mt-2'>
-                  Bali is famous for its pristine beaches, each offering a
-                  unique experience:
-                </p>
-                <p className='mt-2'>
-                  Kuta Beach – Known for its vibrant nightlife, Kuta is perfect
-                  for those who enjoy beach parties and socializing. Its
-                  beautiful sunsets are a bonus!
-                </p>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: blog.data?.body || 'No content available'
+                }}
+              ></div>
+            </div>
 
-                <p className='mt-2'>
-                  Seminyak Beach – Trendy and upscale, Seminyak offers chic
-                  beach clubs, relaxing lounges, and amazing views.
-                </p>
-                <p className='mt-2'>
-                  Nusa Dua – Family-friendly and tranquil, Nusa Dua is ideal for
-                  safe swimming and luxury resorts, away from the crowds.
-                </p>
-                <p className='mt-2'>
-                  Each of these beaches gives you a different flavor of Bali’s
-                  coastal beauty. Relax, surf, or explore the beachside cafes
-                  and markets—there’s always something to enjoy.
-                </p>
-              </div>
+            {/* Comment Section */}
+            <div className='max-w-2xl w-full mt-10'>
+              <h2 className='text-xl font-semibold mb-4'>Comments</h2>
 
-              <div>
-                <h2 className='font-inter text-[24px] font-semibold leading-[130%] tracking-[0.12px] mt-6'>
-                  Sacred Temples
-                </h2>
-                <p className='mt-2'>
-                  Bali is famous for its pristine beaches, each offering a
-                  unique experience:
-                </p>
-                <p className='mt-2'>
-                  Kuta Beach – Known for its vibrant nightlife, Kuta is perfect
-                  for those who enjoy beach parties and socializing. Its
-                  beautiful sunsets are a bonus!
-                </p>
-
-                <p className='mt-2'>
-                  Seminyak Beach – Trendy and upscale, Seminyak offers chic
-                  beach clubs, relaxing lounges, and amazing views.
-                </p>
-                <p className='mt-2'>
-                  Nusa Dua – Family-friendly and tranquil, Nusa Dua is ideal for
-                  safe swimming and luxury resorts, away from the crowds.
-                </p>
-                <p className='mt-2'>
-                  Each of these beaches gives you a different flavor of Bali’s
-                  coastal beauty. Relax, surf, or explore the beachside cafes
-                  and markets—there’s always something to enjoy.
-                </p>
-              </div>
-
-              <div>
-                <h2 className='font-inter text-[24px] font-semibold leading-[130%] tracking-[0.12px] mt-6'>
-                  Majestic Waterfalls
-                </h2>
-                <p className='mt-2'>
-                  Bali is famous for its pristine beaches, each offering a
-                  unique experience:
-                </p>
-                <p className='mt-2'>
-                  Kuta Beach – Known for its vibrant nightlife, Kuta is perfect
-                  for those who enjoy beach parties and socializing. Its
-                  beautiful sunsets are a bonus!
-                </p>
-
-                <p className='mt-2'>
-                  Seminyak Beach – Trendy and upscale, Seminyak offers chic
-                  beach clubs, relaxing lounges, and amazing views.
-                </p>
-                <p className='mt-2'>
-                  Nusa Dua – Family-friendly and tranquil, Nusa Dua is ideal for
-                  safe swimming and luxury resorts, away from the crowds.
-                </p>
-                <p className='mt-2'>
-                  Each of these beaches gives you a different flavor of Bali’s
-                  coastal beauty. Relax, surf, or explore the beachside cafes
-                  and markets—there’s always something to enjoy.
-                </p>
-              </div>
+              {/* Conditional Rendering */}
+              {user ? (
+                <div className='relative'>
+                  <input
+                    type='text'
+                    placeholder='Leave a comment...'
+                    className='w-full px-4 py-4 pr-28 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#EB5B2A] focus:border-transparent'
+                  />
+                  <button className='absolute right-2 top-1/2 transform -translate-y-1/2 px-5 py-3 bg-[#0E457D] text-white rounded-lg font-medium hover:bg-[#0e457de4] text-[15px] duration-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'>
+                    Submit
+                  </button>
+                </div>
+              ) : (
+                <div className='mt-4'>
+                  <p>
+                    Please{' '}
+                    <button
+                      className='text-[#EB5B2A]  font-bold underline'
+                      onClick={handleLoginRedirect}
+                    >
+                      log in
+                    </button>{' '}
+                    to leave a comment.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className='mt-12'>
