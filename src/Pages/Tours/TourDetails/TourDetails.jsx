@@ -1,18 +1,20 @@
-import Details from "../../Components/DetailsComponent/Details";
-import HeroSection from "../../Components/HeroSection/HeroSection";
-import ParentComponent from "../../Components/ParentComponent/ParentComponent";
-import blogImage from '../../assets/img/blogs/blogImage.png';
-import image1 from '../../assets/img/tour-details/image-1.png';
-import image2 from '../../assets/img/tour-details/image-2.png';
-import image3 from '../../assets/img/tour-details/image-3.png';
-import image4 from '../../assets/img/tour-details/image-4.png';
-import image5 from '../../assets/img/tour-details/image-5.png';
-import cancellationBg from '../../assets/img/tour-details/cancellation-bg.png';
+import Details from "../../../Components/DetailsComponent/Details";
+import HeroSection from "../../../Components/HeroSection/HeroSection";
+import ParentComponent from "../../../Components/ParentComponent/ParentComponent";
+import blogImage from '../../../assets/img/blogs/blogImage.png';
+import image1 from '../../../assets/img/tour-details/image-1.png';
+import image2 from '../../../assets/img/tour-details/image-2.png';
+import image3 from '../../../assets/img/tour-details/image-3.png';
+import image4 from '../../../assets/img/tour-details/image-4.png';
+import image5 from '../../../assets/img/tour-details/image-5.png';
+import cancellationBg from '../../../assets/img/tour-details/cancellation-bg.png';
 import './tourDetails.css'
-import TravelPackages from "../../Components/Home/TravelPackages";
+import TravelPackages from "../../../Components/Home/TravelPackages";
+import { useParams } from "react-router-dom";
 
 const TourDetails = () => {
     const links = [{name: "Home", path: "/"}, {name: "Tours", path: "/tours"}, {name: "Tour Details", path: ""},]
+    const { id } = useParams();
     const tour =  {
         id: 1,
         title: "Sacred Temples of Bali",
@@ -32,6 +34,8 @@ const TourDetails = () => {
             {"locationImage": image4, "day": 4, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}
         ],
     }
+
+    console.log('id', id)
     
   return (
     <div>

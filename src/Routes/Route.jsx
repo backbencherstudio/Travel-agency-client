@@ -5,10 +5,10 @@ import Tours from '../Pages/Tours/Tours'
 import Signup from '../Pages/Auth/Signup'
 import Login from '../Pages/Auth/Login'
 import ForgetPassword from '../Pages/Auth/ForgetPassword'
-import Otp from '../Pages/Auth/OTP'
+import Otp from '../Pages/Auth/Otp'
 import Blogs from '../Pages/blogs/Blogs'
 import SingleBlog from '../Pages/blogs/SingleBlog'
-import TourDetails from '../Pages/TourDetails/TourDetails'
+import TourDetails from '../Pages/Tours/TourDetails/TourDetails'
 import ReviewPackage from '../Pages/ReviewPackage/ReviewPackage'
 // import DashboardLayout from '../Layout/DashboardLayout'
 import DashboardAnalysis from '../Components/Dashboard/Dashboard/DashboardAnalysis'
@@ -41,6 +41,7 @@ import Chat from "../Components/Dashboard/chat/Chat";
 import Contacts from '../Pages/Contacts/Contacts'
 import PrivateRoute from './Private/PrivateRoute'
 import Cruises from '../Pages/Cruises/Cruises'
+import CruiseDetails from '../Pages/Cruises/CruiseDetails/CruiseDetails'
 
 export const router = createBrowserRouter([
   {
@@ -98,8 +99,16 @@ export const router = createBrowserRouter([
         element: <Tours />
       },
       {
+        path: '/tours/:id',
+        element: <TourDetails />
+      },
+      {
         path: '/cruises',
         element: <Cruises />
+      },
+      {
+        path: '/cruises/:id',
+        element: <CruiseDetails />
       },
       {
         path: '/contacts',
@@ -109,10 +118,6 @@ export const router = createBrowserRouter([
         path: '/blogs',
         element: <Blogs />
       },
-      {
-        path: '/tour-details/:id',
-        element: <TourDetails />
-      }
     ]
   },
   {
