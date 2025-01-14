@@ -686,16 +686,16 @@ const AddPackage = () => {
                     <option value="" className="text-base text-black">
                       Language
                     </option>
-                    <option value="eng" className="text-base text-black">
+                    <option value="en" className="text-base text-black">
                       English
                     </option>
-                    <option value="" className="text-base text-black">
+                    <option value="es" className="text-base text-black">
                       Spanish
                     </option>
-                    <option value="" className="text-base text-black">
+                    <option value="de" className="text-base text-black">
                       German
                     </option>
-                    <option value="" className="text-base text-black">
+                    <option value="fr" className="text-base text-black">
                       French
                     </option>
                   </select>

@@ -1,6 +1,7 @@
-import  { useState } from 'react'
+import  { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa' 
+import { AuthContext } from '../../../AuthProvider/AuthProvider'
 
 const Password = () => {
   const {
@@ -10,6 +11,7 @@ const Password = () => {
     reset,
     watch
   } = useForm()
+  const { changePassword } = useContext(AuthContext);
 
   // Separate states for toggling visibility of Current and New Password
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
@@ -19,6 +21,7 @@ const Password = () => {
   // Handle form submission
   const onSubmit = data => {
     console.log('Form Data:', data)
+    changePassword(data);
     reset() // Clear the form after successful submission
   }
 
@@ -43,12 +46,12 @@ const Password = () => {
           <div className='relative'>
             <input
               type={showCurrentPassword ? 'text' : 'password'} 
-              {...register('currentPassword', {
+              {...register('old_password', {
                 required: 'Current Password is required'
               })}
               placeholder='Enter your Current Password'
               className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                errors.currentPassword ? 'border-red-500' : ''
+                errors.old_password ? 'border-red-500' : ''
               }`}
             />
             <span
@@ -75,7 +78,7 @@ const Password = () => {
           <div className='relative'>
             <input
               type={showNewPassword ? 'text' : 'password'} 
-              {...register('newPassword', {
+              {...register('new_password', {
                 required: 'New Password is required',
                 minLength: {
                   value: 8,
@@ -90,7 +93,7 @@ const Password = () => {
               })}
               placeholder='Enter your New Password'
               className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                errors.newPassword ? 'border-red-500' : ''
+                errors.new_password ? 'border-red-500' : ''
               }`}
             />
             <span
@@ -120,7 +123,7 @@ const Password = () => {
               {...register('confirmPassword', {
                 required: 'Confirm Password is required',
                 validate: value =>
-                  value === watch('newPassword') || 'Passwords do not match'
+                  value === watch('new_password') || 'Passwords do not match'
               })}
               placeholder='Enter your Confirm Password'
               className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${

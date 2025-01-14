@@ -72,7 +72,7 @@ const Destinations = () => {
                     ))}
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start py-12 md:py-20">
+            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start py-12 md:py-20">
               {destinations?.map((destination) => (
                 <div className="flex gap-3 bg-white shadow rounded-xl overflow-hidden items-center justify-start">
                   <div className="relative w-[102px] h-[102px] flex-shrink-0">
@@ -94,7 +94,7 @@ const Destinations = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
         </div>
 
