@@ -39,11 +39,8 @@ import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
 import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
 import Chat from "../Components/Dashboard/chat/Chat";
 import Contacts from '../Pages/Contacts/Contacts'
-<<<<<<< HEAD
 import Cancellation from '../Pages/Contacts/Cancellation'
-=======
 import PrivateRoute from './Private/PrivateRoute'
->>>>>>> da71061f260322952e6979d2857e2407212c0fe0
 
 export const router = createBrowserRouter([
   {

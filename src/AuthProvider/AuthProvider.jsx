@@ -14,7 +14,7 @@ const AuthProvider = ({ children }) => {
     const fetchUserInfo = async () => {
         try {
             const response = await axiosClient.get("/api/auth/me");
-            console.log('response', response.data?.data)
+            // console.log('response', response.data?.data)
             setUser(response?.data?.data);
         } catch (error) {
             console.error("Failed to fetch user info:", error.response?.data?.message || error.message);
