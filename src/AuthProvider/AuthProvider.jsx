@@ -90,15 +90,6 @@ const AuthProvider = ({ children }) => {
     // }
   };
 
-<<<<<<< HEAD
-  const userInfo = {
-    user,
-    loading,
-    signup,
-    login,
-    logout,
-  };
-=======
     const changePassword = async (data) => {
         try {
             const res = await axiosClient.post("/api/auth/change-password", data);
@@ -119,7 +110,6 @@ const AuthProvider = ({ children }) => {
         logout,
         changePassword,
     };
->>>>>>> da71061f260322952e6979d2857e2407212c0fe0
 
   return (
     <AuthContext.Provider value={userInfo}>{children}</AuthContext.Provider>
