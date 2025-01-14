@@ -1,35 +1,85 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useState } from "react";
-// import { useForm } from "react-hook-form";
+import React, { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import axiosClient from "../../axiosClient";
+import axios from "axios";
+import HeroSection from "../../Components/HeroSection/HeroSection";
+import ParentComponent from "../../Components/ParentComponent/ParentComponent";
+// Assets
 import image from "../../assets/img/contact/contact.png";
 import c1 from "../../assets/img/contact/cimg1.svg";
 import c2 from "../../assets/img/contact/cimg2.svg";
 import c3 from "../../assets/img/contact/cimg3.svg";
 import "./contacts.css";
-import { useForm } from "react-hook-form";
-import HeroSection from "../../Components/HeroSection/HeroSection";
-import ParentComponent from "../../Components/ParentComponent/ParentComponent";
-import axios from "axios";
+// SweetAlert2 for modal notifications
+import Swal from "sweetalert2";
+
 
 const Contacts = () => {
+  // Tracks the loading state during form submission
+  const [loading, setLoading] = useState(false);
+
+  /**
+   * Destructure 'reset' from useForm 
+   * so we can reset the form fields after a successful submission
+   */
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset, // <-- add this
+  } = useForm();
+
+  /**
+   * handleSubmit callback
+   * Sends form data to the server via POST and displays SweetAlert2 modals
+   * based on the API response (success or warning).
+   */
+  const onSubmit = async (formData) => {
+    try {
+      setLoading(true);
+      // Send POST request to save data in the database
+      const response = await axiosClient.post("/api/contact", formData);
+
+      // If the server indicates a successful operation
+      if (response.data.success === true) {
+        Swal.fire({
+          title: "Success",
+          text: response.data.message,
+          icon: "success",
+        });
+        // Reset form fields after a successful submission
+        reset();
+      } else {
+        // If the API responds with a non-success scenario
+        Swal.fire({
+          title: "Failed",
+          text: response.data.message,
+          icon: "warning",
+          timer: 200, // auto-closes after 200ms (optional)
+        });
+      }
+    } catch (error) {
+      // Logs any error encountered during the request
+      console.error("Error sending contact data:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Something went wrong! Please try again.",
+        icon: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Breadcrumb links for the hero section
   const links = [
     { name: "Home", path: "/" },
     { name: "Contacts", path: "/contacts" },
   ];
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
-    alert("Form submitted successfully");
-  };
-
   return (
     <>
+      {/* Hero Section with background image, page name, and navigation links */}
       <div className="bg-white">
         <HeroSection
           bgImg={image}
@@ -38,14 +88,16 @@ const Contacts = () => {
           description="Whether you’re ready to book your next adventure, need assistance with your itinerary, or have questions about our services, our team is here to support you every step of the way."
         />
 
-        <div className="horizontal"> </div>
+        <div className="horizontal"></div>
 
+        {/* Main Content Wrapper */}
         <ParentComponent>
-          <div className=" grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* -----------------------------------------Form start--------------- */}
-            <div className="bg-[#F5F7F9] rounded-lg border p-[32px] ">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* -------------------------- Contact Form Section -------------------------- */}
+            <div className="bg-[#F5F7F9] rounded-lg border p-[32px]">
               <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-6">
+                  {/* First Name & Last Name Fields */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label
@@ -92,6 +144,8 @@ const Contacts = () => {
                       )}
                     </div>
                   </div>
+
+                  {/* Email Field */}
                   <div className="mt-4">
                     <label htmlFor="email" className="block text-gray-700 mb-1">
                       Email
@@ -115,6 +169,8 @@ const Contacts = () => {
                       </p>
                     )}
                   </div>
+
+                  {/* Phone Number Field */}
                   <div className="mt-4">
                     <label htmlFor="phone" className="block text-gray-700 mb-1">
                       Phone Number
@@ -138,6 +194,8 @@ const Contacts = () => {
                       </p>
                     )}
                   </div>
+
+                  {/* Message Field */}
                   <div className="mt-4">
                     <label
                       htmlFor="message"
@@ -160,6 +218,8 @@ const Contacts = () => {
                     )}
                   </div>
                 </div>
+
+                {/* Checkbox Agreement */}
                 <div className="flex items-center mt-2">
                   <input
                     id="default-checkbox"
@@ -181,21 +241,23 @@ const Contacts = () => {
                     </p>
                   )}
                 </div>
+
+                {/* Submit Button */}
                 <div className="mt-8 flex justify-end">
                   <button
                     type="submit"
-                    className="w-full bg-[#EB5B2A] text-white text-base font-semibold py-4 px-4 mt-2 rounded-full hover:bg-[#EB5B2A] transition"
+                    disabled={loading}
+                    className="w-full bg-[#EB5B2A] text-white text-base font-semibold py-4 px-4 mt-2 rounded-full hover:bg-[#d85529] transition"
                   >
-                    Send Message
+                    {loading ? "Sending..." : "Send Message"}
                   </button>
                 </div>
               </form>
             </div>
+            {/* -------------------------- End Contact Form Section -------------------------- */}
 
-            {/* -----------------------------------------Form end--------------- */}
-
-            {/* -----------------------------------------Map start--------------- */}
-            <div className=" ">
+            {/* -------------------------- Map Section -------------------------- */}
+            <div>
               <div
                 className="bg-white overflow-hidden rounded-lg border h-full w-full"
                 style={{ aspectRatio: "16/16" }}
@@ -208,23 +270,24 @@ const Contacts = () => {
                 />
               </div>
             </div>
-            {/* -----------------------------------------Map End--------------- */}
+            {/* -------------------------- End Map Section -------------------------- */}
           </div>
         </ParentComponent>
 
-        {/* -----------------------------------------text-content start--------------- */}
-        <div className="contact2 w-[100%] h-auto bg-[#F0F4F9]  pb-24 ">
-          <h1 className="text-center pt-20 pb-12 text-3xl md:text-5xl ">
+        {/* -------------------------- Additional Contact Info Section -------------------------- */}
+        <div className="contact2 w-[100%] h-auto bg-[#F0F4F9] pb-24">
+          <h1 className="text-center pt-20 pb-12 text-3xl md:text-5xl">
             We’d love to hear from you
           </h1>
 
-          <div className="xl:w-[1240px] mx-auto grid xl:grid-cols-3 grid-cols-1 gap-4 ">
+          <div className="xl:w-[1240px] mx-auto grid xl:grid-cols-3 grid-cols-1 gap-4">
+            {/* Email Info */}
             <div className="content flex flex-col items-center text-center w-[75%] xl:w-auto mx-auto">
               <div className="icon h-14 w-14 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
-                <img src={c1} alt="c1" className="h-8 w-8 " />
+                <img src={c1} alt="c1" className="h-8 w-8" />
               </div>
               <h1 className="text-[26px] mb-4">Email</h1>
-              <p className=" text-xl md:text-[22px] mb-4 text-[#475467]">
+              <p className="text-xl md:text-[22px] mb-4 text-[#475467]">
                 Our friendly team is here to help.
               </p>
               <p className="text-lg md:text-[22px] text-[#0e457d] font-bold">
@@ -232,12 +295,13 @@ const Contacts = () => {
               </p>
             </div>
 
+            {/* Office Location Info */}
             <div className="content flex flex-col items-center text-center w-[80%] xl:w-auto mx-auto mt-6 lg:mt-0">
               <div className="icon h-14 w-14 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
-                <img src={c2} alt="c1" className="h-8 w-8 " />
+                <img src={c2} alt="c2" className="h-8 w-8" />
               </div>
               <h1 className="text-[26px] mb-4">Office</h1>
-              <p className=" text-xl md:text-[22px] mb-4 text-[#475467]">
+              <p className="text-xl md:text-[22px] mb-4 text-[#475467]">
                 Come say hello at our office HQ.
               </p>
               <p className="text-lg md:text-[22px] text-[#0e457d] font-bold">
@@ -245,12 +309,13 @@ const Contacts = () => {
               </p>
             </div>
 
+            {/* Phone Contact Info */}
             <div className="content flex flex-col items-center text-center w-[80%] xl:w-auto mx-auto mt-6 lg:mt-0">
               <div className="icon h-14 w-14 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
-                <img src={c3} alt="c1" className="h-8 w-8 " />
+                <img src={c3} alt="c3" className="h-8 w-8" />
               </div>
               <h1 className="text-[26px] mb-4">Phone</h1>
-              <p className=" text-xl md:text-[22px] mb-4 text-[#475467] whitespace-nowrap ">
+              <p className="text-xl md:text-[22px] mb-4 text-[#475467] whitespace-nowrap">
                 We are available any time to talk with you.
               </p>
               <p className="text-lg md:text-[22px] text-[#0e457d] font-bold">
@@ -259,7 +324,7 @@ const Contacts = () => {
             </div>
           </div>
         </div>
-        {/* -----------------------------------------text-content End--------------- */}
+        {/* -------------------------- End Additional Contact Info Section -------------------------- */}
       </div>
     </>
   );
