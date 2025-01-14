@@ -185,6 +185,7 @@ const PackageTable = ({ tableType = "", title, data, columns, refetch }) => {
                         <TableCell style={{ minWidth: "200px", color: '#475467', fontSize: '12px' }}>{item.package_categories[0]?.category?.name || 'Not Available'}</TableCell>
                         <TableCell style={{
                             minWidth: "200px",
+                            maxWidth: "200px",
                             color: '#475467',
                             whiteSpace: 'nowrap',
                             overflow: 'hidden',
