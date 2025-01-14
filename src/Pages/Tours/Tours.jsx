@@ -1,14 +1,14 @@
 import React from "react";
 import bgImg from "./../../assets/img/banner/tour.png";
 import "./Tour.css";
-import AllTours from "./AllTours";
 import TravelWithUs from "../../Components/Home/TravelWithUs";
+import PackageTourCruise from "../../Components/PackageTourCruise/PackageTourCruise";
 function Tours() {
   return (
     <div>
       {/* Banner Section with Background Image */}
       <div
-        className="flex items-center justify-center h-[700px]"
+        className="flex items-center justify-center h-[483px]"
         style={{
           backgroundImage: `url(${bgImg})`,
           backgroundSize: "cover",
@@ -98,7 +98,7 @@ function Tours() {
         <TravelWithUs />
       </div>
       <div className="bg-[#F0F4F9] lg:min-h-screen">
-        <AllTours />
+        <PackageTourCruise />
       </div>
     </div>
   );
