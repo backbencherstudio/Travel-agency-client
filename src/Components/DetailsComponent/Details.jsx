@@ -160,7 +160,7 @@ const Details = ({ details }) => {
                 </div>
             </div>
             <div className="bg-white p-6 rounded-2xl max-h-fit max-w-full col-span-2 lg:col-span-1 xl:col-span-0">
-                {/* <BookCard details={details} renderStars={renderStars} /> */}
+                <BookCard details={details} renderStars={renderStars} />
             </div>
         </div>
     );

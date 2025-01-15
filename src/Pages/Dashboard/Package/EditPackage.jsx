@@ -539,7 +539,7 @@ const EditPackage = () => {
                     Package Duration (Days)
                   </label>
                   <input
-                    type="text"
+                    type="number"
                     placeholder="Write duration"
                     {...register("duration", {
                       required: "Package duration is required",
