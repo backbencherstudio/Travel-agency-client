@@ -140,16 +140,16 @@ const Navbar = () => {
                             {/* Contacts
                             <img className='w-5 h-5' src={arrowDown} /> */}
                             <div className="relative inline-block text-left">
-                                <button
+                                <Link to="/contacts"
                                 className="inline-flex w-full justify-center gap-x-1.5 text-[#475467] transition"
                                 onClick={handleDropdownToggle('contact')}
                                 >
-                                Contacts
-                                <svg className="-mr-1 size-5 w-6 h-6 text-[#475467]" viewBox="0 0 20 20" fill="currentColor">
+                                Contact us
+                                {/* <svg className="-mr-1 size-5 w-6 h-6 text-[#475467]" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
-                                </svg>
-                                </button>
-                                {contactDropDown && (
+                                </svg> */}
+                                </Link>
+                                {/* {contactDropDown && (
                                 <div className="absolute right-0 z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black/5">
                                     <div className="py-1">
                                     <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Account settings</Link>
@@ -157,7 +157,7 @@ const Navbar = () => {
                                     <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">License</Link>
                                     </div>
                                 </div>
-                                )}
+                                )} */}
                             </div>
                         </button>
                         </li>

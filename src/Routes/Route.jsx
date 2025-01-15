@@ -5,7 +5,6 @@ import Tours from '../Pages/Tours/Tours'
 import Signup from '../Pages/Auth/Signup'
 import Login from '../Pages/Auth/Login'
 import ForgetPassword from '../Pages/Auth/ForgetPassword'
-import Otp from '../Pages/Auth/OTP'
 import Blogs from '../Pages/blogs/Blogs'
 import SingleBlog from '../Pages/blogs/SingleBlog'
 import TourDetails from '../Pages/Tours/TourDetails/TourDetails'
@@ -42,6 +41,7 @@ import Contacts from '../Pages/Contacts/Contacts'
 import PrivateRoute from './Private/PrivateRoute'
 import Cruises from '../Pages/Cruises/Cruises'
 import CruiseDetails from '../Pages/Cruises/CruiseDetails/CruiseDetails'
+import Otp from '../Pages/Auth/Otp'
 
 export const router = createBrowserRouter([
   {
