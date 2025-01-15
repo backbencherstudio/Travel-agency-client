@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
-import { FiPlusCircle } from 'react-icons/fi'
+import { FiPlusCircle, FiTrash2 } from 'react-icons/fi'
 
 function ReviewPackage () {
   const [formData, setFormData] = useState({
@@ -13,7 +13,8 @@ function ReviewPackage () {
   })
 
   const [rating, setRating] = useState(3)
-
+  const [travelers, setTravelers] = useState([{ name: '', type: 'Adult' }])
+  const [showNewTravelerText, setShowNewTravelerText] = useState(false)
   const handleChange = e => {
     const { name, value } = e.target
     setFormData({
@@ -22,6 +23,22 @@ function ReviewPackage () {
     })
   }
 
+  const handleTravelerChange = (index, e) => {
+    const { name, value } = e.target
+    const updatedTravelers = [...travelers]
+    updatedTravelers[index][name] = value
+    setTravelers(updatedTravelers)
+  }
+
+  const addTraveler = () => {
+    setTravelers([...travelers, { name: '', type: 'Adult' }])
+    setShowNewTravelerText(true)
+  }
+
+  const removeTraveler = index => {
+    const updatedTravelers = travelers.filter((_, i) => i !== index)
+    setTravelers(updatedTravelers)
+  }
   return (
     <div className='max-w-[1216px] mx-auto my-10  px-4 lg:px-0'>
       <div className='flex flex-col lg:flex-row justify-between gap-10'>
@@ -188,10 +205,67 @@ function ReviewPackage () {
               </div>
             </form>
           </div>
+
           {/* Add Traveler  */}
           <div className=''>
             <h1 className='text-xl font-semibold my-10'>Add Traveler</h1>
-            <button className='bg-[#EB5B2A] hover:bg-[#eb5a2ae4] transform duration-300 px-7 py-3 rounded-full text-white flex items-center gap-2'>
+
+            <div className='my-5'>
+              {showNewTravelerText && (
+                <h1 className='text-3xl  font-bold mt-10 text-[#0F1416]'>
+                  New Traveler Details
+                </h1>
+              )}
+            </div>
+            <div className='flex flex-col gap-5'>
+              {travelers.map((traveler, index) => (
+                <div
+                  key={index}
+                  className='flex flex-col border rounded-lg p-4 mb-3'
+                >
+                  <div className='flex items-center justify-between'>
+                    <h2 className='text-lg font-semibold mb-3'>
+                      Traveler {index + 1}
+                    </h2>
+
+                    <button
+                      className='ml-3 text-red-600 hover:text-red-800'
+                      onClick={() => removeTraveler(index)}
+                    >
+                      <FiTrash2 size={24} />
+                    </button>
+                  </div>
+                  <div className='flex flex-col '>
+                    <label className='text-sm font-medium'>Name</label>
+                    <input
+                      type='text'
+                      name='name'
+                      placeholder='Enter Full Name'
+                      value={traveler.name}
+                      className='border rounded px-4 py-2 mt-1'
+                      onChange={e => handleTravelerChange(index, e)}
+                    />
+                    <label className='text-sm font-medium mt-3'>
+                      Traveler Type
+                    </label>
+                    <select
+                      name='type'
+                      value={traveler.type}
+                      className='border rounded px-4 py-2 mt-1'
+                      onChange={e => handleTravelerChange(index, e)}
+                    >
+                      <option value='Adult'>Adult</option>
+                      <option value='Child'>Child</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              className='bg-[#EB5B2A] hover:bg-[#eb5a2ae4] transform duration-300 px-7 py-3 rounded-full text-white flex items-center gap-2 mt-4'
+              onClick={addTraveler}
+              type='button'
+            >
               <FiPlusCircle className='text-xl' />
               Add Traveler
             </button>
