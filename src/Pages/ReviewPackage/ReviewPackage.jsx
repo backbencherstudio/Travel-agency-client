@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { FiPlusCircle } from 'react-icons/fi'
+import { useBookingContext } from '../../BookingContext/BookingContext'
 
 function ReviewPackage () {
+    const { bookingDetails } = useBookingContext();
   const [formData, setFormData] = useState({
     mobileNumber: '',
     address: '',
@@ -21,6 +23,8 @@ function ReviewPackage () {
       [name]: value
     })
   }
+
+  console.log('bookingDetails', bookingDetails)
 
   return (
     <div className='max-w-[1216px] mx-auto my-10  px-4 lg:px-0'>
