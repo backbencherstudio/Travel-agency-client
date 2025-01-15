@@ -38,6 +38,7 @@ import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
 import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
 import Chat from "../Components/Dashboard/chat/Chat";
 import Contacts from '../Pages/Contacts/Contacts'
+import Cancellation from '../Pages/Contacts/Cancellation'
 import PrivateRoute from './Private/PrivateRoute'
 import Cruises from '../Pages/Cruises/Cruises'
 import CruiseDetails from '../Pages/Cruises/CruiseDetails/CruiseDetails'
@@ -113,6 +114,10 @@ export const router = createBrowserRouter([
       {
         path: '/contacts',
         element: <Contacts />
+      },
+      {
+        path: '/cancellation',
+        element: <Cancellation />
       },
       {
         path: '/blogs',
