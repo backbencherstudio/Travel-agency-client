@@ -71,7 +71,7 @@ const CardComponent = ({ blog }) => {
                   {blog.user?.name || 'Anonymous'}
                 </h6>
                 <p className='text-sm text-[#899AB2]'>
-                  {blog.user?.role || 'Blogger'}
+                  {blog.user?.type || 'Anonymous'}
                 </p>
               </div>
             </div>

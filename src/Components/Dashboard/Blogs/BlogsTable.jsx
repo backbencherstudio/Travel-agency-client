@@ -13,7 +13,6 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
-// import { GoDotFill } from 'react-icons/go'
 import { FiEdit2 } from 'react-icons/fi'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import BlogApis from '../../../Apis/BlogApi'
@@ -24,7 +23,8 @@ import { RxCross2 } from 'react-icons/rx'
 
 const BlogsTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredData, setFilteredData] = useState(data)
+  // const [filteredData, setFilteredData] = useState(data)
+  const [filteredData, setFilteredData] = useState([])
   const [isOpen, setIsOpen] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('All Status')
   const [isLoading, setIsLoading] = useState(false)
@@ -42,33 +42,31 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
     setIsOpenAction(isOpenAction === id ? null : id)
   }
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = event => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        !Array.from(actionRefs.current.values()).some(ref =>
-          ref?.contains(event.target)
-        )
-      ) {
-        setIsOpenAction(null)
-      }
+  const handleClickOutside = event => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target) &&
+      !Array.from(actionRefs.current.values()).some(ref =>
+        ref?.contains(event.target)
+      )
+    ) {
+      setIsOpenAction(null)
     }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+  }
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
     const searchFromQuery = queryParams.get('search') || ''
     const statusFromQuery = queryParams.get('status') || 'All Status'
-    setSearchQuery(searchFromQuery)
-    setSelectedStatus(statusFromQuery)
+    // setSearchQuery(searchFromQuery)
+    // setSelectedStatus(statusFromQuery)
     fetchSearchResults(searchFromQuery, statusFromQuery)
+
+    // Close dropdown when clicking outside
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
   }, [])
 
   // Debounced function
@@ -91,9 +89,8 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
     }
   }
   // Apply the debounce hook
-// Increase debounce delay to 1 second
-const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300); // 1000ms delay
-
+  // Increase debounce delay to 1 second
+  const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300) // 1000ms delay
 
   // Handle search input change and use debounce
   const handleSearchChange = e => {
@@ -261,6 +258,10 @@ const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300); // 100
     }
   }
 
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
   return (
     <>
       <div className='flex flex-col sm:flex-row justify-between items-center py-5'>
@@ -391,7 +392,7 @@ const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300); // 100
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
                     <TableRow
-                      key={item?.bookingId}
+                      key={item?.id}
                       onClick={() => handleRowClick(item.id)}
                     >
                       {columns?.title && (
