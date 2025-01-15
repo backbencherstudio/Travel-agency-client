@@ -11,6 +11,7 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { ToastContainer } from 'react-toastify';
+import { BookingProvider } from './BookingContext/BookingContext.jsx';
 const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')).render(
@@ -18,7 +19,9 @@ createRoot(document.getElementById('root')).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ToastContainer />
-        <RouterProvider router={router} />
+          <BookingProvider>
+            <RouterProvider router={router} />
+          </BookingProvider>
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,

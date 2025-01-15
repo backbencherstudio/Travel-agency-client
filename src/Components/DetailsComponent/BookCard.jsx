@@ -3,27 +3,39 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import calender from '../../assets/img/tour-details/calender.svg';
 import { duration } from '@mui/material';
+import { useBookingContext } from '../../BookingContext/BookingContext';
+import { useNavigate } from 'react-router-dom';
 
 const BookCard = ({ details, renderStars }) => {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-    const [extraServices, setExtraServices] = useState({
-        breakfast: false,
-        allInclusive: false,
-        dinner: false,
-        lunch: false,
-    });
+    const [extraServices, setExtraServices] = useState([]);
+    const { setBookingDetails } = useBookingContext();
     const startDatePickerRef = useRef(null);
     const endDatePickerRef = useRef(null);
+    const navigate = useNavigate();
 
-    const handleCheckboxChange = (service) => {
-        setExtraServices((prevState) => ({
-            ...prevState,
-            [service]: !prevState[service],
-        }));
+    const handleCheckboxChange = (service, isChecked) => {
+        console.log('service', service)
+        if (isChecked) {
+            setExtraServices((prevState) =>  [...prevState, {id: service?.extra_service?.id}]);
+        } else {
+            setExtraServices((prevState) => prevState.filter((id) => id?.id !== service?.extra_service?.id));
+        }
     };
 
-    console.log('details', details)
+    const handleBookNow = () => {
+        setBookingDetails({
+            package_id : details?.id,
+            price: details?.price,
+            startDate,
+            endDate,
+            extraServices,
+        });
+        navigate('/booking'); // Adjust the path to your booking page
+    };
+
+    console.log('extraServices', extraServices)
 
   return (
     <div className='flex flex-col gap-4 max-w-full'>
@@ -72,9 +84,9 @@ const BookCard = ({ details, renderStars }) => {
         </div>
         <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-2 mt-3'>
-                <p className='text-sm'>{details?.reviews[0]?.rating_value}</p>
+                <p className='text-sm'>{details?.reviews[0]?.rating_value || 0.0}</p>
                 <div className="flex gap-1 items-center">
-                    {renderStars(details?.reviews[0]?.rating_value)}
+                    {renderStars(details?.reviews[0]?.rating_value || 0.0)}
                 </div>
                 <div className='flex items-center'>
                     <div className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -88,21 +100,21 @@ const BookCard = ({ details, renderStars }) => {
             <div className='text-sm mt-1 text-[#EB5B2A]'>Cancellation Policy <span className='text-xs text-[#49556D]'>({details?.cancellation_policy?.policy})</span></div>
             <div className='flex flex-col gap-4'>
                 <h4 className='text-xl font-bold text-[#0F1416]'>Extra Service</h4>
-                {Object.entries(extraServices).map(([service, value]) => (
-                    <div key={service} className='flex items-center gap-3'>
+                {details?.package_extra_services?.map((service, index) => (
+                    <div key={index} className='flex items-center gap-3'>
                         <input
                             type="checkbox"
-                            checked={value}
-                            onChange={() => handleCheckboxChange(service)}
+                            // checked={value}
+                            onChange={(e) => handleCheckboxChange(service, e.target.checked)}
                         />
                         <p className='text-base font-normal text-[#49556D]'>
-                            {service.charAt(0).toUpperCase() + service.slice(1).replace(/([A-Z])/g, ' $1')}
+                            {service?.extra_service?.name}
                         </p>
                     </div>
                 ))}
             </div>
         </div>
-        <button className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w- mt-2'>
+        <button onClick={handleBookNow} className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w- mt-2'>
             Book Now
         </button>
     </div>

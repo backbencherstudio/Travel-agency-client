@@ -390,7 +390,7 @@ const Navbar = () => {
                                 {user?.name}
                             </div>
                             {user?.type === "admin" && (
-                                <Link to="/dashboard" className="block px-6 py-3 text-center text-gray-80">
+                                <Link to="/dashboard" className="block bg-gray-300 px-6 py-3 text-center text-gray-80 rounded-md">
                                     Dashboard
                                 </Link>
                             )}

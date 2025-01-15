@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import "./review.css";
 import { FaStar } from 'react-icons/fa';
+import { useBookingContext } from '../../BookingContext/BookingContext';
 
 function ReviewPackage() {
+    const { bookingDetails } = useBookingContext();
+
+    console.log('bookingDetails', bookingDetails)
+
     // State hooks to manage form data
     const [formData, setFormData] = useState({
         mobileNumber: '',

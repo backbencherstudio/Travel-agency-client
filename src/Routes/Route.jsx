@@ -123,6 +123,10 @@ export const router = createBrowserRouter([
         path: '/blogs',
         element: <Blogs />
       },
+      {
+        path: '/booking',
+        element: <ReviewPackage />
+      },
     ]
   },
   {
