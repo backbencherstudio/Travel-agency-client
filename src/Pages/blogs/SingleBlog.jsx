@@ -1,4 +1,4 @@
-import { Avatar } from '@mui/material'
+import { Avatar, Pagination, Stack } from '@mui/material'
 import HeroSection from '../../Components/HeroSection/HeroSection'
 import ParentComponent from '../../Components/ParentComponent/ParentComponent'
 import blogImage from '../../assets/img/blogs/blogImage.png'
@@ -34,6 +34,7 @@ const SingleBlog = () => {
     { name: 'Blogs', path: '/blogs' },
     { name: 'Blog Details', path: '' }
   ]
+  const COMMENTS_PER_PAGE = 6
   const { user } = useContext(AuthContext)
   const navigate = useNavigate()
   const { id } = useParams()
@@ -50,8 +51,8 @@ const SingleBlog = () => {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [suggestionLoading, setSuggestionLoading] = useState(false)
-
   const inputRef = useRef()
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     const fetchBlogDetails = async () => {
@@ -100,7 +101,7 @@ const SingleBlog = () => {
   const handleSearchInputChange = e => {
     const value = e.target.value
     setSearchInput(value)
-    setSelectedIndex(-1) // Reset keyboard selection
+    setSelectedIndex(-1)
     debouncedFetchSuggestions(value)
   }
 
@@ -235,6 +236,16 @@ const SingleBlog = () => {
     }
   }
 
+  const totalComments = blog?.data?.blog_comments.length || 0
+  const totalPages = Math.ceil(totalComments / COMMENTS_PER_PAGE)
+  // Paginated comments for the current page
+  const paginatedComments = blog?.data?.blog_comments.slice(
+    (currentPage - 1) * COMMENTS_PER_PAGE,
+    currentPage * COMMENTS_PER_PAGE
+  )
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value) // Update the current page
+  }
   return (
     <div className='bg-[#F0F4F9]'>
       <HeroSection
@@ -338,23 +349,18 @@ const SingleBlog = () => {
                 {blog.data?.blog_comments.length} Comments
               </h2>
 
-              {blog.data?.blog_comments.map(comment => (
+              {paginatedComments.map(comment => (
                 <div key={comment.id} className='mb-5 border-b pb-5'>
                   <div className='flex items-center'>
-                    <div className='flex '>
-                      <Avatar
-                        alt={comment.user.name}
-                        src={comment.user.avatar}
-                      />
-                      <span className='ml-2'>
-                        <h2 className='font-inter text-[16px] text-[#0F1416] capitalize font-bold '>
-                          {comment.user.name}
-                        </h2>
-                        <p className='mt-1 text-[14px] text-[#0F1416]'>
-                          {new Date(comment.created_at).toLocaleString()}
-                        </p>
-                      </span>
-                    </div>
+                    <Avatar alt={comment.user.name} src={comment.user.avatar} />
+                    <span className='ml-2'>
+                      <h2 className='font-inter text-[16px] font-bold capitalize'>
+                        {comment.user.name}
+                      </h2>
+                      <p className='mt-1 text-[14px]'>
+                        {new Date(comment.created_at).toLocaleString()}
+                      </p>
+                    </span>
                     {user && comment.user.id === user.id && (
                       <button
                         onClick={() => handleDeleteComment(comment.id)}
@@ -364,11 +370,19 @@ const SingleBlog = () => {
                       </button>
                     )}
                   </div>
-                  <p className='mt-5 text-[16px] text-[#0F1416] leading-6'>
-                    {comment.comment}
-                  </p>
+                  <p className='mt-5 text-[16px]'>{comment.comment}</p>
                 </div>
               ))}
+              {totalComments > COMMENTS_PER_PAGE && (
+                <Stack spacing={2} className='mt-4'>
+                  <Pagination
+                    count={totalPages}
+                    color='primary'
+                    page={currentPage}
+                    onChange={handlePageChange}
+                  />
+                </Stack>
+              )}
             </div>
           </div>
 
@@ -431,9 +445,7 @@ const SingleBlog = () => {
                         alt='blog image'
                       />
                       <span className='ml-2'>
-                        <h1
-                          className='font-inter text-[16px] font-semibold group-hover:text-blue-600 cursor-pointer transform duration-300' 
-                        >
+                        <h1 className='font-inter text-[16px] font-semibold group-hover:text-blue-600 cursor-pointer transform duration-300'>
                           {item.title}
                         </h1>
                         <p className='mt-2'>

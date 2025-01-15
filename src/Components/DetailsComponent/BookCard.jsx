@@ -39,12 +39,12 @@ const BookCard = ({ details, renderStars }) => {
                     endDate={endDate}
                     placeholderText="Start Date"
                     className='outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal'
-                    ref={startDatePickerRef} // Assign ref to the startDate DatePicker
+                    ref={startDatePickerRef} 
                 />
                 {/* Calendar Icon for Start Date */}
                 <img
                     src={calender}
-                    onClick={() => startDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
+                    onClick={() => startDatePickerRef.current.setOpen(true)} 
                     className='text-2xl cursor-pointer ml-2'
                 />
             </div>
@@ -60,12 +60,12 @@ const BookCard = ({ details, renderStars }) => {
                     minDate={startDate}
                     placeholderText="End Date"
                     className='outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal'
-                    ref={endDatePickerRef} // Assign ref to the endDate DatePicker
+                    ref={endDatePickerRef} 
                 />
                 {/* Calendar Icon for End Date */}
                 <img
                     src={calender} 
-                    onClick={() => endDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
+                    onClick={() => endDatePickerRef.current.setOpen(true)} 
                     className='text-2xl cursor-pointer ml-2'
                 />
             </div>
