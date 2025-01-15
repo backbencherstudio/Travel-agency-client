@@ -17,7 +17,7 @@ import Loading from "../../../Shared/Loading";
 
 const CruiseDetails = () => {
     const links = [{name: "Home", path: "/"}, {name: "Cruises", path: "/cruises"}, {name: "Cruise Details", path: ""},];
-    const [loading, setLoading] = useState();
+    const [loading, setLoading] = useState(true);
     const [cruise, setCruise] = useState(null);
     const { id } = useParams();
 

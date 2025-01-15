@@ -83,7 +83,7 @@ useEffect(() => {
     <>
       <div className="grid grid-cols-12 gap-5">
         {/* Start Chat Left Sidebar */}
-        <div className="chat-leftsidebar lg:w-auto shadow  overflow-y-hidden border-none sm:col-span-4 hidden sm:block">
+        <div className="chat-leftsidebar lg:w-auto shadow   border-none sm:col-span-4 hidden sm:block">
           <div>
             <div className="tab-content">
               {/* Start Chat Content */}
