@@ -4,131 +4,80 @@ import { FaSearch } from "react-icons/fa";
 import MessageLeft from "./Components/MessageLeft";
 import MessageRight from "./Components/MessageRight";
 import User from "./Components/User";
+import { useContext, useEffect, useState } from "react";
+import axiosClient from "../../../axiosClient";
+import { AuthContext } from "../../../AuthProvider/AuthProvider";
 
 const Chat = () => {
+  const [usersData, setUsersData] = useState([]);
+  const [messageData, setMessageData] = useState([]);
+  const [activeConversation, setActiveConversation] = useState(null);
+  console.log("activeConversation:", activeConversation);
+
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+
   const { conversationID } = useParams();
+  // console.log("conversationId:", conversationID);
 
-  console.log(conversationID);
+  const { user } = useContext(AuthContext);
 
-  const messages = [
-    {
-      id: 1,
-      dirac: "left",
-      avatar:
-        "https://t4.ftcdn.net/jpg/04/19/94/59/360_F_419945971_YNfDJMmW1nrXi63PGJ6zTqvWwS2RviKK.jpg",
-      naame: "Bonnie Green",
-      time: "11:46",
-      text: "So, Have you selected the day you want to travel? and how many youare to go together?",
-    },
-    {
-      id: 2,
-      dirac: "right",
-      avatar:
-        "https://manofmany.com/_next/image?url=https%3A%2F%2Fapi.manofmany.com%2Fwp-content%2Fuploads%2F2023%2F06%2F10-Most-Famous-Male-Models-of-All-Time.jpg&w=1200&q=75",
-      naame: "Blue Cat",
-      time: "11:46",
-      text: "Hello.",
-    },
-  ];
+  console.log("usersData:", usersData);
 
-  const users = [
-    {
-      id: 1,
-      image:
-        "https://t4.ftcdn.net/jpg/01/98/68/53/360_F_198685380_UiiR2lCHgg7raR054Dv9v5cuOYdLCEdX.jpg",
-      name: "Doris Brown",
-      hint: "Nice to meet you",
-      time: "10:12 AM",
-    },
-    {
-      id: 2,
-      image:
-        "https://t4.ftcdn.net/jpg/01/98/68/53/360_F_198685380_UiiR2lCHgg7raR054Dv9v5cuOYdLCEdX.jpg",
-      name: "Michael Scott",
-      hint: "Looking forward to our meeting",
-      time: "10:15 AM",
-    },
-    {
-      id: 3,
-      image:
-        "https://easy-peasy.ai/cdn-cgi/image/quality=70,format=auto,width=300/https://fdczvxmwwjwpwbeeqcth.supabase.co/storage/v1/object/public/images/ae708cd1-68bb-4a2c-bca6-5a8923e8e7a4/afc178d7-36bd-48b2-aaa2-ffc6cdb45662.png",
-      name: "Alice Johnson",
-      hint: "Can we reschedule our call?",
-      time: "11:00 AM",
-    },
-    {
-      id: 4,
-      image:
-        "https://passure.ai/_next/image?url=%2Fimages%2Fshooting-tips%2Fgood-girl2.webp&w=3840&q=75",
-      name: "Bob Smith",
-      hint: "See you at the event",
-      time: "11:30 AM",
-    },
-    {
-      id: 5,
-      image:
-        "https://passure.ai/_next/image?url=%2Fimages%2Fshooting-tips%2Fgood-kid.webp&w=3840&q=75",
-      name: "Charlie Davis",
-      hint: "Happy Birthday!",
-      time: "12:00 PM",
-    },
-    {
-      id: 6,
-      image:
-        "https://cdn-3.convertexperiments.com/uf/10042538/10043394/hero_a.webp",
-      name: "Eve Thompson",
-      hint: "Let's catch up soon",
-      time: "12:15 PM",
-    },
-    {
-      id: 7,
-      image:
-        "https://d1uuxsymbea74i.cloudfront.net/images/cms/1_15_passport_photo_young_female_e35eecf32a.jpg",
-      name: "Frank Miller",
-      hint: "Project update",
-      time: "1:00 PM",
-    },
-    {
-      id: 8,
-      image:
-        "https://cdn.prod.website-files.com/650865454c2393ac25711ff2%2F66571b995893a7f3375a9138_passport-photo-maker-V3-poster-00001.jpg",
-      name: "Grace Lee",
-      hint: "Thanks for your help",
-      time: "1:30 PM",
-    },
-    {
-      id: 9,
-      image:
-        "https://passure.ai/_next/image?url=%2Fimages%2Fshooting-tips%2Fgood-kid.webp&w=3840&q=75",
-      name: "Henry Wilson",
-      hint: "Meeting at 3 PM",
-      time: "2:00 PM",
-    },
-    {
-      id: 10,
-      image:
-        "https://res.cloudinary.com/dq83xons7/image/upload/f_auto,w_512,c_fill/v1704979067/assets/adult-woman-passport-size-photo-sample3-before.jpg",
-      name: "Ivy Martinez",
-      hint: "Can you review the document?",
-      time: "2:30 PM",
-    },
-    {
-      id: 11,
-      image:
-        "https://t4.ftcdn.net/jpg/10/70/21/61/360_F_1070216164_zXSbEgNW849Yiho3h2ekoyUP1C1u4zgv.jpg",
-      name: "Jack Brown",
-      hint: "Lunch tomorrow?",
-      time: "3:00 PM",
-    },
-    {
-      id: 12,
-      image:
-        "https://d1uuxsymbea74i.cloudfront.net/images/cms/1_15_passport_photo_young_female_e35eecf32a.jpg",
-      name: "Karen Taylor",
-      hint: "Happy New Year!",
-      time: "3:30 PM",
-    },
-  ];
+  // API call inside useEffect
+  useEffect(() => {
+    const fetchConversation = async () => {
+      try {
+        const response = await axiosClient.get("/api/chat/conversation");
+        const data = response.data.data;
+        setUsersData(data);
+        // console.log("Fetched userData:", data);
+      } catch (error) {
+        console.error("Error fetching conversation data:", error);
+      }
+    };
+
+    fetchConversation(); // Call the fetch function
+  }, []); // Empty dependency array to run only once on mount
+
+  // API call inside useEffect
+  useEffect(() => {
+    const fetchMessage = async () => {
+      try {
+        const response = await axiosClient.get("/api/chat/message");
+        const data = response.data.data;
+        setMessageData(data);
+
+        console.log("Fetched messageData:", data);
+      } catch (error) {
+        console.error("Error fetching conversation data:", error);
+      }
+    };
+
+    fetchMessage();
+  }, []);
+
+// Set active conversation when usersData and conversationID are available
+useEffect(() => {
+  if (conversationID && usersData.length > 0) {
+    const selectedConversation = usersData.find(
+      (conversation) => conversation.id === conversationID
+    );
+
+    if (selectedConversation) {
+      setActiveConversation(selectedConversation);
+      console.log("Active Conversation:", selectedConversation);
+    } else {
+      console.warn("No conversation found for this ID.");
+      setActiveConversation(null);
+    }
+  }
+}, [conversationID, usersData]);
+
+  // Conversation-এ ক্লিক করলে activeConversation সেট করা হবে
+  const handleConversationClick = (conversation) => {
+    setActiveConversation(conversation); // Conversation set করে দিচ্ছি
+    navigate(`/chat/${conversation.id}`); // Conversation URL-এ navigate করছি
+  };
 
   return (
     <>
@@ -158,34 +107,48 @@ const Chat = () => {
                 </div>
                 {/* Search Bar Ends */}
 
-                {/* Start Chat Message List */}
+                {/* Start Chat people Message List */}
                 <div>
                   <h5 className="px-6 mb-4 text-xl">Recent</h5>
 
                   {/* Scrollable Chat List */}
                   <div className="h-full px-2 " data-simplebar>
+                  <ul className="chat-user-list">
+  {usersData.length > 0 ? (
+    usersData.map((data, index) => {
+      const chatUser =
+        user.id === data.participant_id ? data.creator : data.participant;
+      const lastMessage = data.messages?.[0]?.message || "No recent messages";
 
-
-                    <ul className="chat-user-list">
-                      {/* Chat User List Item */}
-                      {users.map((data, index) => (
-                        <User
-                          key={index}
-                          active={conversationID == data.id ? true : false}
-                          id={data.id}
-                          image={data.image}
-                          name={data.name}
-                          hint={data.hint}
-                          time={data.time}
-                        />
-                      ))}
-                    </ul>
-
-
-
+      return (
+        <li
+          key={index}
+          onClick={() => handleConversationClick(data)} // এক ক্লিকেই conversation সিলেক্ট হবে
+          className={`cursor-pointer ${
+            conversationID === data.id ? "bg-gray-200" : ""
+          }`}
+        >
+          <User
+            active={conversationID === data.id}
+            id={chatUser.id}
+            image={chatUser.avatar_url || "https://via.placeholder.com/150"}
+            name={chatUser.name}
+            hint={lastMessage}
+            time={new Date(data.updated_at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          />
+        </li>
+      );
+    })
+  ) : (
+    <p className="text-gray-500 p-4">No conversations found.</p>
+  )}
+</ul>;
                   </div>
                 </div>
-                {/* End Chat Message List */}
+                {/* End Chat people Message List */}
               </div>
               {/* End Chat Content */}
             </div>
@@ -193,111 +156,142 @@ const Chat = () => {
         </div>
         {/* End Chat Left Sidebar */}
 
-        {conversationID ? (
-          <div className="w-full h-[87.9vh] relative overflow-hidden transition-all duration-150 bg-white user-chat col-span-12 sm:col-span-8 shadow">
-            <div className="lg:flex">
-              {/* Start Chat Conversation Section */}
-              <div className="relative w-full">
-                {/* Start Chat User Header */}
-                <div className="p-4 border-b border-gray-100 lg:py-4 lg:px-6">
-                  <div className="grid items-center grid-cols-12">
-                    <div className="col-span-8 sm:col-span-4">
-                      <div className="flex items-center">
-                        {/* User Avatar */}
-                        <div className="ltr:mr-3">
-                          <img
-                            src="https://d1uuxsymbea74i.cloudfront.net/images/cms/1_2_passport_photo_young_female_84b29b8fcb.jpg"
-                            className="rounded-full h-9 w-9"
-                            alt="User Avatar"
-                          />
-                        </div>
-                        {/* User Name and Status */}
-                        <div className="flex-grow overflow-hidden">
-                          {/* For LTR Languages */}
-                          <h5 className="mb-0 truncate ltr:block">
-                            <a
-                              href="#"
-                              className="text-gray-800 pl-4 font-bold text-lg"
-                            >
-                              Doris Brown
-                            </a>{" "}
-                            <i className="text-green-500 ltr:ml-1 rtl:mr-1 ri-record-circle-fill"></i>
-                          </h5>
-                        </div>
-                      </div>
+        <>
+    {activeConversation ? (
+      <div className="w-full h-[87.9vh] relative overflow-hidden transition-all duration-150 bg-white user-chat col-span-12 sm:col-span-8 shadow">
+        <div className="lg:flex">
+          {/* Start Chat Conversation Section */}
+          <div className="relative w-full">
+            {/* Start Chat User Header */}
+            <div className="p-4 border-b border-gray-100 lg:py-4 lg:px-6">
+              <div className="grid items-center grid-cols-12">
+                <div className="col-span-8 sm:col-span-4">
+                  <div className="flex items-center">
+                    <div className="ltr:mr-3">
+                      <img
+                        src={
+                          activeConversation
+                            ? user.id === activeConversation.participant_id
+                              ? activeConversation.creator.avatar_url ||
+                                "https://via.placeholder.com/150"
+                              : activeConversation.participant.avatar_url ||
+                                "https://via.placeholder.com/150"
+                            : "https://via.placeholder.com/150"
+                        }
+                        className="rounded-full h-9 w-9"
+                        alt="User Avatar"
+                      />
+                    </div>
+                    <div className="flex-grow overflow-hidden">
+                      <h5 className="mb-0 truncate ltr:block">
+                        <span className="text-gray-800 pl-4 font-bold text-lg">
+                          {activeConversation
+                            ? user.id === activeConversation.participant_id
+                              ? activeConversation.creator.name
+                              : activeConversation.participant.name
+                            : "Select a conversation"}
+                        </span>
+                        <i className="text-green-500 ltr:ml-1 rtl:mr-1 ri-record-circle-fill"></i>
+                      </h5>
                     </div>
                   </div>
                 </div>
-                {/* End Chat User Header */}
+              </div>
+            </div>
+            {/* End Chat User Header */}
 
-                {/* Start Chat Conversation */}
-                <div
-                  className="h-[73vh] p-4 lg:p-6 overflow-y-auto "
-                  data-simplebar
-                >
-                  {messages.map((data, index) => {
-                    if (data.dirac == "right") {
+            {/* Start Chat Conversation */}
+            <div className="h-[73vh] p-4 lg:p-6 overflow-y-auto " data-simplebar>
+              {/* Message list */}
+              {messageData.length > 0 ? (
+                messageData
+                  .filter(
+                    (data) =>
+                      (data.sender.id === user.id &&
+                        data.receiver.id === conversationID) ||
+                      (data.receiver.id === user.id &&
+                        data.sender.id === conversationID)
+                  )
+                  .map((data, index) => {
+                    const time = data.created_at
+                      ? new Date(data.created_at).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "N/A"; // Fallback in case `created_at` is missing
+
+                    if (data.sender.id === user.id) {
                       return (
                         <MessageRight
                           key={index}
-                          avatar={data.avatar}
-                          naame={data.naame}
-                          time={data.time}
-                          text={data.text}
+                          avatar={
+                            data.sender?.avatar_url ||
+                            "https://via.placeholder.com/150"
+                          }
+                          naame={data.sender?.name || "Unknown"}
+                          time={time}
+                          text={data.message}
                         />
                       );
                     } else {
                       return (
                         <MessageLeft
                           key={index}
-                          avatar={data.avatar}
-                          naame={data.naame}
-                          time={data.time}
-                          text={data.text}
+                          avatar={
+                            data.sender?.avatar_url ||
+                            "https://via.placeholder.com/150"
+                          }
+                          naame={data.sender?.name || "Unknown"}
+                          time={time}
+                          text={data.message}
                         />
                       );
                     }
-                  })}
-                  {/* <Message isLeft={true} /> */}
-                </div>
-                {/* End Chat Conversation */}
-              </div>
-              {/* End Chat Conversation Section */}
+                  })
+              ) : (
+                <p className="text-gray-500">
+                  No messages in this conversation.
+                </p>
+              )}
+            </div>
+            {/* End Chat Conversation */}
+          </div>
 
-              {/* Start Chat Input Section */}
-              <div className="p-4 border-t border-[#dddddd] bg-[#f2f2f2]/100 absolute bottom-0 right-0 w-full">
-                <div className="flex items-center gap-4">
-                  <div className="flex-1 flex items-center bg-[#eb5a2a20] rounded px-4 py-2">
-                    <input
-                      type="text"
-                      className="w-full bg-transparent border-none focus:outline-none text-sm"
-                      placeholder="Type your message...."
-                    />
-                  </div>
-                  <button className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]">
-                    <svg
-                      className="w-5 h-5 transform rotate-90 -mr-px"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                      ></path>
-                    </svg>
-                  </button>
-                </div>
+          {/* Start Chat Input Section */}
+          <div className="p-4 border-t border-[#dddddd] bg-[#f2f2f2]/100 absolute bottom-0 right-0 w-full">
+            <div className="flex items-center gap-4">
+              <div className="flex-1 flex items-center bg-[#eb5a2a20] rounded px-4 py-2">
+                <input
+                  type="text"
+                  className="w-full bg-transparent border-none focus:outline-none text-sm"
+                  placeholder="Type your message...."
+                />
               </div>
-              {/* End Chat Input Section */}
+              <button className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]">
+                <svg
+                  className="w-5 h-5 transform rotate-90 -mr-px"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  ></path>
+                </svg>
+              </button>
             </div>
           </div>
-        ) : (
-          <></>
-        )}
+          {/* End Chat Input Section */}
+        </div>
+      </div>
+    ) : (
+      <p className="text-gray-500">Select a conversation to start chatting</p>
+    )}
+  </>
       </div>
     </>
   );

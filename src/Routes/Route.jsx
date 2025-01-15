@@ -5,6 +5,7 @@ import Tours from '../Pages/Tours/Tours'
 import Signup from '../Pages/Auth/Signup'
 import Login from '../Pages/Auth/Login'
 import ForgetPassword from '../Pages/Auth/ForgetPassword'
+import Otp from '../Pages/Auth/Otp'
 import Blogs from '../Pages/blogs/Blogs'
 import SingleBlog from '../Pages/blogs/SingleBlog'
 import TourDetails from '../Pages/Tours/TourDetails/TourDetails'
@@ -132,6 +133,10 @@ export const router = createBrowserRouter([
       {
         path: 'add-package',
         element: <AddPackage />
+      },
+      {
+        path: "chat",
+        element: <Chat/>,
       },
       {
         path: "chat/:conversationID?",
