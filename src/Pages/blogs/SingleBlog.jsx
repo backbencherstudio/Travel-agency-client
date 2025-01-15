@@ -419,7 +419,11 @@ const SingleBlog = () => {
               <h2 className='font-inter text-[20px] font-bold'>Recent Posts</h2>
               <div className='mt-5'>
                 {blog.data?.recent_blogs.map(item => (
-                  <div key={item.id} className='mb-5 pb-5 border-b'>
+                  <Link
+                    to={`/blogDetails/${item.id}`}
+                    key={item.id}
+                    className='mb-5 pb-5 border-b group'
+                  >
                     <div className='flex items-center gap-2'>
                       <img
                         src={item.blog_images[0]?.image_url}
@@ -427,12 +431,11 @@ const SingleBlog = () => {
                         alt='blog image'
                       />
                       <span className='ml-2'>
-                        <Link
-                          to={`/blogDetails/${item.id}`}
-                          className='font-inter text-[16px] font-semibold hover:text-blue-600 cursor-pointer transform duration-300'
+                        <h1
+                          className='font-inter text-[16px] font-semibold group-hover:text-blue-600 cursor-pointer transform duration-300' 
                         >
                           {item.title}
-                        </Link>
+                        </h1>
                         <p className='mt-2'>
                           {new Date(item.created_at).toLocaleDateString(
                             'en-GB',
@@ -445,17 +448,17 @@ const SingleBlog = () => {
                         </p>
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
           </div>
         </div>
-
-        <div className='py-20'>
-          <Faqs />
-        </div>
       </ParentComponent>
+
+      <div className='py-20 bg-white '>
+        <Faqs />
+      </div>
     </div>
   )
 }
