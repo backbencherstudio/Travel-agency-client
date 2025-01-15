@@ -92,7 +92,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
   }
   // Apply the debounce hook
 // Increase debounce delay to 1 second
-const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 1000); // 1000ms delay
+const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300); // 1000ms delay
 
 
   // Handle search input change and use debounce
