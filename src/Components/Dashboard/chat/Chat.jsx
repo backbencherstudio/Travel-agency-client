@@ -12,7 +12,7 @@ const Chat = () => {
   const [usersData, setUsersData] = useState([]);
   const [messageData, setMessageData] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
-  console.log("activeConversation:", activeConversation);
+  // console.log("activeConversation:", activeConversation);
 
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
@@ -22,39 +22,95 @@ const Chat = () => {
   const { user } = useContext(AuthContext);
   // console.log("user", user);
 
-  // API call inside useEffect
-  useEffect(() => {
-    const fetchConversation = async () => {
-      try {
-        const response = await axiosClient.get("/api/chat/conversation");
-        const data = response.data.data;
-        setUsersData(data);
-        console.log("conversation Data:", usersData);
-      } catch (error) {
-        console.error("Error fetching conversation data:", error);
+  // // API call inside useEffect
+  // useEffect(() => {
+  //   const fetchConversation = async () => {
+  //     try {
+  //       const response = await axiosClient.get("/api/chat/conversation");
+  //       const data = response.data.data;
+  //       setUsersData(data);
+  //       // console.log("conversation Data:", usersData);
+  //     } catch (error) {
+  //       console.error("Error fetching conversation data:", error);
+  //     }
+  //   };
+
+  //   fetchConversation(); // Call the fetch function
+  // }, []); // Empty dependency array to run only once on mount
+ 
+  // console.log("data", usersData);
+
+  // Handle initial URL conversation and updates
+useEffect(() => {
+  const fetchConversation = async () => {
+    try {
+      const response = await axiosClient.get("/api/chat/conversation");
+      const data = response.data.data;
+      setUsersData(data);
+      
+      // If URL has conversationID, set that conversation as active
+      if (conversationID && data.length > 0) {
+        const selectedConversation = data.find(
+          (conversation) => conversation.id === conversationID
+        );
+        if (selectedConversation) {
+          setActiveConversation(selectedConversation);
+        }
       }
-    };
+    } catch (error) {
+      console.error("Error fetching conversation data:", error);
+    }
+  };
 
-    fetchConversation(); // Call the fetch function
-  }, []); // Empty dependency array to run only once on mount
+  fetchConversation();
+}, [conversationID]); // Depend on conversationID
 
-  // API call inside useEffect
-  useEffect(() => {
-    const fetchMessage = async () => {
-      try {
-        const response = await axiosClient.get("/api/chat/message");
-        const data = response.data.data;
-        setMessageData(data);
+// Handle conversation click
+const handleConversationClick = (conversation) => {
+  setActiveConversation(conversation);
+  navigate(`/chat/${conversation.id}`);
+};
 
-        console.log("Fetched messageData:", messageData);
-      } catch (error) {
-        console.error("Error fetching conversation data:", error);
-      }
-    };
+  
+  // Update message fetching useEffect
+useEffect(() => {
+  const fetchMessage = async () => {
+    if (!activeConversation?.id) return; // Don't fetch if no active conversation
 
-    fetchMessage();
-  }, []);
+    try {
+      const response = await axiosClient.get(`/api/chat/message?conversation_id=${activeConversation.id}`);
+      const data = response.data.data;
+      setMessageData(data);
+    } catch (error) {
+      console.error("Error fetching message data:", error);
+    }
+  };
 
+  fetchMessage();
+}, [activeConversation?.id]); // Dependency on activeConversation.id
+
+
+  // // API call inside useEffect
+  // useEffect(() => {
+  //   const fetchMessage = async () => {
+  //     try {
+  //       const response = await axiosClient.get("/api/chat/message");
+  //       const data = response.data.data;
+  //       // console.log("msg data:", data);
+        
+  //       setMessageData(data);
+        
+        
+  //     } catch (error) {
+  //       console.error("Error fetching conversation data:", error);
+  //     }
+  //   };
+    
+  //   fetchMessage();
+  // }, []);
+  // console.log("Fetched messageData:", messageData);
+
+  
   // Set active conversation when usersData and conversationID are available
   // useEffect(() => {
   //   if (conversationID && usersData.length > 0) {
@@ -90,15 +146,15 @@ useEffect(() => {
   }
 }, [conversationID, usersData]);
 
-  const handleConversationClick = (conversation) => {
-    setActiveConversation(conversation); // Just set the active conversation
-  };
+  // const handleConversationClick = (conversation) => {
+  //   setActiveConversation(conversation); // Just set the active conversation
+  // };
 
   return (
     <>
       <div className="grid grid-cols-12 gap-5">
         {/* Start Chat Left Sidebar */}
-        <div className="chat-leftsidebar lg:w-auto shadow  overflow-y-hidden border-none sm:col-span-4 hidden sm:block">
+        <div className="chat-leftsidebar lg:w-auto shadow col-span-12 overflow-y-hidden border-none sm:col-span-4 ">
           <div>
             <div className="tab-content">
               {/* Start Chat Content */}
@@ -190,7 +246,7 @@ useEffect(() => {
 
         <>
           {activeConversation ? (
-            <div className="w-full h-[87.9vh] relative overflow-hidden transition-all duration-150 bg-white user-chat col-span-12 sm:col-span-8 shadow">
+            <div className="w-full h-[87.9vh] relative overflow-hidden transition-all duration-150 bg-white user-chat sm:col-span-8 shadow hidden sm:block ">
               <div className="lg:flex">
                 {/* Start Chat Conversation Section */}
                 <div className="relative w-full">
@@ -219,6 +275,7 @@ useEffect(() => {
                           <div className="flex-grow overflow-hidden">
                             <h5 className="mb-0 truncate ltr:block">
                               <span className="text-gray-800 pl-4 font-bold text-lg">
+                                {/* conversation selected user name and image*/}
                                 {activeConversation
                                   ? user.id ===
                                     activeConversation.participant_id
@@ -262,15 +319,15 @@ useEffect(() => {
                                 )
                               : "N/A";
 
-                            if (data.sender.id === user.id) {
+                            if (data.receiver.id === user.id) {
                               return (
                                 <MessageRight
                                   key={index}
                                   avatar={
-                                    data.sender?.avatar_url ||
+                                    data.participant?.avatar_url ||
                                     "https://via.placeholder.com/150"
                                   }
-                                  naame={data.sender?.name || "Unknown"}
+                                  naame={data.participant?.name || "Unknown"}
                                   time={time}
                                   text={data.message}
                                 />
