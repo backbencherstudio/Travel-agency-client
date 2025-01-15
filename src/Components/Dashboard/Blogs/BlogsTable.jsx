@@ -1,6 +1,5 @@
 import { FaSearch, FaCheckCircle } from 'react-icons/fa'
-import { useState, useEffect, useRef, useCallback } from 'react'
-
+import { useState, useEffect, useRef } from 'react'
 import {
   Table,
   TableBody,
@@ -14,40 +13,115 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
-import { GoDotFill } from 'react-icons/go'
+// import { GoDotFill } from 'react-icons/go'
 import { FiEdit2 } from 'react-icons/fi'
-import { debounce } from '../../../Shared/debounce'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import BlogApis from '../../../Apis/BlogApi'
 import Swal from 'sweetalert2'
-
-const statusStyles = {
-  Published: {
-    color: '#067647',
-    backgroundColor: '#ECFDF3',
-    border: '1px solid #ABEFC6',
-    icon: <FaCheckCircle />
-  },
-  Hold: {
-    color: '#0A3159',
-    backgroundColor: '#E7ECF2',
-    border: '1px solid #90A9C3',
-    icon: <GoDotFill className='text-lg' />
-  }
-}
+import useDebounce from '../../../Shared/debounce'
+import { BsThreeDots } from 'react-icons/bs'
+import { RxCross2 } from 'react-icons/rx'
 
 const BlogsTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
   const [isOpen, setIsOpen] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('All Status')
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const dropdownRef = useRef(null)
-
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
+  const [isOpenAction, setIsOpenAction] = useState(null)
+  const actionRefs = useRef(new Map())
 
+  // drop down
+  const handleThreeDotsClick = (e, id) => {
+    e.stopPropagation()
+    setIsOpenAction(isOpenAction === id ? null : id)
+  }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !Array.from(actionRefs.current.values()).some(ref =>
+          ref?.contains(event.target)
+        )
+      ) {
+        setIsOpenAction(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search)
+    const searchFromQuery = queryParams.get('search') || ''
+    const statusFromQuery = queryParams.get('status') || 'All Status'
+    setSearchQuery(searchFromQuery)
+    setSelectedStatus(statusFromQuery)
+    fetchSearchResults(searchFromQuery, statusFromQuery)
+  }, [])
+
+  // Debounced function
+  const fetchSearchResults = async (query = '', status = 'All Status') => {
+    setIsLoading(true)
+
+    try {
+      let apiStatus = ''
+      if (status === 'Active') apiStatus = '1'
+      if (status === 'Deactivated') apiStatus = '0'
+
+      const response = await BlogApis.searchBlogs(query, apiStatus)
+      if (!response.errors) {
+        setFilteredData(response.data || data)
+      }
+    } catch (error) {
+      console.error('Search error:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+  // Apply the debounce hook
+// Increase debounce delay to 1 second
+const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300); // 1000ms delay
+
+
+  // Handle search input change and use debounce
+  const handleSearchChange = e => {
+    const value = e.target.value
+    setSearchQuery(value)
+    debouncedFetchSearchResults(value, selectedStatus)
+    navigate({
+      pathname: location.pathname,
+      search: `?search=${value}&status=${selectedStatus}`
+    })
+  }
+
+  // Handle status change from the dropdown
+  const handleStatusChange = status => {
+    setSelectedStatus(status)
+    setIsOpen(false)
+    if (status === 'All Status') {
+      setFilteredData(data)
+    } else {
+      fetchSearchResults(searchQuery, status)
+    }
+    navigate({
+      pathname: location.pathname,
+      search: `?search=${searchQuery}&status=${status}`
+    })
+  }
+
+  // Other handlers remain the same
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
@@ -63,96 +137,29 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
     }
   }
 
-  const handleStatusChange = status => {
-    setSelectedStatus(status)
-    setIsOpen(false)
-    // Update URL with selected status
-    navigate({
-      pathname: location.pathname,
-      search: `?search=${searchQuery}&status=${status}`
-    })
-  }
-
-  const handleSearchChange = e => {
-    const value = e.target.value
-    setSearchQuery(value)
-    // console.log('Search query updated:', value);
-    // Update URL with the search query
-    navigate({
-      pathname: location.pathname,
-      search: `?search=${value}&status=${selectedStatus}`
-    })
-  }
-
-  // Debounce the handleSearchChange function to optimize search performance
-  const debouncedSearchChange = useCallback(
-    debounce(value => handleSearchChange({ target: { value } }), 100),
-    [handleSearchChange]
-  )
-
-  const handleSearchInputChange = e => {
-    debouncedSearchChange(e.target.value)
-  }
-
-  useEffect(() => {
-    const handleClickOutside = event => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search)
-    const statusFromQuery = queryParams.get('status')
-    const searchFromQuery = queryParams.get('search')
-
-    if (statusFromQuery) {
-      setSelectedStatus(statusFromQuery)
-    }
-
-    if (searchFromQuery) {
-      setSearchQuery(searchFromQuery)
-    }
-  }, [location.search])
-
+  // Update filtered data when the status changes
   useEffect(() => {
     let filtered = data
-
-    // Apply search filter
-    if (searchQuery) {
+    if (selectedStatus !== 'All Status') {
       filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+        selectedStatus === 'Active' ? item.status === 1 : item.status === 0
       )
     }
-
-    // Apply status filter
-    if (selectedStatus && selectedStatus !== 'All Status') {
-      filtered = filtered.filter(item => item.status === selectedStatus)
-    }
-
     setFilteredData(filtered)
-  }, [searchQuery, selectedStatus, data])
+  }, [selectedStatus, data])
 
   const handleAddBlogClick = () => {
     navigate('/dashboard/add-blog')
   }
 
-  // Function to handle edit button click
-
   const handleEditClick = id => {
-    console.log('Edit clicked with id:', id)
     navigate(`/dashboard/add-blog/${id}`)
   }
 
   const handleDeleteClick = async id => {
     const result = await Swal.fire({
       title: 'Are you sure?',
-      text: 'You won’t be able to undo this action!',
+      text: 'You wont be able to undo this action!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
@@ -175,6 +182,84 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
       }
     }
   }
+  // ====================== handle status update
+  // Function to update status (0: Deactive, 1: Active)
+  const handleStatusUpdate = async (id, status) => {
+    try {
+      const newStatus = status === 'Active' ? 1 : 0
+      const response = await BlogApis.updateBlogStatus(id, newStatus)
+      if (response.errors) {
+        await Swal.fire('Error', response.message, 'error')
+      } else {
+        await Swal.fire(
+          'Updated!',
+          `Blog status has been updated to ${status}.`,
+          'success'
+        )
+        setFilteredData(prevData =>
+          prevData.map(item =>
+            item.id === id ? { ...item, status: newStatus } : item
+          )
+        )
+      }
+    } catch (error) {
+      await Swal.fire('Error', 'An unexpected error occurred.', 'error')
+      console.error(error)
+    }
+  }
+
+  // Approval and reject
+  const handleApproveClick = async id => {
+    const result = await Swal.fire({
+      title: 'Approve this blog?',
+      text: 'Are you sure you want to approve this blog?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, approve',
+      cancelButtonText: 'Cancel'
+    })
+
+    if (result.isConfirmed) {
+      const response = await BlogApis.approveBlogPost(id)
+      if (response.errors) {
+        await Swal.fire('Error', response.message, 'error')
+      } else {
+        await Swal.fire('Approved!', 'The blog has been approved.', 'success')
+        setFilteredData(prevData =>
+          prevData.map(item =>
+            item.id === id
+              ? { ...item, approved_at: new Date().toISOString() }
+              : item
+          )
+        )
+      }
+    }
+  }
+
+  const handleRejectClick = async id => {
+    const result = await Swal.fire({
+      title: 'Reject this blog?',
+      text: 'Are you sure you want to reject this blog?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, reject',
+      cancelButtonText: 'Cancel'
+    })
+
+    if (result.isConfirmed) {
+      const response = await BlogApis.rejectBlogPost(id)
+      if (response.errors) {
+        await Swal.fire('Error', response.message, 'error')
+      } else {
+        await Swal.fire('Rejected!', 'The blog has been rejected.', 'success')
+        setFilteredData(prevData =>
+          prevData.map(item =>
+            item.id === id ? { ...item, approved_at: null } : item
+          )
+        )
+      }
+    }
+  }
 
   return (
     <>
@@ -187,7 +272,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
               placeholder='Search...'
               className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
-              onChange={handleSearchInputChange}
+              onChange={handleSearchChange}
             />
             <FaSearch className='absolute top-3 left-3 text-zinc-400' />
           </div>
@@ -209,8 +294,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                   <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
 
                   <div className='bg-white rounded-md'>
-                    {/* Status options */}
-                    {['All Status', 'Published', 'Hold'].map(status => (
+                    {['All Status', 'Active', 'Deactivated'].map(status => (
                       <button
                         key={status}
                         onClick={() => handleStatusChange(status)}
@@ -232,7 +316,6 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
       </div>
 
       <Paper style={{ borderRadius: '10px' }}>
-        {/* add blog  */}
         <div className='flex justify-end p-5'>
           <button
             onClick={handleAddBlogClick}
@@ -261,32 +344,30 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                     Author
                   </TableCell>
                 )}
-                {columns?.approved_at && (
+                {columns?.status && (
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
                     Status
                   </TableCell>
                 )}
-
+                {columns?.approved_at && (
+                  <TableCell
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                  >
+                    Approval
+                  </TableCell>
+                )}
                 {columns?.created_at && (
                   <TableCell
-                    sx={{
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
                     Published Date
                   </TableCell>
                 )}
-                {columns?.approved_at && (
+                {columns?.updated_at && (
                   <TableCell
-                    sx={{
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
                     Modified Date
                   </TableCell>
@@ -318,8 +399,8 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                           <div className='flex items-center gap-3'>
                             <img
                               className='rounded-lg'
-                              // src={item.blog_images?.blog_images[0].image_url}
-                              alt={item.title}
+                              // alt={item.title}
+                              alt='blog image'
                               style={{ width: '80px', height: '80px' }}
                             />
                             <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
@@ -331,51 +412,113 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                       {columns?.user && (
                         <TableCell style={{ minWidth: '200px' }}>
                           <p className='truncate text-[#475467]'>
-                            {item?.user?.name}
+                            {item?.user?.type}
                           </p>
                         </TableCell>
                       )}
-                      {columns?.approved_at && (
-                        <TableCell>
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '8px',
-                              backgroundColor: item.approved_at
-                                ? statusStyles.Published.backgroundColor
-                                : statusStyles.Hold.backgroundColor,
-                              color: item.approved_at
-                                ? statusStyles.Published.color
-                                : statusStyles.Hold.color,
-                              padding: '1px 14px',
-                              borderRadius: '50px',
-                              fontSize: '12px',
-                              fontWeight: 'bold',
-                              border: item.approved_at
-                                ? statusStyles.Published.border
-                                : statusStyles.Hold.border,
-                              height: '32px',
-                              minWidth: '120px',
-                              width: '120px',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden'
-                            }}
-                          >
-                            {item.approved_at ? (
-                              <span>{item.approved_at}</span>
-                            ) : (
-                              <>
-                                {statusStyles.Hold.icon}
-                                <span>{'Hold'}</span>
-                              </>
-                            )}
-                          </span>
+                      {columns?.status && (
+                        <TableCell style={{ minWidth: '200px' }}>
+                          {item.status === 1 ? (
+                            <span
+                              className='bg-[#ECFDF3] border-[#ABEFC6] border text-[13px] text-[#067647] px-2 py-1 rounded-full'
+                              style={{
+                                height: '30px',
+                                width: '100px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              Active
+                            </span>
+                          ) : item.status === 0 ? (
+                            <span
+                              className='bg-[#FEF3F2] border text-[#B42318] text-[13px] border-[#FECDCA] px-2 py-1 rounded-full'
+                              style={{
+                                height: '30px',
+                                width: '100px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              Deactivated
+                            </span>
+                          ) : null}
                         </TableCell>
                       )}
 
+                      {columns?.approved_at && (
+                        <TableCell style={{ minWidth: '200px' }}>
+                          {item?.user?.type === 'admin' ? (
+                            <>
+                              <p className='truncate text-[#475467]'>
+                                {item.approved_at === null ? (
+                                  <span
+                                    className='bg-[#FEF3F2] border text-[#B42318] text-[13px] border-[#FECDCA] px-2 py-1 rounded-full'
+                                    style={{
+                                      height: '30px',
+                                      width: '100px',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    Reject
+                                  </span>
+                                ) : (
+                                  <span
+                                    className='bg-[#ECFDF3] border-[#ABEFC6] border text-[13px] text-[#067647] px-2 py-1 rounded-full'
+                                    style={{
+                                      height: '30px',
+                                      width: '100px',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    Approved
+                                  </span>
+                                )}
+                              </p>
+                            </>
+                          ) : item?.user?.type === 'vendor' ? (
+                            <>
+                              <p className='truncate text-[#475467]'>
+                                {item.approved_at === null ? (
+                                  <span
+                                    className='bg-[#FEF3F2] border text-[#B42318] text-[13px] border-[#FECDCA] px-2 py-1 rounded-full'
+                                    style={{
+                                      height: '30px',
+                                      width: '100px',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    Reject
+                                  </span>
+                                ) : (
+                                  <span
+                                    className='bg-[#ECFDF3] border-[#ABEFC6] border text-[13px] text-[#067647] px-2 py-1 rounded-full'
+                                    style={{
+                                      height: '30px',
+                                      width: '100px',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    Approved
+                                  </span>
+                                )}
+                              </p>
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                        </TableCell>
+                      )}
                       {columns?.created_at && (
                         <TableCell>
                           <p className='text-[#475467]'>
@@ -417,13 +560,13 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                         </TableCell>
                       )}
                       <TableCell>
-                        <div className='flex items-center justify-center gap-4'>
+                        <div className='relative  flex items-center justify-center gap-4'>
                           <button
                             onClick={e => {
                               e.stopPropagation()
                               handleDeleteClick(item.id)
                             }}
-                            className='text-[#475467] hover:text-red-600 transform duration-300'
+                            className=' text-red-600 hover:text-red-700 transform duration-300'
                           >
                             <LuTrash2 className='text-xl' />
                           </button>
@@ -436,6 +579,91 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                           >
                             <FiEdit2 className='text-xl' />
                           </button>
+
+                          <div className='relative flex justify-center'>
+                            <button
+                              onClick={e => handleThreeDotsClick(e, item.id)}
+                              className='text-blue-600 transition-all duration-500 ease-in-out'
+                            >
+                              {/* Conditionally render icons with fade-in/out */}
+                              {isOpenAction === item.id ? (
+                                <RxCross2 className='text-xl opacity-100 scale-100 transition-transform duration-300 ease-in-out' />
+                              ) : (
+                                <BsThreeDots className='text-xl opacity-100 scale-100 transition-transform duration-300 ease-in-out' />
+                              )}
+                            </button>
+
+                            {isOpenAction === item.id && (
+                              <div
+                                ref={ref =>
+                                  actionRefs.current.set(item.id, ref)
+                                }
+                                className='absolute bg-white p-4  flex flex-col top-full right-0 mt-2 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
+                              >
+                                {item?.user?.type === 'admin' ? (
+                                  <>
+                                    <button
+                                      className={`flex item-center gap-3 p-3 rounded-md text-base ${
+                                        item.status === 1
+                                          ? 'bg-green-600 text-white cursor-default'
+                                          : 'flex item-center gap-3 p-3 hover:bg-green-600 rounded-md text-base text-zinc-600 hover:text-white duration-300'
+                                      }`}
+                                      disabled={item.status === 1}
+                                      onClick={() =>
+                                        handleStatusUpdate(item.id, 'Active')
+                                      }
+                                    >
+                                      Active
+                                    </button>
+                                    <button
+                                      className={`flex item-center gap-3 p-3 rounded-md text-base ${
+                                        item.status === 0
+                                          ? 'bg-red-600 text-white cursor-default'
+                                          : 'flex item-center gap-3 p-3 hover:bg-red-600 rounded-md text-base text-zinc-600 hover:text-white duration-300'
+                                      }`}
+                                      disabled={item.status === 0}
+                                      onClick={() =>
+                                        handleStatusUpdate(item.id, 'Deactive')
+                                      }
+                                    >
+                                      Deactive
+                                    </button>
+                                  </>
+                                ) : item?.user?.type === 'vendor' ? (
+                                  <>
+                                    <button
+                                      className={`flex item-center gap-3 p-3 rounded-md text-base ${
+                                        item.approved_at !== null
+                                          ? 'bg-green-600 text-white cursor-default'
+                                          : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
+                                      }`}
+                                      disabled={item.approved_at !== null}
+                                      onClick={() =>
+                                        handleApproveClick(item.id)
+                                      }
+                                    >
+                                      Approve
+                                    </button>
+                                    <button
+                                      className={`flex item-center gap-3 p-3 rounded-md text-base ${
+                                        item.approved_at === null
+                                          ? 'bg-red-600 text-white cursor-default'
+                                          : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
+                                      }`}
+                                      disabled={item.approved_at === null}
+                                      onClick={() => handleRejectClick(item.id)}
+                                    >
+                                      Reject
+                                    </button>
+                                  </>
+                                ) : (
+                                  <p className='text-sm text-gray-500'>
+                                    No actions available
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </TableCell>
                     </TableRow>

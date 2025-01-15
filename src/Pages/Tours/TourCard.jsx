@@ -23,9 +23,9 @@ function TourCard({ tour }) {
     };
 
     return (
-        <div key={tour.id} className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]">
+        <div key={tour?.id} className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]">
             <div className="relative h-56 overflow-hidden text-white rounded-t-[10px]">
-                <img src={tour.images[0]} alt="card-image" />
+                <img src={tour?.package_images[0]} alt="card-image" />
             </div>
             <div className="p-4">
                 <div className='flex items-center gap-1'>
@@ -36,23 +36,23 @@ function TourCard({ tour }) {
                                 fill="white"
                             />
                         </svg>
-                        {tour.location}
+                        {tour?.destination?.name}, {tour?.destination?.country?.name}
                     </div>
                     <div className="mb-5 bg-[#0E457D] text-white text-xs font-medium me-2 px-2.5 py-[5px] rounded-full border border-[#90A9C3] dark:bg-gray-700 dark:text-gray-300">
                         Hotel + All inclusive
                     </div>
                 </div>
-                <Link to={`/tour-details/${tour.id}`} className="mb-2 text-[#1D1F2C] text-xl font-bold hover:text-blue-500">
-                    {tour.name}
+                <Link to={`${tour?.id}`} className="mb-2 text-[#1D1F2C] text-xl font-bold hover:text-blue-500">
+                    {tour?.name}
                 </Link>
                 <p className="text-[#4A4C56] text-sm leading-normal font-normal">
-                    {tour.description}...
+                    {tour?.description}...
                     <a href='' className=' text-blue-500'>Read more</a>
                 </p>
                 <div className='flex items-center gap-2 mt-3'>
-                    <p className=' text-sm'>{tour.rating}</p>
+                    <p className=' text-sm'>{tour?.reviews[0]?.rating_value}</p>
                     <div className="flex gap-1 items-center">
-                        {renderStars(tour.rating)}
+                        {renderStars(tour?.reviews[0]?.rating_value)}
                     </div>
                     <div className='flex items-center'>
                         <div className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -60,10 +60,10 @@ function TourCard({ tour }) {
                                 <path fillRule="evenodd" clipRule="evenodd" d="M6.99984 1.16699C3.77809 1.16699 1.1665 3.77858 1.1665 7.00033C1.1665 10.2221 3.77809 12.8337 6.99984 12.8337C10.2216 12.8337 12.8332 10.2221 12.8332 7.00033C12.8332 3.77858 10.2216 1.16699 6.99984 1.16699ZM9.05902 9.05951C8.97385 9.14468 8.86184 9.18783 8.74984 9.18783C8.63784 9.18783 8.52582 9.14526 8.44065 9.05951L6.69065 7.30951C6.6084 7.22726 6.56234 7.11583 6.56234 7.00033V4.08366C6.56234 3.84216 6.75834 3.64616 6.99984 3.64616C7.24134 3.64616 7.43734 3.84216 7.43734 4.08366V6.81889L9.05902 8.44057C9.22994 8.61207 9.22994 8.88859 9.05902 9.05951Z" fill="#4A4C56"/>
                             </svg>
                         </div>
-                        <p className="ms-1 text-sm  text-gray-600 dark:text-gray-400">{tour.days} days</p>
+                        <p className="ms-1 text-sm  text-gray-600 dark:text-gray-400">{tour?.duration}</p>
                     </div>
                 </div>
-                <div className='text-sm mt-1 text-[#EB5B2A]'>Cancellation Policy <span className='text-xs text-[#49556D]'>(Cancel within 24H)</span></div>
+                <div className='text-sm mt-1 text-[#EB5B2A]'>Cancellation Policy <span className='text-xs text-[#49556D]'>({tour?.cancellation_policy?.policy})</span></div>
             </div>
             <div className='px-4'>
                 <hr />
@@ -71,7 +71,7 @@ function TourCard({ tour }) {
             <div className="flex items-center justify-between p-4">
                 <div className="">
                     <div className='text-xs'>Starting From</div>
-                    <div className='text-xl text-[#0E457D] font-bold'>${tour.starting_price}</div>
+                    <div className='text-xl text-[#0E457D] font-bold'>${tour?.price}</div>
                 </div>
                 <button className='flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white'>
                     <div className='text-sm '>Book Now</div>

@@ -11,23 +11,26 @@ const AdminLayout = () => {
 
   return (
     <div className=' w-full h-full  min-h-screen bg-[#e9f0f9]'>
-      {loading && (
+      {loading ? (
         <Loading />
-      )}
+      )
+      :
+      (
       <div className='animate-from-middle'>
         <AdminHeader
           showSidebar={showSidebar}
           setShowSidebar={setShowSidebar}
-        />
+          />
         <AdminSidebar
           showSidebar={showSidebar}
           setShowSidebar={setShowSidebar}
-        />
+          />
 
         <div className='ml-0 mt-4 lg:ml-[275px] py-[80px] px-5  '>
           <Outlet />
         </div>
       </div>
+        )}
     </div>
   )
 }

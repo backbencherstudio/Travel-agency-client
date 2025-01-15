@@ -9,9 +9,11 @@ const Layout = () => {
   const { loading } = useContext(AuthContext);
   return (
     <div className="min-h-screen flex flex-col">
-      {loading && (
+      {loading ? (
         <Loading />
-      )}
+      )
+      : 
+      (
       <div className="animate-from-middle">
         <Navbar />
         <div className="flex-grow">
@@ -21,6 +23,7 @@ const Layout = () => {
           <Footer />
         </div>
       </div>
+      )}
     </div>
   );
 };
