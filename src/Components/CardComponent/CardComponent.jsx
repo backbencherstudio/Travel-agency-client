@@ -24,7 +24,7 @@ const CardComponent = ({ blog }) => {
   return (
     <div className='h-full'>
       <Link to={`/blogDetails/${blog.id}`}>
-        <div className='relative flex flex-col bg-white shadow-md border border-slate-200 rounded-xl h-full'>
+        <div className='relative flex flex-col group bg-white shadow-md hover:shadow-lg hover:border-orange-500 transform duration-300 border border-slate-200 rounded-xl h-full'>
           <div className='relative h-56 overflow-hidden text-white rounded-t-xl'>
             <img
               src={blog.image || 'https://via.placeholder.com/300x200'}
@@ -48,7 +48,7 @@ const CardComponent = ({ blog }) => {
                   {formatDate(blog.createTime)}
                 </div>
               </div>
-              <h6 className='mb-2 text-slate-800 text-xl font-bold line-clamp-2'>
+              <h6 className='mb-2 text-slate-800 text-xl font-bold line-clamp-2 group-hover:text-blue-500 transform duration-300'>
                 {blog.title || 'Untitled Blog'}
               </h6>
               <p
@@ -71,7 +71,7 @@ const CardComponent = ({ blog }) => {
                   {blog.user?.name || 'Anonymous'}
                 </h6>
                 <p className='text-sm text-[#899AB2]'>
-                  {blog.user?.role || 'Blogger'}
+                  {blog.user?.type || 'Anonymous'}
                 </p>
               </div>
             </div>

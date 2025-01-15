@@ -112,6 +112,10 @@ export const router = createBrowserRouter([
         element: <CruiseDetails />
       },
       {
+        path: 'review-pacakge',
+        element: <ReviewPackage />
+      },
+      {
         path: '/contacts',
         element: <Contacts />
       },

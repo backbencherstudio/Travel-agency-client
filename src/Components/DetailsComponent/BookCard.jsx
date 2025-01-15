@@ -37,50 +37,54 @@ const BookCard = ({ details, renderStars }) => {
 
     console.log('extraServices', extraServices)
 
+  console.log('details', details)
+  
   return (
     <div className='flex flex-col gap-4 max-w-full'>
-        <h1 className='text-[40px] font-bold border-b border-b-[#e5e6e6] pb-[15px]'>${details?.price}<span className='text-lg font-normal'>/per person</span></h1>
-        <div>
-            {/* Start Date Picker */}
-            <div className='flex border items-center justify-between p-2 rounded-md border-[#e5e6e6] shadow-sm'>
-                <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    selectsStart
-                    startDate={startDate}
-                    endDate={endDate}
-                    placeholderText="Start Date"
-                    className='outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal'
-                    ref={startDatePickerRef} // Assign ref to the startDate DatePicker
-                />
-                {/* Calendar Icon for Start Date */}
-                <img
-                    src={calender}
-                    onClick={() => startDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
-                    className='text-2xl cursor-pointer ml-2'
-                />
-            </div>
+      <h1 className='text-[40px] font-bold border-b border-b-[#e5e6e6] pb-[15px]'>
+        ${details?.price}
+        <span className='text-lg font-normal'>/per person</span>
+      </h1>
+      <div>
+        {/* Start Date Picker */}
+        <div className='flex border items-center justify-between p-2 rounded-md border-[#e5e6e6] shadow-sm'>
+          <DatePicker
+            selected={startDate}
+            onChange={date => setStartDate(date)}
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+            placeholderText='Start Date'
+            className='outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal'
+            ref={startDatePickerRef}
+          />
+          {/* Calendar Icon for Start Date */}
+          <img
+            src={calender}
+            onClick={() => startDatePickerRef.current.setOpen(true)}
+            className='text-2xl cursor-pointer ml-2'
+          />
+        </div>
 
-            {/* End Date Picker */}
-            <div className='flex border mt-4 items-center justify-between p-2 rounded-md border-[#e5e6e6] shadow-sm'>
-                <DatePicker
-                    selected={endDate}
-                    onChange={(date) => setEndDate(date)}
-                    selectsEnd
-                    startDate={startDate}
-                    endDate={endDate}
-                    minDate={startDate}
-                    placeholderText="End Date"
-                    className='outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal'
-                    ref={endDatePickerRef} // Assign ref to the endDate DatePicker
-                />
-                {/* Calendar Icon for End Date */}
-                <img
-                    src={calender} 
-                    onClick={() => endDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
-                    className='text-2xl cursor-pointer ml-2'
-                />
-            </div>
+        {/* End Date Picker */}
+        <div className='flex border mt-4 items-center justify-between p-2 rounded-md border-[#e5e6e6] shadow-sm'>
+          <DatePicker
+            selected={endDate}
+            onChange={date => setEndDate(date)}
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+            minDate={startDate}
+            placeholderText='End Date'
+            className='outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal'
+            ref={endDatePickerRef}
+          />
+          {/* Calendar Icon for End Date */}
+          <img
+            src={calender}
+            onClick={() => endDatePickerRef.current.setOpen(true)}
+            className='text-2xl cursor-pointer ml-2'
+          />
         </div>
         <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-2 mt-3'>
@@ -113,6 +117,10 @@ const BookCard = ({ details, renderStars }) => {
                     </div>
                 ))}
             </div>
+            <p className='ms-1 text-sm  text-gray-600 dark:text-gray-400'>
+              {details?.duration} days
+            </p>
+          </div>
         </div>
         <button onClick={handleBookNow} className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w- mt-2'>
             Book Now
