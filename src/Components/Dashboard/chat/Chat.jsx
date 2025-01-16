@@ -49,7 +49,7 @@ useEffect(() => {
       setUsersData(data);
       
       // If URL has conversationID, set that conversation as active
-      if (conversationID && data.length > 0) {
+      if (conversationID && data?.length > 0) {
         const selectedConversation = data.find(
           (conversation) => conversation.id === conversationID
         );
@@ -135,7 +135,7 @@ useEffect(() => {
 
 // Remove these useEffect hooks that were handling route-based navigation
 useEffect(() => {
-  if (conversationID && usersData.length > 0) {
+  if (conversationID && usersData?.length > 0) {
     const selectedConversation = usersData.find(
       (conversation) => conversation.id === conversationID
     );
@@ -185,7 +185,7 @@ useEffect(() => {
                   {/* Scrollable Chat List */}
                   <div className="h-full px-2 " data-simplebar>
                     <ul className="chat-user-list">
-                      {usersData.length === 0 ? (
+                      {usersData?.length === 0 ? (
                         <p>Loading conversations...</p>
                       ) : (
                         <ul className="chat-user-list">
@@ -299,7 +299,7 @@ useEffect(() => {
                   >
                     {/* Message list */}
                     <div className="h-[73vh] p-4 lg:p-6 overflow-y-auto">
-                      {messageData.length > 0 ? (
+                      {messageData?.length > 0 ? (
                         messageData
                         .filter(
                           (data) =>
