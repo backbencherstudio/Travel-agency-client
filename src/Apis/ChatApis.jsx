@@ -2,7 +2,11 @@ import { useContext } from "react";
 import axiosClient from "../axiosClient";
 
 
-const ChatApis = {};
+
+const ChatApis = {
+    sendMessage: (payload) => axiosClient.post("/api/chat/message", payload),
+    fetchMessages: (conversationId) => axiosClient.get(`/api/chat/message?conversation_id=${conversationId}`)
+  };
 
 // কনভারসেশন তৈরি বা ফেচ করার জন্য ফাংশন
 ChatApis.createOrFetchConversation = async (user, adminId) => {    

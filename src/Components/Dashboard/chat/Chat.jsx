@@ -8,24 +8,118 @@ import { useContext, useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import { AuthContext } from "../../../AuthProvider/AuthProvider";
 import ChatApis from "../../../Apis/ChatApis";
+import { io } from "socket.io-client";
+const defaultAvatar = "https://via.placeholder.com/150";
 
 const Chat = () => {
   const [usersData, setUsersData] = useState([]);
   const [messageData, setMessageData] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
   const [newMessage, setNewMessage] = useState("");
-
-  // console.log("activeConversation:", activeConversation);
-
+  const [socket, setSocket] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   const { conversationID } = useParams();
-  console.log("conversationId:", conversationID);
-
   const { user } = useContext(AuthContext);
-  console.log("user", user);
+  const navigate = useNavigate();
 
-  // Handle initial URL conversation and updates
+  // Socket.IO Connection
+  // useEffect(() => {
+  //   // Initialize socket connection
+  //   const newSocket = io(axiosClient.get("/api/chat/conversation"), {
+  //     auth: {
+  //       token: localStorage.getItem("token") // Assuming you store token in localStorage
+  //     }
+  //   });
+
+  //   // Connection event handlers
+  //   newSocket.on("connect", () => {
+  //     console.log("Connected to socket server");
+  //   });
+
+  //   newSocket.on("disconnect", () => {
+  //     console.log("Disconnected from socket server");
+  //   });
+
+  //   // Listen for new messages
+  //   newSocket.on("newMessage", (message) => {
+  //     setMessageData(prevMessages => [...prevMessages, message]);
+  //   });
+
+  //   // Listen for typing status
+  //   newSocket.on("userTyping", ({ userName, isTyping }) => {
+  //     setTypingUser(userName);
+  //     setIsTyping(isTyping);
+      
+  //     // Clear typing indicator after 3 seconds
+  //     setTimeout(() => {
+  //       setIsTyping(false);
+  //     }, 3000);
+  //   });
+
+  //   setSocket(newSocket);
+
+  //   // Cleanup on unmount
+  //   return () => {
+  //     if (newSocket) newSocket.disconnect();
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    // Replace this with your actual backend WebSocket URL
+    const newSocket = io("https://travel-agency-backend-rh1v.onrender.com", {
+      auth: {
+        token: localStorage.getItem("token"), // Assuming you use token-based authentication
+      },
+    });
+    console.log('new socket:', newSocket);
+    
+  
+    // Handle connection events
+    newSocket.on("connect", () => {
+      console.log("Connected to socket server");
+    });
+  
+    newSocket.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+    });
+  
+    // Listen for new messages
+    newSocket.on("newMessage", (message) => {
+      setMessageData((prevMessages) => [...prevMessages, message]);
+    });
+  
+    // Listen for typing status
+    newSocket.on("userTyping", ({ userName, isTyping }) => {
+      setTypingUser(userName);
+      setIsTyping(isTyping);
+  
+      // Clear typing indicator after 3 seconds
+      setTimeout(() => {
+        setIsTyping(false);
+      }, 3000);
+    });
+  
+    // Set the socket instance in state
+    setSocket(newSocket);
+  
+    // Cleanup on component unmount
+    return () => {
+      if (newSocket) newSocket.disconnect();
+    };
+  }, []);
+  
+
+  // Join conversation room when active conversation changes
+  useEffect(() => {
+    if (socket && activeConversation) {
+      socket.emit("joinRoom", activeConversation.id);
+    }
+  }, [socket, activeConversation]);
+
+  // Fetch Conversations
   useEffect(() => {
     const fetchConversation = async () => {
       try {
@@ -33,7 +127,6 @@ const Chat = () => {
         const data = response.data.data;
         setUsersData(data);
 
-        // If URL has conversationID, set that conversation as active
         if (conversationID && data.length > 0) {
           const selectedConversation = data.find(
             (conversation) => conversation.id === conversationID
@@ -48,116 +141,48 @@ const Chat = () => {
     };
 
     fetchConversation();
-  }, [conversationID]); // Depend on conversationID
+  }, [conversationID]);
 
-  console.log("conversation:", activeConversation);
-
-  // Handle conversation click
-  // const handleConversationClick = (conversation) => {
-  //   setActiveConversation(conversation);
-  //   navigate(`/chat/${conversation.id}`);
-  // };
-
-  // Update message fetching useEffect
-  // useEffect(() => {
-  //   const fetchMessage = async () => {
-  //     if (!activeConversation?.id) return; // Don't fetch if no active conversation
-
-  //     try {
-  //       const response = await axiosClient.get(`/api/chat/message?conversation_id=${activeConversation.id}`);
-  //       const data = response.data.data;
-  //       setMessageData(data);
-  //     } catch (error) {
-  //       console.error("Error fetching message data:", error);
-  //     }
-  //   };
-
-  //   fetchMessage();
-  // }, [activeConversation?.id]); // Dependency on activeConversation.id
-
-  // // API call inside useEffect
+  // Fetch Messages for Active Conversation
   useEffect(() => {
-    const fetchMessage = async () => {
+    const fetchMessages = async () => {
+      if (!activeConversation) return;
+      
+      setIsLoadingMessages(true);
       try {
-        const response = await axiosClient.get("/api/chat/message");
-        const data = response.data.data;
-        // console.log("msg data:", data);
-
-        setMessageData(data);
+        const messages = await ChatApis.fetchMessages(activeConversation.id);
+        setMessageData(messages);
       } catch (error) {
-        console.error("Error fetching conversation data:", error);
+        console.error("Error fetching messages:", error);
+      } finally {
+        setIsLoadingMessages(false);
       }
     };
 
-    fetchMessage();
-  }, []);
-  console.log("Fetched messageData:", messageData);
+    fetchMessages();
+  }, [activeConversation]);
 
-  // Set active conversation when usersData and conversationID are available
-  // useEffect(() => {
-  //   if (conversationID && usersData.length > 0) {
-  //     const selectedConversation = usersData.find(
-  //       (conversation) => conversation.id === conversationID
-  //     );
-
-  //     if (selectedConversation) {
-  //       setActiveConversation(selectedConversation);
-  //       console.log("Active Conversation:", selectedConversation);
-  //     } else {
-  //       console.warn("No conversation found for this ID.");
-  //       setActiveConversation(null);
-  //     }
-  //   }
-  // }, [conversationID, usersData]);
-
-  // const handleConversationClick = (conversation) => {
-  //   setActiveConversation(conversation); // Set active conversation
-  //   navigate(`/chat/${conversation.id}`); // Navigate to the selected conversation URL
-  // };
-
-  useEffect(() => {
-    if (conversationID && usersData.length > 0) {
-      const selectedConversation = usersData.find(
-        (conversation) => conversation.id === conversationID
-      );
-
-      if (selectedConversation) {
-        setActiveConversation(selectedConversation);
-      }
-    }
-  }, [conversationID, usersData]);
-
-  // const handleConversationClick = (conversation) => {
-  //   setActiveConversation(conversation); // Set the active conversation directly
-  //   // No need to navigate, handle state-based UI changes instead.
-  // };
-
-  const navigate = useNavigate();
+  // Handle Conversation Click
   const handleConversationClick = (conversation) => {
     setActiveConversation(conversation);
-    navigate(`/dashboard/chat/${conversation.id}`, { replace: true }); // update URL without causing refresh
+    navigate(`/dashboard/chat/${conversation.id}`, { replace: true });
   };
 
-  // Remove these useEffect hooks that were handling route-based navigation
-  useEffect(() => {
-    if (conversationID && usersData.length > 0) {
-      const selectedConversation = usersData.find(
-        (conversation) => conversation.id === conversationID
-      );
-
-      if (selectedConversation) {
-        setActiveConversation(selectedConversation);
-      }
+  // Typing Handler
+  const handleTyping = () => {
+    if (socket && activeConversation) {
+      socket.emit("typing", {
+        conversationId: activeConversation.id,
+        userId: user.id,
+        userName: user.name,
+        isTyping: true
+      });
     }
-  }, [conversationID, usersData]);
-
-  // const handleConversationClick = (conversation) => {
-  //   setActiveConversation(conversation); // Just set the active conversation
-  // };
+  };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim()) return; // Do nothing if the message is empty
-
+    if (!newMessage.trim() || !activeConversation) return;
+  
     const messagePayload = {
       message: newMessage,
       conversation_id: activeConversation.id,
@@ -167,299 +192,220 @@ const Chat = () => {
           ? activeConversation.creator.id
           : activeConversation.participant.id,
     };
-
+  
     try {
+      // Emit message through socket for real-time updates
+      if (socket) {
+        socket.emit("sendMessage", messagePayload);
+      }
+  
+      // Save message through API
       const response = await ChatApis.sendMessage(messagePayload);
       if (response && response.message) {
-        // Update local state with the new message
+        // Update local state immediately
         setMessageData((prevMessages) => [
-          ...prevMessages,
-          { ...response.message, sender: user }, // Add sender details
+          ...(prevMessages || []),
+          { ...response.message, sender: user },
         ]);
-        setNewMessage(""); // Clear the input box
-      } else {
-        console.error("Failed to send message:", response.message);
+        setNewMessage(""); // Clear input
       }
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      if (!activeConversation) return;
-
-      const messages = await ChatApis.fetchMessages(activeConversation.id);
-      setMessageData(messages);
-    };
-
-    fetchMessages();
-  }, [activeConversation]);
+  
+  
 
   return (
-    <>
-      <div className="grid grid-cols-12 gap-5">
-        {/* Start Chat Left Sidebar */}
-        <div className="chat-leftsidebar lg:w-auto shadow col-span-12 overflow-y-hidden border-none sm:col-span-4 ">
-          <div>
-            <div className="tab-content">
-              {/* Start Chat Content */}
-              <div className="bg-[#f2f2f2] overflow-y-auto h-[87.9vh]">
-                <div className="px-6 pt-6">
-                  <h4 className="mb-0 text-gray-700">Chats</h4>
-
-                  {/* Search Bar */}
-                  <div className="w-full max-w-sm min-w-full my-3 p-2 rounded-md bg-[#eb5a2a20]">
-                    <div className="relative w-full">
-                      {/* Search Icon on the Left */}
-                      <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none" />
-
-                      <input
-                        type="text"
-                        className="w-full pl-10 pr-3 py-1 outline-none border-none bg-transparent placeholder:text-slate-400 text-slate-600 text-sm rounded-md transition duration-300 ease"
-                        placeholder="Type here..."
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* Search Bar Ends */}
-
-                {/* Start Chat people Message List */}
-                <div>
-                  <h5 className="px-6 mb-4 text-xl">Recent</h5>
-
-                  {/* Scrollable Chat List */}
-                  <div className="h-full px-2 " data-simplebar>
-                    <ul className="chat-user-list">
-                      {usersData.length === 0 ? (
-                        <p>Loading conversations...</p>
-                      ) : (
-                        <ul className="chat-user-list">
-                          {usersData.map((data, index) => {
-                            const chatUser =
-                              user.id === data.participant_id
-                                ? data.creator
-                                : data.participant;
-                            const lastMessage =
-                              data.messages?.[0]?.message ||
-                              "No recent messages";
-
-                            return (
-                              <li
-                                key={index}
-                                onClick={() => handleConversationClick(data)}
-                                className={`cursor-pointer p-4 ${
-                                  activeConversation?.id === data.id
-                                    ? "bg-gray-100"
-                                    : ""
-                                }`}
-                              >
-                                <User
-                                  active={activeConversation?.id === data.id}
-                                  id={chatUser.id}
-                                  image={
-                                    chatUser.avatar_url ||
-                                    "https://via.placeholder.com/150"
-                                  }
-                                  name={chatUser.name}
-                                  hint={lastMessage}
-                                  time={
-                                    data.updated_at
-                                      ? new Date(
-                                          data.updated_at
-                                        ).toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })
-                                      : "N/A"
-                                  }
-                                />
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      )}
-                    </ul>
-                  </div>
-                </div>
-                {/* End Chat people Message List */}
+    <div className="grid grid-cols-12 gap-5">
+      {/* Chat Left Sidebar */}
+      <div className="chat-leftsidebar lg:w-auto shadow col-span-12 overflow-y-hidden border-none sm:col-span-4">
+        <div className="bg-[#f2f2f2] overflow-y-auto h-[87.9vh]">
+          <div className="px-6 pt-6">
+            <h4 className="mb-0 text-gray-700">Chats</h4>
+            
+            {/* Search Bar */}
+            <div className="w-full max-w-sm min-w-full my-3 p-2 rounded-md bg-[#eb5a2a20]">
+              <div className="relative w-full">
+                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  className="w-full pl-10 pr-3 py-1 outline-none border-none bg-transparent placeholder:text-slate-400 text-slate-600 text-sm rounded-md"
+                  placeholder="Search conversations..."
+                />
               </div>
-              {/* End Chat Content */}
+            </div>
+          </div>
+
+          {/* Conversation List */}
+          <div className="px-6">
+            <h5 className="mb-4 text-xl">Recent</h5>
+            <div className="h-full" data-simplebar>
+              <ul className="chat-user-list">
+                {usersData.length === 0 ? (
+                  <p className="text-gray-500 p-4">No conversations found</p>
+                ) : (
+                  usersData.map((data, index) => {
+                    const chatUser =
+                      user.id === data.participant_id
+                        ? data.creator
+                        : data.participant;
+                    const lastMessage =
+                      data.messages?.[0]?.message || "No recent messages";
+
+                    return (
+                      <li
+                        key={index}
+                        onClick={() => handleConversationClick(data)}
+                        className={`cursor-pointer p-4 ${
+                          activeConversation?.id === data.id
+                            ? "bg-gray-100"
+                            : ""
+                        }`}
+                      >
+                        <User
+                          active={activeConversation?.id === data.id}
+                          id={chatUser.id}
+                          image={chatUser.avatar_url || defaultAvatar}
+                          name={chatUser.name}
+                          hint={lastMessage}
+                          time={data.updated_at
+                            ? new Date(data.updated_at).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "N/A"
+                          }
+                        />
+                      </li>
+                    );
+                  })
+                )}
+              </ul>
             </div>
           </div>
         </div>
-        {/* End Chat Left Sidebar */}
+      </div>
 
-        <>
-          {activeConversation ? (
-            <div className="w-full h-[87.9vh] relative overflow-hidden transition-all duration-150 bg-white user-chat sm:col-span-8 shadow hidden sm:block ">
-              <div className="lg:flex">
-                {/* Start Chat Conversation Section */}
-                <div className="relative w-full">
-                  {/* Start Chat User Header */}
-                  <div className="p-4 border-b border-gray-100 lg:py-4 lg:px-6">
-                    <div className="grid items-center grid-cols-12">
-                      <div className="col-span-8 sm:col-span-4">
-                        <div className="flex items-center">
-                          <div className="ltr:mr-3">
-                            <img
-                              src={
-                                activeConversation
-                                  ? user.id ===
-                                    activeConversation.participant_id
-                                    ? activeConversation.creator.avatar_url ||
-                                      "https://via.placeholder.com/150"
-                                    : activeConversation.participant
-                                        .avatar_url ||
-                                      "https://via.placeholder.com/150"
-                                  : "https://via.placeholder.com/150"
-                              }
-                              className="rounded-full h-9 w-9"
-                              alt="User Avatar"
-                            />
-                          </div>
-                          <div className="flex-grow overflow-hidden">
-                            <h5 className="mb-0 truncate ltr:block">
-                              <span className="text-gray-800 pl-4 font-bold text-lg">
-                                {/* conversation selected user name and image*/}
-                                {activeConversation
-                                  ? user.id ===
-                                    activeConversation.participant_id
-                                    ? activeConversation.creator.name
-                                    : activeConversation.participant.name
-                                  : "Select a conversation"}
-                              </span>
-                              <i className="text-gray-100 ltr:ml-1 rtl:mr-1 ri-record-circle-fill"></i>
-                            </h5>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* End Chat User Header */}
-
-                  {/* Start Chat Conversation */}
-                  <div
-                    className="h-[73vh] p-4 lg:p-6 overflow-y-auto "
-                    data-simplebar
-                  >
-                    {/* Message list */}
-                    <div className="h-[73vh] p-4 lg:p-6 overflow-y-auto">
-                      {/* TODO: right and left side e msg show korar logic er kaj korte hobe */}
-                      {messageData?.length > 0 ? (
-                        messageData
-                          .filter(
-                            (data) =>
-                              // Ensure messages belong to the active conversation
-                              data.sender?.id ===
-                                activeConversation?.creator?.id ||
-                              data.sender?.id ===
-                                activeConversation?.participant_id ||
-                              data.receiver?.id ===
-                                activeConversation?.creator?.id ||
-                              data.receiver?.id ===
-                                activeConversation?.participant_id
-                          )
-                          .map((data, index) => {
-                            const time = data.created_at
-                              ? new Date(data.created_at).toLocaleTimeString(
-                                  [],
-                                  {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  }
-                                )
-                              : "N/A";
-
-                            // Check if the user is the sender and admin is the receiver
-                            const isUserSender = data.sender?.id === user?.id;
-                            const isAdminReceiver = !isUserSender;
-
-                            if (isUserSender) {
-                              // Render MessageRight for user-sent messages
-                              return (
-                                <MessageRight
-                                  key={index}
-                                  avatar={
-                                    data.sender?.avatar_url ||
-                                    "https://via.placeholder.com/150"
-                                  }
-                                  naame={data.sender?.name || "Unknown"}
-                                  time={time}
-                                  text={data?.message}
-                                />
-                              );
-                            } else if (isAdminReceiver) {
-                              // Render MessageLeft for admin-received messages
-                              return (
-                                <MessageLeft
-                                  key={index}
-                                  avatar={
-                                    data.receiver?.avatar_url ||
-                                    "https://via.placeholder.com/150"
-                                  }
-                                  naame={data.receiver?.name || "Admin"}
-                                  time={time}
-                                  text={data?.message}
-                                />
-                              );
-                            }
-                          })
-                      ) : (
-                        <p className="text-gray-500">
-                          No messages in this conversation.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  {/* End Chat Conversation */}
-                </div>
-
-                {/* Start Chat Input Section */}
-                <div className="p-4 border-t border-[#dddddd] bg-[#f2f2f2]/100 absolute bottom-0 right-0 w-full">
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1 flex items-center bg-[#eb5a2a20] rounded px-4 py-2">
-                      <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        className="w-full bg-transparent border-none focus:outline-none text-sm"
-                        placeholder="Type your message...."
-                      />
-                    </div>
-                    <button
-                      onClick={handleSendMessage}
-                      className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]"
-                    >
-                      <svg
-                        className="w-5 h-5 transform rotate-90 -mr-px"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                        ></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-
-                {/* End Chat Input Section */}
+      {/* Chat Content Area */}
+      {activeConversation ? (
+        <div className="w-full h-[87.9vh] relative overflow-hidden bg-white user-chat sm:col-span-8 shadow hidden sm:block">
+          {/* Chat Header */}
+          <div className="p-4 border-b border-gray-100">
+            <div className="flex items-center">
+              <img
+                src={user.id === activeConversation.participant_id
+                  ? activeConversation.creator.avatar_url || defaultAvatar
+                  : activeConversation.participant.avatar_url || defaultAvatar
+                }
+                className="rounded-full h-9 w-9"
+                alt="User Avatar"
+              />
+              <div className="ml-3">
+                <h5 className="text-gray-800 font-bold text-lg">
+                  {user.id === activeConversation.participant_id
+                    ? activeConversation.creator.name
+                    : activeConversation.participant.name}
+                </h5>
+                {isTyping && (
+                  <p className="text-sm text-gray-500">{typingUser} is typing...</p>
+                )}
               </div>
             </div>
-          ) : (
-            <p className="w-full text-gray-500">
-              Select a conversation to start chatting
-            </p>
-          )}
-        </>
-      </div>
-    </>
+          </div>
+
+          {/* Messages Area */}
+          <div className="h-[73vh] p-4 lg:p-6 overflow-y-auto">
+            {isLoadingMessages ? (
+              <p className="text-center text-gray-500">Loading messages...</p>
+            ) : messageData?.length > 0 ? (
+              messageData
+                .filter(data =>
+                  data.sender?.id === activeConversation?.creator?.id ||
+                  data.sender?.id === activeConversation?.participant_id ||
+                  data.receiver?.id === activeConversation?.creator?.id ||
+                  data.receiver?.id === activeConversation?.participant_id
+                )
+                .map((data, index) => {
+                  const time = data.created_at
+                    ? new Date(data.created_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "N/A";
+
+                  const isUserSender = data.sender?.id === user?.id;
+
+                  return isUserSender ? (
+                    <MessageRight
+                      key={index}
+                      avatar={data.sender?.avatar_url || defaultAvatar}
+                      naame={data.sender?.name || "Unknown"}
+                      time={time}
+                      text={data?.message}
+                    />
+                  ) : (
+                    <MessageLeft
+                      key={index}
+                      avatar={data.sender?.avatar_url || defaultAvatar}
+                      naame={data.sender?.name || "Unknown"}
+                      time={time}
+                      text={data?.message}
+                    />
+                  );
+                })
+            ) : (
+              <p className="text-center text-gray-500">No messages in this conversation.</p>
+            )}
+          </div>
+
+          {/* Chat Input */}
+          <div className="p-4 border-t border-[#dddddd] bg-[#f2f2f2]/100 absolute bottom-0 right-0 w-full">
+            <div className="flex items-center gap-4">
+              <div className="flex-1 flex items-center bg-[#eb5a2a20] rounded px-4 py-2">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => {
+                    setNewMessage(e.target.value);
+                    handleTyping();
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSendMessage();
+                    }
+                  }}
+                  className="w-full bg-transparent border-none focus:outline-none text-sm"
+                  placeholder="Type your message..."
+                />
+              </div>
+              <button
+                onClick={handleSendMessage}
+                className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]"
+              >
+                <svg
+                  className="w-5 h-5 transform rotate-90 -mr-px"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full h-[87.9vh] flex items-center justify-center bg-white sm:col-span-8 shadow hidden sm:block">
+          <p className="text-gray-500">Select a conversation to start chatting</p>
+        </div>
+      )}
+    </div>
   );
 };
 
