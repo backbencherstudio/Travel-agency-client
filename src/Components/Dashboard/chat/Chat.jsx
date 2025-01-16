@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./style.css";
 import { FaSearch } from "react-icons/fa";
 import MessageLeft from "./Components/MessageLeft";
@@ -7,110 +7,92 @@ import User from "./Components/User";
 import { useContext, useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import { AuthContext } from "../../../AuthProvider/AuthProvider";
+import ChatApis from "../../../Apis/ChatApis";
 
 const Chat = () => {
   const [usersData, setUsersData] = useState([]);
   const [messageData, setMessageData] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
+  const [newMessage, setNewMessage] = useState("");
+
   // console.log("activeConversation:", activeConversation);
 
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   const { conversationID } = useParams();
-  // console.log("conversationId:", conversationID);
+  console.log("conversationId:", conversationID);
 
   const { user } = useContext(AuthContext);
-  // console.log("user", user);
-
-  // // API call inside useEffect
-  // useEffect(() => {
-  //   const fetchConversation = async () => {
-  //     try {
-  //       const response = await axiosClient.get("/api/chat/conversation");
-  //       const data = response.data.data;
-  //       setUsersData(data);
-  //       // console.log("conversation Data:", usersData);
-  //     } catch (error) {
-  //       console.error("Error fetching conversation data:", error);
-  //     }
-  //   };
-
-  //   fetchConversation(); // Call the fetch function
-  // }, []); // Empty dependency array to run only once on mount
- 
-  // console.log("data", usersData);
+  console.log("user", user);
 
   // Handle initial URL conversation and updates
-useEffect(() => {
-  const fetchConversation = async () => {
-    try {
-      const response = await axiosClient.get("/api/chat/conversation");
-      const data = response.data.data;
-      setUsersData(data);
-      
-      // If URL has conversationID, set that conversation as active
-      if (conversationID && data.length > 0) {
-        const selectedConversation = data.find(
-          (conversation) => conversation.id === conversationID
-        );
-        if (selectedConversation) {
-          setActiveConversation(selectedConversation);
+  useEffect(() => {
+    const fetchConversation = async () => {
+      try {
+        const response = await axiosClient.get("/api/chat/conversation");
+        const data = response.data.data;
+        setUsersData(data);
+
+        // If URL has conversationID, set that conversation as active
+        if (conversationID && data.length > 0) {
+          const selectedConversation = data.find(
+            (conversation) => conversation.id === conversationID
+          );
+          if (selectedConversation) {
+            setActiveConversation(selectedConversation);
+          }
         }
+      } catch (error) {
+        console.error("Error fetching conversation data:", error);
       }
-    } catch (error) {
-      console.error("Error fetching conversation data:", error);
-    }
-  };
+    };
 
-  fetchConversation();
-}, [conversationID]); // Depend on conversationID
+    fetchConversation();
+  }, [conversationID]); // Depend on conversationID
 
-// Handle conversation click
-const handleConversationClick = (conversation) => {
-  setActiveConversation(conversation);
-  navigate(`/chat/${conversation.id}`);
-};
+  console.log("conversation:", activeConversation);
 
-  
+  // Handle conversation click
+  // const handleConversationClick = (conversation) => {
+  //   setActiveConversation(conversation);
+  //   navigate(`/chat/${conversation.id}`);
+  // };
+
   // Update message fetching useEffect
-useEffect(() => {
-  const fetchMessage = async () => {
-    if (!activeConversation?.id) return; // Don't fetch if no active conversation
-
-    try {
-      const response = await axiosClient.get(`/api/chat/message?conversation_id=${activeConversation.id}`);
-      const data = response.data.data;
-      setMessageData(data);
-    } catch (error) {
-      console.error("Error fetching message data:", error);
-    }
-  };
-
-  fetchMessage();
-}, [activeConversation?.id]); // Dependency on activeConversation.id
-
-
-  // // API call inside useEffect
   // useEffect(() => {
   //   const fetchMessage = async () => {
+  //     if (!activeConversation?.id) return; // Don't fetch if no active conversation
+
   //     try {
-  //       const response = await axiosClient.get("/api/chat/message");
+  //       const response = await axiosClient.get(`/api/chat/message?conversation_id=${activeConversation.id}`);
   //       const data = response.data.data;
-  //       // console.log("msg data:", data);
-        
   //       setMessageData(data);
-        
-        
   //     } catch (error) {
-  //       console.error("Error fetching conversation data:", error);
+  //       console.error("Error fetching message data:", error);
   //     }
   //   };
-    
-  //   fetchMessage();
-  // }, []);
-  // console.log("Fetched messageData:", messageData);
 
-  
+  //   fetchMessage();
+  // }, [activeConversation?.id]); // Dependency on activeConversation.id
+
+  // // API call inside useEffect
+  useEffect(() => {
+    const fetchMessage = async () => {
+      try {
+        const response = await axiosClient.get("/api/chat/message");
+        const data = response.data.data;
+        // console.log("msg data:", data);
+
+        setMessageData(data);
+      } catch (error) {
+        console.error("Error fetching conversation data:", error);
+      }
+    };
+
+    fetchMessage();
+  }, []);
+  console.log("Fetched messageData:", messageData);
+
   // Set active conversation when usersData and conversationID are available
   // useEffect(() => {
   //   if (conversationID && usersData.length > 0) {
@@ -133,22 +115,86 @@ useEffect(() => {
   //   navigate(`/chat/${conversation.id}`); // Navigate to the selected conversation URL
   // };
 
-// Remove these useEffect hooks that were handling route-based navigation
-useEffect(() => {
-  if (conversationID && usersData.length > 0) {
-    const selectedConversation = usersData.find(
-      (conversation) => conversation.id === conversationID
-    );
+  useEffect(() => {
+    if (conversationID && usersData.length > 0) {
+      const selectedConversation = usersData.find(
+        (conversation) => conversation.id === conversationID
+      );
 
-    if (selectedConversation) {
-      setActiveConversation(selectedConversation);
+      if (selectedConversation) {
+        setActiveConversation(selectedConversation);
+      }
     }
-  }
-}, [conversationID, usersData]);
+  }, [conversationID, usersData]);
+
+  // const handleConversationClick = (conversation) => {
+  //   setActiveConversation(conversation); // Set the active conversation directly
+  //   // No need to navigate, handle state-based UI changes instead.
+  // };
+
+  const navigate = useNavigate();
+  const handleConversationClick = (conversation) => {
+    setActiveConversation(conversation);
+    navigate(`/dashboard/chat/${conversation.id}`, { replace: true }); // update URL without causing refresh
+  };
+
+  // Remove these useEffect hooks that were handling route-based navigation
+  useEffect(() => {
+    if (conversationID && usersData.length > 0) {
+      const selectedConversation = usersData.find(
+        (conversation) => conversation.id === conversationID
+      );
+
+      if (selectedConversation) {
+        setActiveConversation(selectedConversation);
+      }
+    }
+  }, [conversationID, usersData]);
 
   // const handleConversationClick = (conversation) => {
   //   setActiveConversation(conversation); // Just set the active conversation
   // };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return; // Do nothing if the message is empty
+
+    const messagePayload = {
+      message: newMessage,
+      conversation_id: activeConversation.id,
+      sender_id: user.id,
+      receiver_id:
+        user.id === activeConversation.participant_id
+          ? activeConversation.creator.id
+          : activeConversation.participant.id,
+    };
+
+    try {
+      const response = await ChatApis.sendMessage(messagePayload);
+      if (response && response.message) {
+        // Update local state with the new message
+        setMessageData((prevMessages) => [
+          ...prevMessages,
+          { ...response.message, sender: user }, // Add sender details
+        ]);
+        setNewMessage(""); // Clear the input box
+      } else {
+        console.error("Failed to send message:", response.message);
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!activeConversation) return;
+
+      const messages = await ChatApis.fetchMessages(activeConversation.id);
+      setMessageData(messages);
+    };
+
+    fetchMessages();
+  }, [activeConversation]);
 
   return (
     <>
@@ -299,15 +345,21 @@ useEffect(() => {
                   >
                     {/* Message list */}
                     <div className="h-[73vh] p-4 lg:p-6 overflow-y-auto">
-                      {messageData.length > 0 ? (
+                      {/* TODO: right and left side e msg show korar logic er kaj korte hobe */}
+                      {messageData?.length > 0 ? (
                         messageData
-                        .filter(
-                          (data) =>
-                            data.sender?.id === activeConversation?.creator?.id || 
-                            data.sender?.id === activeConversation?.participant_id ||
-                            data.receiver?.id === activeConversation?.creator?.id ||
-                            data.receiver?.id === activeConversation?.participant_id
-                        )
+                          .filter(
+                            (data) =>
+                              // Ensure messages belong to the active conversation
+                              data.sender?.id ===
+                                activeConversation?.creator?.id ||
+                              data.sender?.id ===
+                                activeConversation?.participant_id ||
+                              data.receiver?.id ===
+                                activeConversation?.creator?.id ||
+                              data.receiver?.id ===
+                                activeConversation?.participant_id
+                          )
                           .map((data, index) => {
                             const time = data.created_at
                               ? new Date(data.created_at).toLocaleTimeString(
@@ -319,22 +371,14 @@ useEffect(() => {
                                 )
                               : "N/A";
 
-                            if (data.receiver.id === user.id) {
+                            // Check if the user is the sender and admin is the receiver
+                            const isUserSender = data.sender?.id === user?.id;
+                            const isAdminReceiver = !isUserSender;
+
+                            if (isUserSender) {
+                              // Render MessageRight for user-sent messages
                               return (
                                 <MessageRight
-                                  key={index}
-                                  avatar={
-                                    data.participant?.avatar_url ||
-                                    "https://via.placeholder.com/150"
-                                  }
-                                  naame={data.participant?.name || "Unknown"}
-                                  time={time}
-                                  text={data.message}
-                                />
-                              );
-                            } else {
-                              return (
-                                <MessageLeft
                                   key={index}
                                   avatar={
                                     data.sender?.avatar_url ||
@@ -342,7 +386,21 @@ useEffect(() => {
                                   }
                                   naame={data.sender?.name || "Unknown"}
                                   time={time}
-                                  text={data.message}
+                                  text={data?.message}
+                                />
+                              );
+                            } else if (isAdminReceiver) {
+                              // Render MessageLeft for admin-received messages
+                              return (
+                                <MessageLeft
+                                  key={index}
+                                  avatar={
+                                    data.receiver?.avatar_url ||
+                                    "https://via.placeholder.com/150"
+                                  }
+                                  naame={data.receiver?.name || "Admin"}
+                                  time={time}
+                                  text={data?.message}
                                 />
                               );
                             }
@@ -363,11 +421,16 @@ useEffect(() => {
                     <div className="flex-1 flex items-center bg-[#eb5a2a20] rounded px-4 py-2">
                       <input
                         type="text"
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
                         className="w-full bg-transparent border-none focus:outline-none text-sm"
                         placeholder="Type your message...."
                       />
                     </div>
-                    <button className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]">
+                    <button
+                      onClick={handleSendMessage}
+                      className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]"
+                    >
                       <svg
                         className="w-5 h-5 transform rotate-90 -mr-px"
                         fill="none"
@@ -385,6 +448,7 @@ useEffect(() => {
                     </button>
                   </div>
                 </div>
+
                 {/* End Chat Input Section */}
               </div>
             </div>
