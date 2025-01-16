@@ -15,7 +15,7 @@ import {
   searchBlogs
 } from '../../Apis/clientApi/ClientBlogApi'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { AuthContext } from '../../AuthProvider/AuthProvider'
+import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 import Swal from 'sweetalert2'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { toast } from 'react-toastify'

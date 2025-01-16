@@ -6,7 +6,7 @@ import MessageRight from "./Components/MessageRight";
 import User from "./Components/User";
 import { useContext, useEffect, useState } from "react";
 import axiosClient from "../../../axiosClient";
-import { AuthContext } from "../../../AuthProvider/AuthProvider";
+import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
 
 const Chat = () => {
   const [usersData, setUsersData] = useState([]);

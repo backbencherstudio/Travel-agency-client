@@ -4,7 +4,7 @@ import languageLogo from '../assets/img/Language.svg';
 import './nav.css';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import avatar from "../assets/img/avatar/avatar-1.jpg";
-import { AuthContext } from '../AuthProvider/AuthProvider';
+import { AuthContext } from '../Context/AuthProvider/AuthProvider';
 import ProfileNameImg from './ProfileNameImg';
 
 const Navbar = () => {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { FiPlusCircle } from 'react-icons/fi'
-import { useBookingContext } from '../../BookingContext/BookingContext'
+import { useBookingContext } from '../../Context/BookingContext/BookingContext'
 
 function ReviewPackage () {
     const { bookingDetails } = useBookingContext();

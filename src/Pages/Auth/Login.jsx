@@ -5,7 +5,7 @@ import logo from '../../assets/img/form-img/logo.png';
 import { Link, useNavigate } from "react-router-dom";
 import AuthApis from "../../Apis/AuthApis";
 import { toast } from "react-toastify";
-import { AuthContext } from "../../AuthProvider/AuthProvider";
+import { AuthContext } from "../../Context/AuthProvider/AuthProvider";
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors, isLoading } } = useForm();

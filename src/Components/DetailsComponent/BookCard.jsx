@@ -3,7 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import calender from '../../assets/img/tour-details/calender.svg';
 import { duration } from '@mui/material';
-import { useBookingContext } from '../../BookingContext/BookingContext';
+import { useBookingContext } from '../../Context/BookingContext/BookingContext';
 import { useNavigate } from 'react-router-dom';
 
 const BookCard = ({ details, renderStars }) => {

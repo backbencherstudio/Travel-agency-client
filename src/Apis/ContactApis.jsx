@@ -2,7 +2,7 @@ import axiosClient from "../axiosClient";
 
 const ContactApis = {};
 
-ProjectCategoryApis.save = async (data) => {
+ContactApis.save = async (data) => {
     let url = "/api/contact";
     const res = await axiosClient.post(url, data)
         .then(response => {

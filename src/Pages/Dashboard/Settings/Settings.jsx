@@ -8,9 +8,10 @@ import { RxCrossCircled } from 'react-icons/rx'
 import { useState, useEffect } from 'react'
 import { GoShieldLock } from 'react-icons/go'
 import { IoLockOpenOutline } from 'react-icons/io5'
-import { RiQuestionAnswerLine } from 'react-icons/ri'
+import { RiCoupon2Line, RiQuestionAnswerLine } from 'react-icons/ri'
 import { useNavigate, useLocation } from 'react-router-dom'
 import FaqAdded from '../Faq/FaqAdded'
+import Coupon from '../../../Components/Dashboard/Settings/Coupon/Coupon'
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -29,6 +30,7 @@ const Settings = () => {
     { icon: <RxCrossCircled className='text-xl' />, label: 'Cancellation' },
     { icon: <GoShieldLock className='text-lg' />, label: 'Permission' },
     { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' },
+    { icon: <RiCoupon2Line  className='text-lg' />, label: 'Coupon' },
     {
       icon: <RiQuestionAnswerLine className='text-xl' />,
       label: 'FAQ'
@@ -53,6 +55,8 @@ const Settings = () => {
         return <Password />
       case 'FAQ':
         return <FaqAdded />
+      case 'Coupon':
+        return <Coupon />
       default:
         return <CompanyInfo />
     }
