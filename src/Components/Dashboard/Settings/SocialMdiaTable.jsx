@@ -20,7 +20,7 @@ import { FiEdit2 } from 'react-icons/fi';
 import { deleteSocialMediaData, postSocialMediaData, updateSocialMediaData } from '../../../Apis/SocialMediaCreateAPi';
 import { LuTrash2 } from 'react-icons/lu';
 
-const SocialMdiaTable = ({ data = [], columns = {}, onAddSocialMedia, onUpdateSocialMedia }) => {
+const SocialMdiaTable = ({ data = [], columns = {}, onAddSocialMedia, onUpdateSocialMedia, fetchData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -85,8 +85,9 @@ const SocialMdiaTable = ({ data = [], columns = {}, onAddSocialMedia, onUpdateSo
     try {
       setLoading(true); // Show loading spinner
       await deleteSocialMediaData(id);
-      onUpdateSocialMedia(id, null); // Pass null to indicate deletion to parent component
-      alert('Social media data deleted successfully!');
+      // onUpdateSocialMedia(id, null); // Pass null to indicate deletion to parent component
+      // alert('Social media data deleted successfully!');
+      fetchData();
     } catch (error) {
       console.error('Failed to delete social media data:', error);
       alert('Failed to delete social media data. Please try again.');
@@ -108,7 +109,8 @@ const SocialMdiaTable = ({ data = [], columns = {}, onAddSocialMedia, onUpdateSo
       if (isEditing) {
         const response = await updateSocialMediaData(currentEditId, formattedData[0]);
         console.log('Updated social media data:', response);
-        onUpdateSocialMedia(currentEditId, response); // Call parent update function
+        // onUpdateSocialMedia(currentEditId, response); // Call parent update function
+        // fetchData();
       } else {
         const addedData = await Promise.all(
           formattedData.map(async (socialMedia) => {
@@ -119,7 +121,7 @@ const SocialMdiaTable = ({ data = [], columns = {}, onAddSocialMedia, onUpdateSo
   
         addedData.forEach((newItem) => onAddSocialMedia(newItem)); // Call parent add function
       }
-  
+      fetchData();
       setIsModalOpen(false); // Close the modal
     } catch (error) {
       console.error('Failed to save social media data:', error);

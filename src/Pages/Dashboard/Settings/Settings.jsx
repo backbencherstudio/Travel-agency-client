@@ -74,7 +74,7 @@ const Settings = () => {
     <div className='min-h-[calc(100vh-80px)] w-full'>
       {/* Header with Search */}
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5'>
-        <h1 className='text-[#0D0E0D] text-[20px] capitalize'>Settings</h1>
+        <h1 className='text-[#0D0E0D] text-2xl font-semibold capitalize'>Settings</h1>
         <div className='relative w-full sm:w-auto'>
           <input
             type='text'
