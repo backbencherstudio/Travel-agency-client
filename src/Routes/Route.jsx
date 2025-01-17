@@ -43,6 +43,7 @@ import Cancellation from '../Pages/Contacts/Cancellation'
 import PrivateRoute from './Private/PrivateRoute'
 import Cruises from '../Pages/Cruises/Cruises'
 import CruiseDetails from '../Pages/Cruises/CruiseDetails/CruiseDetails'
+import Profile from '../Components/Home/Profile'
 
 export const router = createBrowserRouter([
   {
@@ -122,6 +123,10 @@ export const router = createBrowserRouter([
       {
         path: '/blogs',
         element: <Blogs />
+      },
+      {
+        path: '/profile',
+        element: <Profile />
       },
     ]
   },
