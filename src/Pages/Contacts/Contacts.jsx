@@ -276,49 +276,49 @@ const Contacts = () => {
 
         {/* -------------------------- Additional Contact Info Section -------------------------- */}
         <div className="contact2 w-[100%] h-auto bg-[#F0F4F9] pb-24">
-          <h1 className="text-center pt-20 pb-12 text-3xl md:text-5xl">
+          <h1 className="text-center pt-20 pb-12 text-5xl md:text-5xl">
             We’d love to hear from you
           </h1>
 
-          <div className="xl:w-[1240px] mx-auto grid xl:grid-cols-3 grid-cols-1 gap-4">
+          <div className="xl:w-[1152px] mx-auto grid xl:grid-cols-3 grid-cols-1 gap-4">
             {/* Email Info */}
-            <div className="content flex flex-col items-center text-center w-[75%] xl:w-auto mx-auto">
-              <div className="icon h-14 w-14 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
-                <img src={c1} alt="c1" className="h-8 w-8" />
+            <div className="content flex flex-col items-center text-center mx-auto w-[363px] h-[192px]">
+              <div className="icon p-3 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
+                <img src={c1} alt="c1" className="h-6 w-6" />
               </div>
-              <h1 className="text-[26px] mb-4">Email</h1>
-              <p className="text-xl md:text-[22px] mb-4 text-[#475467]">
+              <h1 className="text-xl font-bold mb-2">Email</h1>
+              <p className="text-base mb-4 font-normal text-[#475467]">
                 Our friendly team is here to help.
               </p>
-              <p className="text-lg md:text-[22px] text-[#0e457d] font-bold">
+              <p className="text-base text-[#0e457d] font-bold">
                 <a href="mailto:hello@around360.com">hello@around360.com</a>
               </p>
             </div>
 
             {/* Office Location Info */}
-            <div className="content flex flex-col items-center text-center w-[80%] xl:w-auto mx-auto mt-6 lg:mt-0">
-              <div className="icon h-14 w-14 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
-                <img src={c2} alt="c2" className="h-8 w-8" />
+            <div className="content flex flex-col items-center text-center mx-auto w-[363px] h-[192px]">
+              <div className="icon p-3 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
+                <img src={c2} alt="c2" className="h-6 w-6" />
               </div>
-              <h1 className="text-[26px] mb-4">Office</h1>
-              <p className="text-xl md:text-[22px] mb-4 text-[#475467]">
+              <h1 className="text-xl font-bold mb-2">Office</h1>
+              <p className="text-base mb-4 font-normal text-[#475467]">
                 Come say hello at our office HQ.
               </p>
-              <p className="text-lg md:text-[22px] text-[#0e457d] font-bold">
+              <p className="text-base text-[#0e457d] font-bold">
                 8 12 Victoria Road Barnsley, South Yorkshire S70 2BB
               </p>
             </div>
 
             {/* Phone Contact Info */}
-            <div className="content flex flex-col items-center text-center w-[80%] xl:w-auto mx-auto mt-6 lg:mt-0">
-              <div className="icon h-14 w-14 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
-                <img src={c3} alt="c3" className="h-8 w-8" />
+            <div className="content flex flex-col items-center text-center mx-auto w-[363px] h-[192px]">
+              <div className="icon p-3 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
+                <img src={c3} alt="c3" className="h-6 w-6" />
               </div>
-              <h1 className="text-[26px] mb-4">Phone</h1>
-              <p className="text-xl md:text-[22px] mb-4 text-[#475467] whitespace-nowrap">
+              <h1 className="text-xl font-bold mb-2">Phone</h1>
+              <p className="text-base mb-4 font-normal text-[#475467]">
                 We are available any time to talk with you.
               </p>
-              <p className="text-lg md:text-[22px] text-[#0e457d] font-bold">
+              <p className="text-base text-[#0e457d] font-bold">
                 <a href="tel:602-774-4735">602-774-4735</a>
               </p>
             </div>
