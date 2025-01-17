@@ -4,7 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import MessageLeft from "./Components/MessageLeft";
 import MessageRight from "./Components/MessageRight";
 import User from "./Components/User";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import { AuthContext } from "../../../AuthProvider/AuthProvider";
 import ChatApis from "../../../Apis/ChatApis";
@@ -24,6 +24,9 @@ const Chat = () => {
   const { conversationID } = useParams();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
+
+  const messagesContainerRef = useRef(null);
 
   // Socket.IO Connection
   // useEffect(() => {
@@ -68,48 +71,26 @@ const Chat = () => {
   // }, []);
 
   useEffect(() => {
-    // Replace this with your actual backend WebSocket URL
-    const newSocket = io("https://travel-agency-backend-rh1v.onrender.com", {
+    const newSocket = io("https://travel-agency-backend-rh1v.onrender.com/api/chat/conversation", {
       auth: {
-        token: localStorage.getItem("token"), // Assuming you use token-based authentication
+        token: localStorage.getItem("token"),
       },
     });
-    console.log('new socket:', newSocket);
-    
-  
-    // Handle connection events
-    newSocket.on("connect", () => {
-      console.log("Connected to socket server");
-    });
-  
-    newSocket.on("disconnect", () => {
-      console.log("Disconnected from socket server");
-    });
-  
-    // Listen for new messages
-    newSocket.on("newMessage", (message) => {
-      setMessageData((prevMessages) => [...prevMessages, message]);
-    });
-  
-    // Listen for typing status
+
+    newSocket.on("connect", () => console.log("Connected to socket server"));
+    newSocket.on("disconnect", () => console.log("Disconnected from socket server"));
+    newSocket.on("newMessage", (message) => setMessageData((prev) => [...prev, message]));
     newSocket.on("userTyping", ({ userName, isTyping }) => {
       setTypingUser(userName);
       setIsTyping(isTyping);
-  
-      // Clear typing indicator after 3 seconds
-      setTimeout(() => {
-        setIsTyping(false);
-      }, 3000);
+      setTimeout(() => setIsTyping(false), 3000);
     });
-  
-    // Set the socket instance in state
+
     setSocket(newSocket);
-  
-    // Cleanup on component unmount
-    return () => {
-      if (newSocket) newSocket.disconnect();
-    };
+
+    return () => newSocket.disconnect();
   }, []);
+
   
 
   // Join conversation room when active conversation changes
@@ -120,34 +101,31 @@ const Chat = () => {
   }, [socket, activeConversation]);
 
   // Fetch Conversations
-  useEffect(() => {
-    const fetchConversation = async () => {
+   useEffect(() => {
+    const fetchConversations = async () => {
       try {
-        const response = await axiosClient.get("/api/chat/conversation");
-        const data = response.data.data;
+        const data = await ChatApis.fetchConversations();
         setUsersData(data);
 
         if (conversationID && data.length > 0) {
-          const selectedConversation = data.find(
-            (conversation) => conversation.id === conversationID
-          );
-          if (selectedConversation) {
-            setActiveConversation(selectedConversation);
-          }
+          const selectedConversation = data.find((conv) => conv.id === conversationID);
+          if (selectedConversation) setActiveConversation(selectedConversation);
         }
       } catch (error) {
-        console.error("Error fetching conversation data:", error);
+        console.error("Error fetching conversations:", error);
       }
     };
 
-    fetchConversation();
+    fetchConversations();
   }, [conversationID]);
+  console.log('admin conversation', usersData);
+  
 
   // Fetch Messages for Active Conversation
   useEffect(() => {
     const fetchMessages = async () => {
       if (!activeConversation) return;
-      
+
       setIsLoadingMessages(true);
       try {
         const messages = await ChatApis.fetchMessages(activeConversation.id);
@@ -175,14 +153,14 @@ const Chat = () => {
         conversationId: activeConversation.id,
         userId: user.id,
         userName: user.name,
-        isTyping: true
+        isTyping: true,
       });
     }
   };
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeConversation) return;
-  
+
     const messagePayload = {
       message: newMessage,
       conversation_id: activeConversation.id,
@@ -192,27 +170,33 @@ const Chat = () => {
           ? activeConversation.creator.id
           : activeConversation.participant.id,
     };
-  
+
     try {
-      // Emit message through socket for real-time updates
-      if (socket) {
-        socket.emit("sendMessage", messagePayload);
-      }
-  
-      // Save message through API
+      if (socket) socket.emit("sendMessage", messagePayload);
+
       const response = await ChatApis.sendMessage(messagePayload);
-      if (response && response.message) {
-        // Update local state immediately
-        setMessageData((prevMessages) => [
-          ...(prevMessages || []),
-          { ...response.message, sender: user },
-        ]);
-        setNewMessage(""); // Clear input
+      if (response) {
+        setMessageData((prev) => [...prev, { ...response.message, sender: user }]);
+        setNewMessage("");
       }
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
+
+// auto scroll message
+const scrollToBottom = () => {
+  if (messagesContainerRef.current) {
+    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+  }
+};
+
+   // Scroll to the bottom whenever messageData changes or a new message is sent
+    useEffect(() => {
+    if (activeConversation) {
+      scrollToBottom();
+    }
+  }, [activeConversation, messageData]);
   
   
 
@@ -315,7 +299,7 @@ const Chat = () => {
           </div>
 
           {/* Messages Area */}
-          <div className="h-[73vh] p-4 lg:p-6 overflow-y-auto">
+          <div ref={messagesContainerRef} className="h-[73vh] p-4 lg:p-6 overflow-y-auto">
             {isLoadingMessages ? (
               <p className="text-center text-gray-500">Loading messages...</p>
             ) : messageData?.length > 0 ? (
@@ -347,8 +331,8 @@ const Chat = () => {
                   ) : (
                     <MessageLeft
                       key={index}
-                      avatar={data.sender?.avatar_url || defaultAvatar}
-                      naame={data.sender?.name || "Unknown"}
+                      avatar={data.receiver?.avatar_url || defaultAvatar}
+                      naame={data.receiver?.name || "Unknown"}
                       time={time}
                       text={data?.message}
                     />
@@ -357,6 +341,9 @@ const Chat = () => {
             ) : (
               <p className="text-center text-gray-500">No messages in this conversation.</p>
             )}
+
+            {/* Add a dummy div at the end to scroll into view */}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Chat Input */}
