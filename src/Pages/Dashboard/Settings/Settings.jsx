@@ -12,6 +12,8 @@ import { RiCoupon2Line, RiQuestionAnswerLine } from 'react-icons/ri'
 import { useNavigate, useLocation } from 'react-router-dom'
 import FaqAdded from '../Faq/FaqAdded'
 import Coupon from '../../../Components/Dashboard/Settings/Coupon/Coupon'
+import SocialCopyRight from '../../../Components/Dashboard/Settings/SocialCopyRight'
+import { MdCopyright } from 'react-icons/md'
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -34,7 +36,11 @@ const Settings = () => {
     {
       icon: <RiQuestionAnswerLine className='text-xl' />,
       label: 'FAQ'
-    }
+    },
+    {
+      icon: <MdCopyright className="text-xl" />, // Updated icon
+      label: 'Social & Copyright',
+    },
   ]
 
   // Save active tab to localStorage and update the URL when it changes
@@ -57,6 +63,8 @@ const Settings = () => {
         return <FaqAdded />
       case 'Coupon':
         return <Coupon />
+      case 'Social & Copyright':
+        return <SocialCopyRight />
       default:
         return <CompanyInfo />
     }
