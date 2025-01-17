@@ -1,25 +1,35 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Rating, Stack } from '@mui/material'; // Ensure you have these installed
 import { CalendarToday } from '@mui/icons-material'; // Material UI Calendar Icon
 import avatar from '../../assets/img/avatar/avatar-3.png'; // Replace with your actual avatar path
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'; // Correct import
+import { AuthContext } from '../../Context/AuthProvider/AuthProvider';
+import AuthApis from '../../Apis/AuthApis';
 
 const UserProfile = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: {
-      profileName: 'Esther Howard',
-      email: 'esther.h@demo.com',
-      mobile: '(208) 555-0112',
-      address: '2118 Thornridge Cir. Syracuse, Connecticut 35624',
-      joinDate: '2024-03-12',
-      gender: 'Male',
-      dob: '1999-01-12',
-    }
-  });
+  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
+  const { user } = useContext(AuthContext);
 
-  const onSubmit = data => {
+  useEffect(() => {
+    if (user) {
+      setValue('name', user?.name);
+      setValue('email', user?.email);
+      setValue('mobile', user?.phone_number);
+      setValue('address', user?.address);
+    }
+  }, [user])
+
+  // console.log('user', user)
+
+  const onSubmit = async (data) => {
     console.log(data);
+    const res = await AuthApis.update(data);
+    if (res?.success) {
+      setLoading(false);
+      // Reset form after submission
+      reset();
+    }
     // Handle form submission, e.g., send data to the server
   };
 
@@ -46,13 +56,13 @@ const UserProfile = () => {
               
               {/* Profile Name */}
               <div className="h-auto px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 w-full flex flex-col justify-start items-start">
-                <label className="text-[#a1a1a1] text-sm font-normal mb-[3px]" htmlFor="profileName">Profile Name</label>
+                <label className="text-[#a1a1a1] text-sm font-normal mb-[3px]" htmlFor="name">Profile Name</label>
                 <input
-                  id="profileName"
-                  {...register('profileName', { required: "Profile Name is required" })}
+                  id="name"
+                  {...register('name', { required: "Name is required" })}
                   className="w-full bg-gray-50 text-[#030b09] text-sm font-normal focus:outline-none"
                 />
-                {errors.profileName && <span className="text-red-500 text-xs mt-1">{errors.profileName.message}</span>}
+                {errors.name && <span className="text-red-500 text-xs mt-1">{errors.name.message}</span>}
               </div>
               
               {/* Email Address */}
@@ -119,15 +129,15 @@ const UserProfile = () => {
               
               {/* Date Of Birth (Editable with Calendar Icon) */}
               <div className="h-auto px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-3 w-full flex flex-col justify-start items-start relative">
-                <label className="text-[#a1a1a1] text-sm font-normal mb-[3px]" htmlFor="dob">Date Of Birth</label>
+                <label className="text-[#a1a1a1] text-sm font-normal mb-[3px]" htmlFor="date_of_birth">Date Of Birth</label>
                 <input
-                  id="dob"
+                  id="date_of_birth"
                   type="date"
-                  {...register('dob', { required: "Date of Birth is required" })}
-                  className="w-full bg-gray-50 text-[#030b09] text-sm font-normal focus:outline-none pr-8 hide-native-datepicker"
+                  {...register('date_of_birth', { required: "Date of Birth is required" })}
+                  className="w-full bg-gray-50 text-[#030b09] text-sm font-normal focus:outline-none pr-8"
                 />
 
-                {errors.dob && <span className="text-red-500 text-xs mt-1">{errors.dob.message}</span>}
+                {errors.date_of_birth && <span className="text-red-500 text-xs mt-1">{errors.date_of_birth.message}</span>}
               </div>
 
               
