@@ -1,53 +1,103 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./style.css";
 import { FaSearch } from "react-icons/fa";
 import MessageLeft from "./Components/MessageLeft";
 import MessageRight from "./Components/MessageRight";
 import User from "./Components/User";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import axiosClient from "../../../axiosClient";
+import { AuthContext } from "../../../AuthProvider/AuthProvider";
+import ChatApis from "../../../Apis/ChatApis";
+import { io } from "socket.io-client";
+const defaultAvatar = "https://via.placeholder.com/150";
 import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
 
 const Chat = () => {
   const [usersData, setUsersData] = useState([]);
   const [messageData, setMessageData] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
-  // console.log("activeConversation:", activeConversation);
-
+  const [newMessage, setNewMessage] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUser, setTypingUser] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   const { conversationID } = useParams();
-  // console.log("conversationId:", conversationID);
-
   const { user } = useContext(AuthContext);
-  // console.log("user", user);
+  const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
 
-  // // API call inside useEffect
+  const messagesContainerRef = useRef(null);
+
+  // Socket.IO Connection
   // useEffect(() => {
-  //   const fetchConversation = async () => {
-  //     try {
-  //       const response = await axiosClient.get("/api/chat/conversation");
-  //       const data = response.data.data;
-  //       setUsersData(data);
-  //       // console.log("conversation Data:", usersData);
-  //     } catch (error) {
-  //       console.error("Error fetching conversation data:", error);
+  //   // Initialize socket connection
+  //   const newSocket = io(axiosClient.get("/api/chat/conversation"), {
+  //     auth: {
+  //       token: localStorage.getItem("token") // Assuming you store token in localStorage
   //     }
-  //   };
+  //   });
 
-  //   fetchConversation(); // Call the fetch function
-  // }, []); // Empty dependency array to run only once on mount
- 
-  // console.log("data", usersData);
+  //   // Connection event handlers
+  //   newSocket.on("connect", () => {
+  //     console.log("Connected to socket server");
+  //   });
 
-  // Handle initial URL conversation and updates
-useEffect(() => {
-  const fetchConversation = async () => {
-    try {
-      const response = await axiosClient.get("/api/chat/conversation");
-      const data = response.data.data;
-      setUsersData(data);
+  //   newSocket.on("disconnect", () => {
+  //     console.log("Disconnected from socket server");
+  //   });
+
+  //   // Listen for new messages
+  //   newSocket.on("newMessage", (message) => {
+  //     setMessageData(prevMessages => [...prevMessages, message]);
+  //   });
+
+  //   // Listen for typing status
+  //   newSocket.on("userTyping", ({ userName, isTyping }) => {
+  //     setTypingUser(userName);
+  //     setIsTyping(isTyping);
       
+  //     // Clear typing indicator after 3 seconds
+  //     setTimeout(() => {
+  //       setIsTyping(false);
+  //     }, 3000);
+  //   });
+
+  //   setSocket(newSocket);
+
+  //   // Cleanup on unmount
+  //   return () => {
+  //     if (newSocket) newSocket.disconnect();
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    const newSocket = io("https://travel-agency-backend-rh1v.onrender.com/api/chat/conversation", {
+      auth: {
+        token: localStorage.getItem("token"),
+      },
+    });
+
+    newSocket.on("connect", () => console.log("Connected to socket server"));
+    newSocket.on("disconnect", () => console.log("Disconnected from socket server"));
+    newSocket.on("newMessage", (message) => setMessageData((prev) => [...prev, message]));
+    newSocket.on("userTyping", ({ userName, isTyping }) => {
+      setTypingUser(userName);
+      setIsTyping(isTyping);
+      setTimeout(() => setIsTyping(false), 3000);
+    });
+
+    setSocket(newSocket);
+
+    return () => newSocket.disconnect();
+  }, []);
+
+  
+
+  // Join conversation room when active conversation changes
+  useEffect(() => {
+    if (socket && activeConversation) {
+      socket.emit("joinRoom", activeConversation.id);
       // If URL has conversationID, set that conversation as active
       if (conversationID && data?.length > 0) {
         const selectedConversation = data.find(
@@ -60,56 +110,90 @@ useEffect(() => {
     } catch (error) {
       console.error("Error fetching conversation data:", error);
     }
+  }, [socket, activeConversation]);
+
+  // Fetch Conversations
+   useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const data = await ChatApis.fetchConversations();
+        setUsersData(data);
+
+        if (conversationID && data.length > 0) {
+          const selectedConversation = data.find((conv) => conv.id === conversationID);
+          if (selectedConversation) setActiveConversation(selectedConversation);
+        }
+      } catch (error) {
+        console.error("Error fetching conversations:", error);
+      }
+    };
+
+    fetchConversations();
+  }, [conversationID]);
+  console.log('admin conversation', usersData);
+  
+
+  // Fetch Messages for Active Conversation
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!activeConversation) return;
+
+      setIsLoadingMessages(true);
+      try {
+        const messages = await ChatApis.fetchMessages(activeConversation.id);
+        setMessageData(messages);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      } finally {
+        setIsLoadingMessages(false);
+      }
+    };
+
+    fetchMessages();
+  }, [activeConversation]);
+
+  // Handle Conversation Click
+  const handleConversationClick = (conversation) => {
+    setActiveConversation(conversation);
+    navigate(`/dashboard/chat/${conversation.id}`, { replace: true });
   };
 
-  fetchConversation();
-}, [conversationID]); // Depend on conversationID
-
-// Handle conversation click
-const handleConversationClick = (conversation) => {
-  setActiveConversation(conversation);
-  navigate(`/chat/${conversation.id}`);
-};
-
-  
-  // Update message fetching useEffect
-useEffect(() => {
-  const fetchMessage = async () => {
-    if (!activeConversation?.id) return; // Don't fetch if no active conversation
-
-    try {
-      const response = await axiosClient.get(`/api/chat/message?conversation_id=${activeConversation.id}`);
-      const data = response.data.data;
-      setMessageData(data);
-    } catch (error) {
-      console.error("Error fetching message data:", error);
+  // Typing Handler
+  const handleTyping = () => {
+    if (socket && activeConversation) {
+      socket.emit("typing", {
+        conversationId: activeConversation.id,
+        userId: user.id,
+        userName: user.name,
+        isTyping: true,
+      });
     }
   };
 
-  fetchMessage();
-}, [activeConversation?.id]); // Dependency on activeConversation.id
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !activeConversation) return;
 
+    const messagePayload = {
+      message: newMessage,
+      conversation_id: activeConversation.id,
+      sender_id: user.id,
+      receiver_id:
+        user.id === activeConversation.participant_id
+          ? activeConversation.creator.id
+          : activeConversation.participant.id,
+    };
 
-  // // API call inside useEffect
-  // useEffect(() => {
-  //   const fetchMessage = async () => {
-  //     try {
-  //       const response = await axiosClient.get("/api/chat/message");
-  //       const data = response.data.data;
-  //       // console.log("msg data:", data);
-        
-  //       setMessageData(data);
-        
-        
-  //     } catch (error) {
-  //       console.error("Error fetching conversation data:", error);
-  //     }
-  //   };
-    
-  //   fetchMessage();
-  // }, []);
-  // console.log("Fetched messageData:", messageData);
+    try {
+      if (socket) socket.emit("sendMessage", messagePayload);
 
+      const response = await ChatApis.sendMessage(messagePayload);
+      if (response) {
+        setMessageData((prev) => [...prev, { ...response.message, sender: user }]);
+        setNewMessage("");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   
   // Set active conversation when usersData and conversationID are available
   // useEffect(() => {
@@ -143,12 +227,23 @@ useEffect(() => {
     if (selectedConversation) {
       setActiveConversation(selectedConversation);
     }
-  }
-}, [conversationID, usersData]);
+  };
 
-  // const handleConversationClick = (conversation) => {
-  //   setActiveConversation(conversation); // Just set the active conversation
-  // };
+// auto scroll message
+const scrollToBottom = () => {
+  if (messagesContainerRef.current) {
+    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+  }
+};
+
+   // Scroll to the bottom whenever messageData changes or a new message is sent
+    useEffect(() => {
+    if (activeConversation) {
+      scrollToBottom();
+    }
+  }, [activeConversation, messageData]);
+  
+  
 
   return (
     <>
@@ -238,7 +333,6 @@ useEffect(() => {
                 </div>
                 {/* End Chat people Message List */}
               </div>
-              {/* End Chat Content */}
             </div>
           </div>
         </div>
@@ -375,27 +469,152 @@ useEffect(() => {
                         viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                        ></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-                {/* End Chat Input Section */}
+                        <User
+                          active={activeConversation?.id === data.id}
+                          id={chatUser.id}
+                          image={chatUser.avatar_url || defaultAvatar}
+                          name={chatUser.name}
+                          hint={lastMessage}
+                          time={data.updated_at
+                            ? new Date(data.updated_at).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : "N/A"
+                          }
+                        />
+                      </li>
+                    );
+                  })
+                )}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Content Area */}
+      {activeConversation ? (
+        <div className="w-full h-[87.9vh] relative overflow-hidden bg-white user-chat sm:col-span-8 shadow hidden sm:block">
+          {/* Chat Header */}
+          <div className="p-4 border-b border-gray-100">
+            <div className="flex items-center">
+              <img
+                src={user.id === activeConversation.participant_id
+                  ? activeConversation.creator.avatar_url || defaultAvatar
+                  : activeConversation.participant.avatar_url || defaultAvatar
+                }
+                className="rounded-full h-9 w-9"
+                alt="User Avatar"
+              />
+              <div className="ml-3">
+                <h5 className="text-gray-800 font-bold text-lg">
+                  {user.id === activeConversation.participant_id
+                    ? activeConversation.creator.name
+                    : activeConversation.participant.name}
+                </h5>
+                {isTyping && (
+                  <p className="text-sm text-gray-500">{typingUser} is typing...</p>
+                )}
               </div>
             </div>
-          ) : (
-            <p className="w-full text-gray-500">
-              Select a conversation to start chatting
-            </p>
-          )}
-        </>
-      </div>
-    </>
+          </div>
+
+          {/* Messages Area */}
+          <div ref={messagesContainerRef} className="h-[73vh] p-4 lg:p-6 overflow-y-auto">
+            {isLoadingMessages ? (
+              <p className="text-center text-gray-500">Loading messages...</p>
+            ) : messageData?.length > 0 ? (
+              messageData
+                .filter(data =>
+                  data.sender?.id === activeConversation?.creator?.id ||
+                  data.sender?.id === activeConversation?.participant_id ||
+                  data.receiver?.id === activeConversation?.creator?.id ||
+                  data.receiver?.id === activeConversation?.participant_id
+                )
+                .map((data, index) => {
+                  const time = data.created_at
+                    ? new Date(data.created_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "N/A";
+
+                  const isUserSender = data.sender?.id === user?.id;
+
+                  return isUserSender ? (
+                    <MessageRight
+                      key={index}
+                      avatar={data.sender?.avatar_url || defaultAvatar}
+                      naame={data.sender?.name || "Unknown"}
+                      time={time}
+                      text={data?.message}
+                    />
+                  ) : (
+                    <MessageLeft
+                      key={index}
+                      avatar={data.receiver?.avatar_url || defaultAvatar}
+                      naame={data.receiver?.name || "Unknown"}
+                      time={time}
+                      text={data?.message}
+                    />
+                  );
+                })
+            ) : (
+              <p className="text-center text-gray-500">No messages in this conversation.</p>
+            )}
+
+            {/* Add a dummy div at the end to scroll into view */}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Chat Input */}
+          <div className="p-4 border-t border-[#dddddd] bg-[#f2f2f2]/100 absolute bottom-0 right-0 w-full">
+            <div className="flex items-center gap-4">
+              <div className="flex-1 flex items-center bg-[#eb5a2a20] rounded px-4 py-2">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => {
+                    setNewMessage(e.target.value);
+                    handleTyping();
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSendMessage();
+                    }
+                  }}
+                  className="w-full bg-transparent border-none focus:outline-none text-sm"
+                  placeholder="Type your message..."
+                />
+              </div>
+              <button
+                onClick={handleSendMessage}
+                className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]"
+              >
+                <svg
+                  className="w-5 h-5 transform rotate-90 -mr-px"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full h-[87.9vh] flex items-center justify-center bg-white sm:col-span-8 shadow hidden sm:block">
+          <p className="text-gray-500">Select a conversation to start chatting</p>
+        </div>
+      )}
+    </div>
   );
 };
 
