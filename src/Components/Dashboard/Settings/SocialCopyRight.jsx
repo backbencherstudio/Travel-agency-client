@@ -38,12 +38,11 @@ const SocialCopyRight = () => {
     fetchData();
   }, []);
 
-
-  const handleDataUpdate = (newData) => {
-    setSocialMediaData(newData);
+  const handleAddSocialMedia = (newData) => {
+    setSocialMediaData((prevData) => [...prevData, newData]); 
+    
   };
-
-
+  
   const onSubmit = async (data) => {
     console.log('data', data)
     const res = await WebsiteInfoApis.save(data);
@@ -52,17 +51,16 @@ const SocialCopyRight = () => {
     reset();
   }
 
-  
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loading />;
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div>
       <SocialMdiaTable
-         data={socialMediaData}
-         columns={columns}
-         onDataUpdate={handleDataUpdate}
-         refreshData={fetchData}
+        data={socialMediaData}
+        columns={columns}
+        onAddSocialMedia={handleAddSocialMedia}
+        fetchData={fetchData}
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className='m-6 flex flex-col gap-4'>

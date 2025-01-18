@@ -28,8 +28,9 @@ import Swal from 'sweetalert2'
 const SocialMdiaTable = ({
   data = [],
   columns = {},
-  onDataUpdate,
-  refreshData
+  onAddSocialMedia,
+  onUpdateSocialMedia,
+  fetchData
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -72,7 +73,6 @@ const SocialMdiaTable = ({
     setCurrentEditId(id)
     const itemToEdit = data.find(item => item.id === id)
     if (itemToEdit) {
-      // Set form data to the existing item
       reset({
         socialLinks: [
           {
@@ -88,39 +88,37 @@ const SocialMdiaTable = ({
 
   const handleDelete = async id => {
     try {
-      const result = await Swal.fire({
+      const confirmDelete = await Swal.fire({
         title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        text: 'You won’t be able to undo this action!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#EB5B2A',
-        cancelButtonColor: '#687588',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
         confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-        borderRadius: '10px'
+        cancelButtonText: 'Cancel'
       })
+      if (!confirmDelete.isConfirmed) return
 
-      if (result.isConfirmed) {
-        setLoading(true)
-        await deleteSocialMediaData(id)
-        const updatedData = data.filter(item => item.id !== id)
-        onDataUpdate(updatedData)
-        await Swal.fire({
-          title: 'Deleted!',
-          text: 'Social media data has been deleted.',
-          icon: 'success',
-          confirmButtonColor: '#EB5B2A',
-          timer: 1500
-        })
-      }
+      setLoading(true) 
+
+      await deleteSocialMediaData(id) 
+      fetchData() 
+
+      Swal.fire({
+        title: 'Deleted!',
+        text: 'Your social media data has been deleted.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      })
     } catch (error) {
       console.error('Failed to delete social media data:', error)
-      // Error message
-      await Swal.fire({
+      Swal.fire({
         title: 'Error!',
         text: 'Failed to delete social media data. Please try again.',
         icon: 'error',
-        confirmButtonColor: '#EB5B2A'
+        confirmButtonText: 'OK'
       })
     } finally {
       setLoading(false)
@@ -137,37 +135,27 @@ const SocialMdiaTable = ({
       }))
 
       if (isEditing) {
-        const updatedItem = await updateSocialMediaData(
+        const response = await updateSocialMediaData(
           currentEditId,
           formattedData[0]
         )
-        // Update local state by replacing the edited item
-        const updatedData = data.map(item =>
-          item.id === currentEditId ? updatedItem.data : item
-        )
-        onDataUpdate(updatedData)
+        console.log('Updated social media data:', response)
+        // onUpdateSocialMedia(currentEditId, response); // Call parent update function
+        // fetchData();
       } else {
-        const newItems = await Promise.all(
+        const addedData = await Promise.all(
           formattedData.map(async socialMedia => {
             const response = await postSocialMediaData(socialMedia)
-            return response.data
+            return response
           })
         )
-        onDataUpdate([...data, ...newItems])
+
+        addedData.forEach(newItem => onAddSocialMedia(newItem)) // Call parent add function
       }
-
-      setIsModalOpen(false)
-      reset({
-        socialLinks: [{ name: '', iconUrl: '', link: '' }]
-      })
-      setIsEditing(false)
-      setCurrentEditId(null)
-
-      // Refresh data to ensure synchronization
-      refreshData()
+      fetchData()
+      setIsModalOpen(false) // Close the modal
     } catch (error) {
       console.error('Failed to save social media data:', error)
-      alert('Failed to save social media data. Please try again.')
     } finally {
       setLoading(false)
     }
