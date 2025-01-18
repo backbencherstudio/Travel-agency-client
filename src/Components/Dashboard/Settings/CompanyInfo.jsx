@@ -1,7 +1,12 @@
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { CiImageOn } from 'react-icons/ci'
 import { IoMdClose } from 'react-icons/io'
+import { AuthContext } from '../../../Context/AuthProvider/AuthProvider';
+import WebsiteInfoApis from '../../../Apis/WebsiteInfoApis';
+import AuthApis from '../../../Apis/AuthApis';
+import EmailVerifyOtp from '../../ChangeEmail/EmailVerifyOtp';
+import { Box, Modal } from '@mui/material';
 
 const CompanyInfo = () => {
   const {
@@ -11,8 +16,29 @@ const CompanyInfo = () => {
     setValue,
     reset
   } = useForm()
+  const { user } = useContext(AuthContext);
+  const [newFile, setNewFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const [imageError, setImageError] = useState(false)
+  const [loading, setLoading] = useState(true)
+  // const [isModalOpen, setIsModalOpen] = useState(false)
+
+  useEffect(() => {
+    fetchData();
+  }, [])
+
+  const fetchData = async () => {
+    const res = await WebsiteInfoApis.get();
+    console.log('res', res)
+    if (res?.success) {
+      setValue('name', res?.data?.name);
+      setValue('email', res?.data?.email);
+      setValue('phone_number', res?.data?.phone_number);
+      setValue('address', res?.data?.address);
+      setValue('logo', res?.data?.logo);
+      setImagePreview(res?.data?.logo_url)
+    }
+  }
 
   // Handle image upload
   const handleImageUpload = e => {
@@ -21,7 +47,7 @@ const CompanyInfo = () => {
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result)
-        setValue('logo', reader.result)
+        setNewFile(file)
         setImageError(false)
       }
       reader.readAsDataURL(file)
@@ -35,23 +61,49 @@ const CompanyInfo = () => {
   }
 
   // Handle form submission
-  const onSubmit = data => {
+  const onSubmit = async (data) => {
     if (!imagePreview) {
       setImageError(true)
       return
     }
-    console.log('Form Data:', data)
+    const form = new FormData();
+    form.append('logo', newFile);
+    // form.append('logo', newFile);
+     // Append other data fields to FormData
+    Object.keys(data).forEach((key) => {
+      form.append(key, data[key]);
+    });
 
-    // Reset form after submission
-    reset({
-      companyName: '',
-      email: '',
-      phoneNumber: '',
-      address: '',
-      logo: null
-    })
-    setImagePreview(null)
-    setImageError(false)
+    console.log('FormData Entries:');
+    for (let pair of form.entries()) {
+      console.log(pair[0] + ':', pair[1]);
+    }
+    if (user?.type === 'admin') {
+      const res = await WebsiteInfoApis.save(form);
+      if (res?.success) {
+        setLoading(false);
+        // Reset form after submission
+        reset()
+        setImagePreview(null)
+        setImageError(false)
+        fetchData();
+      }
+    } else {
+      const res = await AuthApis.update(form);
+      if (res?.success) {
+        setLoading(false);
+        // Reset form after submission
+        reset()
+        setImagePreview(null)
+        setImageError(false)
+        fetchData();
+      }
+
+    }
+  }
+
+  const handleModalToggle = () => {
+    setIsModalOpen(!isModalOpen);
   }
 
   return (
@@ -73,17 +125,17 @@ const CompanyInfo = () => {
           <label className='block mb-2 font-medium'>Company Name</label>
           <input
             type='text'
-            {...register('companyName', {
-              required: 'Company name is required'
+            {...register('name', {
+              required: 'Name is required'
             })}
-            placeholder='Enter your company name'
+            placeholder='Enter name'
             className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-              errors.companyName ? 'border-red-500' : ''
+              errors.name ? 'border-red-500' : ''
             }`}
           />
-          {errors.companyName && (
+          {errors.name && (
             <span className='text-red-500 text-sm'>
-              {errors.companyName.message}
+              {errors.name.message}
             </span>
           )}
         </div>
@@ -115,7 +167,7 @@ const CompanyInfo = () => {
             <label className='block mb-2 font-medium'>Phone Number</label>
             <input
               type='tel'
-              {...register('phoneNumber', {
+              {...register('phone_number', {
                 required: 'Phone number is required',
                 pattern: {
                   value: /^[0-9]{10,11}$/,
@@ -127,12 +179,12 @@ const CompanyInfo = () => {
                 e.target.value = e.target.value.replace(/[^0-9]/g, '')
               }}
               className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                errors.phoneNumber ? 'border-red-500' : ''
+                errors.phone_number ? 'border-red-500' : ''
               }`}
             />
-            {errors.phoneNumber && (
+            {errors.phone_number && (
               <span className='text-red-500 text-sm'>
-                {errors.phoneNumber.message}
+                {errors.phone_number.message}
               </span>
             )}
           </div>
@@ -156,7 +208,7 @@ const CompanyInfo = () => {
         </div>
 
         <div>
-          <label className='block mb-2 font-medium'>Upload Logo</label>
+          <label className='block mb-2 font-medium'>Upload {user?.type === 'admin' ? 'logo' : 'Image'}</label>
           <input
             type='file'
             accept='image/*'
@@ -173,7 +225,7 @@ const CompanyInfo = () => {
                 <div className='relative'>
                   <img
                     src={imagePreview}
-                    alt='Preview'
+                    alt={imagePreview}
                     className='w-32 h-32 object-contain'
                   />
                   <button
@@ -185,7 +237,7 @@ const CompanyInfo = () => {
                   </button>
                 </div>
                 <span className='text-sm text-gray-500'>
-                  Click to change image
+                  Click to change {user?.type === 'admin' ? 'logo' : 'image'}
                 </span>
               </div>
             ) : (
@@ -196,7 +248,7 @@ const CompanyInfo = () => {
             )}
           </label>
           {imageError && (
-            <span className='text-red-500 text-sm'>Please upload a logo</span>
+            <span className='text-red-500 text-sm'>Please upload a {user?.type === 'admin' ? 'logo' : 'image'}</span>
           )}
         </div>
 
@@ -207,6 +259,25 @@ const CompanyInfo = () => {
           Submit
         </button>
       </form>
+      {/* <Modal open={isModalOpen} onClose={handleModalToggle}>
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: 500,
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            bgcolor: 'background.paper',
+            p: 4,
+            mx: 'auto',
+            my: '10%',
+            borderRadius: 2,
+            boxShadow: 24,
+            outline: 'none',
+          }}
+        >
+          <EmailVerifyOtp />
+        </Box>
+      </Modal> */}
     </div>
   )
 }

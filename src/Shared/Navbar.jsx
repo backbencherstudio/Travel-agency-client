@@ -4,7 +4,7 @@ import languageLogo from '../assets/img/Language.svg';
 import './nav.css';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import avatar from "../assets/img/avatar/avatar-1.jpg";
-import { AuthContext } from '../AuthProvider/AuthProvider';
+import { AuthContext } from '../Context/AuthProvider/AuthProvider';
 import ProfileNameImg from './ProfileNameImg';
 
 const Navbar = () => {
@@ -140,16 +140,16 @@ const Navbar = () => {
                             {/* Contacts
                             <img className='w-5 h-5' src={arrowDown} /> */}
                             <div className="relative inline-block text-left">
-                                <button
+                                <Link to="/contacts"
                                 className="inline-flex w-full justify-center gap-x-1.5 text-[#475467] transition"
                                 onClick={handleDropdownToggle('contact')}
                                 >
-                                Contacts
-                                <svg className="-mr-1 size-5 w-6 h-6 text-[#475467]" viewBox="0 0 20 20" fill="currentColor">
+                                Contact us
+                                {/* <svg className="-mr-1 size-5 w-6 h-6 text-[#475467]" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clipRule="evenodd" />
-                                </svg>
-                                </button>
-                                {contactDropDown && (
+                                </svg> */}
+                                </Link>
+                                {/* {contactDropDown && (
                                 <div className="absolute right-0 z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black/5">
                                     <div className="py-1">
                                     <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">Account settings</Link>
@@ -157,7 +157,7 @@ const Navbar = () => {
                                     <Link to="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-100">License</Link>
                                     </div>
                                 </div>
-                                )}
+                                )} */}
                             </div>
                         </button>
                         </li>
@@ -209,9 +209,14 @@ const Navbar = () => {
                                     </div>
                                     {userDropDown && (
                                     <div
-                                        className={`bg-white p-6 absolute flex flex-col top-full -right-12 mt-2 space-y-1 border rounded shadow popup w-60`}
+                                        className={`bg-white p-6 absolute flex flex-col top-full -right-6 mt-3 space-y-1 border rounded shadow popup w-60`}
                                     >
                                         <div className="w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block"></div>
+                                        {user?.type === "admin" && (
+                                            <Link to="/dashboard" className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300">
+                                                Dashboard
+                                            </Link>
+                                        )}
                                         <Link
                                         to="/account"
                                         className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
@@ -332,12 +337,13 @@ const Navbar = () => {
                     ))}
                     <li>
                     <div className="relative">
-                        <button
+                        <Link
+                        to="/contacts"
                         className="flex items-center justify-between w-full px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 hover:text-gray-600"
-                        onClick={handleDropdownToggle("contact")}
+                        // onClick={handleDropdownToggle("contact")}
                         >
-                        Contacts
-                        <svg
+                        Contact us
+                        {/* <svg
                             className="w-5 h-5 text-gray-600"
                             viewBox="0 0 20 20"
                             fill="currentColor"
@@ -347,9 +353,9 @@ const Navbar = () => {
                             d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
                             clipRule="evenodd"
                             />
-                        </svg>
-                        </button>
-                        {contactDropDown && (
+                        </svg> */}
+                        </Link>
+                        {/* {contactDropDown && (
                         <div className="absolute left-0 z-20 mt-2 w-48 bg-white rounded-lg shadow-lg ring-1 ring-black/10">
                             <Link
                             to="#"
@@ -370,7 +376,7 @@ const Navbar = () => {
                             License
                             </Link>
                         </div>
-                        )}
+                        )} */}
                     </div>
                     </li>
                 </ul>
@@ -383,6 +389,11 @@ const Navbar = () => {
                             >
                                 {user?.name}
                             </div>
+                            {user?.type === "admin" && (
+                                <Link to="/dashboard" className="block bg-gray-300 px-6 py-3 text-center text-gray-80 rounded-md">
+                                    Dashboard
+                                </Link>
+                            )}
                             <button
                                 onClick={handleLogout}
                                 className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"

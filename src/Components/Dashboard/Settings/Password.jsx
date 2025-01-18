@@ -1,7 +1,7 @@
 import  { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa' 
-import { AuthContext } from '../../../AuthProvider/AuthProvider'
+import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
 
 const Password = () => {
   const {

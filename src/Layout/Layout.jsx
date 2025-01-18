@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import Navbar from "../Shared/Navbar";
 import Footer from "../Shared/Footer";
 import { useContext } from "react";
-import { AuthContext } from "../AuthProvider/AuthProvider";
+import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 import Loading from "../Shared/Loading";
 
 const Layout = () => {

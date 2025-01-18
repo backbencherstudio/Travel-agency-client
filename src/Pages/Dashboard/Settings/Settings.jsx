@@ -8,9 +8,12 @@ import { RxCrossCircled } from 'react-icons/rx'
 import { useState, useEffect } from 'react'
 import { GoShieldLock } from 'react-icons/go'
 import { IoLockOpenOutline } from 'react-icons/io5'
-import { RiQuestionAnswerLine } from 'react-icons/ri'
+import { RiCoupon2Line, RiQuestionAnswerLine } from 'react-icons/ri'
 import { useNavigate, useLocation } from 'react-router-dom'
 import FaqAdded from '../Faq/FaqAdded'
+import Coupon from '../../../Components/Dashboard/Settings/Coupon/Coupon'
+import SocialCopyRight from '../../../Components/Dashboard/Settings/SocialCopyRight'
+import { MdCopyright } from 'react-icons/md'
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -29,10 +32,15 @@ const Settings = () => {
     { icon: <RxCrossCircled className='text-xl' />, label: 'Cancellation' },
     { icon: <GoShieldLock className='text-lg' />, label: 'Permission' },
     { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' },
+    { icon: <RiCoupon2Line  className='text-lg' />, label: 'Coupon' },
     {
       icon: <RiQuestionAnswerLine className='text-xl' />,
       label: 'FAQ'
-    }
+    },
+    {
+      icon: <MdCopyright className="text-xl" />, // Updated icon
+      label: 'Social & Copyright',
+    },
   ]
 
   // Save active tab to localStorage and update the URL when it changes
@@ -53,6 +61,10 @@ const Settings = () => {
         return <Password />
       case 'FAQ':
         return <FaqAdded />
+      case 'Coupon':
+        return <Coupon />
+      case 'Social & Copyright':
+        return <SocialCopyRight />
       default:
         return <CompanyInfo />
     }
@@ -62,7 +74,7 @@ const Settings = () => {
     <div className='min-h-[calc(100vh-80px)] w-full'>
       {/* Header with Search */}
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5'>
-        <h1 className='text-[#0D0E0D] text-[20px] capitalize'>Settings</h1>
+        <h1 className='text-[#0D0E0D] text-2xl font-semibold capitalize'>Settings</h1>
         <div className='relative w-full sm:w-auto'>
           <input
             type='text'
