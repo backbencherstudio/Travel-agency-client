@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
+import { IoChatbubbleEllipsesSharp, IoClose } from "react-icons/io5";
 import MessageRight from "../Components/Dashboard/chat/Components/MessageRight";
 import MessageLeft from "../Components/Dashboard/chat/Components/MessageLeft";
 
@@ -42,7 +42,7 @@ const ChatToggle = () => {
 
         {/* Chat Box */}
         {isOpen && ( // Render the chat box only when `isOpen` is true
-          <div className="class absolute">
+          <div className="absolute">
             <div className="fixed bottom-[18%] right-[3%]">
               <div className="w-[100%] h-[60vh] relative overflow-hidden transition-all duration-150 bg-white user-chat shadow">
                 <div className="lg:flex">
@@ -76,17 +76,27 @@ const ChatToggle = () => {
                             </div>
                           </div>
                         </div>
+                        {/* Close Button Added Here */}
+                        <div className="col-span-4 sm:col-span-8 flex justify-end transi">
+                          <button
+                            onClick={() => setIsOpen(false)} // Chatbox will close onClick
+                            className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
+                            aria-label="Close Chat"
+                          >
+                            <IoClose className="h-8 w-8" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                     {/* End Chat User Header */}
 
                     {/* Start Chat Conversation */}
                     <div
-                      className="h-[73vh] p-4 lg:p-6 overflow-y-auto "
+                      className="h-[73vh] p-4 lg:p-6 overflow-y-auto"
                       data-simplebar
                     >
                       {messages.map((data, index) => {
-                        if (data.dirac == "right") {
+                        if (data.dirac === "right") {
                           return (
                             <MessageRight
                               key={index}

@@ -2,7 +2,7 @@ import { useContext, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import AdminHeader from './AdminHeader'
 import AdminSidebar from './AdminSidebar'
-import { AuthContext } from '../../AuthProvider/AuthProvider'
+import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 import Loading from '../../Shared/Loading'
 
 const AdminLayout = () => {

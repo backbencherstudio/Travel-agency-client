@@ -9,7 +9,7 @@ import { CiLogout } from 'react-icons/ci'
 import { FiCompass } from 'react-icons/fi'
 import { RiArticleLine } from 'react-icons/ri'
 import { LuMessageSquareText } from "react-icons/lu";
-import { AuthContext } from '../../AuthProvider/AuthProvider'
+import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 
 const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate()

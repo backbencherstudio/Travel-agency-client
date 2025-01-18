@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@layer utilities {
+  /* Hide native date picker icon in Chrome, Safari, Edge */
+  .hide-native-datepicker::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+  }
+
+  /* Hide native date picker icon in Firefox */
+  .hide-native-datepicker {
+    -moz-appearance: textfield;
+  }
+}
+
 body {
   font-family: "Inter", serif;
 }
