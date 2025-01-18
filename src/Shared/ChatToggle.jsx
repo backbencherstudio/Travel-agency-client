@@ -2,7 +2,17 @@ import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import MessageRight from "../Components/Dashboard/chat/Components/MessageLeft";
 import MessageLeft from "../Components/Dashboard/chat/Components/MessageRight";
 import { useContext, useEffect, useRef, useState } from "react";
+import axiosClient from "../axiosClient";
+import { io } from "socket.io-client";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
+
+const myToken = localStorage.getItem("token");
+const socket = io("http://192.168.10.159:4000", {
+  extraHeaders: {
+    authorization: `Bearer ${myToken || ""}`,
+  },
+});
+// console.log("new socket:", newSocket);
 
 const ChatToggle = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,22 +22,50 @@ const ChatToggle = () => {
   const [newMessage, setNewMessage] = useState("");
   const [conversations, setConversations] = useState([]);
   const messagesEndRef = useRef(null);
-
   const messagesContainerRef = useRef(null);
-
   const { user } = useContext(AuthContext);
 
-  // console.log('conversition id:', activeConversation);
-  console.log("msg:", messages);
+  // Socket.IO setup
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("Socket connected!");
+    });
+
+    socket.on("message", (newMessage) => {
+      console.log(newMessage);
+
+      setMessages((prev) => [...prev, newMessage]);
+    });
+
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  // Room management for active conversation
+  // useEffect(() => {
+  //   if (socket && activeConversation) {
+  //     if (socket.activeRoom) {
+  //       socket.emit("leave_room", socket.activeRoom);
+  //     }
+
+  //     const roomId = `conversation_${activeConversation.id}`;
+
+  //     socket.emit("joinRoom", roomId);
+  //     socket.activeRoom = roomId;
+  //   }
+  // }, [socket, activeConversation]);
 
   // Fetch conversations
   useEffect(() => {
     const fetchConversations = async () => {
       try {
         const response = await axiosClient.get("/api/chat/conversation");
+        // console.log("fetch conversation", response);
+
         setConversations(response.data.data);
       } catch (error) {
-        console.error("Error fetching conversations:", error);
+        // console.error("Error fetching conversations:", error);
       }
     };
 
@@ -51,25 +89,24 @@ const ChatToggle = () => {
   }, []);
 
   // Fetch messages for active conversation
-  useEffect(() => {
-    if (activeConversation) {
-      const fetchMessages = async () => {
-        try {
-          const response = await axiosClient.get(
-            `/api/chat/message?conversation_id=${activeConversation.id}`
-          );
-          // console.log('msg response:', response.data.data);
+  // useEffect(() => {
+  //   if (activeConversation) {
+  //     const fetchMessages = async () => {
+  //       try {
+  //         const response = await axiosClient.get(
+  //           `/api/chat/message?conversation_id=${activeConversation.id}`
+  //         );
 
-          setMessages(response.data.data || []);
-        } catch (error) {
-          console.error("Error fetching messages:", error);
-        }
-      };
+  //         setMessages(response.data.data || []);
+  //       } catch (error) {
+  //         console.error("Error fetching messages:", error);
+  //       }
+  //     };
 
-      fetchMessages();
-
-    }
-  }, [activeConversation]);
+  //     fetchMessages();
+  //   }
+  // }, [activeConversation]);
+  // console.log("fetch msg:", messages);
 
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
@@ -96,16 +133,47 @@ const ChatToggle = () => {
     }
   };
 
+  useEffect(() => {
+    socket.on("connect", () => {
+      console.log("connected");
+    });
+    socket.on("message", (message) => {
+      console.log("message", message);
+      // if(sendMessage.conversation_id === conversation_id){
+      //   sendMessage((state) => [...state, message])
+      // }
+    });
+  }, []);
+  // console.log('setMessage:', messages);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
 
     try {
-      const response = await axiosClient.post("/api/chat/message", {
+      const messagePayload = {
         conversation_id: activeConversation.id,
         receiver_id: activeConversation.participant_id,
         message: newMessage,
+        // sender: user,
+        // created_at: new Date().toISOString(),
+      };
+
+      // Emit the message through socket
+      socket.emit("sendMessage", {
+        to: activeConversation.participant_id,
+        data: {
+          receiver_id: activeConversation.participant_id,
+          conversation_id: activeConversation.id,
+          message: newMessage,
+        },
       });
+
+      const response = await axiosClient.post(
+        "/api/chat/message",
+        messagePayload
+      );
+      // console.log("send msg:", response.data);
 
       setMessages([...messages, response.data.data]);
       setNewMessage("");
@@ -113,8 +181,9 @@ const ChatToggle = () => {
       console.error("Error sending message:", error);
     }
   };
+  // console.log("send message:", messages);
 
-  // auto scroll message
+  // Auto scroll message
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
@@ -122,12 +191,32 @@ const ChatToggle = () => {
     }
   };
 
-  // Scroll to the bottom whenever messageData changes or a new message is sent
+  // Scroll to bottom on new messages
   useEffect(() => {
     if (activeConversation) {
       scrollToBottom();
     }
   }, [activeConversation, messages]);
+
+  // Typing indicator functionality
+  const handleTyping = () => {
+    if (socket && activeConversation) {
+      socket.emit("typing", {
+        room: `conversation_${activeConversation.id}`,
+        user: user.name,
+      });
+    }
+  };
+
+  // Listen for typing events
+  useEffect(() => {
+    if (socket) {
+      socket.on("user_typing", (data) => {
+        // Handle typing indicator display
+        // console.log(`${data.user} is typing...`);
+      });
+    }
+  }, [socket]);
 
   return (
     <div className="fixed bottom-[11%] right-[3%] z-50">
@@ -196,12 +285,10 @@ const ChatToggle = () => {
                 className="flex-1 p-4 overflow-y-auto"
               >
                 {messages.map((message, index) => {
-                  // Ensure message and its required properties exist
                   if (!message || !message.sender || !message.receiver) {
-                    return null; // Skip rendering if message is invalid
+                    return null;
                   }
 
-                  // Format the message time
                   const time = message.created_at
                     ? new Date(message.created_at).toLocaleTimeString([], {
                         hour: "2-digit",
@@ -209,28 +296,25 @@ const ChatToggle = () => {
                       })
                     : "N/A";
 
-                  // Determine whether the current user is the sender
                   const isUserSender = message.sender.id === user?.id;
 
                   return isUserSender ? (
                     <MessageRight
                       key={index}
                       avatar={
-                        message?.receiver?.avatar || "default-avatar-url.jpg"
-                      } // Default avatar for sender
-                      naame={message.receiver?.name || "Unknown"} // Default name for sender
-                      time={time} // Consistent time format
-                      text={message.message || ""} // Default message content
+                        message?.receiver?.avatar || "/default-avatar.jpg"
+                      }
+                      naame={message.receiver?.name || "Unknown"}
+                      time={time}
+                      text={message.message || ""}
                     />
                   ) : (
                     <MessageLeft
                       key={index}
-                      avatar={
-                        message.sender?.avatar || "default-avatar-url.jpg"
-                      } // Default avatar for receiver
-                      naame={message.sender?.name || "Unknown"} // Default name for receiver
-                      time={time} // Consistent time format
-                      text={message.message || ""} // Default message content
+                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      naame={message.sender?.name || "Unknown"}
+                      time={time}
+                      text={message.message || ""}
                     />
                   );
                 })}
@@ -241,7 +325,10 @@ const ChatToggle = () => {
                   <input
                     type="text"
                     value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
+                    onChange={(e) => {
+                      setNewMessage(e.target.value);
+                      handleTyping();
+                    }}
                     className="flex-1 px-4 py-2 border rounded-lg"
                     placeholder="Type a message..."
                   />
