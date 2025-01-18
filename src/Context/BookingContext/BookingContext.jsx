@@ -13,7 +13,7 @@ export const BookingProvider = ({ children }) => {
         extraServices: [],
     });
 
-    console.log('bookingDetails', bookingDetails)
+    // console.log('bookingDetails', bookingDetails)
 
     return (
         <BookingContext.Provider value={{ bookingDetails, setBookingDetails }}>

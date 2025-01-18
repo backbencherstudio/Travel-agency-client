@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react'
 import { FaStar } from 'react-icons/fa'
 import { useBookingContext } from '../../Context/BookingContext/BookingContext'
 import { FiPlusCircle, FiTrash2 } from 'react-icons/fi'
+// import ReviewPackageDetails from '../../Components/BookingPackageClient/ReviewPackageDetails'
 
 function ReviewPackage () {
-    const { bookingDetails } = useBookingContext();
+  const { bookingDetails } = useBookingContext()
+
+console.log('bookingDetails', bookingDetails)
   const [formData, setFormData] = useState({
     mobileNumber: '',
     address: '',
@@ -31,13 +34,6 @@ function ReviewPackage () {
   useEffect(() => {
     fetchCountries()
   }, [])
-  // const handleChange = e => {
-  //   const { name, value } = e.target
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value
-  //   })
-  // }
 
   // Fetch countries from API
   const fetchCountries = async () => {
@@ -168,8 +164,6 @@ function ReviewPackage () {
     }
   }
 
-  console.log('bookingDetails', bookingDetails)
-
   return (
     <div className='max-w-[1216px] mx-auto my-10  px-4 xl:px-0'>
       <div className='flex flex-col lg:flex-row justify-between gap-10'>
@@ -179,7 +173,7 @@ function ReviewPackage () {
               Review Package
             </h1>
 
-            {/*  */}
+            {/* Details package  */}
             <div className='bg-[#FDEFEA] p-5 rounded-lg'>
               <div className='flex items-center justify-between'>
                 <h1 className='font-bold text-[#000E19]  text-xl sm:text-4xl '>
@@ -247,137 +241,154 @@ function ReviewPackage () {
                   <p className='whitespace-nowrap'>Aug 16, 2024</p>
                 </div>
               </div>
+
+              {/* <ReviewPackageDetails/> */}
             </div>
 
-            <h4 className='text-[20px] text-[#0F1416] font-bold'>
-              Please Enter Contact Details
-            </h4>
-            <form className='flex flex-col gap-7'>
-              <div className='flex flex-col'>
-                <label
-                  className='text-[15px] text-[#0F1416]'
-                  htmlFor='mobileNumber'
-                >
-                  Mobile Number
-                </label>
-                <input
-                  type='text'
-                  name='mobileNumber'
-                  placeholder='Enter Mobile Number'
-                  className=' px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                  value={formData.mobileNumber}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className='flex flex-col'>
-                <label className='text-[15px] text-[#0F1416]' htmlFor='address'>
-                  Flat, House no., Building, Company, Apartment
-                </label>
-                <input
-                  type='text'
-                  name='address'
-                  placeholder='Enter Address'
-                  className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] '
-                  value={formData.address}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className='flex flex-col'>
-                <label className='text-[15px] text-[#0F1416]' htmlFor='area'>
-                  Area, Colony, Street, Sector, Village
-                </label>
-                <input
-                  type='text'
-                  name='area'
-                  placeholder='Enter Area'
-                  className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                  value={formData.area}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className='flex flex-col'>
-                <label className='text-[15px] text-[#0F1416]' htmlFor='country'>
-                  Country
-                </label>
-                <select
-                  name='country'
-                  value={formData.country}
-                  onChange={handleChange}
-                  className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                >
-                  <option value=''>Select Country</option>
-                  {countries.map((country, index) => (
-                    <option key={index} value={country}>
-                      {country}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {hasStates && (
+            {/* input user deatils  */}
+            <div>
+              <h4 className='text-[20px] text-[#0F1416] font-bold'>
+                Please Enter Contact Details
+              </h4>
+              <form className='flex flex-col gap-7'>
                 <div className='flex flex-col'>
-                  <label className='text-[15px] text-[#0F1416]' htmlFor='state'>
-                    State
+                  <label
+                    className='text-[15px] text-[#0F1416]'
+                    htmlFor='mobileNumber'
+                  >
+                    Mobile Number
+                  </label>
+                  <input
+                    type='text'
+                    name='mobileNumber'
+                    placeholder='Enter Mobile Number'
+                    className=' px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+                    value={formData.mobileNumber}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className='flex flex-col'>
+                  <label
+                    className='text-[15px] text-[#0F1416]'
+                    htmlFor='address'
+                  >
+                    Flat, House no., Building, Company, Apartment
+                  </label>
+                  <input
+                    type='text'
+                    name='address'
+                    placeholder='Enter Address'
+                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] '
+                    value={formData.address}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className='flex flex-col'>
+                  <label className='text-[15px] text-[#0F1416]' htmlFor='area'>
+                    Area, Colony, Street, Sector, Village
+                  </label>
+                  <input
+                    type='text'
+                    name='area'
+                    placeholder='Enter Area'
+                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+                    value={formData.area}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className='flex flex-col'>
+                  <label
+                    className='text-[15px] text-[#0F1416]'
+                    htmlFor='country'
+                  >
+                    Country
                   </label>
                   <select
-                    name='state'
-                    value={formData.state}
+                    name='country'
+                    value={formData.country}
                     onChange={handleChange}
                     className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                    disabled={loading.states || !formData.country}
                   >
-                    <option value=''>
-                      {loading.states ? 'Loading states...' : 'Select State'}
-                    </option>
-                    {states.map((state, index) => (
-                      <option key={index} value={state}>
-                        {state}
+                    <option value=''>Select Country</option>
+                    {countries.map((country, index) => (
+                      <option key={index} value={country}>
+                        {country}
                       </option>
                     ))}
                   </select>
                 </div>
-              )}
 
-              <div className='flex flex-col'>
-                <label className='text-[15px] text-[#0F1416]' htmlFor='city'>
-                  City
-                </label>
-                <select
-                  name='city'
-                  value={formData.city}
-                  onChange={handleChange}
-                  className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                  disabled={
-                    loading.cities ||
-                    !formData.country ||
-                    (hasStates && !formData.state)
-                  }
-                >
-                  <option value=''>
-                    {loading.cities ? 'Loading cities...' : 'Select City'}
-                  </option>
-                  {cities.map((city, index) => (
-                    <option key={index} value={city}>
-                      {city}
+                {hasStates && (
+                  <div className='flex flex-col'>
+                    <label
+                      className='text-[15px] text-[#0F1416]'
+                      htmlFor='state'
+                    >
+                      State
+                    </label>
+                    <select
+                      name='state'
+                      value={formData.state}
+                      onChange={handleChange}
+                      className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+                      disabled={loading.states || !formData.country}
+                    >
+                      <option value=''>
+                        {loading.states ? 'Loading states...' : 'Select State'}
+                      </option>
+                      {states.map((state, index) => (
+                        <option key={index} value={state}>
+                          {state}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className='flex flex-col'>
+                  <label className='text-[15px] text-[#0F1416]' htmlFor='city'>
+                    City
+                  </label>
+                  <select
+                    name='city'
+                    value={formData.city}
+                    onChange={handleChange}
+                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+                    disabled={
+                      loading.cities ||
+                      !formData.country ||
+                      (hasStates && !formData.state)
+                    }
+                  >
+                    <option value=''>
+                      {loading.cities ? 'Loading cities...' : 'Select City'}
                     </option>
-                  ))}
-                </select>
-              </div>
+                    {cities.map((city, index) => (
+                      <option key={index} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className='flex flex-col'>
-                <label className='text-[15px] text-[#0F1416]' htmlFor='pinCode'>
-                  Pin Code
-                </label>
-                <input
-                  type='text'
-                  name='pinCode'
-                  placeholder='Enter Pin/Zip Code'
-                  className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] '
-                  value={formData.pinCode}
-                  onChange={handleChange}
-                />
-              </div>
-            </form>
+                <div className='flex flex-col'>
+                  <label
+                    className='text-[15px] text-[#0F1416]'
+                    htmlFor='pinCode'
+                  >
+                    Pin Code
+                  </label>
+                  <input
+                    type='text'
+                    name='pinCode'
+                    placeholder='Enter Pin/Zip Code'
+                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] '
+                    value={formData.pinCode}
+                    onChange={handleChange}
+                  />
+                </div>
+              </form>
+            </div>
           </div>
 
           {/* Add Traveler  */}
@@ -446,6 +457,7 @@ function ReviewPackage () {
           </div>
         </div>
 
+        {/* price section  */}
         <div className='w-full lg:w-4/12 h-fit px-5 shadow-lg border rounded-lg py-5 sticky top-10'>
           <h1 className='border-b text-[#0F1416] text-4xl font-bold pb-5'>
             $4700{' '}

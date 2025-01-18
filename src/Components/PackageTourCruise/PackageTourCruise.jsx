@@ -73,7 +73,7 @@ function PackageTourCruise() {
     const [error, setError] = useState(null);
     const location = useLocation();
     const isCruiseRoute = location.pathname.includes('cruises');
-    console.log('isCruiseRoute', isCruiseRoute)
+    // console.log('isCruiseRoute', isCruiseRoute)
     // const tours = [
     //     {
     //         id: 1,
@@ -121,7 +121,7 @@ function PackageTourCruise() {
     const getTourPackages = async () => {
         setLoading(true);
         const res = await ClientPackageApis.all(`${isCruiseRoute ? 'cruise' : 'tour'}`);
-        console.log('res', res)
+        // console.log('res', res)
         if (res.success) {
             setPackages(res?.data);
             setLoading(false)
@@ -158,7 +158,7 @@ function PackageTourCruise() {
 
     // Function to apply filters and fetch data
 
-    console.log('packages', packages)
+    // console.log('packages', packages)
     const startDatePickerRef = useRef(null);
     const endDatePickerRef = useRef(null);
 
