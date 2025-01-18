@@ -36,7 +36,7 @@ const Settings = () => {
       label: 'FAQ'
     },
     {
-      icon: <MdCopyright className="text-xl" />, // Updated icon
+      icon: <MdCopyright className="text-xl" />, 
       label: 'Social & Copyright',
     },
   ]
