@@ -42,6 +42,16 @@ const SocialCopyRight = () => {
   const handleDataUpdate = (newData) => {
     setSocialMediaData(newData);
   };
+
+
+  const onSubmit = async (data) => {
+    console.log('data', data)
+    const res = await WebsiteInfoApis.save(data);
+    console.log('res', res)
+    fetchData()
+    reset();
+  }
+
   
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -55,7 +65,7 @@ const SocialCopyRight = () => {
          refreshData={fetchData}
       />
 
-      {/* <form onSubmit={handleSubmit(onSubmit)} className='m-6 flex flex-col gap-4'>
+      <form onSubmit={handleSubmit(onSubmit)} className='m-6 flex flex-col gap-4'>
         <h4 className='text-base font-medium'>Copyright Information</h4>
         <input type="text" className='px-5 py-3 border border-[#E9EAEC] rounded-[10px] text-sm font-normal text-[#475467] outline-none' placeholder='Copywrite Info' {...register('copyright', { required: 'Copywrite is required' })} />
         {errors.copywrite && (
@@ -64,7 +74,7 @@ const SocialCopyRight = () => {
           </span>
         )}
         <button type='submit' className='px-5 py-3 bg-[#EB5B2A] w-fit text-xs text-white rounded'>Submit</button>
-      </form> */}
+      </form>
     </div>
   );
 };
