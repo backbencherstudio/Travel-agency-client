@@ -2,8 +2,7 @@ import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import MessageRight from "../Components/Dashboard/chat/Components/MessageLeft";
 import MessageLeft from "../Components/Dashboard/chat/Components/MessageRight";
 import { useContext, useEffect, useRef, useState } from "react";
-import { AuthContext } from "../AuthProvider/AuthProvider";
-import axiosClient from "../axiosClient";
+import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 
 const ChatToggle = () => {
   const [isOpen, setIsOpen] = useState(false);
