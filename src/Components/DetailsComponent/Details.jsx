@@ -39,14 +39,16 @@ const Details = ({ details }) => {
     };
 
     return (
-        <div className="grid lg:grid-cols-3 gap-6 bg-[#F0F4F9]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-[#F0F4F9]">
             <div className="col-span-2 flex flex-col gap-5">
                 <h1 className="text-3xl md:text-[40px] text-[#0F1416] font-semibold">{details?.name}</h1>
-                <div className="grid grid-cols-3 items-center justify-between">
+                <div className="grid grid-cols-3 gap-4 items-center justify-between">
                     <div className="border-r-2">
                         <p className="text-sm text-[#8993A0]">Review</p>
-                        <div className="flex gap-1 items-center">
-                            {renderStars(details?.reviews[0]?.rating_value)}{' '}
+                        <div className="flex flex-col md:flex-row gap-1 md:items-center">
+                            <div className="flex gap-1 items-center">
+                                {renderStars(details?.reviews[0]?.rating_value || 0.0)}{' '}
+                            </div>
                             <span className="text-xs md:text-base text-[#8993A0]">({details?.reviews?.length} reviews)</span>
                         </div>
                     </div>
@@ -160,7 +162,7 @@ const Details = ({ details }) => {
                 </div>
             </div>
             <div className="bg-white p-6 rounded-2xl max-h-fit max-w-full col-span-2 lg:col-span-1 xl:col-span-0">
-                {/* <BookCard details={details} renderStars={renderStars} /> */}
+                <BookCard details={details} renderStars={renderStars} />
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 import React, { useState, createContext, useEffect } from "react";
-import axiosClient from "../axiosClient";
+import axiosClient from "../../axiosClient";
 import { toast } from "react-toastify";
 export const AuthContext = createContext();
 

@@ -1,5 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
-import { Avatar } from '@mui/material'
+import { Avatar, Pagination, Stack } from '@mui/material'
 import HeroSection from '../../Components/HeroSection/HeroSection'
 import ParentComponent from '../../Components/ParentComponent/ParentComponent'
 import blogImage from '../../assets/img/blogs/blogImage.png'
@@ -7,19 +6,27 @@ import Faqs from '../../Components/Home/Faqs'
 import { FaRegComments } from 'react-icons/fa'
 import { SlLike } from 'react-icons/sl'
 import { CiSearch } from 'react-icons/ci'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState, useRef, useCallback } from 'react'
 import {
   getBlogDetails,
   postCommentOnBlog,
   deleteCommentOnBlog,
-  postLikeOnBlog
+  postLikeOnBlog,
+  searchBlogs
 } from '../../Apis/clientApi/ClientBlogApi'
-import { useNavigate, useParams } from 'react-router-dom'
-import { AuthContext } from '../../AuthProvider/AuthProvider'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 import Swal from 'sweetalert2'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { toast } from 'react-toastify'
-import { BiSolidLike } from 'react-icons/bi'
+
+const debounce = (func, delay) => {
+  let timer
+  return function (...args) {
+    clearTimeout(timer)
+    timer = setTimeout(() => func.apply(this, args), delay)
+  }
+}
 
 const SingleBlog = () => {
   const links = [
@@ -27,6 +34,7 @@ const SingleBlog = () => {
     { name: 'Blogs', path: '/blogs' },
     { name: 'Blog Details', path: '' }
   ]
+  const COMMENTS_PER_PAGE = 6
   const { user } = useContext(AuthContext)
   const navigate = useNavigate()
   const { id } = useParams()
@@ -36,23 +44,26 @@ const SingleBlog = () => {
   const [comment, setComment] = useState('')
   const [commentError, setCommentError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isLiking, setIsLiking] = useState(false) // New state for like button
+  const [isLiking, setIsLiking] = useState(false)
   const [isLiked, setIsLiked] = useState(false)
+  const [searchInput, setSearchInput] = useState('')
+  const [suggestions, setSuggestions] = useState([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState(-1)
+  const [suggestionLoading, setSuggestionLoading] = useState(false)
+  const inputRef = useRef()
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     const fetchBlogDetails = async () => {
       try {
         const response = await getBlogDetails(id)
-        console.log('Blog details fetched:', response)
-
         if (response.errors || response.message) {
           setError(response.message || 'Failed to fetch blog details')
         } else {
           setBlog(response)
-          setIsLiked(response.data?.is_liked_by_user || false)
         }
       } catch (err) {
-        // console.error('Error fetching blog details:', err)
         setError('An unexpected error occurred')
       } finally {
         setLoading(false)
@@ -61,6 +72,60 @@ const SingleBlog = () => {
 
     fetchBlogDetails()
   }, [id])
+
+  const fetchSuggestions = async query => {
+    if (!query.trim()) {
+      setSuggestions([])
+      setShowSuggestions(false)
+      return
+    }
+
+    setSuggestionLoading(true)
+    try {
+      const response = await searchBlogs(query)
+      setSuggestions(response.data || [])
+      setShowSuggestions(true)
+    } catch (error) {
+      console.error('Error fetching suggestions:', error)
+      setSuggestions([])
+    } finally {
+      setSuggestionLoading(false)
+    }
+  }
+
+  const debouncedFetchSuggestions = useCallback(
+    debounce(fetchSuggestions, 300),
+    []
+  )
+
+  const handleSearchInputChange = e => {
+    const value = e.target.value
+    setSearchInput(value)
+    setSelectedIndex(-1)
+    debouncedFetchSuggestions(value)
+  }
+
+  const handleSuggestionClick = blogId => {
+    setSearchInput('')
+    setSuggestions([])
+    setShowSuggestions(false)
+    navigate(`/blogDetails/${blogId}`)
+  }
+
+  const handleKeyDown = e => {
+    if (e.key === 'ArrowDown') {
+      setSelectedIndex(prevIndex => (prevIndex + 1) % suggestions.length)
+    } else if (e.key === 'ArrowUp') {
+      setSelectedIndex(prevIndex =>
+        prevIndex === 0 ? suggestions.length - 1 : prevIndex - 1
+      )
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault()
+      handleSuggestionClick(suggestions[selectedIndex].id)
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false)
+    }
+  }
 
   if (loading) {
     return <p>Loading...</p>
@@ -132,7 +197,6 @@ const SingleBlog = () => {
   }
 
   const handleDeleteComment = async commentId => {
-    // Show SweetAlert confirmation dialog
     const result = await Swal.fire({
       title: 'Are you sure you want to delete this comment?',
       text: 'You won’t be able to undo this action!',
@@ -153,7 +217,6 @@ const SingleBlog = () => {
             'error'
           )
         } else {
-          // Success case
           await Swal.fire(
             'Deleted!',
             'Your comment has been deleted.',
@@ -173,6 +236,16 @@ const SingleBlog = () => {
     }
   }
 
+  const totalComments = blog?.data?.blog_comments.length || 0
+  const totalPages = Math.ceil(totalComments / COMMENTS_PER_PAGE)
+  // Paginated comments for the current page
+  const paginatedComments = blog?.data?.blog_comments.slice(
+    (currentPage - 1) * COMMENTS_PER_PAGE,
+    currentPage * COMMENTS_PER_PAGE
+  )
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value) // Update the current page
+  }
   return (
     <div className='bg-[#F0F4F9]'>
       <HeroSection
@@ -188,7 +261,8 @@ const SingleBlog = () => {
       />
 
       <ParentComponent>
-        <div className='blog-details grid grid-cols-12 gap-6'>
+        <div className='blog-details grid grid-cols-12  gap-6 '>
+          {/* blog deatils section  */}
           <div className='col-span-12 lg:col-span-8'>
             <div>
               <img
@@ -208,10 +282,8 @@ const SingleBlog = () => {
                     isLiked ? 'text-orange-500' : 'text-orange-500'
                   } cursor-pointer`}
                 />
-
-                {isLiking ? 'Liking...' : `${blog.data?.like_count} Likes`}
+                {blog.data?.like_count}
               </button>
-
               <h2 className='flex items-center mr-2'>
                 <FaRegComments className='text-orange-500 mr-1 text-xl' />
                 {blog.data?.blog_comments.length} Comments
@@ -230,7 +302,7 @@ const SingleBlog = () => {
               ></div>
             </div>
 
-            {/* Comment Section */}
+            {/* commment section */}
             <div className='max-w-2xl w-full mt-10'>
               <h2 className='text-xl font-semibold mb-4'>Comments</h2>
 
@@ -272,32 +344,23 @@ const SingleBlog = () => {
               )}
             </div>
 
-            <div className='mt-12'>
+            <div className='mt-12 max-w-2xl'>
               <h2 className='font-inter text-[24px] font-semibold leading-[1.3] tracking-[0.12px] mb-7'>
                 {blog.data?.blog_comments.length} Comments
               </h2>
 
-              {blog.data?.blog_comments.map(comment => (
+              {paginatedComments.map(comment => (
                 <div key={comment.id} className='mb-5 border-b pb-5'>
                   <div className='flex items-center'>
-                    <div className='flex '>
-                      {/* img */}
-                      <Avatar
-                        alt={comment.user.name}
-                        src={comment.user.avatar}
-                      />
-
-                      <span className='ml-2'>
-                        <h2 className='font-inter text-[16px] text-[#0F1416] capitalize font-bold '>
-                          {comment.user.name}
-                        </h2>
-                        <p className='mt-1 text-[14px] text-[#0F1416]'>
-                          {new Date(comment.created_at).toLocaleString()}
-                        </p>
-                      </span>
-                    </div>
-
-                    {/* Show delete button if the comment belongs to the logged-in user */}
+                    <Avatar alt={comment.user.name} src={comment.user.avatar} />
+                    <span className='ml-2'>
+                      <h2 className='font-inter text-[16px] font-bold capitalize'>
+                        {comment.user.name}
+                      </h2>
+                      <p className='mt-1 text-[14px]'>
+                        {new Date(comment.created_at).toLocaleString()}
+                      </p>
+                    </span>
                     {user && comment.user.id === user.id && (
                       <button
                         onClick={() => handleDeleteComment(comment.id)}
@@ -307,35 +370,84 @@ const SingleBlog = () => {
                       </button>
                     )}
                   </div>
-                  <p className='mt-5 text-[16px] text-[#0F1416] leading-6'>
-                    {comment.comment}
-                  </p>
+                  <p className='mt-5 text-[16px]'>{comment.comment}</p>
                 </div>
               ))}
+              {totalComments > COMMENTS_PER_PAGE && (
+                <Stack spacing={2} className='mt-4'>
+                  <Pagination
+                    count={totalPages}
+                    color='primary'
+                    page={currentPage}
+                    onChange={handlePageChange}
+                  />
+                </Stack>
+              )}
             </div>
           </div>
 
           <div className='col-span-12 lg:col-span-4 '>
-            <div className='flex border rounded-lg items-center px-2 bg-white'>
-              <CiSearch className='text-3xl cursor-pointer' />
-              <input type='text' placeholder='Search blog...' className='w-full p-2 focus:outline-none' />
+            <div className='relative w-full max-w-md'>
+              <div className='flex border rounded-lg items-center px-2 bg-white'>
+                <CiSearch className='text-3xl cursor-pointer' />
+                <input
+                  ref={inputRef}
+                  type='text'
+                  placeholder='Search blog...'
+                  className='w-full p-2 focus:outline-none'
+                  value={searchInput}
+                  onChange={handleSearchInputChange}
+                  onKeyDown={handleKeyDown}
+                />
+              </div>
+              {suggestionLoading ? (
+                <div className='absolute top-12 left-0 w-full bg-white border border-gray-200 rounded-lg shadow-md p-3 text-center'>
+                  Loading...
+                </div>
+              ) : (
+                showSuggestions && (
+                  <div className='absolute top-12 left-0 w-full bg-white border border-gray-200 rounded-lg shadow-md max-h-60 overflow-y-auto z-10'>
+                    {suggestions.length > 0 ? (
+                      suggestions.map((suggestion, index) => (
+                        <div
+                          key={suggestion.id}
+                          className={`p-3 cursor-pointer ${
+                            index === selectedIndex ? 'bg-gray-100' : ''
+                          }`}
+                          onClick={() => handleSuggestionClick(suggestion.id)}
+                        >
+                          {suggestion.title}
+                        </div>
+                      ))
+                    ) : (
+                      <div className='p-3 text-center text-gray-500'>
+                        No data found
+                      </div>
+                    )}
+                  </div>
+                )
+              )}
             </div>
 
-            <div className='bg-[#f0f4f9] mt-4 px-6 py-5 rounded-lg'>
+            <div className='bg-[#f0f4f9] mt-4  py-5 rounded-lg'>
               <h2 className='font-inter text-[20px] font-bold'>Recent Posts</h2>
               <div className='mt-5'>
                 {blog.data?.recent_blogs.map(item => (
-                  <div key={item.id} className='mb-5 pb-5 border-b'>
-                    <div className='flex items-center'>
+                  <Link
+                    to={`/blogDetails/${item.id}`}
+                    key={item.id}
+                    className='mb-5 pb-5 border-b group'
+                  >
+                    <div className='flex items-center gap-2'>
                       <img
                         src={item.blog_images[0]?.image_url}
                         className='w-[100px] h-[80px] rounded-xl'
-                        alt={item.title}
+                        alt='blog image'
                       />
                       <span className='ml-2'>
-                        <h2 className='font-inter text-[16px] font-bold'>
+                        <h1 className='font-inter text-[16px] font-semibold group-hover:text-blue-600 cursor-pointer transform duration-300'>
                           {item.title}
-                        </h2>
+                        </h1>
                         <p className='mt-2'>
                           {new Date(item.created_at).toLocaleDateString(
                             'en-GB',
@@ -348,17 +460,17 @@ const SingleBlog = () => {
                         </p>
                       </span>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
           </div>
         </div>
-
-        <div className='py-20'>
-          <Faqs />
-        </div>
       </ParentComponent>
+
+      <div className='py-20 bg-white '>
+        <Faqs />
+      </div>
     </div>
   )
 }

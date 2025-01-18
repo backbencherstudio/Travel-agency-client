@@ -111,3 +111,26 @@ export const postLikeOnBlog = async blogId => {
 
   return res
 }
+
+
+// Search blogs by title
+export const searchBlogs = async query => {
+  const url = `/api/blog/search?q=${encodeURIComponent(query)}`; 
+  const res = await axiosClient
+    .get(url)
+    .then(response => response.data) 
+    .catch(error => {
+      if (error.response) {
+        return {
+          errors: error.response.data.errors || null,
+          message:
+            error.response.data.message ||
+            'An error occurred while searching for blogs.'
+        };
+      } else {
+        return { message: 'An error occurred while searching for blogs.' };
+      }
+    });
+  return res;
+};
+

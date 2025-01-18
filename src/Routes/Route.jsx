@@ -5,7 +5,6 @@ import Tours from '../Pages/Tours/Tours'
 import Signup from '../Pages/Auth/Signup'
 import Login from '../Pages/Auth/Login'
 import ForgetPassword from '../Pages/Auth/ForgetPassword'
-import Otp from '../Pages/Auth/Otp'
 import Blogs from '../Pages/blogs/Blogs'
 import SingleBlog from '../Pages/blogs/SingleBlog'
 import TourDetails from '../Pages/Tours/TourDetails/TourDetails'
@@ -43,6 +42,7 @@ import Cancellation from '../Pages/Contacts/Cancellation'
 import PrivateRoute from './Private/PrivateRoute'
 import Cruises from '../Pages/Cruises/Cruises'
 import CruiseDetails from '../Pages/Cruises/CruiseDetails/CruiseDetails'
+import Otp from '../Pages/Auth/Otp'
 import Profile from '../Components/Home/Profile'
 
 export const router = createBrowserRouter([
@@ -111,6 +111,10 @@ export const router = createBrowserRouter([
       {
         path: '/cruises/:id',
         element: <CruiseDetails />
+      },
+      {
+        path: 'review-pacakge',
+        element: <ReviewPackage />
       },
       {
         path: '/contacts',
