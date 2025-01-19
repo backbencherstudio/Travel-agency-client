@@ -34,16 +34,16 @@ const BookCard = ({ details, renderStars }) => {
   // }
   const handleCheckboxChange = (service, isChecked) => {
     if (isChecked) {
-      setExtraServices((prevState) => [
+      setExtraServices(prevState => [
         ...prevState,
-        { id: service?.extra_service?.id, name: service?.extra_service?.name },
-      ]);
+        { id: service?.extra_service?.id, name: service?.extra_service?.name }
+      ])
     } else {
-      setExtraServices((prevState) =>
-        prevState.filter((s) => s.id !== service?.extra_service?.id)
-      );
+      setExtraServices(prevState =>
+        prevState.filter(s => s.id !== service?.extra_service?.id)
+      )
     }
-  };
+  }
 
   const handleBookNow = async () => {
     if (!user) {
@@ -73,11 +73,12 @@ const BookCard = ({ details, renderStars }) => {
 
     try {
       const response = await createCheckout(bookingData)
+      // console.log('response', response)
       if (response.errors) {
         toast.error(response.message || 'Failed to complete booking.')
       } else {
-        toast.success('Booking successful!')
-        navigate(`/booking/${details?.id}`)
+        // toast.success('Booking successful!')
+        navigate(`/booking/${response?.data?.id}`)
       }
     } catch (error) {
       toast.error('An error occurred while processing your booking.')

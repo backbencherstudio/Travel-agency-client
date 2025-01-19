@@ -3,11 +3,10 @@ import { FaStar } from 'react-icons/fa'
 import { useBookingContext } from '../../Context/BookingContext/BookingContext'
 import { FiPlusCircle, FiTrash2 } from 'react-icons/fi'
 // import ReviewPackageDetails from '../../Components/BookingPackageClient/ReviewPackageDetails'
-
+import { RxCross2 } from 'react-icons/rx'
+import { getCheckoutById } from '../../Apis/clientApi/ClientBookApi'
+import { useParams } from 'react-router-dom'
 function ReviewPackage () {
-  const { bookingDetails } = useBookingContext()
-
-console.log('bookingDetails', bookingDetails)
   const [formData, setFormData] = useState({
     mobileNumber: '',
     address: '',
@@ -17,6 +16,15 @@ console.log('bookingDetails', bookingDetails)
     state: '',
     country: ''
   })
+
+  const formatDate = isoDate => {
+    const date = new Date(isoDate)
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
 
   const [rating, setRating] = useState(3)
   const [travelers, setTravelers] = useState([])
@@ -29,6 +37,37 @@ console.log('bookingDetails', bookingDetails)
     cities: false
   })
   const [hasStates, setHasStates] = useState(false)
+  const [couponCode, setCouponCode] = useState('')
+  const [appliedCoupons, setAppliedCoupons] = useState([])
+  const [checkoutData, setCheckoutData] = useState(null)
+  const [error, setError] = useState('')
+  const { id } = useParams()
+
+  useEffect(() => {
+    const fetchCheckoutData = async () => {
+      setLoading(true)
+      try {
+        const data = await getCheckoutById(id)
+        console.log('API Response:', data)
+        if (data.errors) {
+          setError(data.message || 'An error occurred while fetching data.')
+        } else {
+          setCheckoutData(data)
+        }
+      } catch (err) {
+        console.error('API Error:', err)
+        setError('An unexpected error occurred.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (id) {
+      fetchCheckoutData()
+    }
+  }, [id])
+
+  console.log('API Response:', checkoutData)
 
   // Fetch all countries on component mount
   useEffect(() => {
@@ -164,6 +203,20 @@ console.log('bookingDetails', bookingDetails)
     }
   }
 
+  const applyCoupon = () => {
+    if (couponCode.trim() && !appliedCoupons.includes(couponCode.trim())) {
+      setAppliedCoupons([...appliedCoupons, couponCode.trim()])
+      setCouponCode('')
+    }
+  }
+
+  const removeCoupon = code => {
+    setAppliedCoupons(appliedCoupons.filter(coupon => coupon !== code))
+  }
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error}</div>
+
   return (
     <div className='max-w-[1216px] mx-auto my-10  px-4 xl:px-0'>
       <div className='flex flex-col lg:flex-row justify-between gap-10'>
@@ -224,22 +277,52 @@ console.log('bookingDetails', bookingDetails)
                   <p className='font-semibold'>Beijing, China</p>
                 </div>
               </div>
+              {/* date show and calutate night and day  */}
+              <div className='flex gap-5 sm:gap-16 lg:justify-start lg:gap-16 mt-10'>
+                {checkoutData.data.checkout.checkout_items.length > 0 ? (
+                  checkoutData.data.checkout.checkout_items.map(
+                    (item, index) => {
+                      // Calculate days and nights
+                      const startDate = new Date(item.start_date)
+                      const endDate = new Date(item.end_date)
+                      const days = Math.ceil(
+                        (endDate - startDate) / (1000 * 60 * 60 * 24)
+                      )
+                      const nights = days - 1
 
-              <div className='flex items-center  mt-10 '>
-                <div className='text-[#000E19]'>
-                  <p className='whitespace-nowrap'>Aug 11, 2024</p>
-                </div>
-                <div className='relative flex items-center w-full max-w-xs mx-4'>
-                  <div className='border-t border-dashed border border-gray-300 w-full'></div>
-                  <div className='absolute left-1/2 -translate-x-1/2'>
-                    <span className='bg-orange-500 text-white px-3 py-2 rounded-full text-sm'>
-                      6D/5N
-                    </span>
-                  </div>
-                </div>
-                <div className='text-[#000E19]'>
-                  <p className='whitespace-nowrap'>Aug 16, 2024</p>
-                </div>
+                      return (
+                        <div
+                          key={index}
+                          className='flex  gap-10 items-center w-full max-w-3xl'
+                        >
+                          {/* Start Date */}
+                          <div className='text-center sm:text-left'>
+                            <p className='font-medium text-[#000E19]'>
+                              {formatDate(item.start_date)}
+                            </p>
+                          </div>
+
+                          {/* Duration Badge */}
+                          <div className='relative flex items-center w-full max-w-xs my-2 sm:my-0'>
+                            <div className='border-t border-dashed border-gray-300 w-full'></div>
+                            <div className='absolute left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-4 py-1 rounded-full text-sm'>
+                              {days}D/{nights}N
+                            </div>
+                          </div>
+
+                          {/* End Date */}
+                          <div className='text-center sm:text-right'>
+                            <p className='font-medium text-[#000E19]'>
+                              {formatDate(item.end_date)}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    }
+                  )
+                ) : (
+                  <p className='text-center'>No checkout items available.</p>
+                )}
               </div>
 
               {/* <ReviewPackageDetails/> */}
@@ -476,21 +559,52 @@ console.log('bookingDetails', bookingDetails)
             </div>
             <h4 className='text-[20px] text-[#0F1416] font-bold'>$5000</h4>
           </div>
-          <div className='flex items-start mt-5 border-b pb-5 justify-between'>
-            <div>
-              <div className='flex flex-col gap-2 mb-2'>
-                <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
+          <div className='flex flex-col mt-5 border-b pb-5'>
+            <div className='flex justify-between items-start'>
+              <div>
+                <h4 className='text-[#0F1416] text-[16px] font-bold'>
                   Coupon Discount
                 </h4>
-                <span className='bg-[#EB5B2A] text-white px-3 py-1 rounded-2xl w-fit text-[12px]'>
-                  BESTOFFER50
-                </span>
+
+                {appliedCoupons.length > 0 && (
+                  <div className='flex flex-wrap gap-2 mt-2'>
+                    {appliedCoupons.map((coupon, index) => (
+                      <span
+                        key={index}
+                        className='flex items-center bg-green-600 text-white px-2 py-1 rounded-2xl w-fit text-[10px]'
+                      >
+                        {coupon}
+                        <button
+                          onClick={() => removeCoupon(coupon)}
+                          className='ml-2  text-[12px] font-bold'
+                        >
+                          <RxCross2 className='text-md' />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-              {/* <p className='text-base font-normal flex items-center gap-3'>
-                <span>2500</span> <span>x</span> <span>2</span> Travelers
-              </p> */}
+              <h4 className='text-[20px] text-[#0F1416] font-bold'>
+                -${appliedCoupons.length * 350}
+              </h4>
             </div>
-            <h4 className='text-[20px] text-[#0F1416] font-bold'>-$350</h4>
+
+            <div className='flex gap-2 mt-2'>
+              <input
+                type='text'
+                value={couponCode}
+                onChange={e => setCouponCode(e.target.value)}
+                className='border px-2 py-1 text-[14px] rounded-md  border-zinc-300 focus:outline-none focus:border-green-600'
+                placeholder='Enter coupon code'
+              />
+              <button
+                onClick={applyCoupon}
+                className='bg-green-600 text-white px-3 py-1 rounded-md text-[14px] '
+              >
+                Apply
+              </button>
+            </div>
           </div>
           <div className='flex items-start mt-5 border-b pb-5 justify-between'>
             <div>
