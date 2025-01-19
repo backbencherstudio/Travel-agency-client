@@ -1,37 +1,71 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Rating, Stack } from '@mui/material'; // Ensure you have these installed
+import { Box, Modal, Rating, Stack } from '@mui/material'; // Ensure you have these installed
 import { CalendarToday } from '@mui/icons-material'; // Material UI Calendar Icon
 import avatar from '../../assets/img/avatar/avatar-3.png'; // Replace with your actual avatar path
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'; // Correct import
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider';
 import AuthApis from '../../Apis/AuthApis';
+import moment from 'moment/moment';
+import EmailVerifyOtp from '../ChangeEmail/EmailVerifyOtp';
+import EmailChangeApis from '../../Apis/EmailChangeApis';
 
 const UserProfile = () => {
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
+  const [imageFile, setImageFile] = useState();
+  const [avatar, setAvatar] = useState();
+  const [newEmail, setNewEmail] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false);
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (user) {
       setValue('name', user?.name);
       setValue('email', user?.email);
-      setValue('mobile', user?.phone_number);
+      setValue('phone_number', user?.phone_number);
       setValue('address', user?.address);
+      setValue('gender', user?.gender);
+      setValue('date_of_birth', moment(user?.date_of_birth).format('YYYY-MM-DD'));
+      setAvatar(user?.avatar_url);
     }
   }, [user])
 
-  // console.log('user', user)
-
   const onSubmit = async (data) => {
     console.log(data);
-    const res = await AuthApis.update(data);
+    setLoading(true);
+    setNewEmail(data?.email);
+    const form = new FormData();
+    form.append('image', imageFile);
+    Object.keys(data).forEach((key) => {
+      form.append(key, data[key]);
+    });
+    const res = await AuthApis.update(form);
     if (res?.success) {
       setLoading(false);
-      // Reset form after submission
-      reset();
+      const sendOtpRes = await EmailChangeApis.send({email: data?.email})
+      if (sendOtpRes?.success) {
+        setIsModalOpen(true);
+      }
     }
     // Handle form submission, e.g., send data to the server
   };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setAvatar(imageUrl);
+      setImageFile(file);
+    }
+  }
+
+  const handleModalToggle = () => {
+    setIsModalOpen(!isModalOpen);
+  }
+
+  console.log('imageFile', imageFile)
+  console.log('NewEmail', newEmail)
 
   return (
     <div className="userData max-w-[1216px] mx-auto my-24 p-8 bg-[#fffdfd] rounded-3xl border-2 border-[#eaedf1]">
@@ -39,14 +73,34 @@ const UserProfile = () => {
         <div className="top grid grid-cols-12 gap-4">
           {/* User Avatar and Ratings */}
           <div className="first col-span-12 md:col-span-2 flex flex-col items-center">
-            <img src={avatar} alt="User Avatar" className="w-[200px] rounded-full object-cover mb-4" />
-            <h1 className="text-xl font-medium text-center mb-[3px]">Ralph Edwards</h1>
-            <div className="rating flex justify-center mb-1">
+            <div className="flex flex-col items-center">
+              <label htmlFor="fileInput" className="cursor-pointer">
+                <img
+                  src={avatar || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"} // Placeholder for default image
+                  alt="User Avatar"
+                  className="w-52 h-52 md:h-28 lg:h-36 xl:h-44 rounded-full object-cover mb-4"
+                />
+              </label>
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden" // Hide the input element
+              />
+            </div>
+            <input
+              id="name"
+              {...register('name', { required: "Name is required" })}
+              className="w-full text-sm font-medium text-center mb-[3px] focus:outline-none bg-transparent" disabled
+            />
+            {/* <h1 className="text-xl font-medium text-center mb-[3px]">Ralph Edwards</h1> */}
+            {/* <div className="rating flex justify-center mb-1">
               <Stack spacing={1}>
                 <Rating name="half-rating-read" defaultValue={4.5} precision={0.5} readOnly />
               </Stack>
             </div>
-            <p className="text-sm font-normal text-center">15 Reviews</p>
+            <p className="text-sm font-normal text-center">15 Reviews</p> */}
           </div>
 
           {/* User Profile Form */}
@@ -85,13 +139,14 @@ const UserProfile = () => {
               
               {/* Mobile Number */}
               <div className="h-auto px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 w-full flex flex-col justify-start items-start">
-                <label className="text-[#a1a1a1] text-sm font-normal mb-[3px]" htmlFor="mobile">Mobile Number</label>
+                <label className="text-[#a1a1a1] text-sm font-normal mb-[3px]" htmlFor="phone_number">Mobile Number</label>
                 <input
-                  id="mobile"
-                  {...register('mobile', { required: "Mobile number is required" })}
+                type='phone'
+                  id="phone_number"
+                  {...register('phone_number', { required: "Mobile number is required" })}
                   className="w-full bg-gray-50 text-[#030b09] text-sm font-normal focus:outline-none"
                 />
-                {errors.mobile && <span className="text-red-500 text-xs mt-1">{errors.mobile.message}</span>}
+                {errors.phone_number && <span className="text-red-500 text-xs mt-1">{errors.phone_number.message}</span>}
               </div>
               
               {/* Address */}
@@ -147,12 +202,31 @@ const UserProfile = () => {
                 type="submit"
                 className="px-6 py-2 bg-[#f97316] text-white rounded hover:bg-[#f17c28] transition"
               >
-                Save Changes
+                {loading ? 'Loading...' : 'Update Profile'}
               </button>
             </div>
           </div>
         </div>
       </form>
+      <Modal open={isModalOpen} onClose={handleModalToggle}>
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: 500,
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            bgcolor: 'background.paper',
+            p: 4,
+            mx: 'auto',
+            my: '10%',
+            borderRadius: 2,
+            boxShadow: 24,
+            outline: 'none',
+          }}
+        >
+          <EmailVerifyOtp email={newEmail} setIsModalOpen={setIsModalOpen} />
+        </Box>
+      </Modal>
     </div>
   );
 };
