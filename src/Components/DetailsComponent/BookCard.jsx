@@ -1,8 +1,8 @@
-import React, { useRef, useState, useContext } from 'react'
+import React, { useRef, useState, useContext, useEffect } from 'react'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import calender from '../../assets/img/tour-details/calender.svg'
-import { useBookingContext } from '../../Context/BookingContext/BookingContext'
+// import { useBookingContext } from '../../Context/BookingContext/BookingContext'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
@@ -12,7 +12,7 @@ const BookCard = ({ details, renderStars }) => {
   const [startDate, setStartDate] = useState(null)
   const [endDate, setEndDate] = useState(null)
   const [extraServices, setExtraServices] = useState([])
-  const { setBookingDetails } = useBookingContext()
+  // const { setBookingDetails } = useBookingContext()
   const startDatePickerRef = useRef(null)
   const endDatePickerRef = useRef(null)
   const navigate = useNavigate()
@@ -20,18 +20,26 @@ const BookCard = ({ details, renderStars }) => {
   // Access user from AuthContext
   const { user } = useContext(AuthContext)
 
-  // const handleCheckboxChange = (service, isChecked) => {
-  //   if (isChecked) {
-  //     setExtraServices(prevState => [
-  //       ...prevState,
-  //       { id: service?.extra_service?.id }
-  //     ])
-  //   } else {
-  //     setExtraServices(prevState =>
-  //       prevState.filter(id => id?.id !== service?.extra_service?.id)
-  //     )
-  //   }
-  // }
+  const duration = details?.duration || 0
+
+  // Get today's date
+  const today = new Date()
+
+  // Dynamically calculate max end date based on start date and duration
+  const calculateMaxEndDate = startDate => {
+    if (!startDate) return null
+    const maxEndDate = new Date(startDate)
+    maxEndDate.setDate(startDate.getDate() + duration)
+    return maxEndDate
+  }
+
+  useEffect(() => {
+    if (startDate) {
+      const calculatedEndDate = calculateMaxEndDate(startDate)
+      setEndDate(calculatedEndDate)
+    }
+  }, [startDate, duration])
+
   const handleCheckboxChange = (service, isChecked) => {
     if (isChecked) {
       setExtraServices(prevState => [
@@ -61,6 +69,7 @@ const BookCard = ({ details, renderStars }) => {
       toast.error('Please select both start and end dates.')
       return
     }
+
     const bookingData = {
       package_id: details?.id,
       start_date: startDate.toISOString(),
@@ -73,17 +82,32 @@ const BookCard = ({ details, renderStars }) => {
 
     try {
       const response = await createCheckout(bookingData)
-      // console.log('response', response)
       if (response.errors) {
         toast.error(response.message || 'Failed to complete booking.')
       } else {
-        // toast.success('Booking successful!')
         navigate(`/booking/${response?.data?.id}`)
       }
     } catch (error) {
       toast.error('An error occurred while processing your booking.')
     }
   }
+
+  const handleStartDateChange = date => {
+    if (date < today) {
+      toast.error('Start date cannot be in the past.')
+      return
+    }
+    setStartDate(date)
+  }
+
+  const handleEndDateChange = date => {
+    if (date < startDate) {
+      toast.error('End date cannot be before the start date.')
+      return
+    }
+    setEndDate(date)
+  }
+
   return (
     <div className='flex flex-col gap-4 max-w-full'>
       <h1 className='text-[40px] font-bold border-b border-b-[#e5e6e6] pb-[15px]'>
@@ -95,10 +119,11 @@ const BookCard = ({ details, renderStars }) => {
         <div className='flex border items-center justify-between p-2 rounded-md border-[#e5e6e6] shadow-sm'>
           <DatePicker
             selected={startDate}
-            onChange={date => setStartDate(date)}
+            onChange={handleStartDateChange}
             selectsStart
             startDate={startDate}
             endDate={endDate}
+            minDate={today}
             placeholderText='Start Date'
             className='outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal'
             ref={startDatePickerRef}
@@ -114,14 +139,16 @@ const BookCard = ({ details, renderStars }) => {
         <div className='flex border mt-4 items-center justify-between p-2 rounded-md border-[#e5e6e6] shadow-sm'>
           <DatePicker
             selected={endDate}
-            onChange={date => setEndDate(date)}
+            onChange={handleEndDateChange}
             selectsEnd
             startDate={startDate}
             endDate={endDate}
             minDate={startDate}
+            maxDate={calculateMaxEndDate(startDate)}
             placeholderText='End Date'
             className='outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal'
             ref={endDatePickerRef}
+            disabled={!startDate}
           />
           <img
             src={calender}
@@ -131,7 +158,7 @@ const BookCard = ({ details, renderStars }) => {
         </div>
 
         {/* Extra Services */}
-        <div className='flex flex-col gap-4'>
+        <div className='flex flex-col gap-4 mt-5'>
           <h4 className='text-xl font-bold text-[#0F1416]'>Extra Service</h4>
           {[
             ...new Map(

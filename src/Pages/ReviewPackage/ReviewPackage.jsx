@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FaStar } from 'react-icons/fa'
-import { useBookingContext } from '../../Context/BookingContext/BookingContext'
 import { FiPlusCircle, FiTrash2 } from 'react-icons/fi'
-// import ReviewPackageDetails from '../../Components/BookingPackageClient/ReviewPackageDetails'
 import { RxCross2 } from 'react-icons/rx'
 import { getCheckoutById } from '../../Apis/clientApi/ClientBookApi'
 import { useParams } from 'react-router-dom'
+import Confetti from 'react-confetti'
+import { toast } from 'react-toastify'
+import { useForm } from 'react-hook-form'
+import PaymentMethod from '../../Components/Client/Booking/PaymentMethod'
+import PackageDetails from '../../Components/Client/Booking/PackageDetails'
+// import ContactFrom from '../../Components/Client/Booking/ContactFrom'
+
 function ReviewPackage () {
   const [formData, setFormData] = useState({
     mobileNumber: '',
@@ -17,17 +22,36 @@ function ReviewPackage () {
     country: ''
   })
 
-  const formatDate = isoDate => {
-    const date = new Date(isoDate)
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
-  }
+  const formRef = useRef(null)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue
+  } = useForm()
 
-  const [rating, setRating] = useState(3)
+  // discount coupon
+  const data = [
+    {
+      id: 'cm5s2pg810000wv5osq7wk41c',
+      name: 'Coupon20$',
+      description: 'this is discount',
+      amount_type: 'fixed',
+      amount: 20,
+      max_uses: 15,
+      max_uses_per_user: 2,
+      starts_at: '2025-01-01T00:00:00.000Z',
+      expires_at: '2026-01-01T00:00:00.000Z',
+      min_type: 'amount',
+      min_amount: 20,
+      min_quantity: 5,
+      created_at: '2025-01-11T11:00:00.000Z',
+      updated_at: '2025-01-11T11:00:00.000Z'
+    }
+  ]
+
   const [travelers, setTravelers] = useState([])
+  const [totalPrice, setTotalPrice] = useState(0)
   const [showNewTravelerText, setShowNewTravelerText] = useState(false)
   const [countries, setCountries] = useState([])
   const [states, setStates] = useState([])
@@ -42,7 +66,8 @@ function ReviewPackage () {
   const [checkoutData, setCheckoutData] = useState(null)
   const [error, setError] = useState('')
   const { id } = useParams()
-
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [showNewPart, setShowNewPart] = useState(false)
   useEffect(() => {
     const fetchCheckoutData = async () => {
       setLoading(true)
@@ -67,7 +92,29 @@ function ReviewPackage () {
     }
   }, [id])
 
-  console.log('API Response:', checkoutData)
+  // Calculate total price dynamically
+  useEffect(() => {
+    const basePrice =
+      checkoutData?.data?.checkout?.checkout_items?.[0]?.package?.price || 0
+
+    const travelerCount = travelers.length + 1
+    let totalDiscount = 0
+
+    appliedCoupons.forEach(coupon => {
+      if (coupon.amount_type === 'percentage') {
+        totalDiscount += (basePrice * travelerCount * coupon.amount) / 100
+      } else if (coupon.amount_type === 'fixed') {
+        totalDiscount += coupon.amount
+      }
+    })
+
+    const calculatedTotalPrice =
+      travelerCount * basePrice + 200 * travelerCount - totalDiscount
+
+    setTotalPrice(calculatedTotalPrice)
+  }, [travelers, appliedCoupons, checkoutData])
+
+  // console.log('API Response:', checkoutData)
 
   // Fetch all countries on component mount
   useEffect(() => {
@@ -188,363 +235,391 @@ function ReviewPackage () {
   }
 
   const addTraveler = () => {
-    if (travelers.length === 0) {
+    setTravelers(prevTravelers => [
+      ...prevTravelers,
+      { name: '', type: 'Adult' }
+    ])
+    if (!showNewTravelerText) {
       setShowNewTravelerText(true)
     }
-    setTravelers([...travelers, { name: '', type: 'Adult' }])
   }
 
   const removeTraveler = index => {
     const updatedTravelers = travelers.filter((_, i) => i !== index)
     setTravelers(updatedTravelers)
-    // Hide "New Traveler Details" if no travelers left
     if (updatedTravelers.length === 0) {
       setShowNewTravelerText(false)
     }
   }
 
+  // coupon vaidation
+
   const applyCoupon = () => {
-    if (couponCode.trim() && !appliedCoupons.includes(couponCode.trim())) {
-      setAppliedCoupons([...appliedCoupons, couponCode.trim()])
-      setCouponCode('')
+    const enteredCode = couponCode.trim()
+
+    // Find the matching coupon
+    const coupon = data.find(c => c.name === enteredCode)
+
+    // Validate the coupon
+    if (!coupon) {
+      toast.error('Coupon not found or invalid')
+      return
     }
+
+    // Check if the coupon is already applied
+    if (appliedCoupons.some(c => c.name === enteredCode)) {
+      toast.error(`Coupon ${enteredCode} has already been used.`)
+      return
+    }
+
+    // Additional validation (e.g., expiration date, usage limits, etc.)
+    const currentDate = new Date()
+    const startsAt = new Date(coupon.starts_at)
+    const expiresAt = new Date(coupon.expires_at)
+
+    if (currentDate < startsAt) {
+      toast.warn(
+        `Coupon is not valid yet. It starts on ${startsAt.toLocaleDateString()}`
+      )
+      return
+    }
+
+    if (currentDate > expiresAt) {
+      toast.warn(
+        `Coupon has expired. It expired on ${expiresAt.toLocaleDateString()}`
+      )
+      return
+    }
+
+    // Apply the coupon
+    setAppliedCoupons(prevCoupons => [...prevCoupons, coupon])
+    setCouponCode('')
+    setShowConfetti(true)
+    toast.success(`Coupon ${coupon.name} applied successfully!`)
+
+    setTimeout(() => setShowConfetti(false), 4000)
   }
 
   const removeCoupon = code => {
     setAppliedCoupons(appliedCoupons.filter(coupon => coupon !== code))
   }
 
-  if (loading) return <div>Loading...</div>
-  if (error) return <div>Error: {error}</div>
+  // if (loading) return <div>Loading...</div>
+  // if (error) return <div>Error: {error}</div>
+
+  const onSubmit = data => {
+    toast.success('All fields validated successfully! Proceeding to payment.')
+    console.log('Form Data:', data)
+    setShowNewPart(true)
+  }
+
+  const onError = () => {
+    toast.error('Please fill all required fields correctly.')
+  }
+  useEffect(() => {
+    setValue('country', '') // Initialize default country value
+  }, [setValue])
+
+  const handleButtonClick = () => {
+    if (formRef.current) {
+      formRef.current.dispatchEvent(
+        new Event('submit', { cancelable: true, bubbles: true })
+      )
+    }
+  }
 
   return (
     <div className='max-w-[1216px] mx-auto my-10  px-4 xl:px-0'>
+      {showConfetti && (
+        <Confetti width={window.innerWidth} height={window.innerHeight} />
+      )}
       <div className='flex flex-col lg:flex-row justify-between gap-10'>
-        <div className='w-full lg:w-8/12'>
-          <div className=' flex flex-col gap-10'>
-            <h1 className='text-[#0F1416] text-4xl font-bold'>
-              Review Package
-            </h1>
-
-            {/* Details package  */}
-            <div className='bg-[#FDEFEA] p-5 rounded-lg'>
-              <div className='flex items-center justify-between'>
-                <h1 className='font-bold text-[#000E19]  text-xl sm:text-4xl '>
-                  Beijing, China
-                </h1>
-                <div className='flex gap-1 sm:hidden'>
-                  <p className='text-[#4A4C56] text-[14px] '>Review</p>
-                  <div className='flex'>
-                    <p className='flex gap-1'>
-                      {[...Array(5)].map((_, index) => (
-                        <FaStar
-                          key={index}
-                          className={`${
-                            index < rating ? 'text-yellow-500' : 'text-gray-400'
-                          }`}
-                          size={20}
-                        />
-                      ))}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className='flex gap-5 sm:gap-16 lg:justify-start lg:gap-16 mt-5'>
-                <div className='hidden sm:block'>
-                  <p className='text-[#4A4C56] text-[14px] mb-3'>Review</p>
-                  <div className='flex'>
-                    <p className='flex gap-1'>
-                      {[...Array(5)].map((_, index) => (
-                        <FaStar
-                          key={index}
-                          className={`${
-                            index < rating ? 'text-yellow-500' : 'text-gray-400'
-                          }`}
-                          size={20}
-                        />
-                      ))}
-                    </p>
-                  </div>
-                </div>
-                <div className='h-14 w-[1px] bg-gray-300 hidden sm:block'></div>
-                <div className=''>
-                  <p className='text-[#4A4C56] text-[14px] mb-3'>Days</p>
-                  <p className='font-semibold'>6 days</p>
-                </div>
-                <div className='h-14 w-[1px] bg-gray-300'></div>
-                <div>
-                  <p className='text-[#4A4C56] text-[14px] mb-3'>Location</p>
-                  <p className='font-semibold'>Beijing, China</p>
-                </div>
-              </div>
-              {/* date show and calutate night and day  */}
-              <div className='flex gap-5 sm:gap-16 lg:justify-start lg:gap-16 mt-10'>
-                {checkoutData.data.checkout.checkout_items.length > 0 ? (
-                  checkoutData.data.checkout.checkout_items.map(
-                    (item, index) => {
-                      // Calculate days and nights
-                      const startDate = new Date(item.start_date)
-                      const endDate = new Date(item.end_date)
-                      const days = Math.ceil(
-                        (endDate - startDate) / (1000 * 60 * 60 * 24)
-                      )
-                      const nights = days - 1
-
-                      return (
-                        <div
-                          key={index}
-                          className='flex  gap-10 items-center w-full max-w-3xl'
-                        >
-                          {/* Start Date */}
-                          <div className='text-center sm:text-left'>
-                            <p className='font-medium text-[#000E19]'>
-                              {formatDate(item.start_date)}
-                            </p>
-                          </div>
-
-                          {/* Duration Badge */}
-                          <div className='relative flex items-center w-full max-w-xs my-2 sm:my-0'>
-                            <div className='border-t border-dashed border-gray-300 w-full'></div>
-                            <div className='absolute left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-4 py-1 rounded-full text-sm'>
-                              {days}D/{nights}N
-                            </div>
-                          </div>
-
-                          {/* End Date */}
-                          <div className='text-center sm:text-right'>
-                            <p className='font-medium text-[#000E19]'>
-                              {formatDate(item.end_date)}
-                            </p>
-                          </div>
-                        </div>
-                      )
-                    }
-                  )
-                ) : (
-                  <p className='text-center'>No checkout items available.</p>
-                )}
-              </div>
-
-              {/* <ReviewPackageDetails/> */}
-            </div>
-
-            {/* input user deatils  */}
+        {showNewPart ? (
+          <>
             <div>
-              <h4 className='text-[20px] text-[#0F1416] font-bold'>
-                Please Enter Contact Details
-              </h4>
-              <form className='flex flex-col gap-7'>
-                <div className='flex flex-col'>
-                  <label
-                    className='text-[15px] text-[#0F1416]'
-                    htmlFor='mobileNumber'
-                  >
-                    Mobile Number
-                  </label>
-                  <input
-                    type='text'
-                    name='mobileNumber'
-                    placeholder='Enter Mobile Number'
-                    className=' px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                    value={formData.mobileNumber}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className='flex flex-col'>
-                  <label
-                    className='text-[15px] text-[#0F1416]'
-                    htmlFor='address'
-                  >
-                    Flat, House no., Building, Company, Apartment
-                  </label>
-                  <input
-                    type='text'
-                    name='address'
-                    placeholder='Enter Address'
-                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] '
-                    value={formData.address}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className='flex flex-col'>
-                  <label className='text-[15px] text-[#0F1416]' htmlFor='area'>
-                    Area, Colony, Street, Sector, Village
-                  </label>
-                  <input
-                    type='text'
-                    name='area'
-                    placeholder='Enter Area'
-                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                    value={formData.area}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className='flex flex-col'>
-                  <label
-                    className='text-[15px] text-[#0F1416]'
-                    htmlFor='country'
-                  >
-                    Country
-                  </label>
-                  <select
-                    name='country'
-                    value={formData.country}
-                    onChange={handleChange}
-                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                  >
-                    <option value=''>Select Country</option>
-                    {countries.map((country, index) => (
-                      <option key={index} value={country}>
-                        {country}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {hasStates && (
-                  <div className='flex flex-col'>
-                    <label
-                      className='text-[15px] text-[#0F1416]'
-                      htmlFor='state'
-                    >
-                      State
-                    </label>
-                    <select
-                      name='state'
-                      value={formData.state}
-                      onChange={handleChange}
-                      className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                      disabled={loading.states || !formData.country}
-                    >
-                      <option value=''>
-                        {loading.states ? 'Loading states...' : 'Select State'}
-                      </option>
-                      {states.map((state, index) => (
-                        <option key={index} value={state}>
-                          {state}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <div className='flex flex-col'>
-                  <label className='text-[15px] text-[#0F1416]' htmlFor='city'>
-                    City
-                  </label>
-                  <select
-                    name='city'
-                    value={formData.city}
-                    onChange={handleChange}
-                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
-                    disabled={
-                      loading.cities ||
-                      !formData.country ||
-                      (hasStates && !formData.state)
-                    }
-                  >
-                    <option value=''>
-                      {loading.cities ? 'Loading cities...' : 'Select City'}
-                    </option>
-                    {cities.map((city, index) => (
-                      <option key={index} value={city}>
-                        {city}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className='flex flex-col'>
-                  <label
-                    className='text-[15px] text-[#0F1416]'
-                    htmlFor='pinCode'
-                  >
-                    Pin Code
-                  </label>
-                  <input
-                    type='text'
-                    name='pinCode'
-                    placeholder='Enter Pin/Zip Code'
-                    className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] '
-                    value={formData.pinCode}
-                    onChange={handleChange}
-                  />
-                </div>
-              </form>
+              <PaymentMethod />
             </div>
-          </div>
-
-          {/* Add Traveler  */}
-          <div className=''>
-            <h1 className='text-xl font-semibold mt-10'>Add Traveler</h1>
-
-            <div className='my-5'>
-              {showNewTravelerText && (
-                <h1 className='text-3xl  font-bold mt-10 text-[#0F1416]'>
-                  New Traveler Details
+          </>
+        ) : (
+          <>
+            <div className='w-full lg:w-8/12'>
+              <div className=' flex flex-col gap-10'>
+                <h1 className='text-[#0F1416] text-4xl font-bold'>
+                  Review Package
                 </h1>
-              )}
-            </div>
-            <div className='flex flex-col gap-5'>
-              {travelers.map((traveler, index) => (
-                <div
-                  key={index}
-                  className='flex flex-col border rounded-lg p-4 mb-3'
-                >
-                  <div className='flex items-center justify-between'>
-                    <h2 className='text-lg font-semibold mb-3'>
-                      Traveler {index + 1}
-                    </h2>
 
-                    <button
-                      className='ml-3 text-red-600 hover:text-red-800'
-                      onClick={() => removeTraveler(index)}
-                    >
-                      <FiTrash2 size={24} />
-                    </button>
-                  </div>
-                  <div className='flex flex-col '>
-                    <label className='text-sm font-medium'>Name</label>
-                    <input
-                      type='text'
-                      name='name'
-                      placeholder='Enter Full Name'
-                      value={traveler.name}
-                      className='border rounded px-4 py-2 mt-1'
-                      onChange={e => handleTravelerChange(index, e)}
-                    />
-                    <label className='text-sm font-medium mt-3'>
-                      Traveler Type
-                    </label>
-                    <select
-                      name='type'
-                      value={traveler.type}
-                      className='border rounded px-4 py-2 mt-1'
-                      onChange={e => handleTravelerChange(index, e)}
-                    >
-                      <option value='Adult'>Adult</option>
-                      <option value='Child'>Child</option>
-                    </select>
-                  </div>
+                {/* Details package  */}
+                <PackageDetails checkoutData={checkoutData} />
+
+                {/* input user deatils  */}
+                {/* <ContactFrom
+                  formRef={formRef}
+                  handleSubmit={handleSubmit}
+                  onSubmit={onSubmit}
+                  onError={onError}
+                  register={register}
+                  errors={errors}
+                  formData={formData}
+                  handleChange={handleChange}
+                  countries={countries}
+                  states={states}
+                  cities={cities}
+                  hasStates={hasStates}
+                  loading={loading}
+                /> */}
+
+                <div>
+                  <h4 className='text-[20px] text-[#0F1416] font-bold mb-5'>
+                    Please Enter Contact Details
+                  </h4>
+                  <form
+                    ref={formRef}
+                    onSubmit={handleSubmit(onSubmit, onError)}
+                    className='flex flex-col gap-7'
+                  >
+                    <div className='flex flex-col'>
+                      <label
+                        className='text-[15px] text-[#0F1416]'
+                        htmlFor='mobileNumber'
+                      >
+                        Mobile Number <span className='text-red-600'>*</span>
+                      </label>
+                      <input
+                        type='text'
+                        {...register('mobileNumber', {
+                          required: 'Mobile number is required',
+                          pattern: {
+                            value: /^[0-9]{10,15}$/,
+                            message:
+                              'Enter a valid mobile number (10-15 digits)'
+                          }
+                        })}
+                        className='px-5 py-3 rounded-lg mt-3 border'
+                        placeholder='Enter Mobile Number'
+                      />
+                      {errors.mobileNumber && (
+                        <p className='text-red-500 text-sm mt-1'>
+                          {errors.mobileNumber.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className='flex flex-col'>
+                      <label
+                        className='text-[15px] text-[#0F1416]'
+                        htmlFor='address'
+                      >
+                        Flat, House no., Building, Company, Apartment{' '}
+                        <span className='text-red-600'>*</span>
+                      </label>
+                      <input
+                        type='text'
+                        {...register('address', {
+                          required: 'Address is required'
+                        })}
+                        className='px-5 py-3 rounded-lg mt-3 border'
+                        placeholder='Enter Address'
+                      />
+                      {errors.address && (
+                        <p className='text-red-500 text-sm mt-1'>
+                          {errors.address.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className='flex flex-col'>
+                      <label
+                        className='text-[15px] text-[#0F1416]'
+                        htmlFor='area'
+                      >
+                        Area, Colony, Street, Sector, Village{' '}
+                        <span className='text-red-600'>*</span>
+                      </label>
+                      <input
+                        type='text'
+                        {...register('area', {
+                          required: 'Area is required'
+                        })}
+                        className='px-5 py-3 rounded-lg mt-3 border'
+                        placeholder='Enter Area'
+                      />
+                      {errors.area && (
+                        <p className='text-red-500 text-sm mt-1'>
+                          {errors.area.message}
+                        </p>
+                      )}
+                    </div>
+                    <div className='flex flex-col'>
+                      <label
+                        className='text-[15px] text-[#0F1416]'
+                        htmlFor='country'
+                      >
+                        Country <span className='text-red-600'>*</span>
+                      </label>
+                      <select
+                        name='country'
+                        value={formData.country}
+                        onChange={handleChange}
+                        className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+                      >
+                        <option value=''>Select Country</option>
+                        {countries.map((country, index) => (
+                          <option key={index} value={country}>
+                            {country}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {hasStates && (
+                      <div className='flex flex-col'>
+                        <label
+                          className='text-[15px] text-[#0F1416]'
+                          htmlFor='state'
+                        >
+                          State
+                        </label>
+                        <select
+                          name='state'
+                          value={formData.state}
+                          onChange={handleChange}
+                          className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+                          disabled={loading.states || !formData.country}
+                        >
+                          <option value=''>
+                            {loading.states
+                              ? 'Loading states...'
+                              : 'Select State'}
+                          </option>
+                          {states.map((state, index) => (
+                            <option key={index} value={state}>
+                              {state}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    <div className='flex flex-col'>
+                      <label
+                        className='text-[15px] text-[#0F1416]'
+                        htmlFor='city'
+                      >
+                        City
+                      </label>
+                      <select
+                        name='city'
+                        value={formData.city}
+                        onChange={handleChange}
+                        className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+                        disabled={
+                          loading.cities ||
+                          !formData.country ||
+                          (hasStates && !formData.state)
+                        }
+                      >
+                        <option value=''>
+                          {loading.cities ? 'Loading cities...' : 'Select City'}
+                        </option>
+                        {cities.map((city, index) => (
+                          <option key={index} value={city}>
+                            {city}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className='flex flex-col'>
+                      <label
+                        className='text-[15px] text-[#0F1416]'
+                        htmlFor='pinCode'
+                      >
+                        Pin Code
+                      </label>
+                      <input
+                        type='text'
+                        name='pinCode'
+                        placeholder='Enter Pin/Zip Code'
+                        className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] '
+                        value={formData.pinCode}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </form>
                 </div>
-              ))}
+              </div>
+
+              {/* Add Traveler  */}
+              <div className=''>
+                <h1 className='text-xl font-semibold mt-10'>Add Traveler</h1>
+
+                <div className='my-5'>
+                  {showNewTravelerText && (
+                    <h1 className='text-3xl  font-bold mt-10 text-[#0F1416]'>
+                      New Traveler Details
+                    </h1>
+                  )}
+                </div>
+                <div className='flex flex-col gap-5'>
+                  {travelers.map((traveler, index) => (
+                    <div
+                      key={index}
+                      className='flex flex-col border rounded-lg p-4 mb-3'
+                    >
+                      <div className='flex items-center justify-between'>
+                        <h2 className='text-lg font-semibold mb-3'>
+                          Traveler {index + 2} {/* Default is Traveler 1 */}
+                        </h2>
+                        <button
+                          className='ml-3 text-red-600 hover:text-red-800'
+                          onClick={() => removeTraveler(index)}
+                        >
+                          <FiTrash2 size={24} />
+                        </button>
+                      </div>
+                      <div className='flex flex-col '>
+                        <label className='text-sm font-medium'>Name</label>
+                        <input
+                          type='text'
+                          name='name'
+                          placeholder='Enter Full Name'
+                          value={traveler.name}
+                          className='border rounded px-4 py-2 mt-1'
+                          onChange={e => handleTravelerChange(index, e)}
+                        />
+                        <label className='text-sm font-medium mt-3'>
+                          Traveler Type
+                        </label>
+                        <select
+                          name='type'
+                          value={traveler.type}
+                          className='border rounded px-4 py-2 mt-1'
+                          onChange={e => handleTravelerChange(index, e)}
+                        >
+                          <option value='Adult'>Adult</option>
+                          <option value='Child'>Child</option>
+                        </select>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className='bg-[#EB5B2A] hover:bg-[#eb5a2ae4] transform duration-300 px-7 py-3 rounded-full text-white flex items-center gap-2 mt-4'
+                  onClick={addTraveler}
+                  type='button'
+                >
+                  <FiPlusCircle className='text-xl' />
+                  Add Traveler
+                </button>
+              </div>
             </div>
-            <button
-              className='bg-[#EB5B2A] hover:bg-[#eb5a2ae4] transform duration-300 px-7 py-3 rounded-full text-white flex items-center gap-2 mt-4'
-              onClick={addTraveler}
-              type='button'
-            >
-              <FiPlusCircle className='text-xl' />
-              Add Traveler
-            </button>
-          </div>
-        </div>
+          </>
+        )}
 
         {/* price section  */}
         <div className='w-full lg:w-4/12 h-fit px-5 shadow-lg border rounded-lg py-5 sticky top-10'>
           <h1 className='border-b text-[#0F1416] text-4xl font-bold pb-5'>
-            $4700{' '}
-            <span className='font-normal text-lg'>
+            ${totalPrice.toFixed(2)}{' '}
+            <span className='font-normal text-[16px]'>
               (Inclusive of All Taxes)
             </span>
           </h1>
@@ -554,10 +629,22 @@ function ReviewPackage () {
                 Total Basic Cost
               </h4>
               <p className='text-base text-[#0F1416] font-normal flex items-center gap-3'>
-                <span>2500</span> <span>x</span> <span>2</span> Travelers
+                <span>
+                  $
+                  {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                    ?.price || '0'}
+                </span>{' '}
+                <span>x</span> <span>{travelers.length + 1}</span> Travelers
               </p>
             </div>
-            <h4 className='text-[20px] text-[#0F1416] font-bold'>$5000</h4>
+            <h4 className='text-[20px] text-[#0F1416] font-bold'>
+              $
+              {(
+                (travelers.length + 1) *
+                (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                  ?.price || 0)
+              ).toFixed(2)}
+            </h4>
           </div>
           <div className='flex flex-col mt-5 border-b pb-5'>
             <div className='flex justify-between items-start'>
@@ -573,10 +660,17 @@ function ReviewPackage () {
                         key={index}
                         className='flex items-center bg-green-600 text-white px-2 py-1 rounded-2xl w-fit text-[10px]'
                       >
-                        {coupon}
+                        {coupon.name} -{' '}
+                        {coupon.amount_type === 'percentage'
+                          ? `${coupon.amount}%`
+                          : `$${coupon.amount}`}
                         <button
-                          onClick={() => removeCoupon(coupon)}
-                          className='ml-2  text-[12px] font-bold'
+                          onClick={() =>
+                            setAppliedCoupons(prevCoupons =>
+                              prevCoupons.filter((_, i) => i !== index)
+                            )
+                          }
+                          className='ml-2 text-[12px] font-bold'
                         >
                           <RxCross2 className='text-md' />
                         </button>
@@ -586,10 +680,9 @@ function ReviewPackage () {
                 )}
               </div>
               <h4 className='text-[20px] text-[#0F1416] font-bold'>
-                -${appliedCoupons.length * 350}
+                -${(appliedCoupons.length * 350).toFixed(2)}
               </h4>
             </div>
-
             <div className='flex gap-2 mt-2'>
               <input
                 type='text'
@@ -600,7 +693,7 @@ function ReviewPackage () {
               />
               <button
                 onClick={applyCoupon}
-                className='bg-green-600 text-white px-3 py-1 rounded-md text-[14px] '
+                className='bg-green-600 text-white px-3 py-1 rounded-md text-[14px]'
               >
                 Apply
               </button>
@@ -612,14 +705,42 @@ function ReviewPackage () {
                 Fee & Taxes
               </h4>
               <p className='text-base font-normal flex items-center gap-3'>
-                <span>2500</span> <span>x</span> <span>2</span> Travelers
+                <span>$200</span> <span>x</span>{' '}
+                <span>{travelers.length + 1}</span> Travelers
               </p>
             </div>
-            <h4 className='text-[20px] text-[#0F1416] font-bold'>+$50</h4>
+            <h4 className='text-[20px] text-[#0F1416] font-bold'>
+              +${(200 * (travelers.length + 1)).toFixed(2)}{' '}
+            </h4>
           </div>
-          <button className='bg-[#EB5B2A] rounded-full px-6 py-3 text-white w-full mt-4 hover:bg-[#eb5a2ada] transform duration-300 '>
-            Proceed To Payments
-          </button>
+
+          <div className='flex items-start mt-5 border-b pb-5 justify-between'>
+            <div>
+              <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
+                Coupon Discount
+              </h4>
+              <p className='text-base font-normal flex items-center gap-3'>
+                <span>$350</span> <span>x</span>{' '}
+                <span>{appliedCoupons.length}</span> Coupons
+              </p>
+            </div>
+            <h4 className='text-[20px] text-[#0F1416] font-bold'>
+              -${(appliedCoupons.length * 350).toFixed(2)}
+            </h4>
+          </div>
+
+          {showNewPart ? (
+            <button className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'>
+              Payment
+            </button>
+          ) : (
+            <button
+              onClick={handleButtonClick}
+              className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'
+            >
+              Proceed to Payment
+            </button>
+          )}
         </div>
       </div>
     </div>
