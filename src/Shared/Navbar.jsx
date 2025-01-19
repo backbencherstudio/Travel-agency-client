@@ -218,10 +218,10 @@ const Navbar = () => {
                                             </Link>
                                         )}
                                         <Link
-                                        to="/account"
+                                        to="/profile"
                                         className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
                                         >
-                                        My Account
+                                        My Profile
                                         </Link>
                                         <Link
                                         onClick={handleLogout}
@@ -394,6 +394,10 @@ const Navbar = () => {
                                     Dashboard
                                 </Link>
                             )}
+                            
+                            <Link to="/profile" className="block bg-gray-300 px-6 py-3 text-center text-gray-80 rounded-md">
+                                My Profile
+                            </Link>
                             <button
                                 onClick={handleLogout}
                                 className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
