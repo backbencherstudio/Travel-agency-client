@@ -1,6 +1,158 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 const ContactFrom = () => {
+  const [formData, setFormData] = useState({
+    mobileNumber: '',
+    address: '',
+    area: '',
+    city: '',
+    pinCode: '',
+    state: '',
+    country: ''
+  })
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue
+  } = useForm()
+  const formRef = useRef(null)
+  const [countries, setCountries] = useState([])
+  const [states, setStates] = useState([])
+    const [hasStates, setHasStates] = useState(false)
+  const [cities, setCities] = useState([])
+  const [loading, setLoading] = useState({
+    states: false,
+    cities: false
+  })
+
+
+
+
+  // Fetch all countries on component mount
+  useEffect(() => {
+    fetchCountries()
+  }, [])
+
+  // Fetch countries from API
+  const fetchCountries = async () => {
+    try {
+      const response = await fetch(
+        'https://countriesnow.space/api/v0.1/countries'
+      )
+      const data = await response.json()
+      if (data.data) {
+        setCountries(data.data.map(country => country.country))
+      }
+    } catch (error) {
+      console.error('Error fetching countries:', error)
+    }
+  }
+
+  // Fetch states when country changes
+  const fetchStates = async country => {
+    if (!country) return
+
+    setLoading(prev => ({ ...prev, states: true }))
+    try {
+      const response = await fetch(
+        'https://countriesnow.space/api/v0.1/countries/states',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ country })
+        }
+      )
+      const data = await response.json()
+      if (data.data?.states) {
+        setStates(data.data.states.map(state => state.name))
+        setHasStates(data.data.states.length > 0)
+      } else {
+        setStates([])
+        setHasStates(false)
+      }
+    } catch (error) {
+      console.error('Error fetching states:', error)
+      setStates([])
+      setHasStates(false)
+    } finally {
+      setLoading(prev => ({ ...prev, states: false }))
+    }
+  }
+
+  // Fetch cities based on country and state
+  const fetchCities = async (country, state = null) => {
+    if (!country) return
+
+    setLoading(prev => ({ ...prev, cities: true }))
+    try {
+      const endpoint = state
+        ? 'https://countriesnow.space/api/v0.1/countries/state/cities'
+        : 'https://countriesnow.space/api/v0.1/countries/cities'
+
+      const body = state ? { country, state } : { country }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      })
+      const data = await response.json()
+      if (data.data) {
+        setCities(data.data)
+      }
+    } catch (error) {
+      console.error('Error fetching cities:', error)
+      setCities([])
+    } finally {
+      setLoading(prev => ({ ...prev, cities: false }))
+    }
+  }
+
+ const handleChange = e => {
+    const { name, value } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
+
+    // Handle cascading updates
+    if (name === 'country') {
+      fetchStates(value)
+      fetchCities(value)
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        state: '',
+        city: ''
+      }))
+    } else if (name === 'state') {
+      fetchCities(formData.country, value)
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        city: ''
+      }))
+    }
+  }
+    const onSubmit = data => {
+      toast.success('All fields validated successfully! Proceeding to payment.')
+      console.log('Form Data:', data)
+      setShowNewPart(true)
+    }
+  
+    const onError = () => {
+      toast.error('Please fill all required fields correctly.')
+    }
+    useEffect(() => {
+      setValue('country', '') 
+    }, [setValue])
   return (
     <div>
       <div>
