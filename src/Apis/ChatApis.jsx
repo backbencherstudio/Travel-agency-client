@@ -10,7 +10,7 @@ const ChatApis = {
       throw error;
     }
   },
-  
+
 
   fetchMessages: async (conversationId) => {
     try {
@@ -39,7 +39,7 @@ const ChatApis = {
     try {
       const response = await axiosClient.get("/api/chat/conversation");
       // console.log("conversation:", response);
-      
+
       return response.data.data;
 
     } catch (error) {
@@ -58,7 +58,7 @@ const ChatApis = {
       throw error;
     }
   },
-  
+
 };
 
 export default ChatApis;

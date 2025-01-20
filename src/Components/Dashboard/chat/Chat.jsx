@@ -8,7 +8,24 @@ import { useContext, useEffect, useRef, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import ChatApis from "../../../Apis/ChatApis";
 import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
+import { io } from "socket.io-client";
 const defaultAvatar = "https://via.placeholder.com/150";
+
+const token = localStorage.getItem("token");
+
+const socket = io("http://localhost:4000", {
+  auth: {
+    token: token
+  }
+});
+
+socket.on("connect", () => {
+  console.log("Connected to server!");
+});
+
+socket.on("disconnect", (reason) => {
+  console.log("Disconnected:", reason);
+});
 
 const Chat = () => {
   const [usersData, setUsersData] = useState([]);
@@ -23,43 +40,63 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
+
+  const fetchConversations = async () => {
+    try {
+      const data = await ChatApis.fetchConversations();
+      setUsersData(data);
+
+      if (conversationID && data.length > 0) {
+        const selectedConversation = data.find((conv) => conv.id === conversationID);
+        if (selectedConversation) setActiveConversation(selectedConversation);
+      } else {
+        setActiveConversation(data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  };
+
+
+
+  const fetchMessages = async () => {
+    if (!activeConversation) return;
+
+    setIsLoadingMessages(true);
+    try {
+      const messages = await ChatApis.fetchMessages(activeConversation.id);
+
+      setMessageData(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    } finally {
+      setIsLoadingMessages(false);
+    }
+  };
+
   // Fetch Conversations
   useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const data = await ChatApis.fetchConversations();
-        setUsersData(data);
-
-        if (conversationID && data.length > 0) {
-          const selectedConversation = data.find((conv) => conv.id === conversationID);
-          if (selectedConversation) setActiveConversation(selectedConversation);
-        }
-      } catch (error) {
-        console.error("Error fetching conversations:", error);
-      }
-    };
-
     fetchConversations();
   }, [conversationID]);
 
   // Fetch Messages for Active Conversation
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (!activeConversation) return;
-
-      setIsLoadingMessages(true);
-      try {
-        const messages = await ChatApis.fetchMessages(activeConversation.id);
-        setMessageData(messages);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      } finally {
-        setIsLoadingMessages(false);
-      }
-    };
-
     fetchMessages();
+    socket.on("message", (data) => {
+      console.log("onmessage", data.data);
+
+      const tempData = messageData;
+      tempData.push(data.data);
+
+      setMessageData(tempData);
+
+    });
   }, [activeConversation]);
+
+  useEffect(() => {
+
+  }, [messageData])
+
 
   // Handle Conversation Click
   const handleConversationClick = (conversation) => {
@@ -93,10 +130,10 @@ const Chat = () => {
       // Add message to local state immediately
       const newMsg = {
         message: newMessage,
-        sender: { 
-          id: user.id, 
+        sender: {
+          id: user.id,
           name: user.name,
-          avatar: user.avatar_url 
+          avatar: user.avatar_url
         },
         receiver: {
           id: messagePayload.receiver_id,
@@ -105,7 +142,7 @@ const Chat = () => {
         },
         created_at: new Date().toISOString(),
       };
-      
+
       setMessageData(prev => {
         const prevMessages = Array.isArray(prev) ? prev : [];
         return [...prevMessages, newMsg];
@@ -113,6 +150,8 @@ const Chat = () => {
 
       // Send to API
       await ChatApis.sendMessage(messagePayload);
+
+      socket.emit("sendMessage", { to: messagePayload.receiver_id, data: newMsg });
 
       // Clear input
       setNewMessage("");
@@ -135,6 +174,11 @@ const Chat = () => {
     }
   }, [activeConversation, messageData]);
 
+
+  if (activeConversation == null) {
+    return <>Loading...</>
+  }
+
   return (
     <div className="grid grid-cols-12 gap-5">
       {/* Chat Left Sidebar */}
@@ -142,7 +186,7 @@ const Chat = () => {
         <div className="bg-[#f2f2f2] overflow-y-auto h-[87.9vh]">
           <div className="px-6 pt-6">
             <h4 className="mb-0 text-gray-700">Chats</h4>
-            
+
             {/* Search Bar */}
             <div className="w-full max-w-sm min-w-full my-3 p-2 rounded-md bg-[#eb5a2a20]">
               <div className="relative w-full">
@@ -176,11 +220,10 @@ const Chat = () => {
                       <li
                         key={index}
                         onClick={() => handleConversationClick(data)}
-                        className={`cursor-pointer p-4 ${
-                          activeConversation?.id === data.id
-                            ? "bg-gray-100"
-                            : ""
-                        }`}
+                        className={`cursor-pointer p-4 ${activeConversation?.id === data.id
+                          ? "bg-gray-100"
+                          : ""
+                          }`}
                       >
                         <User
                           active={activeConversation?.id === data.id}
@@ -190,9 +233,9 @@ const Chat = () => {
                           hint={lastMessage}
                           time={data.updated_at
                             ? new Date(data.updated_at).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
                             : "N/A"
                           }
                         />
@@ -236,23 +279,26 @@ const Chat = () => {
               <p className="text-center text-gray-500">Loading messages...</p>
             ) : messageData?.length > 0 ? (
               messageData
-                .filter(data =>
-                  data.sender?.id === activeConversation?.creator?.id ||
-                  data.sender?.id === activeConversation?.participant_id ||
-                  data.receiver?.id === activeConversation?.creator?.id ||
-                  data.receiver?.id === activeConversation?.participant_id
-                )
+                // .filter(data =>
+                //   data.sender?.id === activeConversation?.creator?.id ||
+                //   data.sender?.id === activeConversation?.participant_id ||
+                //   data.receiver?.id === activeConversation?.creator?.id ||
+                //   data.receiver?.id === activeConversation?.participant_id
+                // )
                 .map((data, index) => {
                   const time = data.created_at
                     ? new Date(data.created_at).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
                     : "N/A";
 
                   const isUserSender = data.sender?.id === user?.id;
 
-                  return isUserSender ? (
+                  // console.log("sender", data.sender);
+
+
+                  return isUserSender == data.sender && data.sender.id ? (
                     <MessageRight
                       key={index}
                       avatar={data.sender?.avatar_url || defaultAvatar}
