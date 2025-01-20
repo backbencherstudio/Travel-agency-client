@@ -38,7 +38,7 @@ const CruiseDetails = () => {
     console.log('res', res)
   }
 
-  console.log('cruise', cruise)
+  // console.log('cruise', cruise)
 
   return (
     <div>

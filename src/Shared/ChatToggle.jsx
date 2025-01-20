@@ -1,165 +1,271 @@
-import React, { useState } from "react";
-import { IoChatbubbleEllipsesSharp, IoClose } from "react-icons/io5";
-import MessageRight from "../Components/Dashboard/chat/Components/MessageRight";
-import MessageLeft from "../Components/Dashboard/chat/Components/MessageLeft";
+import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
+import MessageRight from "../Components/Dashboard/chat/Components/MessageLeft";
+import MessageLeft from "../Components/Dashboard/chat/Components/MessageRight";
+import { useContext, useEffect, useRef, useState } from "react";
+import axiosClient from "../axiosClient";
+import { AuthContext } from "../Context/AuthProvider/AuthProvider";
+import ChatApis from "../Apis/ChatApis";
 
 const ChatToggle = () => {
-  const [isOpen, setIsOpen] = useState(false); // State for toggling chat box
+  const [isOpen, setIsOpen] = useState(false);
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [activeConversation, setActiveConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [conversations, setConversations] = useState([]);
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const { user } = useContext(AuthContext);
 
-  const messages = [
-    {
-      id: 1,
-      dirac: "left",
-      avatar:
-        "https://t4.ftcdn.net/jpg/04/19/94/59/360_F_419945971_YNfDJMmW1nrXi63PGJ6zTqvWwS2RviKK.jpg",
-      naame: "Bonnie Green",
-      time: "11:46",
-      text: "So, Have you selected the day you want to travel? and how many youare to go together?",
-    },
-    {
-      id: 2,
-      dirac: "right",
-      avatar:
-        "https://manofmany.com/_next/image?url=https%3A%2F%2Fapi.manofmany.com%2Fwp-content%2Fuploads%2F2023%2F06%2F10-Most-Famous-Male-Models-of-All-Time.jpg&w=1200&q=75",
-      naame: "Blue Cat",
-      time: "11:46",
-      text: "Hello.",
-    },
-  ];
+  const fetchConversations = async () => {
+    try {
+      const response = await axiosClient.get("/api/chat/conversation");
+      setConversations(response.data.data);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  };
+
+  const fetchAdminUsers = async () => {
+    try {
+      const response = await axiosClient.get("/api/chat/user");
+      const admins = response.data.data.filter((user) => user.type === "admin");
+      setAdminUsers(admins);
+    } catch (error) {
+      console.error("Error fetching admin users:", error);
+    }
+  };
+
+  const fetchMessages = async () => {
+    if (activeConversation) {
+      try {
+        const response = await axiosClient.get(
+          `/api/chat/message?conversation_id=${activeConversation.id}`
+        );
+        setMessages(response.data.data || []);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    }
+  };
+
+  // Fetch conversations
+  useEffect(() => {
+    fetchConversations();
+    fetchAdminUsers();
+  }, []);
+
+  const handleAdminClick = async (admin) => {
+    // Check if conversation exists
+    const existingConversation = conversations.find(
+      (conv) => conv.admin?.id === admin.id
+    );
+
+    if (existingConversation) {
+      setActiveConversation(existingConversation);
+      return;
+    }
+
+    // Create new conversation
+    try {
+      const response = await axiosClient.post("/api/chat/conversation", {
+        creator_id: user.id,
+        participant_id: admin.id,
+      });
+
+      setActiveConversation(response.data.data);
+      setConversations([...conversations, response.data.data]);
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    }
+  };
+
+  // Fetch messages when conversation changes
+  useEffect(() => {
+    fetchMessages();
+  }, [activeConversation]);
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !activeConversation) return;
+
+    try {
+      // Create message object
+      const messageData = {
+        conversation_id: activeConversation.id,
+        receiver_id: activeConversation.participant_id,
+        message: newMessage,
+      };
+
+      // Add message to local state immediately
+      const newMsg = {
+        message: newMessage,
+        sender: {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+        },
+        receiver: {
+          id: activeConversation.participant_id,
+        },
+        created_at: new Date().toISOString(),
+      };
+
+      setMessages(prev => [...prev, newMsg]);
+
+      // Send to API
+      await ChatApis.sendMessage(messageData);
+
+      // Clear input
+      setNewMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  };
+
+  useEffect(() => {
+    if (activeConversation) {
+      scrollToBottom();
+    }
+  }, [activeConversation, messages]);
 
   return (
-    <>
-      {/* Container for the Chat Toggle */}
-      <div className="fixed bottom-[11%] right-[3%] z-50">
-        {/* Chat Icon/Button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)} // Toggles the chat box visibility
-          className="p-3 bg-[#f974164b] text-[#f97316] rounded-full shadow-lg transition hover:bg-[#f97316] hover:text-[#f2f2f2]"
-          aria-label="Toggle Chat" // Accessibility label for screen readers
-        >
-          <IoChatbubbleEllipsesSharp className="h-8 w-8" />
-        </button>
+    <div className="fixed bottom-[11%] right-[3%] z-50">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="p-3 bg-[#f974164b] text-[#f97316] rounded-full shadow-lg transition hover:bg-[#f97316] hover:text-[#f2f2f2]"
+      >
+        <IoChatbubbleEllipsesSharp className="h-8 w-8" />
+      </button>
 
-        {/* Chat Box */}
-        {isOpen && ( // Render the chat box only when `isOpen` is true
-          <div className="absolute">
-            <div className="fixed bottom-[18%] right-[3%]">
-              <div className="w-[100%] h-[60vh] relative overflow-hidden transition-all duration-150 bg-white user-chat shadow">
-                <div className="lg:flex">
-                  {/* Start Chat Conversation Section */}
-                  <div className="relative w-full">
-                    {/* Start Chat User Header */}
-                    <div className="p-4 border-b border-gray-100 lg:py-4 lg:px-6">
-                      <div className="grid items-center grid-cols-12">
-                        <div className="col-span-8 sm:col-span-4">
-                          <div className="flex items-center">
-                            {/* User Avatar */}
-                            <div className="ltr:mr-3">
-                              <img
-                                src="https://d1uuxsymbea74i.cloudfront.net/images/cms/1_2_passport_photo_young_female_84b29b8fcb.jpg"
-                                className="rounded-full h-9 w-9 object-cover"
-                                alt="User Avatar"
-                              />
-                            </div>
-                            {/* User Name and Status */}
-                            <div className="flex-grow overflow-hidden">
-                              {/* For LTR Languages */}
-                              <h5 className="mb-0 truncate ltr:block">
-                                <a
-                                  href="#"
-                                  className="text-gray-800 pl-4 font-bold text-lg"
-                                >
-                                  Doris Brown
-                                </a>{" "}
-                                <i className="text-green-500 ltr:ml-1 rtl:mr-1 ri-record-circle-fill"></i>
-                              </h5>
-                            </div>
-                          </div>
-                        </div>
-                        {/* Close Button Added Here */}
-                        <div className="col-span-4 sm:col-span-8 flex justify-end transi">
-                          <button
-                            onClick={() => setIsOpen(false)} // Chatbox will close onClick
-                            className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
-                            aria-label="Close Chat"
-                          >
-                            <IoClose className="h-8 w-8" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    {/* End Chat User Header */}
-
-                    {/* Start Chat Conversation */}
-                    <div
-                      className="h-[73vh] p-4 lg:p-6 overflow-y-auto"
-                      data-simplebar
-                    >
-                      {messages.map((data, index) => {
-                        if (data.dirac === "right") {
-                          return (
-                            <MessageRight
-                              key={index}
-                              avatar={data.avatar}
-                              naame={data.naame}
-                              time={data.time}
-                              text={data.text}
-                            />
-                          );
-                        } else {
-                          return (
-                            <MessageLeft
-                              key={index}
-                              avatar={data.avatar}
-                              naame={data.naame}
-                              time={data.time}
-                              text={data.text}
-                            />
-                          );
-                        }
-                      })}
-                      {/* <Message isLeft={true} /> */}
-                    </div>
-                    {/* End Chat Conversation */}
-                  </div>
-                  {/* End Chat Conversation Section */}
-
-                  {/* Start Chat Input Section */}
-                  <div className="p-4 border-t border-[#dddddd] bg-[#f2f2f2]/100 absolute bottom-0 right-0 w-full">
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1 flex items-center bg-[#eb5a2a20] rounded px-4 py-2">
-                        <input
-                          type="text"
-                          className="w-full bg-transparent border-none focus:outline-none text-sm"
-                          placeholder="Type your message...."
-                        />
-                      </div>
-                      <button className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]">
-                        <svg
-                          className="w-5 h-5 transform rotate-90 -mr-px"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                          ></path>
-                        </svg>
-                      </button>
+      {isOpen && (
+        <div className="fixed bottom-[18%] right-[3%] w-[400px] h-[400px] bg-white shadow-lg rounded-lg overflow-hidden">
+          {!activeConversation ? (
+            <div className="p-4">
+              <h5 className="text-xl font-bold mb-4">Conversations</h5>
+              <div className="overflow-y-auto h-[calc(100%-50px)]">
+                {adminUsers.map((admin) => (
+                  <div
+                    key={admin.id}
+                    onClick={() => handleAdminClick(admin)}
+                    className="flex items-center p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
+                  >
+                    <img
+                      src={admin.avatar || "/default-avatar.jpg"}
+                      className="rounded-full h-10 w-10 object-cover"
+                      alt={admin.name}
+                    />
+                    <div className="ml-3">
+                      <h6 className="font-medium">{admin.name}</h6>
+                      <p className="text-sm text-gray-500">
+                        {conversations.some(
+                          (conv) => conv.admin?.id === admin.id
+                        )
+                          ? "Continue chat"
+                          : "Start new chat"}
+                      </p>
                     </div>
                   </div>
-                  {/* End Chat Input Section */}
-                </div>
+                ))}
               </div>
             </div>
-          </div>
-        )}
-      </div>
-    </>
+          ) : (
+            <div className="flex flex-col h-full">
+              <div className="p-4 bg-gray-100 flex items-center">
+                <button
+                  onClick={() => setActiveConversation(null)}
+                  className="mr-4 px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                >
+                  Back
+                </button>
+                <img
+                  src={
+                    activeConversation.participant?.avatar ||
+                    "/default-avatar.jpg"
+                  }
+                  className="rounded-full h-8 w-8 object-cover"
+                  alt={activeConversation.participant?.name}
+                />
+                <h5 className="ml-3 font-bold">
+                  {activeConversation.participant?.name}
+                </h5>
+              </div>
+
+              <div
+                ref={messagesContainerRef}
+                className="flex-1 p-4 overflow-y-auto"
+              >
+                {messages.map((message, index) => {
+                  if (!message || !message.sender || !message.receiver) {
+                    return null;
+                  }
+
+                  const time = message.created_at
+                    ? new Date(message.created_at).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : "N/A";
+
+                  const isUserSender = message.sender.id === user?.id;
+
+                  return isUserSender ? (
+                    <MessageLeft
+                      key={index}
+                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      naame={message.sender?.name || "Unknown"}
+                      time={time}
+                      text={message.message || ""}
+                    />
+                  ) : (
+                    <MessageRight
+                      key={index}
+                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      naame={message.sender?.name || "Unknown"}
+                      time={time}
+                      text={message.message || ""}
+                    />
+                  );
+                })}
+              </div>
+
+              <form onSubmit={handleSendMessage} className="p-4 border-t">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    className="flex-1 px-4 py-2 border rounded-lg"
+                    placeholder="Type a message..."
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#f97316] text-white rounded-lg"
+                  >
+                    Send
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

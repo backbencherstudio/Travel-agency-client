@@ -113,7 +113,7 @@ export const router = createBrowserRouter([
         element: <CruiseDetails />
       },
       {
-        path: 'review-pacakge',
+        path: '/booking/:id',
         element: <ReviewPackage />
       },
       {

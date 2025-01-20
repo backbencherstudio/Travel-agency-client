@@ -84,8 +84,8 @@ const Testimonials = () => {
                     </div> */}
                 </div>
                 <div className="-mx-3 flex flex-col md:flex-row flex-wrap gap-4 items-start justify-between py-12 md:py-20">
-                    {testimonials?.map(testimonial => (
-                        <div className="md:w-[28%] rounded-lg bg-white shadow p-4 text-gray-800 font-light">
+                    {testimonials?.map((testimonial, index) => (
+                        <div key={index} className="md:w-[28%] rounded-lg bg-white shadow p-4 text-gray-800 font-light">
                             <div className='flex gap-2 items-center'>
                                 {/* <img src={starFull} alt="" />
                                 <img src={starFull} alt="" />
