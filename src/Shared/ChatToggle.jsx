@@ -3,16 +3,8 @@ import MessageRight from "../Components/Dashboard/chat/Components/MessageLeft";
 import MessageLeft from "../Components/Dashboard/chat/Components/MessageRight";
 import { useContext, useEffect, useRef, useState } from "react";
 import axiosClient from "../axiosClient";
-import { io } from "socket.io-client";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
-
-const myToken = localStorage.getItem("token");
-const socket = io("http://192.168.10.159:4000", {
-  extraHeaders: {
-    authorization: `Bearer ${myToken || ""}`,
-  },
-});
-// console.log("new socket:", newSocket);
+import ChatApis from "../Apis/ChatApis";
 
 const ChatToggle = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,88 +17,43 @@ const ChatToggle = () => {
   const messagesContainerRef = useRef(null);
   const { user } = useContext(AuthContext);
 
-  // Socket.IO setup
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Socket connected!");
-    });
+  const fetchConversations = async () => {
+    try {
+      const response = await axiosClient.get("/api/chat/conversation");
+      setConversations(response.data.data);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  };
 
-    socket.on("message", (newMessage) => {
-      console.log(newMessage);
+  const fetchAdminUsers = async () => {
+    try {
+      const response = await axiosClient.get("/api/chat/user");
+      const admins = response.data.data.filter((user) => user.type === "admin");
+      setAdminUsers(admins);
+    } catch (error) {
+      console.error("Error fetching admin users:", error);
+    }
+  };
 
-      setMessages((prev) => [...prev, newMessage]);
-    });
-
-    return () => {
-      socket.close();
-    };
-  }, []);
-
-  // Room management for active conversation
-  // useEffect(() => {
-  //   if (socket && activeConversation) {
-  //     if (socket.activeRoom) {
-  //       socket.emit("leave_room", socket.activeRoom);
-  //     }
-
-  //     const roomId = `conversation_${activeConversation.id}`;
-
-  //     socket.emit("joinRoom", roomId);
-  //     socket.activeRoom = roomId;
-  //   }
-  // }, [socket, activeConversation]);
+  const fetchMessages = async () => {
+    if (activeConversation) {
+      try {
+        const response = await axiosClient.get(
+          `/api/chat/message?conversation_id=${activeConversation.id}`
+        );
+        setMessages(response.data.data || []);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    }
+  };
 
   // Fetch conversations
   useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const response = await axiosClient.get("/api/chat/conversation");
-        // console.log("fetch conversation", response);
-
-        setConversations(response.data.data);
-      } catch (error) {
-        // console.error("Error fetching conversations:", error);
-      }
-    };
-
     fetchConversations();
-  }, []);
-
-  // Fetch admin users
-  useEffect(() => {
-    const fetchAdminUsers = async () => {
-      try {
-        const response = await axiosClient.get("/api/chat/user");
-        const admins = response.data.data.filter(
-          (user) => user.type === "admin"
-        );
-        setAdminUsers(admins);
-      } catch (error) {
-        console.error("Error fetching admin users:", error);
-      }
-    };
     fetchAdminUsers();
   }, []);
-
-  // Fetch messages for active conversation
-  // useEffect(() => {
-  //   if (activeConversation) {
-  //     const fetchMessages = async () => {
-  //       try {
-  //         const response = await axiosClient.get(
-  //           `/api/chat/message?conversation_id=${activeConversation.id}`
-  //         );
-
-  //         setMessages(response.data.data || []);
-  //       } catch (error) {
-  //         console.error("Error fetching messages:", error);
-  //       }
-  //     };
-
-  //     fetchMessages();
-  //   }
-  // }, [activeConversation]);
-  // console.log("fetch msg:", messages);
 
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
@@ -133,57 +80,57 @@ const ChatToggle = () => {
     }
   };
 
+  // Fetch messages when conversation changes
   useEffect(() => {
-    socket.on("connect", () => {
-      console.log("connected");
-    });
-    socket.on("message", (message) => {
-      console.log("message", message);
-      // if(sendMessage.conversation_id === conversation_id){
-      //   sendMessage((state) => [...state, message])
-      // }
-    });
-  }, []);
-  // console.log('setMessage:', messages);
+    fetchMessages();
+  }, [activeConversation]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
 
     try {
-      const messagePayload = {
+      // Create message object
+      const messageData = {
         conversation_id: activeConversation.id,
         receiver_id: activeConversation.participant_id,
         message: newMessage,
-        // sender: user,
-        // created_at: new Date().toISOString(),
       };
 
-      // Emit the message through socket
-      socket.emit("sendMessage", {
-        to: activeConversation.participant_id,
-        data: {
-          receiver_id: activeConversation.participant_id,
-          conversation_id: activeConversation.id,
-          message: newMessage,
+      // Add message to local state immediately
+      const newMsg = {
+        message: newMessage,
+        sender: {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
         },
-      });
+        receiver: {
+          id: activeConversation.participant_id,
+        },
+        created_at: new Date().toISOString(),
+      };
 
-      const response = await axiosClient.post(
-        "/api/chat/message",
-        messagePayload
-      );
-      // console.log("send msg:", response.data);
+      setMessages(prev => [...prev, newMsg]);
 
-      setMessages([...messages, response.data.data]);
+      // Send to API
+      await ChatApis.sendMessage(messageData);
+
+      // Clear input
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
-  // console.log("send message:", messages);
 
-  // Auto scroll message
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
@@ -191,32 +138,11 @@ const ChatToggle = () => {
     }
   };
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     if (activeConversation) {
       scrollToBottom();
     }
   }, [activeConversation, messages]);
-
-  // Typing indicator functionality
-  const handleTyping = () => {
-    if (socket && activeConversation) {
-      socket.emit("typing", {
-        room: `conversation_${activeConversation.id}`,
-        user: user.name,
-      });
-    }
-  };
-
-  // Listen for typing events
-  useEffect(() => {
-    if (socket) {
-      socket.on("user_typing", (data) => {
-        // Handle typing indicator display
-        // console.log(`${data.user} is typing...`);
-      });
-    }
-  }, [socket]);
 
   return (
     <div className="fixed bottom-[11%] right-[3%] z-50">
@@ -299,17 +225,15 @@ const ChatToggle = () => {
                   const isUserSender = message.sender.id === user?.id;
 
                   return isUserSender ? (
-                    <MessageRight
+                    <MessageLeft
                       key={index}
-                      avatar={
-                        message?.receiver?.avatar || "/default-avatar.jpg"
-                      }
-                      naame={message.receiver?.name || "Unknown"}
+                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      naame={message.sender?.name || "Unknown"}
                       time={time}
                       text={message.message || ""}
                     />
                   ) : (
-                    <MessageLeft
+                    <MessageRight
                       key={index}
                       avatar={message.sender?.avatar || "/default-avatar.jpg"}
                       naame={message.sender?.name || "Unknown"}
@@ -325,10 +249,7 @@ const ChatToggle = () => {
                   <input
                     type="text"
                     value={newMessage}
-                    onChange={(e) => {
-                      setNewMessage(e.target.value);
-                      handleTyping();
-                    }}
+                    onChange={(e) => setNewMessage(e.target.value)}
                     className="flex-1 px-4 py-2 border rounded-lg"
                     placeholder="Type a message..."
                   />

@@ -38,7 +38,7 @@ const ChatApis = {
   fetchConversations: async () => {
     try {
       const response = await axiosClient.get("/api/chat/conversation");
-      console.log("conversation:", response);
+      // console.log("conversation:", response);
       
       return response.data.data;
 
