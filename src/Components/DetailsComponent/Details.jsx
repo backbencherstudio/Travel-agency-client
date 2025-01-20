@@ -12,7 +12,9 @@ const Details = ({ details }) => {
     const contentRefs = useRef([]);
 
     useEffect(() => {
-        setSelectedImage(details?.package_images[0]?.image_url)
+        if (details?.package_images?.length > 0) {
+            setSelectedImage(details.package_images[0].image_url);
+        }
     }, [details])
     
     const toggleFAQ = (index) => {

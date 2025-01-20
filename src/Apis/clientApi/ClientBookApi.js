@@ -45,3 +45,27 @@ export const getCheckoutById = async id => {
     }
   }
 }
+
+
+export const updateCheckout = async (checkoutId, data) => {
+  const url = `/api/checkout/${checkoutId}`
+  try {
+    const response = await axiosClient.patch(url, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      return {
+        errors: error.response.data.errors,
+        message: error.response.data.message || 'An error occurred while processing your request.'
+      }
+    } else if (error.request) {
+      return { message: 'No response received from the server.' }
+    } else {
+      return { message: 'An error occurred while processing the request.' }
+    }
+  }
+}
