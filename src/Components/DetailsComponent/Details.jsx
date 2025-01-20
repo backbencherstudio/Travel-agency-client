@@ -12,7 +12,7 @@ const Details = ({ details }) => {
     const contentRefs = useRef([]);
 
     useEffect(() => {
-        setSelectedImage(details?.package_images[0]?.image_url)
+        setSelectedImage(details?.package_files[0]?.file_url)
     }, [details])
     
     const toggleFAQ = (index) => {
@@ -72,16 +72,16 @@ const Details = ({ details }) => {
                     </div>
                     {/* Grid images */}
                     <div className="grid grid-cols-4 gap-4">
-                        {details?.package_images?.map((planimg) => (
+                        {details?.package_files?.map((planimg) => (
                             <button
                                 key={planimg?.id}
                                 className={``}
-                                onClick={() => handleShowImage(planimg?.image_url)}
+                                onClick={() => handleShowImage(planimg?.file_url)}
                             >
                                 <img
-                                    src={planimg?.image_url}
-                                    alt={planimg?.image_url}
-                                    className={`h-20 md:h-40 w-full object-cover rounded-xl ${planimg?.image_url === selectedImage ? ' ring-blue-500 ring-2' : ''}`}
+                                    src={planimg?.file_url}
+                                    alt={planimg?.file_url}
+                                    className={`h-20 md:h-40 w-full object-cover rounded-xl ${planimg?.file_url === selectedImage ? ' ring-blue-500 ring-2' : ''}`}
                                 />
                             </button>
                         ))}

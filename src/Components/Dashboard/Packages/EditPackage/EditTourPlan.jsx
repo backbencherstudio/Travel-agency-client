@@ -64,7 +64,7 @@ const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
     );
 };
 
-const EditTourPlan = ({ package_id, tourPlan, setTourPlan }) => {
+const EditTourPlan = ({ package_id, tourPlan, setTourPlan, packageType }) => {
     const [loading, setLoading] =  useState(false);
     const navigate = useNavigate();
 
@@ -214,7 +214,7 @@ const EditTourPlan = ({ package_id, tourPlan, setTourPlan }) => {
                             </div>
                         </div>
                         {index === tourPlan.length -1 && (
-                            <Link to={`/dashboard/package/${package_id}/tour-plan`} className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded">
+                            <Link to={`/dashboard/package/${package_id}/tour-plan`} className={`px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded ${packageType === "tour" ? "hidden" : "block"}`}>
                                 <FaPlus className="w-3 h-3" /> Add Another Day
                             </Link>
                         )}

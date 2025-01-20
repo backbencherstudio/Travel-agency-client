@@ -61,7 +61,7 @@ const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
     );
 };
 
-const TourPlan = ({ tourPlan, setTourPlan }) => {
+const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
 
     const handleInputChange = (index, field, value) => {
         setTourPlan((prev) => {
@@ -177,7 +177,7 @@ const TourPlan = ({ tourPlan, setTourPlan }) => {
 
                             <button
                             onClick={addDay}
-                            className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded"
+                            className={`px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded ${packageType === "tour" ? "hidden" : "block"}`}
                             >
                             <FaPlus className="w-3 h-3" /> Add Another Day
                         </button>

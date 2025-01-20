@@ -25,6 +25,7 @@ const EditPackage = () => {
   const [packageName, setPackageName] = useState('');
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
+  const [packageType, setPackageType] = useState("tour");
   const [tags, setTags] = useState([]);
   const [categories, setCategories] = useState([]);
   const [policies, setPolicies] = useState([]);
@@ -95,16 +96,18 @@ const EditPackage = () => {
               (category) => category?.category?.id
             )
           );
+          setPackageType(packageData.type);
           setValue("destination_id", packageData.destination?.id);
           setValue("price", packageData.price);
           setValue("duration", packageData.duration);
+          setValue("duration_type", packageData.duration_type);
           setValue("min_capacity", packageData.min_capacity);
           setValue("max_capacity", packageData.max_capacity);
           // setSelectedPolicy(packageData.cancellation_policy?.id || "");
           setValue("cancellation_policy_id", packageData.cancellation_policy?.id)
           setValue("type", packageData.type);
           setValue("language", packageData.language);
-          setImages(packageData.package_images);
+          setImages(packageData.package_files);
           setIncludedPackages(
             packageData.package_tags
               ?.filter((tag) => tag?.type === "included")
@@ -165,17 +168,21 @@ const EditPackage = () => {
   ];
 
   const onImageDrop = (acceptedFiles) => {
-    const newImages = acceptedFiles.map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-    setImages((prev) => [...prev, ...newImages]);
+    const newFiles = acceptedFiles.map((file) => {
+      const isVideo = file.type.startsWith('video/');
+      return {
+        file,
+        preview: isVideo ? null : URL.createObjectURL(file),
+        type: isVideo ? 'video' : 'image',
+      };
+    });
+    setImages((prev) => [...prev, ...newFiles]);
     setIsDragging(false);
   };
 
   const imageDropzone = useDropzone({
     onDrop: onImageDrop,
-    accept: { "image/*": [".jpeg", ".jpg", ".png"] },
+    accept: { "image/*": [".jpeg", ".jpg", ".png"], "video/*": [".mp4", ".avi", ".mov"] },
     multiple: true,
     onDragEnter: () => setIsDragging(true),
     onDragLeave: () => setIsDragging(false),
@@ -230,11 +237,11 @@ const EditPackage = () => {
         // Append trip_plans as JSON
         form.append("trip_plans", JSON.stringify(formDataObject[key]));
       } else if (key === "package_images") {
-        const package_images = [];
+        const package_files = [];
         formDataObject[key].forEach((image) => {
           if (image instanceof File) {
             // Append the file directly if it's a File object
-            form.append("package_images", image);
+            form.append("package_files", image);
           } else {
             // const package_images = [];
             // const imagesArray = [];
@@ -244,7 +251,7 @@ const EditPackage = () => {
             //     ))
             // }
             // for (const img in image) {
-            package_images.push(image);
+            package_files.push(image);
             // }
           }
         });
@@ -386,17 +393,29 @@ const EditPackage = () => {
                     upload
                   </p>
                   <p className="mt-1 text-xs md:text-base text-gray-400 text-center">
-                    Supported formats : jpeg, png
+                    Supported formats : jpeg, png, mp4, avi, mov
                   </p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-4 justify-start items-start">
-                  {images.map((image, index) => (
+                  {images.map((file, index) => (
                     <div key={index} className="relative">
-                      <img
-                        src={image.preview || image?.image_url}
-                        alt={image.preview || image?.image_url}
-                        className="w-16 h-16 object-cover rounded-lg"
-                      />
+                      {file.type === 'video' || file?.video_url ? (
+                        <div 
+                          className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer"
+                          onClick={() => window.open(file.video_url || URL.createObjectURL(file.file), '_blank')}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      ) : (
+                        <img
+                          src={file.preview || file?.file_url}
+                          alt={file.preview || file?.fileurl}
+                          className="w-16 h-16 object-cover rounded-lg cursor-pointer"
+                          onClick={() => window.open(file.preview || file?.file_url, '_blank')}
+                        />
+                      )}
                       <button
                         type="button"
                         className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
@@ -410,7 +429,7 @@ const EditPackage = () => {
               </div>
 
               {/* Included Packages */}
-              <div>
+              <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
                 <label className="block text-gray-500 text-base font-medium mb-2">
                   Included Package
                 </label>
@@ -426,7 +445,7 @@ const EditPackage = () => {
               </div>
 
               {/* Excluded Packages */}
-              <div>
+              <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
                 <label className="block text-gray-500 text-base font-medium mb-2">
                   Excluded Package
                 </label>
@@ -464,6 +483,30 @@ const EditPackage = () => {
             </div>
             <div className="p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0">
               <div className="flex flex-col gap-4 col-span-2">
+                <div>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Package Type
+                  </label>
+                  <select
+                    placeholder="Select Package Type"
+                    {...register("type", { required: "Type is required" })}
+                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    value={packageType}
+                    onChange={(e) => setPackageType(e.target.value)}
+                  >
+                    <option value="" className="text-base text-[#C9C9C9]">
+                      Select Package Type
+                    </option>
+                    <option value="tour">Tour</option>
+                    <option value="cruise">Cruise</option>
+                    <option value="package">Package</option>
+                  </select>
+                  {errors.type && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.type.message}
+                    </p>
+                  )}
+                </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Package/Tour Category
@@ -534,23 +577,46 @@ const EditPackage = () => {
                     </p>
                   )}
                 </div>
-                <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Package Duration (Days)
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="Write duration"
-                    {...register("duration", {
-                      required: "Package duration is required",
-                    })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  />
-                  {errors.duration && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.duration.message}
-                    </p>
-                  )}
+                <div className="flex flex-col 2xl:flex-row gap-4">
+                  <div>
+                    <label className="block text-gray-500 text-base font-medium mb-4">
+                      Package Duration <span className="text-xs">(Days/Hours)</span>
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="Write duration"
+                      {...register("duration", {
+                        required: "Package duration is required",
+                      })}
+                      className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    />
+                    {errors.duration && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.duration.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-gray-500 text-base font-medium mb-4">
+                      Duration Type
+                    </label>
+                    <select
+                      placeholder="Select Package Type"
+                      {...register("duration_type", { required: "Duration Type is required" })}
+                      className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    >
+                      <option value="" className="text-base text-[#C9C9C9]">
+                        Select Duration Type
+                      </option>
+                      <option value="days">Days</option>
+                      <option value="hours">Hours</option>
+                    </select>
+                    {errors.duration_type && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.duration_type.message}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
@@ -605,27 +671,6 @@ const EditPackage = () => {
                     <option value="8">8</option>
                     <option value="9">9</option>
                     <option value="10">10</option>
-                  </select>
-                  {errors.max_capacity && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.max_capacity.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Type
-                  </label>
-                  <select
-                    placeholder="Select max. capacity"
-                    {...register("type", { required: "Type is required" })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select Package Type
-                    </option>
-                    <option value="tour">Tour</option>
-                    <option value="cruise">Cruise</option>
                   </select>
                   {errors.max_capacity && (
                     <p className="text-red-500 text-xs mt-1">
@@ -744,7 +789,7 @@ const EditPackage = () => {
             <h3 className="text-2xl font-semibold text-[#080613]">
                 Tour Plan
             </h3>
-            <EditTourPlan package_id={editId} tourPlan={tourPlan} setTourPlan={setTourPlan} />
+            <EditTourPlan package_id={editId} tourPlan={tourPlan} setTourPlan={setTourPlan} packageType={packageType} />
           </div>
         </div>
       </form>
