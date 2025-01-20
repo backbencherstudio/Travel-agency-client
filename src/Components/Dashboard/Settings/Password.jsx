@@ -19,10 +19,14 @@ const Password = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // Handle form submission
-  const onSubmit = data => {
-    console.log('Form Data:', data)
-    changePassword(data);
-    reset() // Clear the form after successful submission
+  const onSubmit = async (data) => {
+    try {
+      await changePassword(data);
+      reset(); // Clear the form after successful submission
+    } catch (error) {
+      console.error('Error changing password:', error);
+      // You might want to show an error message to the user here
+    }
   }
 
   return (
@@ -65,9 +69,9 @@ const Password = () => {
               )}
             </span>
           </div>
-          {errors.currentPassword && (
+          {errors.old_password && (
             <span className='text-red-500 text-sm'>
-              {errors.currentPassword.message}
+              {errors.old_password.message}
             </span>
           )}
         </div>
@@ -84,12 +88,12 @@ const Password = () => {
                   value: 8,
                   message: 'Password must be at least 8 characters long'
                 },
-                pattern: {
-                  value:
-                    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
-                  message:
-                    'Password must contain at least one letter, one number, and one special character'
-                }
+                // pattern: {
+                //   value:
+                //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
+                //   message:
+                //     'Password must contain at least one letter, one number, and one special character'
+                // }
               })}
               placeholder='Enter your New Password'
               className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
@@ -107,9 +111,9 @@ const Password = () => {
               )}
             </span>
           </div>
-          {errors.newPassword && (
+          {errors.new_password && (
             <span className='text-red-500 text-sm'>
-              {errors.newPassword.message}
+              {errors.new_password.message}
             </span>
           )}
         </div>
@@ -120,14 +124,14 @@ const Password = () => {
           <div className='relative'>
             <input
               type={showConfirmPassword ? 'text' : 'password'} // Toggle visibility
-              {...register('confirmPassword', {
+              {...register('confirm_password', {
                 required: 'Confirm Password is required',
                 validate: value =>
                   value === watch('new_password') || 'Passwords do not match'
               })}
               placeholder='Enter your Confirm Password'
               className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                errors.confirmPassword ? 'border-red-500' : ''
+                errors.confirm_password ? 'border-red-500' : ''
               }`}
             />
             <span
@@ -141,9 +145,9 @@ const Password = () => {
               )}
             </span>
           </div>
-          {errors.confirmPassword && (
+          {errors.confirm_password && (
             <span className='text-red-500 text-sm'>
-              {errors.confirmPassword.message}
+              {errors.confirm_password.message}
             </span>
           )}
         </div>

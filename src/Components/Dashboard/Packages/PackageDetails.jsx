@@ -81,7 +81,7 @@ const PackageDetails = () => {
         </div>
         <div className='bg-white p-4 border border-[#EAECF0] rounded-lg grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 pb-5'>
             <div className='flex flex-col gap-5 md:col-span-2 xl:col-span-3'>
-                <img src={singlePackage?.package_images[0]?.image_url} alt={singlePackage?.package_images[0]?.image_url} className='h-[281px] object-cover rounded-lg' />
+                <img src={singlePackage?.package_files[0]?.file_url} alt={singlePackage?.package_files[0]?.file_url} className='h-[281px] object-cover rounded-lg' />
                 <div className='flex flex-col gap-2'>
                     <div className="flex justify-between flex-wrap">
                         <h1 className="font-semibold text-[24px]">{singlePackage?.name}</h1>
@@ -165,7 +165,7 @@ const PackageDetails = () => {
                 {packages.map((pack, index) =>
                     <div key={index} className='p-3 flex flex-col gap-3 cursor-pointer' onClick={() => handleNavigate(pack.id)}>
                         <div className='flex flex-col xl:flex-row gap-[9px]'>
-                            <img src={pack?.package_images[0]?.image_url} className='xl:w-[108px] xl:h-16 rounded' alt={pack?.package_images[0]?.image_url} />
+                            <img src={pack?.package_files[0]?.file_url} className='xl:w-[108px] xl:h-16 rounded' alt={pack?.package_files[0]?.file_url} />
                             <div className='flex flex-col gap-[5px]'>
                                 <h6 className='text-sm font-medium text-[#475467]'>{pack.name}</h6>
                                 <div className='flex gap-2 justify-between'>

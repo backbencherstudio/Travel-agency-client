@@ -25,7 +25,7 @@ function TourCard({ tour }) {
     return (
         <div key={tour?.id} className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]">
             <div className="relative h-56 overflow-hidden text-white rounded-t-[10px]">
-                <img src={tour?.package_images[0]} alt="card-image" />
+                <img src={tour?.package_files[0].file_url} alt={tour?.package_files[0].file_url} />
             </div>
             <div className="p-4">
                 <div className='flex items-center gap-1'>

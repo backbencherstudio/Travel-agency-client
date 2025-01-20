@@ -5,8 +5,9 @@ import SuccessPopup from "../../Components/Auth/SuccessPopUp";
 import axiosClient from "../../axiosClient";
 import { toast } from "react-toastify";
 
-const EmailVerifyOtp = ({ email }) => {
+const EmailVerifyOtp = ({ email, setIsModalOpen }) => {
     const { register, handleSubmit, setFocus, formState: { errors } } = useForm();
+    const [loading, setLoading] = useState(false);
     const [isPopupVisible, setPopupVisible] = useState(false);
 
     console.log('email', email)
@@ -14,10 +15,12 @@ const EmailVerifyOtp = ({ email }) => {
         const otp = Object.values(data).join('');
         console.log("Entered OTP:", otp);
         const res = await axiosClient.post(`/api/auth/change-email`, {email: email, token: otp})
-        if (res.success) {
-            toast.success(res.message);
+        console.log('res', res)
+        if (res?.data?.success) {
+            toast.success(res?.data?.message);
+            setIsModalOpen(false);
         }
-        setPopupVisible(true);
+        // setPopupVisible(true);
     };
     
     const handleKeyUp = (e, index) => {
@@ -32,7 +35,7 @@ const EmailVerifyOtp = ({ email }) => {
                 <div className="w-full flex flex-col gap-8">
                     <div className="flex flex-col gap-3">
                         <h2 className="text-[32px] font-bold text-[#101828]">Enter OTP</h2>
-                        <p className="text-[#475467] text-base">We have send an otp in your email. Enter the otp to verify the new email</p>
+                        <p className="text-[#475467] text-base">We have send an otp in your email<span className="text-xs">({email})</span>. Enter the otp to verify the new email</p>
                     </div>
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
                         <div className="flex justify-between gap-2">
@@ -56,7 +59,7 @@ const EmailVerifyOtp = ({ email }) => {
                             type="submit"
                             className="w-full bg-[#EB5B2A] text-white text-base font-semibold py-2 px-4 rounded-full hover:bg-[#EB5B2A] transition"
                         >
-                            Verify OTP
+                            {loading ? 'Verifying...' : 'Verify OTP'}
                         </button>
                     </form>
                 </div>

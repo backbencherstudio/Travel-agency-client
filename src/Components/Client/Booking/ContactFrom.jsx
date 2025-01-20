@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 
-const ContactFrom = () => {
+const ContactFrom = ({ onFormSubmit }) => {
   const [formData, setFormData] = useState({
     mobileNumber: '',
-    address: '',
-    area: '',
+    address1: '',
+    address2: '',
     city: '',
-    pinCode: '',
+    zip_code: '',
     state: '',
     country: ''
   })
@@ -21,22 +22,17 @@ const ContactFrom = () => {
   const formRef = useRef(null)
   const [countries, setCountries] = useState([])
   const [states, setStates] = useState([])
-    const [hasStates, setHasStates] = useState(false)
+  const [hasStates, setHasStates] = useState(false)
   const [cities, setCities] = useState([])
   const [loading, setLoading] = useState({
     states: false,
     cities: false
   })
 
-
-
-
-  // Fetch all countries on component mount
   useEffect(() => {
     fetchCountries()
   }, [])
 
-  // Fetch countries from API
   const fetchCountries = async () => {
     try {
       const response = await fetch(
@@ -51,7 +47,6 @@ const ContactFrom = () => {
     }
   }
 
-  // Fetch states when country changes
   const fetchStates = async country => {
     if (!country) return
 
@@ -84,7 +79,6 @@ const ContactFrom = () => {
     }
   }
 
-  // Fetch cities based on country and state
   const fetchCities = async (country, state = null) => {
     if (!country) return
 
@@ -115,14 +109,13 @@ const ContactFrom = () => {
     }
   }
 
- const handleChange = e => {
+  const handleChange = e => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
 
-    // Handle cascading updates
     if (name === 'country') {
       fetchStates(value)
       fetchCities(value)
@@ -141,20 +134,44 @@ const ContactFrom = () => {
       }))
     }
   }
-    const onSubmit = data => {
-      toast.success('All fields validated successfully! Proceeding to payment.')
-      console.log('Form Data:', data)
-      setShowNewPart(true)
+
+  const onSubmit = async data => {
+    try {
+      if (!formData.country) {
+        toast.error('Please select a country')
+        return false // Add this to prevent form submission
+      }
+
+      const contactData = {
+        phone_number: data.mobileNumber,
+        address1: data.address1,
+        address2: data.address2,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
+        zip_code: formData.zip_code
+      }
+
+      // Only call onFormSubmit if all validations pass
+      onFormSubmit(contactData)
+      return true
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      toast.error('Failed to submit contact details')
+      return false
     }
-  
-    const onError = () => {
-      toast.error('Please fill all required fields correctly.')
-    }
-    useEffect(() => {
-      setValue('country', '') 
-    }, [setValue])
+  }
+
+  const onError = () => {
+    toast.error('Please fill all required fields correctly.')
+  }
+
+  useEffect(() => {
+    setValue('country', '')
+  }, [setValue])
+
   return (
-    <div>
+    <div className='relative'>
       <div>
         <h4 className='text-[20px] text-[#0F1416] font-bold mb-5'>
           Please Enter Contact Details
@@ -191,50 +208,51 @@ const ContactFrom = () => {
           </div>
 
           <div className='flex flex-col'>
-            <label className='text-[15px] text-[#0F1416]' htmlFor='address'>
-              Flat, House no., Building, Company, Apartment{' '}
-              <span className='text-red-600'>*</span>
+            <label className='text-[15px] text-[#0F1416]' htmlFor='address1'>
+              Address Line 1 <span className='text-red-600'>*</span>
             </label>
             <input
               type='text'
-              {...register('address', {
+              {...register('address1', {
                 required: 'Address is required'
               })}
               className='px-5 py-3 rounded-lg mt-3 border'
-              placeholder='Enter Address'
+              placeholder='Enter Address Line 1'
             />
-            {errors.address && (
+            {errors.address1 && (
               <p className='text-red-500 text-sm mt-1'>
-                {errors.address.message}
+                {errors.address1.message}
               </p>
             )}
           </div>
+
           <div className='flex flex-col'>
-            <label className='text-[15px] text-[#0F1416]' htmlFor='area'>
-              Area, Colony, Street, Sector, Village{' '}
-              <span className='text-red-600'>*</span>
+            <label className='text-[15px] text-[#0F1416]' htmlFor='address2'>
+              Address Line 2
             </label>
             <input
               type='text'
-              {...register('area', {
-                required: 'Area is required'
-              })}
+              {...register('address2')}
               className='px-5 py-3 rounded-lg mt-3 border'
-              placeholder='Enter Area'
+              placeholder='Enter Address Line 2'
             />
-            {errors.area && (
-              <p className='text-red-500 text-sm mt-1'>{errors.area.message}</p>
-            )}
           </div>
-          <div className='flex flex-col'>
+
+          <div className='flex flex-col relative'>
             <label className='text-[15px] text-[#0F1416]' htmlFor='country'>
               Country <span className='text-red-600'>*</span>
             </label>
             <select
+              {...register('country', { required: true })}
               name='country'
               value={formData.country}
-              onChange={handleChange}
-              className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+              onChange={e => {
+                handleChange(e)
+                setValue('country', e.target.value)
+              }}
+              className={`px-5 py-3 rounded-lg mt-3 border ${
+                errors.country ? 'border-red-500' : 'border-zinc-300'
+              } focus:outline-none focus:border-[#EB5B2A] appearance-none bg-white w-full`}
             >
               <option value=''>Select Country</option>
               {countries.map((country, index) => (
@@ -243,10 +261,22 @@ const ContactFrom = () => {
                 </option>
               ))}
             </select>
+            <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 mt-8'>
+              <svg
+                className='fill-current h-4 w-4'
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 20 20'
+              >
+                <path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
+              </svg>
+            </div>
+            {errors.country && (
+              <p className='text-red-500 text-sm mt-1'>Country is required</p>
+            )}
           </div>
 
           {hasStates && (
-            <div className='flex flex-col'>
+            <div className='flex flex-col relative'>
               <label className='text-[15px] text-[#0F1416]' htmlFor='state'>
                 State
               </label>
@@ -254,7 +284,7 @@ const ContactFrom = () => {
                 name='state'
                 value={formData.state}
                 onChange={handleChange}
-                className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+                className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] appearance-none bg-white w-full'
                 disabled={loading.states || !formData.country}
               >
                 <option value=''>
@@ -266,10 +296,19 @@ const ContactFrom = () => {
                   </option>
                 ))}
               </select>
+              <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 mt-8'>
+                <svg
+                  className='fill-current h-4 w-4'
+                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox='0 0 20 20'
+                >
+                  <path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
+                </svg>
+              </div>
             </div>
           )}
 
-          <div className='flex flex-col'>
+          <div className='flex flex-col relative'>
             <label className='text-[15px] text-[#0F1416]' htmlFor='city'>
               City
             </label>
@@ -277,7 +316,7 @@ const ContactFrom = () => {
               name='city'
               value={formData.city}
               onChange={handleChange}
-              className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+              className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] appearance-none bg-white w-full'
               disabled={
                 loading.cities ||
                 !formData.country ||
@@ -293,18 +332,27 @@ const ContactFrom = () => {
                 </option>
               ))}
             </select>
+            <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 mt-8'>
+              <svg
+                className='fill-current h-4 w-4'
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 20 20'
+              >
+                <path d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' />
+              </svg>
+            </div>
           </div>
 
           <div className='flex flex-col'>
-            <label className='text-[15px] text-[#0F1416]' htmlFor='pinCode'>
-              Pin Code
+            <label className='text-[15px] text-[#0F1416]' htmlFor='zip_code'>
+              ZIP Code
             </label>
             <input
               type='text'
-              name='pinCode'
-              placeholder='Enter Pin/Zip Code'
-              className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A] '
-              value={formData.pinCode}
+              name='zip_code'
+              placeholder='Enter ZIP Code'
+              className='px-5 py-3 rounded-lg mt-3 border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]'
+              value={formData.zip_code}
               onChange={handleChange}
             />
           </div>
