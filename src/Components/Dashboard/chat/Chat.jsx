@@ -7,7 +7,6 @@ import User from "./Components/User";
 import { useContext, useEffect, useRef, useState } from "react";
 import axiosClient from "../../../axiosClient";
 import ChatApis from "../../../Apis/ChatApis";
-import { io } from "socket.io-client";
 import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
 const defaultAvatar = "https://via.placeholder.com/150";
 
@@ -16,92 +15,16 @@ const Chat = () => {
   const [messageData, setMessageData] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
   const [newMessage, setNewMessage] = useState("");
-  const [socket, setSocket] = useState(null);
-  const [isTyping, setIsTyping] = useState(false);
-  const [typingUser, setTypingUser] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
 
   const { conversationID } = useParams();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
-
   const messagesContainerRef = useRef(null);
 
-  // Socket.IO Connection
-  // useEffect(() => {
-  //   // Initialize socket connection
-  //   const newSocket = io(axiosClient.get("/api/chat/conversation"), {
-  //     auth: {
-  //       token: localStorage.getItem("token") // Assuming you store token in localStorage
-  //     }
-  //   });
-
-  //   // Connection event handlers
-  //   newSocket.on("connect", () => {
-  //     console.log("Connected to socket server");
-  //   });
-
-  //   newSocket.on("disconnect", () => {
-  //     console.log("Disconnected from socket server");
-  //   });
-
-  //   // Listen for new messages
-  //   newSocket.on("newMessage", (message) => {
-  //     setMessageData(prevMessages => [...prevMessages, message]);
-  //   });
-
-  //   // Listen for typing status
-  //   newSocket.on("userTyping", ({ userName, isTyping }) => {
-  //     setTypingUser(userName);
-  //     setIsTyping(isTyping);
-      
-  //     // Clear typing indicator after 3 seconds
-  //     setTimeout(() => {
-  //       setIsTyping(false);
-  //     }, 3000);
-  //   });
-
-  //   setSocket(newSocket);
-
-  //   // Cleanup on unmount
-  //   return () => {
-  //     if (newSocket) newSocket.disconnect();
-  //   };
-  // }, []);
-
-  useEffect(() => {
-    const newSocket = io("https://travel-agency-backend-rh1v.onrender.com/api/chat/conversation", {
-      auth: {
-        token: localStorage.getItem("token"),
-      },
-    });
-
-    newSocket.on("connect", () => console.log("Connected to socket server"));
-    newSocket.on("disconnect", () => console.log("Disconnected from socket server"));
-    newSocket.on("newMessage", (message) => setMessageData((prev) => [...prev, message]));
-    newSocket.on("userTyping", ({ userName, isTyping }) => {
-      setTypingUser(userName);
-      setIsTyping(isTyping);
-      setTimeout(() => setIsTyping(false), 3000);
-    });
-
-    setSocket(newSocket);
-
-    return () => newSocket.disconnect();
-  }, []);
-
-  
-
-  // Join conversation room when active conversation changes
-  useEffect(() => {
-    if (socket && activeConversation) {
-      socket.emit("joinRoom", activeConversation.id);
-    }
-  }, [socket, activeConversation]);
-
   // Fetch Conversations
-   useEffect(() => {
+  useEffect(() => {
     const fetchConversations = async () => {
       try {
         const data = await ChatApis.fetchConversations();
@@ -118,8 +41,6 @@ const Chat = () => {
 
     fetchConversations();
   }, [conversationID]);
-  console.log('admin conversation', usersData);
-  
 
   // Fetch Messages for Active Conversation
   useEffect(() => {
@@ -146,59 +67,73 @@ const Chat = () => {
     navigate(`/dashboard/chat/${conversation.id}`, { replace: true });
   };
 
-  // Typing Handler
-  const handleTyping = () => {
-    if (socket && activeConversation) {
-      socket.emit("typing", {
-        conversationId: activeConversation.id,
-        userId: user.id,
-        userName: user.name,
-        isTyping: true,
-      });
-    }
-  };
-
+  // Handle Send Message
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeConversation) return;
 
-    const messagePayload = {
-      message: newMessage,
-      conversation_id: activeConversation.id,
-      sender_id: user.id,
-      receiver_id:
-        user.id === activeConversation.participant_id
+    try {
+      // Create message object
+      const messagePayload = {
+        conversation_id: activeConversation.id,
+        receiver_id: user.id === activeConversation.participant_id
           ? activeConversation.creator.id
           : activeConversation.participant.id,
-    };
+        message: newMessage,
+        sender_id: user.id,
+        sender_name: user.name,
+        sender_avatar: user.avatar_url,
+        receiver_name: user.id === activeConversation.participant_id
+          ? activeConversation.creator.name
+          : activeConversation.participant.name,
+        receiver_avatar: user.id === activeConversation.participant_id
+          ? activeConversation.creator.avatar_url
+          : activeConversation.participant.avatar_url
+      };
 
-    try {
-      if (socket) socket.emit("sendMessage", messagePayload);
+      // Add message to local state immediately
+      const newMsg = {
+        message: newMessage,
+        sender: { 
+          id: user.id, 
+          name: user.name,
+          avatar: user.avatar_url 
+        },
+        receiver: {
+          id: messagePayload.receiver_id,
+          name: messagePayload.receiver_name,
+          avatar: messagePayload.receiver_avatar
+        },
+        created_at: new Date().toISOString(),
+      };
+      
+      setMessageData(prev => {
+        const prevMessages = Array.isArray(prev) ? prev : [];
+        return [...prevMessages, newMsg];
+      });
 
-      const response = await ChatApis.sendMessage(messagePayload);
-      if (response) {
-        setMessageData((prev) => [...prev, { ...response.message, sender: user }]);
-        setNewMessage("");
-      }
+      // Send to API
+      await ChatApis.sendMessage(messagePayload);
+
+      // Clear input
+      setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
-// auto scroll message
-const scrollToBottom = () => {
-  if (messagesContainerRef.current) {
-    messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-  }
-};
+  // Auto scroll message
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  };
 
-   // Scroll to the bottom whenever messageData changes or a new message is sent
-    useEffect(() => {
+  // Scroll to the bottom whenever messageData changes or a new message is sent
+  useEffect(() => {
     if (activeConversation) {
       scrollToBottom();
     }
   }, [activeConversation, messageData]);
-  
-  
 
   return (
     <div className="grid grid-cols-12 gap-5">
@@ -291,9 +226,6 @@ const scrollToBottom = () => {
                     ? activeConversation.creator.name
                     : activeConversation.participant.name}
                 </h5>
-                {isTyping && (
-                  <p className="text-sm text-gray-500">{typingUser} is typing...</p>
-                )}
               </div>
             </div>
           </div>
@@ -331,8 +263,8 @@ const scrollToBottom = () => {
                   ) : (
                     <MessageLeft
                       key={index}
-                      avatar={data.receiver?.avatar_url || defaultAvatar}
-                      naame={data.receiver?.name || "Unknown"}
+                      avatar={data.sender?.avatar_url || defaultAvatar}
+                      naame={data.sender?.name || "Unknown"}
                       time={time}
                       text={data?.message}
                     />
@@ -353,10 +285,7 @@ const scrollToBottom = () => {
                 <input
                   type="text"
                   value={newMessage}
-                  onChange={(e) => {
-                    setNewMessage(e.target.value);
-                    handleTyping();
-                  }}
+                  onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
                       handleSendMessage();

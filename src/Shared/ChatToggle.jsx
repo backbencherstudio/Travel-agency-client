@@ -2,7 +2,9 @@ import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import MessageRight from "../Components/Dashboard/chat/Components/MessageLeft";
 import MessageLeft from "../Components/Dashboard/chat/Components/MessageRight";
 import { useContext, useEffect, useRef, useState } from "react";
+import axiosClient from "../axiosClient";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
+import ChatApis from "../Apis/ChatApis";
 
 const ChatToggle = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,64 +14,46 @@ const ChatToggle = () => {
   const [newMessage, setNewMessage] = useState("");
   const [conversations, setConversations] = useState([]);
   const messagesEndRef = useRef(null);
-
   const messagesContainerRef = useRef(null);
-
   const { user } = useContext(AuthContext);
 
-  // console.log('conversition id:', activeConversation);
-  console.log("msg:", messages);
+  const fetchConversations = async () => {
+    try {
+      const response = await axiosClient.get("/api/chat/conversation");
+      setConversations(response.data.data);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  };
+
+  const fetchAdminUsers = async () => {
+    try {
+      const response = await axiosClient.get("/api/chat/user");
+      const admins = response.data.data.filter((user) => user.type === "admin");
+      setAdminUsers(admins);
+    } catch (error) {
+      console.error("Error fetching admin users:", error);
+    }
+  };
+
+  const fetchMessages = async () => {
+    if (activeConversation) {
+      try {
+        const response = await axiosClient.get(
+          `/api/chat/message?conversation_id=${activeConversation.id}`
+        );
+        setMessages(response.data.data || []);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    }
+  };
 
   // Fetch conversations
   useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const response = await axiosClient.get("/api/chat/conversation");
-        setConversations(response.data.data);
-      } catch (error) {
-        console.error("Error fetching conversations:", error);
-      }
-    };
-
     fetchConversations();
-  }, []);
-
-  // Fetch admin users
-  useEffect(() => {
-    const fetchAdminUsers = async () => {
-      try {
-        const response = await axiosClient.get("/api/chat/user");
-        const admins = response.data.data.filter(
-          (user) => user.type === "admin"
-        );
-        setAdminUsers(admins);
-      } catch (error) {
-        console.error("Error fetching admin users:", error);
-      }
-    };
     fetchAdminUsers();
   }, []);
-
-  // Fetch messages for active conversation
-  useEffect(() => {
-    if (activeConversation) {
-      const fetchMessages = async () => {
-        try {
-          const response = await axiosClient.get(
-            `/api/chat/message?conversation_id=${activeConversation.id}`
-          );
-          // console.log('msg response:', response.data.data);
-
-          setMessages(response.data.data || []);
-        } catch (error) {
-          console.error("Error fetching messages:", error);
-        }
-      };
-
-      fetchMessages();
-
-    }
-  }, [activeConversation]);
 
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
@@ -96,25 +80,57 @@ const ChatToggle = () => {
     }
   };
 
+  // Fetch messages when conversation changes
+  useEffect(() => {
+    fetchMessages();
+  }, [activeConversation]);
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
 
     try {
-      const response = await axiosClient.post("/api/chat/message", {
+      // Create message object
+      const messageData = {
         conversation_id: activeConversation.id,
         receiver_id: activeConversation.participant_id,
         message: newMessage,
-      });
+      };
 
-      setMessages([...messages, response.data.data]);
+      // Add message to local state immediately
+      const newMsg = {
+        message: newMessage,
+        sender: {
+          id: user.id,
+          name: user.name,
+          avatar: user.avatar,
+        },
+        receiver: {
+          id: activeConversation.participant_id,
+        },
+        created_at: new Date().toISOString(),
+      };
+
+      setMessages(prev => [...prev, newMsg]);
+
+      // Send to API
+      await ChatApis.sendMessage(messageData);
+
+      // Clear input
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
-  // auto scroll message
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
@@ -122,7 +138,6 @@ const ChatToggle = () => {
     }
   };
 
-  // Scroll to the bottom whenever messageData changes or a new message is sent
   useEffect(() => {
     if (activeConversation) {
       scrollToBottom();
@@ -196,12 +211,10 @@ const ChatToggle = () => {
                 className="flex-1 p-4 overflow-y-auto"
               >
                 {messages.map((message, index) => {
-                  // Ensure message and its required properties exist
                   if (!message || !message.sender || !message.receiver) {
-                    return null; // Skip rendering if message is invalid
+                    return null;
                   }
 
-                  // Format the message time
                   const time = message.created_at
                     ? new Date(message.created_at).toLocaleTimeString([], {
                         hour: "2-digit",
@@ -209,28 +222,23 @@ const ChatToggle = () => {
                       })
                     : "N/A";
 
-                  // Determine whether the current user is the sender
                   const isUserSender = message.sender.id === user?.id;
 
                   return isUserSender ? (
-                    <MessageRight
-                      key={index}
-                      avatar={
-                        message?.receiver?.avatar || "default-avatar-url.jpg"
-                      } // Default avatar for sender
-                      naame={message.receiver?.name || "Unknown"} // Default name for sender
-                      time={time} // Consistent time format
-                      text={message.message || ""} // Default message content
-                    />
-                  ) : (
                     <MessageLeft
                       key={index}
-                      avatar={
-                        message.sender?.avatar || "default-avatar-url.jpg"
-                      } // Default avatar for receiver
-                      naame={message.sender?.name || "Unknown"} // Default name for receiver
-                      time={time} // Consistent time format
-                      text={message.message || ""} // Default message content
+                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      naame={message.sender?.name || "Unknown"}
+                      time={time}
+                      text={message.message || ""}
+                    />
+                  ) : (
+                    <MessageRight
+                      key={index}
+                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      naame={message.sender?.name || "Unknown"}
+                      time={time}
+                      text={message.message || ""}
                     />
                   );
                 })}
