@@ -44,6 +44,8 @@ import Cruises from '../Pages/Cruises/Cruises'
 import CruiseDetails from '../Pages/Cruises/CruiseDetails/CruiseDetails'
 import Otp from '../Pages/Auth/Otp'
 import Profile from '../Components/Home/Profile'
+import ClientPackages from '../Pages/Package/Packages'
+import ClientPackageDetails from '../Pages/Package/PackageDetails'
 
 export const router = createBrowserRouter([
   {
@@ -111,6 +113,14 @@ export const router = createBrowserRouter([
       {
         path: '/cruises/:id',
         element: <CruiseDetails />
+      },
+      {
+        path: '/packages',
+        element: <ClientPackages />
+      },
+      {
+        path: '/packages/:id',
+        element: <ClientPackageDetails />
       },
       {
         path: '/booking/:id',

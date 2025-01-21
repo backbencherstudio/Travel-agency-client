@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -12,8 +12,10 @@ import ClientPackageApis from '../../Apis/clientApi/ClientPackageApis';
 import Loading from '../../Shared/Loading';
 import { useLocation } from 'react-router-dom';
 import CruiseCard from '../../Pages/Cruises/CruiseCard';
+import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext';
 
 function PackageTourCruise() {
+    const { destinations, cancellationPolicies } = useTravelData();
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [isDurationOpen, setIsDurationOpen] = useState(false);
@@ -73,6 +75,7 @@ function PackageTourCruise() {
     const [error, setError] = useState(null);
     const location = useLocation();
     const isCruiseRoute = location.pathname.includes('cruises');
+    const isPackageRoute = location.pathname.includes('packages');
     // console.log('isCruiseRoute', isCruiseRoute)
     // const tours = [
     //     {
@@ -111,6 +114,10 @@ function PackageTourCruise() {
         max: 5000
     });
 
+    console.log('destinations', destinations)
+    console.log('cancellationPolicies', cancellationPolicies)
+    // console.log('priceRange', priceRange)
+
     const minPrice = 0;
     const maxPrice = 5000;
 
@@ -120,7 +127,7 @@ function PackageTourCruise() {
 
     const getTourPackages = async () => {
         setLoading(true);
-        const res = await ClientPackageApis.all(`${isCruiseRoute ? 'cruise' : 'tour'}`);
+        const res = await ClientPackageApis.all(`${isCruiseRoute ? 'cruise' : isPackageRoute ? 'package' : 'tour'}`);
         // console.log('res', res)
         if (res.success) {
             setPackages(res?.data);
@@ -130,7 +137,7 @@ function PackageTourCruise() {
 
     const handleMinChange = (e) => {
         const value = Math.min(Number(e.target.value), priceRange.max - 100);
-        setPriceR ({
+        setPriceRange({
             ...priceRange,
             min: value
         });
@@ -488,13 +495,16 @@ function PackageTourCruise() {
 
                             {isCancellationOpen && (
                                 <div className='mt-4 flex flex-col gap-4'>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() => setIsFreeCancellation((prev) => !prev)}
-                                        />
-                                        <p>Free Cancellation </p>
+                                    <div className='flex flex-col items-start gap-3'>
+                                        {cancellationPolicies.map((policy) => (
+                                            <div key={policy.id} className='flex items-center gap-2'>
+                                                <input
+                                                    type="checkbox"
+                                                    onChange={() => setIsFreeCancellation((prev) => !prev)}
+                                                />
+                                                <p>{policy.policy}</p>
+                                            </div>
+                                        ))}
 
                                     </div>
                                 </div>
@@ -526,85 +536,21 @@ function PackageTourCruise() {
 
                             {isDestinationOpen && (
                                 <div className='mt-4 flex flex-col gap-4'>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
+                                    {destinations?.map((destination) => (
+                                        <div key={destination.id} className='flex items-center gap-3'>
+                                            <input
+                                                type="checkbox"
                                         
                                             onChange={() =>
                                                 setSelectedDestinations((prevState) => ({
                                                     ...prevState,
-                                                    indonesia: !prevState.indonesia,
+                                                    [destination.name]: !prevState[destination.name],
                                                 }))
                                             }
                                         />
-
-                                        <p className='text-[#49556D]'>Indonesia </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    bali: !prevState.bali,
-                                                }))
-                                            }
-                                        />
-                                        <p className='text-[#49556D]'>Bali </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    iceland: !prevState.iceland,
-                                                }))
-                                            }
-                                        />
-                                        <p className='text-[#49556D]'>Iceland </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    japan: !prevState.japan,
-                                                }))
-                                            }
-                                        /> <p className='text-[#49556D]'>Japan </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    italy: !prevState.italy,
-                                                }))
-                                            }
-                                        />
-                                        <p className='text-[#49556D]'>Italy </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    paris: !prevState.paris,
-                                                }))
-                                            }
-                                        />
-                                        <p className='text-[#49556D]'>Paris </p>
-                                    </div>
+                                         <p className='text-[#49556D]'>{destination.name} </p>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>

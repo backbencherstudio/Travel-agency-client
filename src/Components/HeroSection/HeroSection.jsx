@@ -15,7 +15,14 @@ const HeroSection = ({ bgImg, pageName, links, description }) => {
                     backgroundRepeat: 'no-repeat',
                 }}
             >
-                <div className="text-center flex items-center justify-center flex-col text-white">
+                <div className="text-center flex items-center justify-center flex-col text-white" 
+                    style={{
+                        background:
+                        "linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.60) 100%)",
+                        height: "100%",
+                        width: "100%",
+                    }}
+                >
                     <h3 className="flex gap-2 justify-center items-center">
                         {links?.map((link, index) => (
                             <div key={index} className="flex gap-2 justify-center items-center text-lg">

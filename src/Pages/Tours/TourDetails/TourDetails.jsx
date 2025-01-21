@@ -1,7 +1,7 @@
 import Details from "../../../Components/DetailsComponent/Details";
 import HeroSection from "../../../Components/HeroSection/HeroSection";
 import ParentComponent from "../../../Components/ParentComponent/ParentComponent";
-import blogImage from '../../../assets/img/blogs/blogImage.png';
+import bgImg from '../../../assets/img/banner/tour.png'
 import image1 from '../../../assets/img/tour-details/image-1.png';
 import image2 from '../../../assets/img/tour-details/image-2.png';
 import image3 from '../../../assets/img/tour-details/image-3.png';
@@ -17,7 +17,7 @@ import Loading from "../../../Shared/Loading";
 
 const TourDetails = () => {
     const links = [{name: "Home", path: "/"}, {name: "Tours", path: "/tours"}, {name: "Tour Details", path: ""},]
-        const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [tour, setTour] = useState(null);
     const { id } = useParams();
     
@@ -63,7 +63,7 @@ const TourDetails = () => {
       ) : (
         <div>
           <div className="bg-[#F0F4F9]" >
-              <HeroSection bgImg={blogImage} pageName="Our Tour" links={links} description={tour?.description} />
+              <HeroSection bgImg={bgImg} pageName="Our Tour" links={links} description={tour?.description} />
             <ParentComponent>
                 <Details details={tour} />
               </ParentComponent>
