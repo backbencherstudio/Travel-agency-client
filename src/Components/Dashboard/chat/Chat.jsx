@@ -13,11 +13,13 @@ const defaultAvatar = "https://via.placeholder.com/150";
 
 const token = localStorage.getItem("token");
 
-const socket = io("http://localhost:4000", {
+const socket = io(import.meta.env.VITE_API_BASE_URL, {
   auth: {
     token: token
   }
 });
+// console.log('socket', socket);
+
 
 socket.on("connect", () => {
   console.log("Connected to server!");
@@ -82,20 +84,30 @@ const Chat = () => {
   // Fetch Messages for Active Conversation
   useEffect(() => {
     fetchMessages();
-    socket.on("message", (data) => {
+    
+    // Add socket event listener
+    const handleNewMessage = (data) => {
       console.log("onmessage", data.data);
+      setMessageData(prevMessages => {
+        const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+        // Check if message already exists to prevent duplicates
+        const messageExists = prevMessagesArray.some(msg => 
+          msg.created_at === data.data.created_at && 
+          msg.message === data.data.message &&
+          msg.sender.id === data.data.sender.id
+        );
+        if (messageExists) return prevMessagesArray;
+        return [...prevMessagesArray, data.data];
+      });
+    };
+    
+    socket.on("message", handleNewMessage);
 
-      const tempData = messageData;
-      tempData.push(data.data);
-
-      setMessageData(tempData);
-
-    });
+    // Cleanup socket listener when component unmounts or activeConversation changes
+    return () => {
+      socket.off("message", handleNewMessage);
+    };
   }, [activeConversation]);
-
-  useEffect(() => {
-
-  }, [messageData])
 
 
   // Handle Conversation Click
@@ -298,7 +310,7 @@ const Chat = () => {
                   // console.log("sender", data.sender);
 
 
-                  return isUserSender == data.sender && data.sender.id ? (
+                  return isUserSender ? (
                     <MessageRight
                       key={index}
                       avatar={data.sender?.avatar_url || defaultAvatar}
