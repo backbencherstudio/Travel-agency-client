@@ -66,9 +66,14 @@ const Chat = () => {
 
     setIsLoadingMessages(true);
     try {
-      const messages = await ChatApis.fetchMessages(activeConversation.id);
+      // const messages = await ChatApis.fetchMessages(activeConversation.id);
+      const response = await axiosClient.get(
+        `/api/chat/message?conversation_id=${activeConversation.id}`
+      );
 
-      setMessageData(messages);
+      setMessageData(response.data.data);
+      console.log("response", response.data.data);
+      
     } catch (error) {
       console.error("Error fetching messages:", error);
     } finally {
@@ -187,9 +192,9 @@ const Chat = () => {
   }, [activeConversation, messageData]);
 
 
-  if (activeConversation == null) {
-    return <>Loading...</>
-  }
+  // if (activeConversation == null) {
+  //   return <>Loading...</>
+  // }
 
   return (
     <div className="grid grid-cols-12 gap-5">
