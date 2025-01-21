@@ -6,6 +6,8 @@ import axiosClient from "../axiosClient";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 import ChatApis from "../Apis/ChatApis";
 import { io } from "socket.io-client";
+const defaultAvatar = "https://via.placeholder.com/150";
+
 
 const token = localStorage.getItem("token");
 
@@ -54,6 +56,8 @@ const ChatToggle = () => {
         });
       }
     });
+    console.log('messages', messages);
+    
 
     return () => {
       socket.off("message");
@@ -63,6 +67,8 @@ const ChatToggle = () => {
   const fetchConversations = async () => {
     try {
       const response = await ChatApis.fetchConversations();
+      console.log('conversations response', response);
+      
       setConversations(response);
     } catch (error) {
       console.error("Error fetching conversations:", error);
@@ -73,6 +79,7 @@ const ChatToggle = () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
       const admins = response.data.data.filter((user) => user.type === "admin");
+      console.log('admins', admins);
       setAdminUsers(admins);
     } catch (error) {
       console.error("Error fetching admin users:", error);
@@ -97,6 +104,8 @@ const ChatToggle = () => {
     fetchConversations();
     fetchAdminUsers();
   }, []);
+  console.log('fetching messages', messages);
+  
 
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
@@ -137,11 +146,14 @@ const ChatToggle = () => {
   // Fetch messages when conversation changes
   useEffect(() => {
     fetchMessages();
+    console.log('fetching messages', messages);
+    
   }, [activeConversation]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
+    console.log('new message', newMessage);
 
     try {
       const receiverId = activeConversation.participant_id === user.id 
@@ -159,6 +171,7 @@ const ChatToggle = () => {
         receiver_name: activeConversation.participant?.name,
         receiver_avatar: activeConversation.participant?.avatar_url,
       };
+      console.log('message payload', messagePayload);
 
       // Add message to local state immediately
       const newMsg = {
@@ -178,6 +191,7 @@ const ChatToggle = () => {
       };
 
       setMessages((prev) => [...prev, newMsg]);
+      console.log('new message', newMsg);
 
       // Send to API
       await ChatApis.sendMessage(messagePayload);
@@ -187,6 +201,10 @@ const ChatToggle = () => {
         to: messagePayload.receiver_id,
         data: newMsg,
       });
+      console.log('socket event emitted');
+      console.log('new ', newMsg);
+      console.log('new message', newMessage);
+      
 
       // Clear input
       setNewMessage("");
@@ -238,7 +256,7 @@ const ChatToggle = () => {
                     className="flex items-center p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
                   >
                     <img
-                      src={admin.avatar || "/default-avatar.jpg"}
+                      src={admin.avatar || defaultAvatar}
                       className="rounded-full h-10 w-10 object-cover"
                       alt={admin.name}
                     />
@@ -268,7 +286,7 @@ const ChatToggle = () => {
                 <img
                   src={
                     activeConversation.participant?.avatar ||
-                    "/default-avatar.jpg"
+                    defaultAvatar
                   }
                   className="rounded-full h-8 w-8 object-cover"
                   alt={activeConversation.participant?.name}
@@ -299,7 +317,7 @@ const ChatToggle = () => {
                   return isUserSender ? (
                     <MessageLeft
                       key={index}
-                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      avatar={message.sender?.avatar || defaultAvatar}
                       naame={message.sender?.name || "Unknown"}
                       time={time}
                       text={message.message || ""}
@@ -307,7 +325,7 @@ const ChatToggle = () => {
                   ) : (
                     <MessageRight
                       key={index}
-                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      avatar={message.sender?.avatar || defaultAvatar}
                       naame={message.sender?.name || "Unknown"}
                       time={time}
                       text={message.message || ""}

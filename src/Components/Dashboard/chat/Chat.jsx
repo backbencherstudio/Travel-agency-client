@@ -43,7 +43,12 @@ const Chat = () => {
   const fetchConversations = async () => {
     try {
       const data = await ChatApis.fetchConversations();
-      setUsersData(data);
+      // Add unread property to each conversation if not exists
+      const conversationsWithUnread = data.map(conv => ({
+        ...conv,
+        unread: conv.unread || false
+      }));
+      setUsersData(conversationsWithUnread);
 
       if (conversationID && data.length > 0) {
         const selectedConversation = data.find((conv) => conv.id === conversationID);
@@ -78,6 +83,27 @@ const Chat = () => {
   // Fetch Conversations
   useEffect(() => {
     fetchConversations();
+
+    // Listen for new conversations
+    socket.on("conversation", (data) => {
+      const newConversation = data.conversation;
+      setUsersData(prevUsers => {
+        // Check if conversation already exists
+        const exists = prevUsers.some(conv => conv.id === newConversation.id);
+        if (exists) {
+          // Update the existing conversation but preserve unread state
+          return prevUsers.map(conv => 
+            conv.id === newConversation.id ? {...newConversation, unread: conv.unread} : conv
+          );
+        }
+        // Add new conversation to the beginning with unread set to true
+        return [{...newConversation, unread: true}, ...prevUsers];
+      });
+    });
+
+    return () => {
+      socket.off("conversation");
+    };
   }, [conversationID]);
 
   // Fetch Messages for Active Conversation
@@ -101,6 +127,22 @@ const Chat = () => {
           return [...prevMessagesArray, data.data];
         });
       }
+
+      // Update the conversation list to show recent message
+      setUsersData(prevUsers => {
+        return prevUsers.map(conv => {
+          if (conv.id === data.data.conversation_id) {
+            // Set unread to true only if it's not the active conversation
+            const shouldMarkUnread = conv.id !== activeConversation?.id;
+            return {
+              ...conv,
+              messages: [{ message: data.data.message }, ...(conv.messages || [])],
+              unread: shouldMarkUnread
+            };
+          }
+          return conv;
+        });
+      });
     };
     
     socket.on("message", handleNewMessage);
@@ -114,6 +156,15 @@ const Chat = () => {
   // Handle Conversation Click
   const handleConversationClick = (conversation) => {
     setActiveConversation(conversation);
+    // Only update the unread status for the clicked conversation
+    setUsersData(prevUsers => {
+      return prevUsers.map(conv => {
+        if (conv.id === conversation.id) {
+          return { ...conv, unread: false };
+        }
+        return conv;
+      });
+    });
     navigate(`/dashboard/chat/${conversation.id}`, { replace: true });
   };
 
@@ -160,6 +211,19 @@ const Chat = () => {
       setMessageData(prev => {
         const prevMessages = Array.isArray(prev) ? prev : [];
         return [...prevMessages, newMsg];
+      });
+
+      // Update conversation list immediately
+      setUsersData(prevUsers => {
+        return prevUsers.map(conv => {
+          if (conv.id === activeConversation.id) {
+            return {
+              ...conv,
+              messages: [{ message: newMessage }, ...(conv.messages || [])]
+            };
+          }
+          return conv;
+        });
       });
 
       // Send to API
@@ -239,7 +303,7 @@ const Chat = () => {
                           id={chatUser.id}
                           image={chatUser.avatar_url || defaultAvatar}
                           name={chatUser.name}
-                          hint={lastMessage}
+                          hint={data.unread ? <strong>{lastMessage}</strong> : lastMessage}
                           time={data.updated_at
                             ? new Date(data.updated_at).toLocaleTimeString([], {
                               hour: "2-digit",
