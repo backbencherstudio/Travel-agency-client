@@ -5,6 +5,23 @@ import { useContext, useEffect, useRef, useState } from "react";
 import axiosClient from "../axiosClient";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 import ChatApis from "../Apis/ChatApis";
+import { io } from "socket.io-client";
+
+const token = localStorage.getItem("token");
+
+const socket = io(import.meta.env.VITE_API_BASE_URL, {
+  auth: {
+    token: token
+  }
+});
+
+socket.on("connect", () => {
+  console.log("Connected to server!");
+});
+
+socket.on("disconnect", (reason) => {
+  console.log("Disconnected:", reason);
+});
 
 const ChatToggle = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -72,6 +89,8 @@ const ChatToggle = () => {
         creator_id: user.id,
         participant_id: admin.id,
       });
+      console.log('response', response );
+      
 
       setActiveConversation(response.data.data);
       setConversations([...conversations, response.data.data]);
@@ -85,16 +104,49 @@ const ChatToggle = () => {
     fetchMessages();
   }, [activeConversation]);
 
+  // Add socket event listener for new messages
+  useEffect(() => {
+    const handleNewMessage = (data) => {
+      console.log("onmessage", data.data);
+      setMessages(prevMessages => {
+        const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+        // Check if message already exists to prevent duplicates
+        const messageExists = prevMessagesArray.some(msg => 
+          msg.created_at === data.data.created_at && 
+          msg.message === data.data.message &&
+          msg.sender.id === data.data.sender.id
+        );
+        if (messageExists) return prevMessagesArray;
+        return [...prevMessagesArray, data.data];
+      });
+    };
+    
+    socket.on("message", handleNewMessage);
+
+    return () => {
+      socket.off("message", handleNewMessage);
+    };
+  }, [activeConversation]);
+  console.log('activeConversation', activeConversation);
+  
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
+    console.log('activeConversation', activeConversation);
+    
 
     try {
       // Create message object
-      const messageData = {
+      const messagePayload = {
         conversation_id: activeConversation.id,
         receiver_id: activeConversation.participant_id,
         message: newMessage,
+        sender_id: user.id,
+        sender_name: user.name,
+        sender_avatar: user.avatar_url,
+        receiver_name: activeConversation.participant?.name,
+        receiver_avatar: activeConversation.participant?.avatar_url
       };
 
       // Add message to local state immediately
@@ -103,10 +155,12 @@ const ChatToggle = () => {
         sender: {
           id: user.id,
           name: user.name,
-          avatar: user.avatar,
+          avatar: user.avatar_url
         },
         receiver: {
-          id: activeConversation.participant_id,
+          id: messagePayload.receiver_id,
+          name: messagePayload.receiver_name,
+          avatar: messagePayload.receiver_avatar
         },
         created_at: new Date().toISOString(),
       };
@@ -114,7 +168,10 @@ const ChatToggle = () => {
       setMessages(prev => [...prev, newMsg]);
 
       // Send to API
-      await ChatApis.sendMessage(messageData);
+      await ChatApis.sendMessage(messagePayload);
+
+      // Emit socket event
+      socket.emit("sendMessage", { to: messagePayload.receiver_id, data: newMsg });
 
       // Clear input
       setNewMessage("");
