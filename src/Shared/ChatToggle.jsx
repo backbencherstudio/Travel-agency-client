@@ -5,6 +5,25 @@ import { useContext, useEffect, useRef, useState } from "react";
 import axiosClient from "../axiosClient";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 import ChatApis from "../Apis/ChatApis";
+import { io } from "socket.io-client";
+const defaultAvatar = "https://via.placeholder.com/150";
+
+
+const token = localStorage.getItem("token");
+
+const socket = io(import.meta.env.VITE_API_BASE_URL, {
+  auth: {
+    token: token,
+  },
+});
+
+socket.on("connect", () => {
+  console.log("Connected to server!");
+});
+
+socket.on("disconnect", (reason) => {
+  console.log("Disconnected:", reason);
+});
 
 const ChatToggle = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,11 +35,41 @@ const ChatToggle = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const { user } = useContext(AuthContext);
+  
+
+  // Socket event listener for new messages
+  useEffect(() => {
+    socket.on("message", (data) => {
+      console.log("New message received:", data.data);
+      // Only update messages if it belongs to current conversation
+      if (activeConversation && data.data.conversation_id === activeConversation.id) {
+        setMessages((prevMessages) => {
+          const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+          const messageExists = prevMessagesArray.some(
+            (msg) =>
+              msg.created_at === data.data.created_at &&
+              msg.message === data.data.message &&
+              msg.sender.id === data.data.sender.id
+          );
+          if (messageExists) return prevMessagesArray;
+          return [...prevMessagesArray, data.data];
+        });
+      }
+    });
+    console.log('messages', messages);
+    
+
+    return () => {
+      socket.off("message");
+    };
+  }, [activeConversation]);
 
   const fetchConversations = async () => {
     try {
-      const response = await axiosClient.get("/api/chat/conversation");
-      setConversations(response.data.data);
+      const response = await ChatApis.fetchConversations();
+      console.log('conversations response', response);
+      
+      setConversations(response);
     } catch (error) {
       console.error("Error fetching conversations:", error);
     }
@@ -30,6 +79,7 @@ const ChatToggle = () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
       const admins = response.data.data.filter((user) => user.type === "admin");
+      console.log('admins', admins);
       setAdminUsers(admins);
     } catch (error) {
       console.error("Error fetching admin users:", error);
@@ -54,11 +104,15 @@ const ChatToggle = () => {
     fetchConversations();
     fetchAdminUsers();
   }, []);
+  console.log('fetching messages', messages);
+  
 
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
     const existingConversation = conversations.find(
-      (conv) => conv.admin?.id === admin.id
+      (conv) => 
+        (conv.creator_id === user.id && conv.participant_id === admin.id) ||
+        (conv.creator_id === admin.id && conv.participant_id === user.id)
     );
 
     if (existingConversation) {
@@ -73,8 +127,17 @@ const ChatToggle = () => {
         participant_id: admin.id,
       });
 
-      setActiveConversation(response.data.data);
-      setConversations([...conversations, response.data.data]);
+      const newConversation = {
+        ...response.data.data,
+        participant: {
+          id: admin.id,
+          name: admin.name,
+          avatar_url: admin.avatar
+        }
+      };
+
+      setActiveConversation(newConversation);
+      setConversations([...conversations, newConversation]);
     } catch (error) {
       console.error("Error creating conversation:", error);
     }
@@ -83,38 +146,65 @@ const ChatToggle = () => {
   // Fetch messages when conversation changes
   useEffect(() => {
     fetchMessages();
+    console.log('fetching messages', messages);
+    
   }, [activeConversation]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
+    console.log('new message', newMessage);
 
     try {
+      const receiverId = activeConversation.participant_id === user.id 
+        ? activeConversation.creator_id 
+        : activeConversation.participant_id;
+
       // Create message object
-      const messageData = {
+      const messagePayload = {
         conversation_id: activeConversation.id,
-        receiver_id: activeConversation.participant_id,
+        receiver_id: receiverId,
         message: newMessage,
+        sender_id: user.id,
+        sender_name: user.name,
+        sender_avatar: user.avatar_url,
+        receiver_name: activeConversation.participant?.name,
+        receiver_avatar: activeConversation.participant?.avatar_url,
       };
+      console.log('message payload', messagePayload);
 
       // Add message to local state immediately
       const newMsg = {
         message: newMessage,
+        conversation_id: activeConversation.id,
         sender: {
           id: user.id,
           name: user.name,
-          avatar: user.avatar,
+          avatar: user.avatar_url,
         },
         receiver: {
-          id: activeConversation.participant_id,
+          id: receiverId,
+          name: activeConversation.participant?.name,
+          avatar: activeConversation.participant?.avatar_url,
         },
         created_at: new Date().toISOString(),
       };
 
-      setMessages(prev => [...prev, newMsg]);
+      setMessages((prev) => [...prev, newMsg]);
+      console.log('new message', newMsg);
 
       // Send to API
-      await ChatApis.sendMessage(messageData);
+      await ChatApis.sendMessage(messagePayload);
+
+      // Emit socket event
+      socket.emit("sendMessage", {
+        to: messagePayload.receiver_id,
+        data: newMsg,
+      });
+      console.log('socket event emitted');
+      console.log('new ', newMsg);
+      console.log('new message', newMessage);
+      
 
       // Clear input
       setNewMessage("");
@@ -166,7 +256,7 @@ const ChatToggle = () => {
                     className="flex items-center p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
                   >
                     <img
-                      src={admin.avatar || "/default-avatar.jpg"}
+                      src={admin.avatar || defaultAvatar}
                       className="rounded-full h-10 w-10 object-cover"
                       alt={admin.name}
                     />
@@ -196,7 +286,7 @@ const ChatToggle = () => {
                 <img
                   src={
                     activeConversation.participant?.avatar ||
-                    "/default-avatar.jpg"
+                    defaultAvatar
                   }
                   className="rounded-full h-8 w-8 object-cover"
                   alt={activeConversation.participant?.name}
@@ -227,7 +317,7 @@ const ChatToggle = () => {
                   return isUserSender ? (
                     <MessageLeft
                       key={index}
-                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      avatar={message.sender?.avatar || defaultAvatar}
                       naame={message.sender?.name || "Unknown"}
                       time={time}
                       text={message.message || ""}
@@ -235,7 +325,7 @@ const ChatToggle = () => {
                   ) : (
                     <MessageRight
                       key={index}
-                      avatar={message.sender?.avatar || "/default-avatar.jpg"}
+                      avatar={message.sender?.avatar || defaultAvatar}
                       naame={message.sender?.name || "Unknown"}
                       time={time}
                       text={message.message || ""}

@@ -13,7 +13,7 @@ const defaultAvatar = "https://via.placeholder.com/150";
 
 const token = localStorage.getItem("token");
 
-const socket = io("http://localhost:4000", {
+const socket = io(import.meta.env.VITE_API_BASE_URL, {
   auth: {
     token: token
   }
@@ -40,11 +40,15 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
-
   const fetchConversations = async () => {
     try {
       const data = await ChatApis.fetchConversations();
-      setUsersData(data);
+      // Add unread property to each conversation if not exists
+      const conversationsWithUnread = data.map(conv => ({
+        ...conv,
+        unread: conv.unread || false
+      }));
+      setUsersData(conversationsWithUnread);
 
       if (conversationID && data.length > 0) {
         const selectedConversation = data.find((conv) => conv.id === conversationID);
@@ -57,16 +61,18 @@ const Chat = () => {
     }
   };
 
-
-
   const fetchMessages = async () => {
     if (!activeConversation) return;
 
     setIsLoadingMessages(true);
     try {
-      const messages = await ChatApis.fetchMessages(activeConversation.id);
+      const response = await axiosClient.get(
+        `/api/chat/message?conversation_id=${activeConversation.id}`
+      );
 
-      setMessageData(messages);
+      setMessageData(response.data.data);
+      console.log("response", response.data.data);
+      
     } catch (error) {
       console.error("Error fetching messages:", error);
     } finally {
@@ -77,30 +83,88 @@ const Chat = () => {
   // Fetch Conversations
   useEffect(() => {
     fetchConversations();
+
+    // Listen for new conversations
+    socket.on("conversation", (data) => {
+      const newConversation = data.conversation;
+      setUsersData(prevUsers => {
+        // Check if conversation already exists
+        const exists = prevUsers.some(conv => conv.id === newConversation.id);
+        if (exists) {
+          // Update the existing conversation but preserve unread state
+          return prevUsers.map(conv => 
+            conv.id === newConversation.id ? {...newConversation, unread: conv.unread} : conv
+          );
+        }
+        // Add new conversation to the beginning with unread set to true
+        return [{...newConversation, unread: true}, ...prevUsers];
+      });
+    });
+
+    return () => {
+      socket.off("conversation");
+    };
   }, [conversationID]);
 
   // Fetch Messages for Active Conversation
   useEffect(() => {
     fetchMessages();
-    socket.on("message", (data) => {
+    
+    // Add socket event listener
+    const handleNewMessage = (data) => {
       console.log("onmessage", data.data);
+      // Only update messages if they belong to the active conversation
+      if (data.data.conversation_id === activeConversation?.id) {
+        setMessageData(prevMessages => {
+          const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+          // Check if message already exists to prevent duplicates
+          const messageExists = prevMessagesArray.some(msg => 
+            msg.created_at === data.data.created_at && 
+            msg.message === data.data.message &&
+            msg.sender.id === data.data.sender.id
+          );
+          if (messageExists) return prevMessagesArray;
+          return [...prevMessagesArray, data.data];
+        });
+      }
 
-      const tempData = messageData;
-      tempData.push(data.data);
+      // Update the conversation list to show recent message
+      setUsersData(prevUsers => {
+        return prevUsers.map(conv => {
+          if (conv.id === data.data.conversation_id) {
+            // Set unread to true only if it's not the active conversation
+            const shouldMarkUnread = conv.id !== activeConversation?.id;
+            return {
+              ...conv,
+              messages: [{ message: data.data.message }, ...(conv.messages || [])],
+              unread: shouldMarkUnread
+            };
+          }
+          return conv;
+        });
+      });
+    };
+    
+    socket.on("message", handleNewMessage);
 
-      setMessageData(tempData);
-
-    });
+    // Cleanup socket listener when component unmounts or activeConversation changes
+    return () => {
+      socket.off("message", handleNewMessage);
+    };
   }, [activeConversation]);
-
-  useEffect(() => {
-
-  }, [messageData])
-
 
   // Handle Conversation Click
   const handleConversationClick = (conversation) => {
     setActiveConversation(conversation);
+    // Only update the unread status for the clicked conversation
+    setUsersData(prevUsers => {
+      return prevUsers.map(conv => {
+        if (conv.id === conversation.id) {
+          return { ...conv, unread: false };
+        }
+        return conv;
+      });
+    });
     navigate(`/dashboard/chat/${conversation.id}`, { replace: true });
   };
 
@@ -130,6 +194,7 @@ const Chat = () => {
       // Add message to local state immediately
       const newMsg = {
         message: newMessage,
+        conversation_id: activeConversation.id,
         sender: {
           id: user.id,
           name: user.name,
@@ -146,6 +211,19 @@ const Chat = () => {
       setMessageData(prev => {
         const prevMessages = Array.isArray(prev) ? prev : [];
         return [...prevMessages, newMsg];
+      });
+
+      // Update conversation list immediately
+      setUsersData(prevUsers => {
+        return prevUsers.map(conv => {
+          if (conv.id === activeConversation.id) {
+            return {
+              ...conv,
+              messages: [{ message: newMessage }, ...(conv.messages || [])]
+            };
+          }
+          return conv;
+        });
       });
 
       // Send to API
@@ -173,11 +251,6 @@ const Chat = () => {
       scrollToBottom();
     }
   }, [activeConversation, messageData]);
-
-
-  if (activeConversation == null) {
-    return <>Loading...</>
-  }
 
   return (
     <div className="grid grid-cols-12 gap-5">
@@ -230,7 +303,7 @@ const Chat = () => {
                           id={chatUser.id}
                           image={chatUser.avatar_url || defaultAvatar}
                           name={chatUser.name}
-                          hint={lastMessage}
+                          hint={data.unread ? <strong>{lastMessage}</strong> : lastMessage}
                           time={data.updated_at
                             ? new Date(data.updated_at).toLocaleTimeString([], {
                               hour: "2-digit",
@@ -278,44 +351,34 @@ const Chat = () => {
             {isLoadingMessages ? (
               <p className="text-center text-gray-500">Loading messages...</p>
             ) : messageData?.length > 0 ? (
-              messageData
-                // .filter(data =>
-                //   data.sender?.id === activeConversation?.creator?.id ||
-                //   data.sender?.id === activeConversation?.participant_id ||
-                //   data.receiver?.id === activeConversation?.creator?.id ||
-                //   data.receiver?.id === activeConversation?.participant_id
-                // )
-                .map((data, index) => {
-                  const time = data.created_at
-                    ? new Date(data.created_at).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                    : "N/A";
+              messageData.map((data, index) => {
+                const time = data.created_at
+                  ? new Date(data.created_at).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                  : "N/A";
 
-                  const isUserSender = data.sender?.id === user?.id;
+                const isUserSender = data.sender?.id === user?.id;
 
-                  // console.log("sender", data.sender);
-
-
-                  return isUserSender == data.sender && data.sender.id ? (
-                    <MessageRight
-                      key={index}
-                      avatar={data.sender?.avatar_url || defaultAvatar}
-                      naame={data.sender?.name || "Unknown"}
-                      time={time}
-                      text={data?.message}
-                    />
-                  ) : (
-                    <MessageLeft
-                      key={index}
-                      avatar={data.sender?.avatar_url || defaultAvatar}
-                      naame={data.sender?.name || "Unknown"}
-                      time={time}
-                      text={data?.message}
-                    />
-                  );
-                })
+                return isUserSender ? (
+                  <MessageRight
+                    key={index}
+                    avatar={data.sender?.avatar_url || defaultAvatar}
+                    naame={data.sender?.name || "Unknown"}
+                    time={time}
+                    text={data?.message}
+                  />
+                ) : (
+                  <MessageLeft
+                    key={index}
+                    avatar={data.sender?.avatar_url || defaultAvatar}
+                    naame={data.sender?.name || "Unknown"}
+                    time={time}
+                    text={data?.message}
+                  />
+                );
+              })
             ) : (
               <p className="text-center text-gray-500">No messages in this conversation.</p>
             )}

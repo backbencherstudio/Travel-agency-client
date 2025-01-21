@@ -4,6 +4,7 @@ const ChatApis = {
   sendMessage: async (payload) => {
     try {
       const response = await axiosClient.post("/api/chat/message", payload);
+      
       return response.data;
     } catch (error) {
       console.error("Error sending message:", error);
@@ -51,7 +52,7 @@ const ChatApis = {
   fetchUsers: async () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
-      console.log("Raw API Response:", response.data); // Log the full response
+      // console.log("Raw API Response:", response.data); // Log the full response
       return response.data.data; // Ensure you're returning the correct field
     } catch (error) {
       console.error("Error fetching users:", error);
