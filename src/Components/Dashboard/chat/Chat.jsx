@@ -18,8 +18,6 @@ const socket = io(import.meta.env.VITE_API_BASE_URL, {
     token: token
   }
 });
-// console.log('socket', socket);
-
 
 socket.on("connect", () => {
   console.log("Connected to server!");
@@ -42,7 +40,6 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
-
   const fetchConversations = async () => {
     try {
       const data = await ChatApis.fetchConversations();
@@ -59,14 +56,11 @@ const Chat = () => {
     }
   };
 
-
-
   const fetchMessages = async () => {
     if (!activeConversation) return;
 
     setIsLoadingMessages(true);
     try {
-      // const messages = await ChatApis.fetchMessages(activeConversation.id);
       const response = await axiosClient.get(
         `/api/chat/message?conversation_id=${activeConversation.id}`
       );
@@ -93,17 +87,20 @@ const Chat = () => {
     // Add socket event listener
     const handleNewMessage = (data) => {
       console.log("onmessage", data.data);
-      setMessageData(prevMessages => {
-        const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
-        // Check if message already exists to prevent duplicates
-        const messageExists = prevMessagesArray.some(msg => 
-          msg.created_at === data.data.created_at && 
-          msg.message === data.data.message &&
-          msg.sender.id === data.data.sender.id
-        );
-        if (messageExists) return prevMessagesArray;
-        return [...prevMessagesArray, data.data];
-      });
+      // Only update messages if they belong to the active conversation
+      if (data.data.conversation_id === activeConversation?.id) {
+        setMessageData(prevMessages => {
+          const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+          // Check if message already exists to prevent duplicates
+          const messageExists = prevMessagesArray.some(msg => 
+            msg.created_at === data.data.created_at && 
+            msg.message === data.data.message &&
+            msg.sender.id === data.data.sender.id
+          );
+          if (messageExists) return prevMessagesArray;
+          return [...prevMessagesArray, data.data];
+        });
+      }
     };
     
     socket.on("message", handleNewMessage);
@@ -113,7 +110,6 @@ const Chat = () => {
       socket.off("message", handleNewMessage);
     };
   }, [activeConversation]);
-
 
   // Handle Conversation Click
   const handleConversationClick = (conversation) => {
@@ -147,6 +143,7 @@ const Chat = () => {
       // Add message to local state immediately
       const newMsg = {
         message: newMessage,
+        conversation_id: activeConversation.id,
         sender: {
           id: user.id,
           name: user.name,
@@ -190,11 +187,6 @@ const Chat = () => {
       scrollToBottom();
     }
   }, [activeConversation, messageData]);
-
-
-  // if (activeConversation == null) {
-  //   return <>Loading...</>
-  // }
 
   return (
     <div className="grid grid-cols-12 gap-5">
@@ -295,44 +287,34 @@ const Chat = () => {
             {isLoadingMessages ? (
               <p className="text-center text-gray-500">Loading messages...</p>
             ) : messageData?.length > 0 ? (
-              messageData
-                // .filter(data =>
-                //   data.sender?.id === activeConversation?.creator?.id ||
-                //   data.sender?.id === activeConversation?.participant_id ||
-                //   data.receiver?.id === activeConversation?.creator?.id ||
-                //   data.receiver?.id === activeConversation?.participant_id
-                // )
-                .map((data, index) => {
-                  const time = data.created_at
-                    ? new Date(data.created_at).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })
-                    : "N/A";
+              messageData.map((data, index) => {
+                const time = data.created_at
+                  ? new Date(data.created_at).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                  : "N/A";
 
-                  const isUserSender = data.sender?.id === user?.id;
+                const isUserSender = data.sender?.id === user?.id;
 
-                  // console.log("sender", data.sender);
-
-
-                  return isUserSender ? (
-                    <MessageRight
-                      key={index}
-                      avatar={data.sender?.avatar_url || defaultAvatar}
-                      naame={data.sender?.name || "Unknown"}
-                      time={time}
-                      text={data?.message}
-                    />
-                  ) : (
-                    <MessageLeft
-                      key={index}
-                      avatar={data.sender?.avatar_url || defaultAvatar}
-                      naame={data.sender?.name || "Unknown"}
-                      time={time}
-                      text={data?.message}
-                    />
-                  );
-                })
+                return isUserSender ? (
+                  <MessageRight
+                    key={index}
+                    avatar={data.sender?.avatar_url || defaultAvatar}
+                    naame={data.sender?.name || "Unknown"}
+                    time={time}
+                    text={data?.message}
+                  />
+                ) : (
+                  <MessageLeft
+                    key={index}
+                    avatar={data.sender?.avatar_url || defaultAvatar}
+                    naame={data.sender?.name || "Unknown"}
+                    time={time}
+                    text={data?.message}
+                  />
+                );
+              })
             ) : (
               <p className="text-center text-gray-500">No messages in this conversation.</p>
             )}

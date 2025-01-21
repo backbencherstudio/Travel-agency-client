@@ -39,30 +39,31 @@ const ChatToggle = () => {
   useEffect(() => {
     socket.on("message", (data) => {
       console.log("New message received:", data.data);
-      setMessages((prevMessages) => {
-        const prevMessagesArray = Array.isArray(prevMessages)
-          ? prevMessages
-          : [];
-        const messageExists = prevMessagesArray.some(
-          (msg) =>
-            msg.created_at === data.data.created_at &&
-            msg.message === data.data.message &&
-            msg.sender.id === data.data.sender.id
-        );
-        if (messageExists) return prevMessagesArray;
-        return [...prevMessagesArray, data.data];
-      });
+      // Only update messages if it belongs to current conversation
+      if (activeConversation && data.data.conversation_id === activeConversation.id) {
+        setMessages((prevMessages) => {
+          const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+          const messageExists = prevMessagesArray.some(
+            (msg) =>
+              msg.created_at === data.data.created_at &&
+              msg.message === data.data.message &&
+              msg.sender.id === data.data.sender.id
+          );
+          if (messageExists) return prevMessagesArray;
+          return [...prevMessagesArray, data.data];
+        });
+      }
     });
 
     return () => {
       socket.off("message");
     };
-  }, []);
+  }, [activeConversation]);
 
   const fetchConversations = async () => {
     try {
-      const response = await axiosClient.get("/api/chat/conversation");
-      setConversations(response.data.data);
+      const response = await ChatApis.fetchConversations();
+      setConversations(response);
     } catch (error) {
       console.error("Error fetching conversations:", error);
     }
@@ -100,9 +101,10 @@ const ChatToggle = () => {
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
     const existingConversation = conversations.find(
-      (conv) => conv.id === admin.id
+      (conv) => 
+        (conv.creator_id === user.id && conv.participant_id === admin.id) ||
+        (conv.creator_id === admin.id && conv.participant_id === user.id)
     );
-    console.log("existingConversation", existingConversation);
 
     if (existingConversation) {
       setActiveConversation(existingConversation);
@@ -115,10 +117,18 @@ const ChatToggle = () => {
         creator_id: user.id,
         participant_id: admin.id,
       });
-      console.log("response", response);
 
-      setActiveConversation(response.data.data);
-      setConversations([...conversations, response.data.data]);
+      const newConversation = {
+        ...response.data.data,
+        participant: {
+          id: admin.id,
+          name: admin.name,
+          avatar_url: admin.avatar
+        }
+      };
+
+      setActiveConversation(newConversation);
+      setConversations([...conversations, newConversation]);
     } catch (error) {
       console.error("Error creating conversation:", error);
     }
@@ -134,10 +144,14 @@ const ChatToggle = () => {
     if (!newMessage.trim() || !activeConversation) return;
 
     try {
+      const receiverId = activeConversation.participant_id === user.id 
+        ? activeConversation.creator_id 
+        : activeConversation.participant_id;
+
       // Create message object
       const messagePayload = {
         conversation_id: activeConversation.id,
-        receiver_id: activeConversation.participant_id,
+        receiver_id: receiverId,
         message: newMessage,
         sender_id: user.id,
         sender_name: user.name,
@@ -149,15 +163,16 @@ const ChatToggle = () => {
       // Add message to local state immediately
       const newMsg = {
         message: newMessage,
+        conversation_id: activeConversation.id,
         sender: {
           id: user.id,
           name: user.name,
           avatar: user.avatar_url,
         },
         receiver: {
-          id: messagePayload.receiver_id,
-          name: messagePayload.receiver_name,
-          avatar: messagePayload.receiver_avatar,
+          id: receiverId,
+          name: activeConversation.participant?.name,
+          avatar: activeConversation.participant?.avatar_url,
         },
         created_at: new Date().toISOString(),
       };
