@@ -40,7 +40,7 @@ const HeroSection = ({ bgImg, pageName, links, description }) => {
                         ))}
                     </h3>
                     <h4 className="pageTitle">{pageName}</h4>
-                    <p className="mt-4 text-lg px-6 sm:px-10 md:px-16 lg:max-w-[45%]">
+                    <p className="mt-4 text-lg px-6 sm:px-10 md:px-16 lg:max-w-5xl">
                         {description}
                     </p>
                 </div>

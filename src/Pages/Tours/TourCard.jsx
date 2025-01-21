@@ -1,9 +1,9 @@
 import React from 'react';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function TourCard({ tour }) {
-
+const navigate = useNavigate()
     // Function to render stars based on rating
     const renderStars = (rating) => {
         const stars = [];
@@ -21,6 +21,10 @@ function TourCard({ tour }) {
         }
         return stars;
     };
+
+    const handleBookNow = () => {
+        navigate(`/tours/${tour?.id}`)
+    }
 
     return (
         <div key={tour?.id} className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]">
@@ -42,7 +46,7 @@ function TourCard({ tour }) {
                         Hotel + All inclusive
                     </div>
                 </div>
-                <Link to={`${tour?.id}`} className="mb-2 text-[#1D1F2C] text-xl font-bold hover:text-blue-500">
+                <Link to={`${tour?.id}`} className="mb-2 text-[#1D1F2C] text-xl font-bold transform duration-300 hover:text-blue-500">
                     {tour?.name}
                 </Link>
                 <p className="text-[#4A4C56] text-sm leading-normal font-normal">
@@ -73,7 +77,7 @@ function TourCard({ tour }) {
                     <div className='text-xs'>Starting From</div>
                     <div className='text-xl text-[#0E457D] font-bold'>${tour?.price}</div>
                 </div>
-                <button className='flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white'>
+                <button onClick={handleBookNow} className='flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white transform duration-300'>
                     <div className='text-sm '>Book Now</div>
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                     <path d="M3.66699 8H13.0003" stroke="#0E457D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

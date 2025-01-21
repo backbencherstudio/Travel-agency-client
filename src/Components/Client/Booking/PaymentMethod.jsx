@@ -115,14 +115,14 @@ const PaymentMethod = ({ onBack }) => {
                 </div>
               </div>
 
-              <button className='w-full p-3 mt-2 bg-[#EB5B2A] text-white rounded-full flex items-center justify-center gap-2'>
+              {/* <button className='w-full p-3 mt-2 bg-[#EB5B2A] text-white rounded-full flex items-center justify-center gap-2'>
                 <span className='text-lg'>+</span> Add New Card
-              </button>
+              </button> */}
             </div>
           )}
         </div>
 
-        <div
+        {/* <div
           className={`p-4 border rounded-lg cursor-pointer ${
             selectedMethod === 'googlepay'
               ? 'border-[#EB5B2A]'
@@ -139,9 +139,9 @@ const PaymentMethod = ({ onBack }) => {
             />
             <span className='font-medium'>Google Pay</span>
           </div>
-        </div>
+        </div> */}
 
-        <div
+        {/* <div
           className={`p-4 border rounded-lg cursor-pointer ${
             selectedMethod === 'paypal' ? 'border-[#EB5B2A]' : 'border-gray-200'
           }`}
@@ -156,8 +156,8 @@ const PaymentMethod = ({ onBack }) => {
             />
             <span className='font-medium'>Paypal</span>
           </div>
-        </div>
-
+        </div> */}
+{/* 
         <div
           className={`p-4 border rounded-lg cursor-pointer ${
             selectedMethod === 'cod' ? 'border-[#EB5B2A]' : 'border-gray-200'
@@ -173,7 +173,7 @@ const PaymentMethod = ({ onBack }) => {
             />
             <span className='font-medium'>Cash on Delivery</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

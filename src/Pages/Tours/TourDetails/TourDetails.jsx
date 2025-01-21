@@ -54,7 +54,7 @@ const TourDetails = () => {
     //     ],
     // }
 
-    console.log('id', id)
+    // console.log('id', id)
     
   return (
     <div>
