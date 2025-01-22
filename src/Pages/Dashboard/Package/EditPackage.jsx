@@ -31,12 +31,13 @@ const EditPackage = () => {
   const [policies, setPolicies] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [images, setImages] = useState([]);
-    const [extraServices, setExtraServices] = useState([]);
+  const [extraServices, setExtraServices] = useState([]);
   const [serviceIds, setServicesIds] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
   const [loading, setLoading] = useState(false);
+  const [selectedDestinations, setSelectedDestinations] = useState([]);
 
   const { id } = useParams();
   const editId = id;
@@ -97,7 +98,17 @@ const EditPackage = () => {
             )
           );
           setPackageType(packageData.type);
-          setValue("destination_id", packageData.destination?.id);
+          if (packageData.package_destinations) {
+            setSelectedDestinations(
+              packageData.package_destinations.map(dest => ({ id: dest.destination.id }))
+            );
+            setValue('destinations', 
+              packageData.package_destinations.map(dest => ({ id: dest.destination.id }))
+            );
+          } else if (packageData.package_destinations) {
+            setSelectedDestinations([{ id: packageData.package_destinations.destination.id }]);
+            setValue('destinations', [{ id: packageData.package_destinations.destination.id }]);
+          }
           setValue("price", packageData.price);
           setValue("duration", packageData.duration);
           setValue("duration_type", packageData.duration_type);
@@ -147,6 +158,7 @@ const EditPackage = () => {
   // console.log('tags', tags)
   // console.log('categories', categories)
 
+  console.log("selectedDestinations", selectedDestinations);
   // console.log('includedPackages', includedPackages)
   console.log("policies", policies);
   console.log("images", images);
@@ -199,7 +211,7 @@ const EditPackage = () => {
       excludedPackages,
       serviceIds,
       package_images: images.map((image) => (image.file ? image.file : image)),
-      // tourPlan,
+      destinations: selectedDestinations,
     };
 
     const package_images = [];
@@ -314,6 +326,22 @@ const EditPackage = () => {
     } else {
       // Remove the service ID object if unchecked
       setServicesIds((prev) => prev.filter((service) => service.id !== serviceId));
+    }
+  };
+
+  const handleDestinationChange = (selected) => {
+    if (Array.isArray(selected)) {
+      // For multiple selections (package type)
+      setSelectedDestinations(selected.map(item => ({ id: item.value })));
+      setValue('destinations', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      // For single selection (tour/cruise type)
+      setSelectedDestinations([{ id: selected.value }]);
+      setValue('destinations', [{ id: selected.value }]);
+    } else {
+      // Handle clearing the selection
+      setSelectedDestinations([]);
+      setValue('destinations', []);
     }
   };
 
@@ -536,28 +564,35 @@ const EditPackage = () => {
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
-                    Destination
+                    Destination{packageType === 'package' ? 's' : ''}
                   </label>
-                  <select
-                    type="text"
-                    placeholder="Select a destination"
-                    {...register("destination_id", {
-                      required: "Destination is required",
-                    })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select a destination
-                    </option>
-                    {destinations.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option> // Ensure a return for each <option>
-                    ))}
-                  </select>
-                  {errors.destination_id && (
+                  {packageType === 'package' ? (
+                    <Select
+                      isMulti
+                      options={destinations}
+                      value={destinations.filter(option => 
+                        selectedDestinations.some(dest => dest.id === option.value)
+                      )}
+                      onChange={handleDestinationChange}
+                      placeholder="Select destinations"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                    />
+                  ) : (
+                    <Select
+                      options={destinations}
+                      value={destinations.find(option => 
+                        selectedDestinations[0]?.id === option.value
+                      )}
+                      onChange={handleDestinationChange}
+                      placeholder="Select a destination"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                    />
+                  )}
+                  {errors.destinations && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.destination_id.message}
+                      {errors.destinations.message}
                     </p>
                   )}
                 </div>

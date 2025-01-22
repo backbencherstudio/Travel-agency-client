@@ -14,7 +14,11 @@ import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const AddPackage = () => {
-  const { register, handleSubmit, setValue, formState: { errors }, } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors }, } = useForm({
+    defaultValues: {
+      destinations: []
+    }
+  });
   const [isDragging, setIsDragging] = useState(false);
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
@@ -30,10 +34,11 @@ const AddPackage = () => {
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
   const [loading, setLoading] = useState(false);
+  const [selectedDestinations, setSelectedDestinations] = useState([]);
 
   // const { id } = useParams();
   // const editId = id;
-//   console.log("editId", editId);
+  console.log("selectedDestinations", selectedDestinations);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -256,6 +261,8 @@ const AddPackage = () => {
         );
       } else if (key === "serviceIds") {
         form.append("extra_services", JSON.stringify(serviceIds));
+      } else if (key === "destinations") {
+        form.append("destinations", JSON.stringify(selectedDestinations));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -312,6 +319,22 @@ const AddPackage = () => {
 
   console.log("serviceIds", serviceIds);
   console.log("includedPackages", includedPackages);
+
+  const handleDestinationChange = (selected) => {
+    if (Array.isArray(selected)) {
+      // For multiple selections (package type)
+      setSelectedDestinations(selected.map(item => ({ id: item.value })));
+      setValue('destinations', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      // For single selection (tour/cruise type)
+      setSelectedDestinations([{ id: selected.value }]);
+      setValue('destinations', [{ id: selected.value }]);
+    } else {
+      // Handle clearing the selection
+      setSelectedDestinations([]);
+      setValue('destinations', []);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -519,28 +542,35 @@ const AddPackage = () => {
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
-                    Destination
+                    Destination{packageType === 'package' ? 's' : ''}
                   </label>
-                  <select
-                    type="text"
-                    placeholder="Select a destination"
-                    {...register("destination_id", {
-                      required: "Destination is required",
-                    })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select a destination
-                    </option>
-                    {destinations.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option> // Ensure a return for each <option>
-                    ))}
-                  </select>
-                  {errors.destination_id && (
+                  {packageType === 'package' ? (
+                    <Select
+                      isMulti
+                      options={destinations}
+                      value={destinations.filter(option => 
+                        selectedDestinations.some(dest => dest.id === option.value)
+                      )}
+                      onChange={handleDestinationChange}
+                      placeholder="Select destinations"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                    />
+                  ) : (
+                    <Select
+                      options={destinations}
+                      value={destinations.find(option => 
+                        selectedDestinations[0]?.id === option.value
+                      )}
+                      onChange={handleDestinationChange}
+                      placeholder="Select a destination"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                    />
+                  )}
+                  {errors.destinations && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.destination_id.message}
+                      {errors.destinations.message}
                     </p>
                   )}
                 </div>
@@ -570,8 +600,22 @@ const AddPackage = () => {
                       placeholder="Write duration"
                       {...register("duration", {
                         required: "Package duration is required",
+                        validate: (value) => {
+                          const durationType = document.querySelector('[name="duration_type"]').value;
+                          if (packageType === "tour") {
+                            if (durationType === 'days' && value > 1) {
+                              return "Duration cannot exceed 1 day for tour packages";
+                            }
+                            if (durationType === 'hours' && value > 24) {
+                              return "Duration cannot exceed 24 hours for tour packages";
+                            }
+                            return true;
+                          }
+                        }
                       })}
                       className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                      min="1"
+                      max={packageType === "tour" ? (document.querySelector('[name="duration_type"]')?.value === 'days' ? 1 : 24) : undefined}
                     />
                     {errors.duration && (
                       <p className="text-red-500 text-xs mt-1">
@@ -585,7 +629,18 @@ const AddPackage = () => {
                     </label>
                     <select
                       placeholder="Select Package Type"
-                      {...register("duration_type", { required: "Duration Type is required" })}
+                      {...register("duration_type", { 
+                        required: "Duration Type is required",
+                        onChange: (e) => {
+                          // Reset duration if it exceeds the new type's limit
+                          const currentDuration = parseFloat(document.querySelector('[name="duration"]').value);
+                          if (e.target.value === 'days' && currentDuration > 1) {
+                            setValue('duration', 1);
+                          } else if (e.target.value === 'hours' && currentDuration > 24) {
+                            setValue('duration', 24);
+                          }
+                        }
+                      })}
                       className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     >
                       <option value="" className="text-base text-[#C9C9C9]">
