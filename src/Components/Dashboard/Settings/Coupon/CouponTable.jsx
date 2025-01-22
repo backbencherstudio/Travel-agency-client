@@ -24,8 +24,14 @@ import CouponApis from '../../../../Apis/CouponApis'
 import moment from 'moment/moment'
 
 const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm()
-    const [searchQuery, setSearchQuery] = useState('')
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors }
+  } = useForm()
+  const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -45,7 +51,7 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
         item.status?.toLowerCase().includes(searchQuery.toLowerCase())
     )
     // if (searchQuery) {
-        setFilteredData(filtered)
+    setFilteredData(filtered)
     // }
   }, [searchQuery, data])
 
@@ -89,13 +95,20 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
     if (mode === 'edit' && selectedMember) {
       // Populate form with selected member's data
       setValue('name', selectedMember.name)
+      setValue('code', selectedMember.code)
       setValue('description', selectedMember.description)
       setValue('amount_type', selectedMember.amount_type)
       setValue('amount', selectedMember.amount)
       setValue('max_uses', selectedMember.max_uses)
       setValue('max_uses_per_user', selectedMember.max_uses_per_user)
-      setValue('starts_at', moment(selectedMember.starts_at).format('YYYY-MM-DD'))
-      setValue('expires_at', moment(selectedMember.updated_at).format('YYYY-MM-DD'))
+      setValue(
+        'starts_at',
+        moment(selectedMember.starts_at).format('YYYY-MM-DD')
+      )
+      setValue(
+        'expires_at',
+        moment(selectedMember.updated_at).format('YYYY-MM-DD')
+      )
       setValue('min_type', selectedMember.min_type)
       setValue('min_amount', selectedMember.min_amount)
       setValue('min_quantity', selectedMember.min_quantity)
@@ -124,67 +137,63 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
   }
 
   // Handle form submission
-  const onSubmit = async (data) => {
-
+  const onSubmit = async data => {
     setLoading(true)
 
     // For now, just log the data
     if (mode === 'edit') {
-        // console.log('Editing Member', selectedMember.id)
-        // console.log('data', data)
-        // Make API call to update the member
-        const res = await CouponApis.update(selectedMember.id, data);
-        console.log('res', res)
-        if (res.success) {
-            // Reset form and close modal
-            reset()
-            setOpenModal(false)
-            setLoading(false)
-            getCoupons()
-        }
+      // console.log('Editing Member', selectedMember.id)
+      // console.log('data', data)
+      // Make API call to update the member
+      const res = await CouponApis.update(selectedMember.id, data)
+      console.log('res', res)
+      if (res.success) {
+        // Reset form and close modal
+        reset()
+        setOpenModal(false)
+        setLoading(false)
+        getCoupons()
+      }
     } else {
-        console.log('data', data)
-        console.log('Adding new member')
-        // Make API call to add the new member
-        const res = await CouponApis.save(data);
-        console.log('res', res)
-        if (res.success) {
-            // Reset form and close modal
-            reset()
-            setOpenModal(false)
-            setLoading(false)
-            getCoupons()
-        }
+      console.log('data', data)
+      console.log('Adding new member')
+      // Make API call to add the new member
+      const res = await CouponApis.save(data)
+      console.log('res', res)
+      if (res.success) {
+        // Reset form and close modal
+        reset()
+        setOpenModal(false)
+        setLoading(false)
+        getCoupons()
+      }
     }
   }
 
   const handleCouponDelete = async (e, id) => {
-    e.preventDefault();
-    const shouldDelete = window.confirm("Do you want to delete this coupon?");
+    e.preventDefault()
+    const shouldDelete = window.confirm('Do you want to delete this coupon?')
     if (shouldDelete) {
-        try {
-            const res = await CouponApis.delete(id);
-            getCoupons();
-            // Optional: Handle success, e.g., refresh list or show a success message
-            console.log("Package deleted successfully:", res);
-        } catch (error) {
-            // Handle errors, e.g., show an error message
-            console.error("Failed to delete package:", error);
-        }
+      try {
+        const res = await CouponApis.delete(id)
+        getCoupons()
+        // Optional: Handle success, e.g., refresh list or show a success message
+        console.log('Package deleted successfully:', res)
+      } catch (error) {
+        // Handle errors, e.g., show an error message
+        console.error('Failed to delete package:', error)
+      }
     }
-
   }
-  
+
   return (
     <div>
       <div className=''>
         <div className='grid gird-col-1 xl:grid-cols-2 items-center py-5 gap-3'>
-        <div className='flex flex-col gap-2 '>
-          <h1 className='text-[#0D0E0D] text-xl font-semibold'>{title}</h1>
-          <p className='text-[#687588] text-sm'>
-            Give discounts by coupons.
-          </p>
-        </div>
+          <div className='flex flex-col gap-2 '>
+            <h1 className='text-[#0D0E0D] text-xl font-semibold'>{title}</h1>
+            <p className='text-[#687588] text-sm'>Give discounts by coupons.</p>
+          </div>
           <div className='flex items-center xl:justify-end gap-5'>
             <div className='relative'>
               <input
@@ -216,6 +225,13 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
                     Coupon Name
+                  </TableCell>
+                )}
+                {columns.code && (
+                  <TableCell
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                  >
+                    Coupon Code
                   </TableCell>
                 )}
                 {columns.description && (
@@ -276,9 +292,16 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
                     >
                       {columns.name && (
                         <TableCell>
-                            <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
-                                {item.name}
-                            </span>
+                          <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
+                            {item.name}
+                          </span>
+                        </TableCell>
+                      )}
+                      {columns.code && (
+                        <TableCell>
+                          <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
+                            {item.code}
+                          </span>
                         </TableCell>
                       )}
                       {columns.description && (
@@ -316,7 +339,7 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
                           </p>
                         </TableCell>
                       )}
-                      
+
                       <TableCell>
                         <div className='flex items-center justify-center gap-4'>
                           <button
@@ -329,9 +352,9 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
                             <FiEdit2 className='text-xl' />
                           </button>
                           <button
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                handleCouponDelete(e, item.id)
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleCouponDelete(e, item.id)
                             }}
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
                           >
@@ -368,8 +391,16 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
       </Paper>
 
       {/* Modal */}
-      <AddEditModal mode={mode} openModal={openModal} handleCloseModal={handleCloseModal} handleSubmit={handleSubmit} onSubmit={onSubmit} register={register} errors={errors} loading={loading}  />
-
+      <AddEditModal
+        mode={mode}
+        openModal={openModal}
+        handleCloseModal={handleCloseModal}
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        register={register}
+        errors={errors}
+        loading={loading}
+      />
     </div>
   )
 }

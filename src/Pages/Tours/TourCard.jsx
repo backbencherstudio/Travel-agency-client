@@ -46,7 +46,7 @@ const navigate = useNavigate()
                         Hotel + All inclusive
                     </div>
                 </div>
-                <Link to={`${tour?.id}`} className="mb-2 text-[#1D1F2C] text-xl font-bold transform duration-300 hover:text-blue-500">
+                <Link to={`${tour?.id}`} className="mb-2 text-[#1D1F2C] text-xl font-bold trans hover:text-blue-500">
                     {tour?.name}
                 </Link>
                 <p className="text-[#4A4C56] text-sm leading-normal font-normal">
@@ -77,7 +77,7 @@ const navigate = useNavigate()
                     <div className='text-xs'>Starting From</div>
                     <div className='text-xl text-[#0E457D] font-bold'>${tour?.price}</div>
                 </div>
-                <button onClick={handleBookNow} className='flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white transform duration-300'>
+                <button onClick={handleBookNow} className='flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white'>
                     <div className='text-sm '>Book Now</div>
                     <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
                     <path d="M3.66699 8H13.0003" stroke="#0E457D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

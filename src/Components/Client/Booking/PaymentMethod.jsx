@@ -24,7 +24,7 @@ const PaymentMethod = ({ onBack }) => {
   return (
     <div className='p-6'>
       <div className='flex items-center justify-between mb-6'>
-        {/* <button
+        <button
           onClick={onBack}
           className='flex items-center gap-2 text-gray-600 hover:text-[#EB5B2A]'
         >
@@ -42,7 +42,7 @@ const PaymentMethod = ({ onBack }) => {
             />
           </svg>
           Back
-        </button> */}
+        </button>
       </div>
       <h2 className='text-2xl font-bold mb-4'>Payment Method</h2>
       <p className='text-gray-600 mb-6'>Select a payment method</p>
@@ -122,7 +122,7 @@ const PaymentMethod = ({ onBack }) => {
           )}
         </div>
 
-        {/* <div
+        <div
           className={`p-4 border rounded-lg cursor-pointer ${
             selectedMethod === 'googlepay'
               ? 'border-[#EB5B2A]'
@@ -139,9 +139,9 @@ const PaymentMethod = ({ onBack }) => {
             />
             <span className='font-medium'>Google Pay</span>
           </div>
-        </div> */}
+        </div>
 
-        {/* <div
+        <div
           className={`p-4 border rounded-lg cursor-pointer ${
             selectedMethod === 'paypal' ? 'border-[#EB5B2A]' : 'border-gray-200'
           }`}
@@ -156,8 +156,8 @@ const PaymentMethod = ({ onBack }) => {
             />
             <span className='font-medium'>Paypal</span>
           </div>
-        </div> */}
-{/* 
+        </div>
+
         <div
           className={`p-4 border rounded-lg cursor-pointer ${
             selectedMethod === 'cod' ? 'border-[#EB5B2A]' : 'border-gray-200'
@@ -173,7 +173,7 @@ const PaymentMethod = ({ onBack }) => {
             />
             <span className='font-medium'>Cash on Delivery</span>
           </div>
-        </div> */}
+        </div>
       </div>
     </div>
   )

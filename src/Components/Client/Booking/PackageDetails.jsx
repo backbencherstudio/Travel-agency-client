@@ -11,16 +11,17 @@ const formatDate = isoDate => {
 }
 
 const PackageDetails = ({ checkoutData }) => {
+
+  // console.log("checkout", checkoutData)
   // Get average rating from backend, default to 0 if null or undefined
   const averageRating = checkoutData?.data?.checkout?.average_rating ?? 0
-
   return (
     <div>
       <div className='bg-[#FDEFEA] p-5 rounded-lg'>
         <div className='flex flex-col sm:flex-row items-center justify-between'>
           <h1 className='font-bold text-[#000E19] text-xl sm:text-4xl mb-3'>
             {checkoutData?.data?.checkout?.checkout_items?.[0]?.package?.name ||
-              'anonymous'}
+              'Not found'}
           </h1>
           <div className='flex items-center gap-2 sm:hidden'>
             <p className='text-[#4A4C56] text-[14px]'>Review</p>
