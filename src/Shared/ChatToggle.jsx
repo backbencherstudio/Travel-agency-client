@@ -6,6 +6,7 @@ import axiosClient from "../axiosClient";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 import ChatApis from "../Apis/ChatApis";
 import { io } from "socket.io-client";
+import NotificationManager from "./NotificationManager";
 const defaultAvatar = "https://via.placeholder.com/150";
 
 
@@ -38,23 +39,7 @@ const ChatToggle = () => {
   
   // Request notification permission on component mount
   useEffect(() => {
-    const requestNotificationPermission = async () => {
-      try {
-        if (!("Notification" in window)) {
-          console.log("This browser does not support desktop notification");
-          return;
-        }
-
-        const permission = await Notification.requestPermission();
-        if (permission !== "granted") {
-          console.log("Permission not granted for Notification");
-        }
-      } catch (error) {
-        console.error("Error requesting notification permission:", error);
-      }
-    };
-
-    requestNotificationPermission();
+    NotificationManager.requestPermission();
   }, []);
 
   // Socket event listener for new messages
@@ -62,38 +47,24 @@ const ChatToggle = () => {
     socket.on("message", (data) => {
       console.log("New message received:", data.data);
       
-      // Show notification for all messages from others
-      if (data.data.sender.id !== user.id) {
-        try {
-          if ("Notification" in window && Notification.permission === "granted") {
-            const notification = new Notification("New Message from Admin", {
-              body: `Admin: ${data.data.message}`,
-              icon: data.data.sender.avatar || defaultAvatar,
-              tag: String(new Date().getTime()), // Unique tag for each message
-              requireInteraction: false, // Changed to false to allow auto-close
-              silent: false
-            });
-
-            // Close notification after 5 seconds
-            setTimeout(() => {
-              notification.close();
-            }, 5000);
-
-            notification.onclick = function() {
-              window.focus();
-              setIsOpen(true);
-              if (data.data.conversation_id) {
-                const conversation = conversations.find(conv => conv.id === data.data.conversation_id);
-                if (conversation) {
-                  setActiveConversation(conversation);
-                }
+      // Show notification only when chat is closed and message is from others
+      if (data.data.sender.id !== user.id && !isOpen) {
+        NotificationManager.showNotification({
+          title: "New Message from Admin",
+          body: `Admin: ${data.data.message}`,
+          icon: data.data.sender.avatar || defaultAvatar,
+          requireInteraction: false,
+          onClick: () => {
+            window.focus();
+            setIsOpen(true);
+            if (data.data.conversation_id) {
+              const conversation = conversations.find(conv => conv.id === data.data.conversation_id);
+              if (conversation) {
+                setActiveConversation(conversation);
               }
-              this.close();
-            };
+            }
           }
-        } catch (error) {
-          console.error("Error showing notification:", error);
-        }
+        });
       }
 
       // Only update messages if it belongs to current conversation
@@ -117,7 +88,7 @@ const ChatToggle = () => {
     return () => {
       socket.off("message");
     };
-  }, [activeConversation, user.id, conversations]);
+  }, [activeConversation, user.id, conversations, isOpen]);
 
   const fetchConversations = async () => {
     try {

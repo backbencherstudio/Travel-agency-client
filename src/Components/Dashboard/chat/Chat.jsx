@@ -9,6 +9,7 @@ import axiosClient from "../../../axiosClient";
 import ChatApis from "../../../Apis/ChatApis";
 import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
 import { io } from "socket.io-client";
+import NotificationManager from "../../../Shared/NotificationManager";
 const defaultAvatar = "https://via.placeholder.com/150";
 
 const token = localStorage.getItem("token");
@@ -138,29 +139,19 @@ const Chat = () => {
     const handleNewMessage = (data) => {
       // Show notification only when sender is not the current user and user is not in dashboard
       if (data.data.sender.id !== user.id && !isInDashboard && document.hidden) {
-        if ("Notification" in window && Notification.permission === "granted") {
-          const notification = new Notification(data.data.sender.name, {
-            body: data.data.message,
-            icon: data.data.sender.avatar_url || defaultAvatar,
-            tag: 'chat-message',
-            silent: false,
-            requireInteraction: true,
-          });
-
-          notification.onclick = function(event) {
-            event.preventDefault();
+        NotificationManager.showNotification({
+          title: data.data.sender.name,
+          body: data.data.message,
+          icon: data.data.sender.avatar_url || defaultAvatar,
+          requireInteraction: true,
+          onClick: () => {
             window.focus();
             navigate('/dashboard/chat');
             if (data.data.conversation_id) {
               navigate(`/dashboard/chat/${data.data.conversation_id}`);
             }
-            notification.close();
-          };
-
-          setTimeout(() => {
-            notification.close();
-          }, 5000);
-        }
+          }
+        });
       }
 
       // Update messages if they belong to active conversation
@@ -202,9 +193,7 @@ const Chat = () => {
 
   // Request notification permission
   useEffect(() => {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
+    NotificationManager.requestPermission();
   }, []);
 
   const handleConversationClick = (conversation) => {
