@@ -6,6 +6,7 @@ import axiosClient from "../axiosClient";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 import ChatApis from "../Apis/ChatApis";
 import { io } from "socket.io-client";
+import NotificationManager from "./NotificationManager";
 const defaultAvatar = "https://via.placeholder.com/150";
 
 
@@ -36,11 +37,36 @@ const ChatToggle = () => {
   const messagesContainerRef = useRef(null);
   const { user } = useContext(AuthContext);
   
+  // Request notification permission on component mount
+  useEffect(() => {
+    NotificationManager.requestPermission();
+  }, []);
 
   // Socket event listener for new messages
   useEffect(() => {
     socket.on("message", (data) => {
       console.log("New message received:", data.data);
+      
+      // Show notification only when chat is closed and message is from others
+      if (data.data.sender.id !== user.id && !isOpen) {
+        NotificationManager.showNotification({
+          title: "New Message from Admin",
+          body: `Admin: ${data.data.message}`,
+          icon: data.data.sender.avatar || defaultAvatar,
+          requireInteraction: false,
+          onClick: () => {
+            window.focus();
+            setIsOpen(true);
+            if (data.data.conversation_id) {
+              const conversation = conversations.find(conv => conv.id === data.data.conversation_id);
+              if (conversation) {
+                setActiveConversation(conversation);
+              }
+            }
+          }
+        });
+      }
+
       // Only update messages if it belongs to current conversation
       if (activeConversation && data.data.conversation_id === activeConversation.id) {
         setMessages((prevMessages) => {
@@ -62,7 +88,7 @@ const ChatToggle = () => {
     return () => {
       socket.off("message");
     };
-  }, [activeConversation]);
+  }, [activeConversation, user.id, conversations, isOpen]);
 
   const fetchConversations = async () => {
     try {
@@ -153,14 +179,12 @@ const ChatToggle = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
-    console.log('new message', newMessage);
 
     try {
       const receiverId = activeConversation.participant_id === user.id 
         ? activeConversation.creator_id 
         : activeConversation.participant_id;
 
-      // Create message object
       const messagePayload = {
         conversation_id: activeConversation.id,
         receiver_id: receiverId,
@@ -171,7 +195,6 @@ const ChatToggle = () => {
         receiver_name: activeConversation.participant?.name,
         receiver_avatar: activeConversation.participant?.avatar_url,
       };
-      console.log('message payload', messagePayload);
 
       // Add message to local state immediately
       const newMsg = {
@@ -191,22 +214,16 @@ const ChatToggle = () => {
       };
 
       setMessages((prev) => [...prev, newMsg]);
-      console.log('new message', newMsg);
 
       // Send to API
       await ChatApis.sendMessage(messagePayload);
 
-      // Emit socket event
+      // Emit socket event with conversation details
       socket.emit("sendMessage", {
         to: messagePayload.receiver_id,
         data: newMsg,
       });
-      console.log('socket event emitted');
-      console.log('new ', newMsg);
-      console.log('new message', newMessage);
-      
 
-      // Clear input
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
