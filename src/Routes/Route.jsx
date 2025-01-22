@@ -46,6 +46,7 @@ import Otp from '../Pages/Auth/Otp'
 import Profile from '../Components/Home/Profile'
 import ClientPackages from '../Pages/Package/Packages'
 import ClientPackageDetails from '../Pages/Package/PackageDetails'
+import Language from '../Pages/Dashboard/Package/Language'
 
 export const router = createBrowserRouter([
   {
@@ -156,6 +157,10 @@ export const router = createBrowserRouter([
       {
         path: 'add-package',
         element: <AddPackage />
+      },
+      {
+        path: 'language',
+        element: <Language />
       },
       {
         path: "chat",
