@@ -33,6 +33,7 @@ const Chat = () => {
   const [activeConversation, setActiveConversation] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+  const [isInDashboard, setIsInDashboard] = useState(true);
 
   const { conversationID } = useParams();
   const { user } = useContext(AuthContext);
@@ -40,10 +41,41 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
+  // Check if user is in dashboard
+  useEffect(() => {
+    const checkLocation = () => {
+      const path = window.location.pathname;
+      setIsInDashboard(path.includes('/dashboard/chat'));
+    };
+
+    // Initial check
+    checkLocation();
+
+    // Check on visibility change
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsInDashboard(false);
+      } else {
+        checkLocation();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('popstate', checkLocation);
+    window.addEventListener('focus', checkLocation);
+    window.addEventListener('blur', () => setIsInDashboard(false));
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('popstate', checkLocation);
+      window.removeEventListener('focus', checkLocation);
+      window.removeEventListener('blur', () => setIsInDashboard(false));
+    };
+  }, []);
+
   const fetchConversations = async () => {
     try {
       const data = await ChatApis.fetchConversations();
-      // Add unread property to each conversation if not exists
       const conversationsWithUnread = data.map(conv => ({
         ...conv,
         unread: conv.unread || false
@@ -69,10 +101,7 @@ const Chat = () => {
       const response = await axiosClient.get(
         `/api/chat/message?conversation_id=${activeConversation.id}`
       );
-
       setMessageData(response.data.data);
-      console.log("response", response.data.data);
-      
     } catch (error) {
       console.error("Error fetching messages:", error);
     } finally {
@@ -84,19 +113,15 @@ const Chat = () => {
   useEffect(() => {
     fetchConversations();
 
-    // Listen for new conversations
     socket.on("conversation", (data) => {
       const newConversation = data.conversation;
       setUsersData(prevUsers => {
-        // Check if conversation already exists
         const exists = prevUsers.some(conv => conv.id === newConversation.id);
         if (exists) {
-          // Update the existing conversation but preserve unread state
           return prevUsers.map(conv => 
             conv.id === newConversation.id ? {...newConversation, unread: conv.unread} : conv
           );
         }
-        // Add new conversation to the beginning with unread set to true
         return [{...newConversation, unread: true}, ...prevUsers];
       });
     });
@@ -106,18 +131,42 @@ const Chat = () => {
     };
   }, [conversationID]);
 
-  // Fetch Messages for Active Conversation
+  // Fetch Messages and Handle New Messages
   useEffect(() => {
     fetchMessages();
     
-    // Add socket event listener
     const handleNewMessage = (data) => {
-      console.log("onmessage", data.data);
-      // Only update messages if they belong to the active conversation
+      // Show notification only when sender is not the current user and user is not in dashboard
+      if (data.data.sender.id !== user.id && !isInDashboard && document.hidden) {
+        if ("Notification" in window && Notification.permission === "granted") {
+          const notification = new Notification(data.data.sender.name, {
+            body: data.data.message,
+            icon: data.data.sender.avatar_url || defaultAvatar,
+            tag: 'chat-message',
+            silent: false,
+            requireInteraction: true,
+          });
+
+          notification.onclick = function(event) {
+            event.preventDefault();
+            window.focus();
+            navigate('/dashboard/chat');
+            if (data.data.conversation_id) {
+              navigate(`/dashboard/chat/${data.data.conversation_id}`);
+            }
+            notification.close();
+          };
+
+          setTimeout(() => {
+            notification.close();
+          }, 5000);
+        }
+      }
+
+      // Update messages if they belong to active conversation
       if (data.data.conversation_id === activeConversation?.id) {
         setMessageData(prevMessages => {
           const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
-          // Check if message already exists to prevent duplicates
           const messageExists = prevMessagesArray.some(msg => 
             msg.created_at === data.data.created_at && 
             msg.message === data.data.message &&
@@ -128,16 +177,15 @@ const Chat = () => {
         });
       }
 
-      // Update the conversation list to show recent message
+      // Update conversation list and mark as unread
       setUsersData(prevUsers => {
         return prevUsers.map(conv => {
           if (conv.id === data.data.conversation_id) {
-            // Set unread to true only if it's not the active conversation
             const shouldMarkUnread = conv.id !== activeConversation?.id;
             return {
               ...conv,
               messages: [{ message: data.data.message }, ...(conv.messages || [])],
-              unread: shouldMarkUnread
+              unread: shouldMarkUnread || conv.unread
             };
           }
           return conv;
@@ -147,16 +195,20 @@ const Chat = () => {
     
     socket.on("message", handleNewMessage);
 
-    // Cleanup socket listener when component unmounts or activeConversation changes
     return () => {
       socket.off("message", handleNewMessage);
     };
-  }, [activeConversation]);
+  }, [activeConversation, user.id, navigate, isInDashboard]);
 
-  // Handle Conversation Click
+  // Request notification permission
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
   const handleConversationClick = (conversation) => {
     setActiveConversation(conversation);
-    // Only update the unread status for the clicked conversation
     setUsersData(prevUsers => {
       return prevUsers.map(conv => {
         if (conv.id === conversation.id) {
@@ -168,12 +220,10 @@ const Chat = () => {
     navigate(`/dashboard/chat/${conversation.id}`, { replace: true });
   };
 
-  // Handle Send Message
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeConversation) return;
 
     try {
-      // Create message object
       const messagePayload = {
         conversation_id: activeConversation.id,
         receiver_id: user.id === activeConversation.participant_id
@@ -191,7 +241,6 @@ const Chat = () => {
           : activeConversation.participant.avatar_url
       };
 
-      // Add message to local state immediately
       const newMsg = {
         message: newMessage,
         conversation_id: activeConversation.id,
@@ -213,7 +262,6 @@ const Chat = () => {
         return [...prevMessages, newMsg];
       });
 
-      // Update conversation list immediately
       setUsersData(prevUsers => {
         return prevUsers.map(conv => {
           if (conv.id === activeConversation.id) {
@@ -226,26 +274,20 @@ const Chat = () => {
         });
       });
 
-      // Send to API
       await ChatApis.sendMessage(messagePayload);
-
       socket.emit("sendMessage", { to: messagePayload.receiver_id, data: newMsg });
-
-      // Clear input
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
     }
   };
 
-  // Auto scroll message
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   };
 
-  // Scroll to the bottom whenever messageData changes or a new message is sent
   useEffect(() => {
     if (activeConversation) {
       scrollToBottom();

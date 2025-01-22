@@ -36,11 +36,66 @@ const ChatToggle = () => {
   const messagesContainerRef = useRef(null);
   const { user } = useContext(AuthContext);
   
+  // Request notification permission on component mount
+  useEffect(() => {
+    const requestNotificationPermission = async () => {
+      try {
+        if (!("Notification" in window)) {
+          console.log("This browser does not support desktop notification");
+          return;
+        }
+
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          console.log("Permission not granted for Notification");
+        }
+      } catch (error) {
+        console.error("Error requesting notification permission:", error);
+      }
+    };
+
+    requestNotificationPermission();
+  }, []);
 
   // Socket event listener for new messages
   useEffect(() => {
     socket.on("message", (data) => {
       console.log("New message received:", data.data);
+      
+      // Show notification for all messages from others
+      if (data.data.sender.id !== user.id) {
+        try {
+          if ("Notification" in window && Notification.permission === "granted") {
+            const notification = new Notification("New Message from Admin", {
+              body: `Admin: ${data.data.message}`,
+              icon: data.data.sender.avatar || defaultAvatar,
+              tag: String(new Date().getTime()), // Unique tag for each message
+              requireInteraction: false, // Changed to false to allow auto-close
+              silent: false
+            });
+
+            // Close notification after 5 seconds
+            setTimeout(() => {
+              notification.close();
+            }, 5000);
+
+            notification.onclick = function() {
+              window.focus();
+              setIsOpen(true);
+              if (data.data.conversation_id) {
+                const conversation = conversations.find(conv => conv.id === data.data.conversation_id);
+                if (conversation) {
+                  setActiveConversation(conversation);
+                }
+              }
+              this.close();
+            };
+          }
+        } catch (error) {
+          console.error("Error showing notification:", error);
+        }
+      }
+
       // Only update messages if it belongs to current conversation
       if (activeConversation && data.data.conversation_id === activeConversation.id) {
         setMessages((prevMessages) => {
@@ -62,7 +117,7 @@ const ChatToggle = () => {
     return () => {
       socket.off("message");
     };
-  }, [activeConversation]);
+  }, [activeConversation, user.id, conversations]);
 
   const fetchConversations = async () => {
     try {
@@ -153,14 +208,12 @@ const ChatToggle = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
-    console.log('new message', newMessage);
 
     try {
       const receiverId = activeConversation.participant_id === user.id 
         ? activeConversation.creator_id 
         : activeConversation.participant_id;
 
-      // Create message object
       const messagePayload = {
         conversation_id: activeConversation.id,
         receiver_id: receiverId,
@@ -171,7 +224,6 @@ const ChatToggle = () => {
         receiver_name: activeConversation.participant?.name,
         receiver_avatar: activeConversation.participant?.avatar_url,
       };
-      console.log('message payload', messagePayload);
 
       // Add message to local state immediately
       const newMsg = {
@@ -191,22 +243,16 @@ const ChatToggle = () => {
       };
 
       setMessages((prev) => [...prev, newMsg]);
-      console.log('new message', newMsg);
 
       // Send to API
       await ChatApis.sendMessage(messagePayload);
 
-      // Emit socket event
+      // Emit socket event with conversation details
       socket.emit("sendMessage", {
         to: messagePayload.receiver_id,
         data: newMsg,
       });
-      console.log('socket event emitted');
-      console.log('new ', newMsg);
-      console.log('new message', newMessage);
-      
 
-      // Clear input
       setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
