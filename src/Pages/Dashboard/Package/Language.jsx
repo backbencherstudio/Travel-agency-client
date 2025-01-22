@@ -83,26 +83,34 @@ const Language = () => {
     });
 
     const onSubmit = async (data) => {
-        if (editLanguageId) {
-            updateMutation.mutate({
-                id: editLanguageId,
-                data: {
+        try {
+            if (editLanguageId) {
+                await updateMutation.mutateAsync({
+                    id: editLanguageId,
+                    data: {
+                        name: data.name,
+                        code: data.content
+                    }
+                });
+            } else {
+                await saveMutation.mutateAsync({
                     name: data.name,
-                    code: data.content // Using content as code based on API
-                }
-            });
-        } else {
-            saveMutation.mutate({
-                name: data.name,
-                code: data.content // Using content as code based on API
-            });
+                    code: data.content
+                });
+            }
+        } catch (error) {
+            console.error('Form submission error:', error);
         }
     };
 
     const handleEdit = (language) => {
+        // Prevent any default behavior
+        event.preventDefault();
+        event.stopPropagation();
+        
         setEditLanguageId(language.id);
         setValue('name', language.name);
-        setValue('content', language.code); // Using code as content based on API
+        setValue('content', language.code);
     };
 
     const handleDelete = (id) => {
@@ -209,7 +217,7 @@ const Language = () => {
                                                 <TableCell>
                                                     <div className="flex gap-2">
                                                         <button
-                                                            onClick={() => handleEdit(language)}
+                                                            onClick={(event) => handleEdit(language)}
                                                             className="flex items-center justify-center text-blue-600 hover:text-blue-800"
                                                             style={{ width: '40px', height: '40px', padding: '0', margin: '0' }}
                                                         >

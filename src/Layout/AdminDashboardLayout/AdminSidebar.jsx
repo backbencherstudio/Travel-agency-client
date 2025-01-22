@@ -63,7 +63,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
       tab === 'addPackage' ||
       tab === 'packageCategory&Tag' ||
       tab === 'packageDestination&Policy' ||
-      tab === 'packageExtraService'
+      tab === 'packageExtraService' ||
+      tab === 'language'
     ) {
       setSubmenuOpen(true)
     } else {
@@ -117,7 +118,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
               selectedTab === 'addPackage' ||
               selectedTab === 'packageCategory&Tag' ||
               selectedTab === 'packageDestination&Policy' ||
-              selectedTab === 'packageExtraService'
+              selectedTab === 'packageExtraService' ||
+              selectedTab === 'language'
                 ? 'bg-[#eb5b2a] text-white font-semibold'
                 : 'hover:bg-[#0d3055]'
             }`}
@@ -191,6 +193,16 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 }`}
               >
                 <span>Package Extra Service</span>
+              </button>
+              <button
+                onClick={() => handleNavigation('language', 'language')}
+                className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${
+                  selectedTab === 'language'
+                    ? 'bg-[#eb5b2a] text-white font-semibold'
+                    : 'hover:bg-[#0d3055]'
+                }`}
+              >
+                <span>Package Language</span>
               </button>
             </div>
           )}

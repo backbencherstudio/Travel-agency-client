@@ -30,11 +30,13 @@ const AddPackage = () => {
   const [images, setImages] = useState([]);
   const [extraServices, setExtraServices] = useState([]);
   const [serviceIds, setServicesIds] = useState([]);
+  const [languages, setLanguages] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
   const [loading, setLoading] = useState(false);
   const [selectedDestinations, setSelectedDestinations] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
 
   // const { id } = useParams();
   // const editId = id;
@@ -79,6 +81,8 @@ const AddPackage = () => {
         const resServices = await axiosClient.get("api/admin/extra-service");
         setExtraServices(resServices.data?.data);
 
+        const resLanguages = await axiosClient.get("api/admin/language");
+        setLanguages(resLanguages.data?.data);
         // if (editId) {
         //   const resPackage = await axiosClient.get(
         //     `api/admin/package/${editId}`
@@ -775,31 +779,29 @@ const AddPackage = () => {
                   </ul>
                 </div>
                 <div>
-                  <select
-                    type="text"
-                    placeholder="Language"
-                    {...register("language")}
-                    className="text-base text-black w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-black">
-                      Language
-                    </option>
-                    <option value="en" className="text-base text-black">
-                      English
-                    </option>
-                    <option value="es" className="text-base text-black">
-                      Spanish
-                    </option>
-                    <option value="de" className="text-base text-black">
-                      German
-                    </option>
-                    <option value="fr" className="text-base text-black">
-                      French
-                    </option>
-                  </select>
-                  {/* {errors.language && (
-                          <p className="text-red-500 text-xs mt-1">{errors.language.message}</p>
-                      )} */}
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Language
+                  </label>
+                  <Select
+                    options={languages.map(lang => ({
+                      value: lang.id,
+                      label: lang.name
+                    }))}
+                    value={languages
+                      .filter(lang => selectedLanguages.some(sel => sel.id === lang.id))
+                      .map(lang => ({
+                        value: lang.id,
+                        label: lang.name
+                      }))}
+                    onChange={(selected) => {
+                      const selectedIds = selected ? [{ id: selected.value }] : [];
+                      setSelectedLanguages(selectedIds);
+                      setValue('language_id', selected ? selected.value : '');
+                    }}
+                    placeholder="Select a language"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
