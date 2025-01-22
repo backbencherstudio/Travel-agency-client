@@ -35,6 +35,7 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isInDashboard, setIsInDashboard] = useState(true);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
   const { conversationID } = useParams();
   const { user } = useContext(AuthContext);
@@ -199,12 +200,19 @@ const Chat = () => {
   const handleConversationClick = (conversation) => {
     setActiveConversation(conversation);
     setUsersData(prevUsers => {
-      return prevUsers.map(conv => {
+      const updatedUsers = prevUsers.map(conv => {
         if (conv.id === conversation.id) {
           return { ...conv, unread: false };
         }
         return conv;
       });
+      
+      // Recalculate total unread count
+      const newUnreadCount = updatedUsers.filter(conv => conv.unread).length;
+      setTotalUnreadCount(newUnreadCount);
+      localStorage.setItem('unreadMessageCount', newUnreadCount);
+      
+      return updatedUsers;
     });
     navigate(`/dashboard/chat/${conversation.id}`, { replace: true });
   };
