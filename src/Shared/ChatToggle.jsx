@@ -84,11 +84,12 @@ const ChatToggle = () => {
     });
     console.log('messages', messages);
     
+    
 
     return () => {
       socket.off("message");
     };
-  }, [activeConversation, user.id, conversations, isOpen]);
+  }, [activeConversation,  conversations, isOpen]);
 
   const fetchConversations = async () => {
     try {
@@ -272,11 +273,24 @@ const ChatToggle = () => {
                     onClick={() => handleAdminClick(admin)}
                     className="flex items-center p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
                   >
-                    <img
-                      src={admin.avatar || defaultAvatar}
-                      className="rounded-full h-10 w-10 object-cover"
-                      alt={admin.name}
-                    />
+                    {admin.avatar ? (
+                      <img
+                        src={admin.avatar}
+                        className="rounded-full h-10 w-10 object-cover"
+                        alt={admin.name}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextElementSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div 
+                      className={`rounded-full h-10 w-10 bg-gray-200 text-gray-600 flex items-center justify-center ${
+                        admin.avatar ? 'hidden' : ''
+                      }`}
+                    >
+                      {admin.name.charAt(0).toUpperCase()}
+                    </div>
                     <div className="ml-3">
                       <h6 className="font-medium">{admin.name}</h6>
                       <p className="text-sm text-gray-500">
