@@ -16,7 +16,8 @@ import { toast } from "react-toastify";
 const AddPackage = () => {
   const { register, handleSubmit, setValue, formState: { errors }, } = useForm({
     defaultValues: {
-      destinations: []
+      destinations: [],
+      languages: []
     }
   });
   const [isDragging, setIsDragging] = useState(false);
@@ -37,7 +38,7 @@ const AddPackage = () => {
   const [loading, setLoading] = useState(false);
   const [selectedDestinations, setSelectedDestinations] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
-
+  console.log('selectedLanguages', selectedLanguages)
   // const { id } = useParams();
   // const editId = id;
   console.log("selectedDestinations", selectedDestinations);
@@ -267,6 +268,8 @@ const AddPackage = () => {
         form.append("extra_services", JSON.stringify(serviceIds));
       } else if (key === "destinations") {
         form.append("destinations", JSON.stringify(selectedDestinations));
+      }  else if (key === "languages") {
+        form.append("languages", JSON.stringify(selectedLanguages));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -337,6 +340,22 @@ const AddPackage = () => {
       // Handle clearing the selection
       setSelectedDestinations([]);
       setValue('destinations', []);
+    }
+  };
+
+  const handleLanguageChange = (selected) => {
+    if (Array.isArray(selected)) {
+      // For multiple selections (package type)
+      setSelectedLanguages(selected.map(item => ({ id: item.value })));
+      setValue('languages', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      // For single selection (tour/cruise type)
+      setSelectedLanguages([{ id: selected.value }]);
+      setValue('languages', [{ id: selected.value }]);
+    } else {
+      // Handle clearing the selection
+      setSelectedLanguages([]);
+      setValue('languages', []);
     }
   };
 
@@ -783,6 +802,7 @@ const AddPackage = () => {
                     Language
                   </label>
                   <Select
+                    isMulti
                     options={languages.map(lang => ({
                       value: lang.id,
                       label: lang.name
@@ -793,12 +813,8 @@ const AddPackage = () => {
                         value: lang.id,
                         label: lang.name
                       }))}
-                    onChange={(selected) => {
-                      const selectedIds = selected ? [{ id: selected.value }] : [];
-                      setSelectedLanguages(selectedIds);
-                      setValue('language_id', selected ? selected.value : '');
-                    }}
-                    placeholder="Select a language"
+                    onChange={handleLanguageChange}
+                    placeholder="Select language"
                     className="react-select-container"
                     classNamePrefix="react-select"
                   />

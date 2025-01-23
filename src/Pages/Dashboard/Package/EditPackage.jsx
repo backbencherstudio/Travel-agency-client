@@ -33,6 +33,8 @@ const EditPackage = () => {
   const [images, setImages] = useState([]);
   const [extraServices, setExtraServices] = useState([]);
   const [serviceIds, setServicesIds] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
@@ -82,6 +84,9 @@ const EditPackage = () => {
         const resServices = await axiosClient.get("api/admin/extra-service");
         setExtraServices(resServices.data?.data);
 
+        const resLanguages = await axiosClient.get("api/admin/language");
+        setLanguages(resLanguages.data?.data);
+
         if (editId) {
           const resPackage = await axiosClient.get(
             `api/admin/package/${editId}`
@@ -108,6 +113,14 @@ const EditPackage = () => {
           } else if (packageData.package_destinations) {
             setSelectedDestinations([{ id: packageData.package_destinations.destination.id }]);
             setValue('destinations', [{ id: packageData.package_destinations.destination.id }]);
+          }
+          if (packageData.package_languages) {
+            setSelectedLanguages(
+              packageData.package_languages.map(dest => ({ id: dest.language.id }))
+            );
+            setValue('languages', 
+              packageData.package_languages.map(dest => ({ id: dest.language.id }))
+            );
           }
           setValue("price", packageData.price);
           setValue("duration", packageData.duration);
@@ -283,6 +296,10 @@ const EditPackage = () => {
         );
       } else if (key === "serviceIds") {
         form.append("extra_services", JSON.stringify(serviceIds));
+      } else if (key === "destinations") {
+        form.append("destinations", JSON.stringify(selectedDestinations));
+      } else if (key === "languages") {
+        form.append("languages", JSON.stringify(selectedLanguages));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -342,6 +359,19 @@ const EditPackage = () => {
       // Handle clearing the selection
       setSelectedDestinations([]);
       setValue('destinations', []);
+    }
+  };
+
+  const handleLanguageChange = (selected) => {
+    if (Array.isArray(selected)) {
+      setSelectedLanguages(selected.map(item => ({ id: item.value })));
+      setValue('languages', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      setSelectedLanguages([{ id: selected.value }]);
+      setValue('languages', [{ id: selected.value }]);
+    } else {
+      setSelectedLanguages([]);
+      setValue('languages', []);
     }
   };
 
@@ -774,28 +804,26 @@ const EditPackage = () => {
                   </ul>
                 </div>
                 <div>
-                  <select
-                    type="text"
-                    placeholder="Language"
-                    {...register("language")}
-                    className="text-base text-black w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-black">
-                      Language
-                    </option>
-                    <option value="en" className="text-base text-black">
-                      English
-                    </option>
-                    <option value="es" className="text-base text-black">
-                      Spanish
-                    </option>
-                    <option value="de" className="text-base text-black">
-                      German
-                    </option>
-                    <option value="fr" className="text-base text-black">
-                      French
-                    </option>
-                  </select>
+                <label className="block text-gray-500 text-base font-medium mb-4">
+                    Language
+                  </label>
+                  <Select
+                    isMulti
+                    options={languages.map(lang => ({
+                      value: lang.id,
+                      label: lang.name
+                    }))}
+                    value={languages
+                      .filter(lang => selectedLanguages.some(sel => sel.id === lang.id))
+                      .map(lang => ({
+                        value: lang.id,
+                        label: lang.name
+                      }))}
+                    onChange={handleLanguageChange}
+                    placeholder="Select language"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                   {/* {errors.language && (
                           <p className="text-red-500 text-xs mt-1">{errors.language.message}</p>
                       )} */}
