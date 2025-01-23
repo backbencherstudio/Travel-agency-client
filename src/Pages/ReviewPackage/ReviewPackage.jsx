@@ -38,11 +38,12 @@ function ReviewPackage () {
   const { id } = useParams()
   const [showConfetti, setShowConfetti] = useState(false)
   const [showNewPart, setShowNewPart] = useState(false)
-  const [cardDetails, setCardDetails] = useState({ isValid: false, error: null })
+  const [cardDetails, setCardDetails] = useState({
+    isValid: false,
+    error: null
+  })
   const [processing, setProcessing] = useState(false)
 
-  
-  
   useEffect(() => {
     // Check localStorage for payment state for this checkout ID
     const paymentState = localStorage.getItem(`payment_state_${id}`)
@@ -50,7 +51,6 @@ function ReviewPackage () {
       setShowNewPart(JSON.parse(paymentState))
     }
   }, [id])
-
 
   // fetch checkout data
   const fetchCheckoutData = async () => {
@@ -73,7 +73,7 @@ function ReviewPackage () {
         // Set travelers from checkout_travellers, excluding the main traveler
         if (data?.data?.checkout?.checkout_travellers?.length > 1) {
           const additionalTravelers = data.data.checkout.checkout_travellers
-            .slice(1) 
+            .slice(1)
             .map(traveler => ({
               full_name: traveler.full_name,
               type: traveler.type
@@ -301,13 +301,12 @@ function ReviewPackage () {
     }
   }
 
-
   // Payment Method
 
-  const handleCardDetailsChange = (details) => {
+  const handleCardDetailsChange = details => {
     setCardDetails(details)
   }
-  
+
   const handlePayment = async () => {
     if (!cardDetails.isValid) {
       toast.error(cardDetails.error || 'Please fill in valid card details.');
@@ -319,26 +318,31 @@ function ReviewPackage () {
     const travelersArray = [
       {
         full_name: 'Main Traveler',
-        type: 'Adult'
+        type: 'Adult',
       },
-      ...travelers.map(traveler => ({
+      ...travelers.map((traveler) => ({
         full_name: traveler.full_name,
-        type: traveler.type
-      }))
+        type: traveler.type,
+      })),
     ];
   
     const checkoutPayload = {
       booking_travellers: JSON.stringify(travelersArray),
-      coupons: JSON.stringify(appliedCoupons.map(coupon => coupon.id)),
-      phone_number: checkoutData?.data?.checkout?.contact?.phone_number || '',
-      email: checkoutData?.data?.checkout?.contact?.email || '',
-      address1: checkoutData?.data?.checkout?.contact?.address1 || '',
-      address2: checkoutData?.data?.checkout?.contact?.address2 || '',
-      city: checkoutData?.data?.checkout?.contact?.city || '',
-      zip_code: checkoutData?.data?.checkout?.contact?.zip_code || '',
-      state: checkoutData?.data?.checkout?.contact?.state || '',
-      country: checkoutData?.data?.checkout?.contact?.country || '',
-      payment_method: 'card', // Assuming 'card' for this implementation
+      coupons: JSON.stringify(appliedCoupons.map((coupon) => coupon.id)),
+      phone_number: checkoutData?.data?.checkout?.phone_number || '',
+      email: checkoutData?.data?.checkout?.email || '',
+      address1: checkoutData?.data?.checkout?.address1 || '',
+      address2: checkoutData?.data?.checkout?.address2 || '',
+      city: checkoutData?.data?.checkout?.city || '',
+      zip_code: checkoutData?.data?.checkout?.zip_code || '',
+      state: checkoutData?.data?.checkout?.state || '',
+      country: checkoutData?.data?.checkout?.country || '',
+      payment_method: {
+        card_number: cardDetails.card_number,
+        expiry_date: cardDetails.expiry_date,
+        cvc: cardDetails.cvc,
+        name: cardDetails.name,
+      },
     };
   
     try {
@@ -352,9 +356,6 @@ function ReviewPackage () {
   
       toast.success('Payment processed successfully!');
       setProcessing(false);
-  
-      // Clear payment state from localStorage after successful payment
-      localStorage.removeItem(`payment_state_${id}`);
     } catch (error) {
       console.error('Error during payment processing:', error);
       toast.error('Failed to process the payment. Please try again.');
@@ -362,7 +363,6 @@ function ReviewPackage () {
     }
   };
   
-
   const handleBackToReview = () => {
     setShowNewPart(false)
     // Update localStorage when going back to review
@@ -385,7 +385,10 @@ function ReviewPackage () {
         {showNewPart ? (
           <>
             <div className='w-full lg:w-8/12'>
-            <PaymentMethod onCardDetailsChange={handleCardDetailsChange} onBack={handleBackToReview}  />
+              <PaymentMethod
+                onCardDetailsChange={handleCardDetailsChange}
+                onBack={handleBackToReview}
+              />
             </div>
           </>
         ) : (
@@ -398,7 +401,10 @@ function ReviewPackage () {
 
                 <PackageDetails checkoutData={checkoutData} />
 
-                <ContactFrom checkoutData={checkoutData} onFormSubmit={handleContactFormSubmit} />
+                <ContactFrom
+                  checkoutData={checkoutData}
+                  onFormSubmit={handleContactFormSubmit}
+                />
               </div>
 
               <div className=''>
@@ -647,9 +653,9 @@ function ReviewPackage () {
           </div>
 
           {showNewPart ? (
-              <button
+            <button
               onClick={handlePayment}
-              className="flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2"
+              className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'
               disabled={processing}
             >
               {processing ? 'Processing...' : 'Payment'}
