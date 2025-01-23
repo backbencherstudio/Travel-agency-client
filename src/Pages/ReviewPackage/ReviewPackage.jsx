@@ -38,7 +38,21 @@ function ReviewPackage () {
   const { id } = useParams()
   const [showConfetti, setShowConfetti] = useState(false)
   const [showNewPart, setShowNewPart] = useState(false)
+  const [cardDetails, setCardDetails] = useState({ isValid: false, error: null })
+  const [processing, setProcessing] = useState(false)
 
+  
+  
+  useEffect(() => {
+    // Check localStorage for payment state for this checkout ID
+    const paymentState = localStorage.getItem(`payment_state_${id}`)
+    if (paymentState) {
+      setShowNewPart(JSON.parse(paymentState))
+    }
+  }, [id])
+
+
+  // fetch checkout data
   const fetchCheckoutData = async () => {
     setLoading(true)
     try {
@@ -47,7 +61,6 @@ function ReviewPackage () {
         setError(data.message || 'An error occurred while fetching data.')
       } else {
         setCheckoutData(data)
-        console.log("checkout data", data)
         // Set applied coupons from temp_redeems
         if (data?.data?.checkout?.temp_redeems?.length > 0) {
           const coupons = data.data.checkout.temp_redeems.map(redeem => ({
@@ -55,6 +68,18 @@ function ReviewPackage () {
             temp_redeem_id: redeem.id
           }))
           setAppliedCoupons(coupons)
+        }
+
+        // Set travelers from checkout_travellers, excluding the main traveler
+        if (data?.data?.checkout?.checkout_travellers?.length > 1) {
+          const additionalTravelers = data.data.checkout.checkout_travellers
+            .slice(1) 
+            .map(traveler => ({
+              full_name: traveler.full_name,
+              type: traveler.type
+            }))
+          setTravelers(additionalTravelers)
+          setShowNewTravelerText(additionalTravelers.length > 0)
         }
       }
     } catch (err) {
@@ -71,14 +96,11 @@ function ReviewPackage () {
     }
   }, [id])
 
-
-
   useEffect(() => {
     const basePrice =
       checkoutData?.data?.checkout?.checkout_items?.[0]?.package?.price || 0
     const travelerCount = travelers.length + 1
 
-    // Sort coupons by amount in descending order to apply highest discount first
     const sortedCoupons = [...appliedCoupons].sort((a, b) => {
       const aAmount =
         a.amount_type === 'percentage'
@@ -96,7 +118,6 @@ function ReviewPackage () {
     // Apply coupon discounts sequentially
     sortedCoupons.forEach(coupon => {
       if (remainingPrice > 0) {
-        // Only apply coupon if there's remaining price
         const couponAmount = parseFloat(coupon.amount)
         if (coupon.amount_type === 'percentage') {
           const discount = (remainingPrice * couponAmount) / 100
@@ -110,7 +131,6 @@ function ReviewPackage () {
     // Ensure price doesn't go below 0
     remainingPrice = Math.max(0, remainingPrice)
 
-    // Calculate extra services total per person
     const extraServicesTotal =
       (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
         (total, service) => {
@@ -119,21 +139,20 @@ function ReviewPackage () {
         0
       ) || 0) * travelerCount
 
-    // Calculate fees
     const fees = checkoutData?.data?.fees || 0
     const feesTotal = fees * travelerCount
 
-    // Final total calculation
     const calculatedTotal = remainingPrice + extraServicesTotal + feesTotal
 
     setTotalPrice(calculatedTotal)
   }, [travelers.length, appliedCoupons, checkoutData])
-
+  // add traveler
   const addTraveler = () => {
     setTravelers(prev => [...prev, { full_name: '', type: 'Adult', email: '' }])
     setShowNewTravelerText(true)
   }
 
+  // Handle Traveler Change
   const handleTravelerChange = (index, e) => {
     const { name, value } = e.target
     setTravelers(prev => {
@@ -146,6 +165,7 @@ function ReviewPackage () {
     })
   }
 
+  // Remove Traveler
   const removeTraveler = index => {
     setTravelers(prev => {
       const updated = prev.filter((_, i) => i !== index)
@@ -271,6 +291,8 @@ function ReviewPackage () {
       setTimeout(() => {
         setIsProcessing(false)
         setShowNewPart(true)
+        // Save payment state to localStorage
+        localStorage.setItem(`payment_state_${id}`, JSON.stringify(true))
       }, 500)
     } catch (error) {
       console.error('Error updating checkout details:', error)
@@ -279,8 +301,72 @@ function ReviewPackage () {
     }
   }
 
+
+  // Payment Method
+
+  const handleCardDetailsChange = (details) => {
+    setCardDetails(details)
+  }
+  
+  const handlePayment = async () => {
+    if (!cardDetails.isValid) {
+      toast.error(cardDetails.error || 'Please fill in valid card details.');
+      return;
+    }
+  
+    setProcessing(true);
+  
+    const travelersArray = [
+      {
+        full_name: 'Main Traveler',
+        type: 'Adult'
+      },
+      ...travelers.map(traveler => ({
+        full_name: traveler.full_name,
+        type: traveler.type
+      }))
+    ];
+  
+    const checkoutPayload = {
+      booking_travellers: JSON.stringify(travelersArray),
+      coupons: JSON.stringify(appliedCoupons.map(coupon => coupon.id)),
+      phone_number: checkoutData?.data?.checkout?.contact?.phone_number || '',
+      email: checkoutData?.data?.checkout?.contact?.email || '',
+      address1: checkoutData?.data?.checkout?.contact?.address1 || '',
+      address2: checkoutData?.data?.checkout?.contact?.address2 || '',
+      city: checkoutData?.data?.checkout?.contact?.city || '',
+      zip_code: checkoutData?.data?.checkout?.contact?.zip_code || '',
+      state: checkoutData?.data?.checkout?.contact?.state || '',
+      country: checkoutData?.data?.checkout?.contact?.country || '',
+      payment_method: 'card', // Assuming 'card' for this implementation
+    };
+  
+    try {
+      const response = await updateCheckout(id, checkoutPayload);
+  
+      if (response.errors) {
+        toast.error(response.message || 'Failed to update checkout details.');
+        setProcessing(false);
+        return;
+      }
+  
+      toast.success('Payment processed successfully!');
+      setProcessing(false);
+  
+      // Clear payment state from localStorage after successful payment
+      localStorage.removeItem(`payment_state_${id}`);
+    } catch (error) {
+      console.error('Error during payment processing:', error);
+      toast.error('Failed to process the payment. Please try again.');
+      setProcessing(false);
+    }
+  };
+  
+
   const handleBackToReview = () => {
     setShowNewPart(false)
+    // Update localStorage when going back to review
+    localStorage.setItem(`payment_state_${id}`, JSON.stringify(false))
   }
 
   return (
@@ -299,7 +385,7 @@ function ReviewPackage () {
         {showNewPart ? (
           <>
             <div className='w-full lg:w-8/12'>
-              <PaymentMethod onBack={handleBackToReview} />
+            <PaymentMethod onCardDetailsChange={handleCardDetailsChange} onBack={handleBackToReview}  />
             </div>
           </>
         ) : (
@@ -561,8 +647,12 @@ function ReviewPackage () {
           </div>
 
           {showNewPart ? (
-            <button className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'>
-              Payment
+              <button
+              onClick={handlePayment}
+              className="flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2"
+              disabled={processing}
+            >
+              {processing ? 'Processing...' : 'Payment'}
             </button>
           ) : (
             <button

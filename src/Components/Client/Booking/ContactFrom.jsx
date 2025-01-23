@@ -29,12 +29,33 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
     cities: false
   })
 
-  // console.log('checkout data fetch from review package', checkoutData)
-  // console.log('this is the form data', checkoutData.contact_details)
-
   useEffect(() => {
     fetchCountries()
-  }, [])
+
+    // Populate fields from checkoutData when available
+    if (checkoutData) {
+      const contactDetails = checkoutData?.data?.checkout
+      setFormData({
+        mobileNumber: contactDetails?.phone_number || '',
+        address1: contactDetails?.address1 || '',
+        address2: contactDetails?.address2 || '',
+        city: contactDetails?.city || '',
+        zip_code: contactDetails?.zip_code || '',
+        state: contactDetails?.state || '',
+        country: contactDetails?.country || ''
+      })
+
+      // Load states and cities if country is available
+      if (contactDetails?.country) {
+        fetchStates(contactDetails.country)
+        if (contactDetails?.state) {
+          fetchCities(contactDetails.country, contactDetails.state)
+        } else {
+          fetchCities(contactDetails.country)
+        }
+      }
+    }
+  }, [checkoutData])
 
   const fetchCountries = async () => {
     try {
@@ -142,7 +163,7 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
     try {
       if (!formData.country) {
         toast.error('Please select a country')
-        return false // Add this to prevent form submission
+        return false
       }
 
       const contactData = {
@@ -155,7 +176,6 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
         zip_code: formData.zip_code
       }
 
-      // Only call onFormSubmit if all validations pass
       onFormSubmit(contactData)
       return true
     } catch (error) {
@@ -169,10 +189,6 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
     toast.error('Please fill all required fields correctly.')
   }
 
-  useEffect(() => {
-    setValue('country', '')
-  }, [setValue])
-
   return (
     <div className='relative'>
       <div>
@@ -184,6 +200,7 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
           onSubmit={handleSubmit(onSubmit, onError)}
           className='flex flex-col gap-7'
         >
+          {/* Mobile Number */}
           <div className='flex flex-col'>
             <label
               className='text-[15px] text-[#0F1416]'
@@ -202,6 +219,8 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
               })}
               className='px-5 py-3 rounded-lg mt-3 border'
               placeholder='Enter Mobile Number'
+              value={formData.mobileNumber}
+              onChange={handleChange}
             />
             {errors.mobileNumber && (
               <p className='text-red-500 text-sm mt-1'>
@@ -210,6 +229,7 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
             )}
           </div>
 
+          {/* Address Line 1 */}
           <div className='flex flex-col'>
             <label className='text-[15px] text-[#0F1416]' htmlFor='address1'>
               Address Line 1 <span className='text-red-600'>*</span>
@@ -221,6 +241,8 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
               })}
               className='px-5 py-3 rounded-lg mt-3 border'
               placeholder='Enter Address Line 1'
+              value={formData.address1}
+              onChange={handleChange}
             />
             {errors.address1 && (
               <p className='text-red-500 text-sm mt-1'>
@@ -229,6 +251,7 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
             )}
           </div>
 
+          {/* Address Line 2 */}
           <div className='flex flex-col'>
             <label className='text-[15px] text-[#0F1416]' htmlFor='address2'>
               Address Line 2
@@ -238,6 +261,8 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
               {...register('address2')}
               className='px-5 py-3 rounded-lg mt-3 border'
               placeholder='Enter Address Line 2'
+              value={formData.address2}
+              onChange={handleChange}
             />
           </div>
 
