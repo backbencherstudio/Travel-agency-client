@@ -47,6 +47,7 @@ import Profile from '../Components/Home/Profile'
 import ClientPackages from '../Pages/Package/Packages'
 import ClientPackageDetails from '../Pages/Package/PackageDetails'
 import Language from '../Pages/Dashboard/Package/Language'
+import PaymentMethod from '../Components/Client/Booking/PaymentMethod'
 
 export const router = createBrowserRouter([
   {
@@ -143,6 +144,10 @@ export const router = createBrowserRouter([
         path: '/profile',
         element: <Profile />
       },
+      // {
+      //   path: '/payment/:id',
+      //   element: <PaymentMethod/>
+      // },
     ]
   },
   {

@@ -24,7 +24,7 @@ const PaymentMethod = ({ onBack }) => {
   return (
     <div className='p-6'>
       <div className='flex items-center justify-between mb-6'>
-        {/* <button
+        <button
           onClick={onBack}
           className='flex items-center gap-2 text-gray-600 hover:text-[#EB5B2A]'
         >
@@ -42,7 +42,7 @@ const PaymentMethod = ({ onBack }) => {
             />
           </svg>
           Back
-        </button> */}
+        </button>
       </div>
       <h2 className='text-2xl font-bold mb-4'>Payment Method</h2>
       <p className='text-gray-600 mb-6'>Select a payment method</p>
@@ -115,9 +115,9 @@ const PaymentMethod = ({ onBack }) => {
                 </div>
               </div>
 
-              <button className='w-full p-3 mt-2 bg-[#EB5B2A] text-white rounded-full flex items-center justify-center gap-2'>
+              {/* <button className='w-full p-3 mt-2 bg-[#EB5B2A] text-white rounded-full flex items-center justify-center gap-2'>
                 <span className='text-lg'>+</span> Add New Card
-              </button>
+              </button> */}
             </div>
           )}
         </div>
