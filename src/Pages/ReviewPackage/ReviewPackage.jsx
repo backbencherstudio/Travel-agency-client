@@ -47,6 +47,7 @@ function ReviewPackage () {
         setError(data.message || 'An error occurred while fetching data.')
       } else {
         setCheckoutData(data)
+        console.log("checkout data", data)
         // Set applied coupons from temp_redeems
         if (data?.data?.checkout?.temp_redeems?.length > 0) {
           const coupons = data.data.checkout.temp_redeems.map(redeem => ({
@@ -69,6 +70,8 @@ function ReviewPackage () {
       fetchCheckoutData()
     }
   }, [id])
+
+
 
   useEffect(() => {
     const basePrice =
@@ -309,7 +312,7 @@ function ReviewPackage () {
 
                 <PackageDetails checkoutData={checkoutData} />
 
-                <ContactFrom onFormSubmit={handleContactFormSubmit} />
+                <ContactFrom checkoutData={checkoutData} onFormSubmit={handleContactFormSubmit} />
               </div>
 
               <div className=''>

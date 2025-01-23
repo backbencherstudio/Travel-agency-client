@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
 
-const ContactFrom = ({ onFormSubmit }) => {
+const ContactFrom = ({ checkoutData, onFormSubmit }) => {
   const [formData, setFormData] = useState({
     mobileNumber: '',
     address1: '',
@@ -28,6 +28,9 @@ const ContactFrom = ({ onFormSubmit }) => {
     states: false,
     cities: false
   })
+
+  // console.log('checkout data fetch from review package', checkoutData)
+  // console.log('this is the form data', checkoutData.contact_details)
 
   useEffect(() => {
     fetchCountries()

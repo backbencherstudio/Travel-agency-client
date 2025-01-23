@@ -133,10 +133,10 @@ export const router = createBrowserRouter([
         path: '/profile',
         element: <Profile />
       },
-      {
-        path: '/payment/:id',
-        element: <PaymentMethod/>
-      },
+      // {
+      //   path: '/payment/:id',
+      //   element: <PaymentMethod/>
+      // },
     ]
   },
   {

@@ -275,7 +275,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             <span>Settings</span>
           </button>
 
-          <button onClick={(e) => handleLogOut(e)} className='absolute bottom-5 flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white'>
+          <button onClick={(e) => handleLogOut(e)} className='flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white'>
             <CiLogout className='mt-1' /> Logout
           </button>
         </nav>
