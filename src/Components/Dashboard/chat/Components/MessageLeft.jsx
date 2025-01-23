@@ -1,18 +1,34 @@
-
-
 // leftMessage
 const MessageLeft = ({avatar, naame, time, text}) => {
+  // Helper function to check if image URL is valid
+  const isValidImageUrl = (url) => {
+    if (!url || typeof url !== 'string') return false;
+    return url.match(/\.(jpeg|jpg|gif|png)$/) != null || url.startsWith('http');
+  };
 
   return (
     <>
       {/* Message from Doris Brown */}
       <div className="flex items-start gap-2.5 mb-5">
-        {/* User Avatar */}
-        <img
-          className="w-8 h-8 rounded-full object-cover"
-          src={avatar}
-          alt="Jese"
-        />
+        {isValidImageUrl(avatar?.avatar_url) ? (
+          <img
+            className="w-8 h-8 rounded-full object-cover"
+            src={avatar.avatar_url}
+            alt={naame}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.parentElement.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+                  ${naame?.charAt(0)?.toUpperCase() || '?'}
+                </div>
+              `;
+            }}
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600">
+            {naame?.charAt(0)?.toUpperCase() || '?'}
+          </div>
+        )}
 
         {/* Message Container */}
         <div className="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-[#eb5a2a15] rounded-xl rounded-tl-none">

@@ -3,14 +3,14 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from './CheckoutForm';
 
-if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
+if ("pk_test_51QFpATLEvlBZD5dJaha6mJPocvY5x6EoeWDg3DVjMIFdAwRzxN6sNlimMO6xW3hk3a7STUMQtVi6vb2NWu1Vc46c000l8Y7yha" === undefined) {
   throw new Error(
     'VITE_STRIPE_PUBLISHABLE_KEY is not set in the environment variables'
   );
 }
 
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe("pk_test_51QFpATLEvlBZD5dJaha6mJPocvY5x6EoeWDg3DVjMIFdAwRzxN6sNlimMO6xW3hk3a7STUMQtVi6vb2NWu1Vc46c000l8Y7yha");
 
 
 const PaymentMethod = ({ onCardDetailsChange, onPaymentMethodChange }) => {
