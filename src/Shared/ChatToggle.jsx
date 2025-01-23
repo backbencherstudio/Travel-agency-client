@@ -160,14 +160,12 @@ const ChatToggle = () => {
           name: admin.name,
           avatar_url: admin.avatar,
         },
-      };
+      });
 
       setActiveConversation(newConversation);
       setConversations([...conversations, newConversation]);
       
-    } catch (error) {
-      console.error("Error creating conversation:", error);
-    }
+    } 
   };
 
   // Fetch messages when conversation changes
