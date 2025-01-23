@@ -337,6 +337,7 @@ function ReviewPackage () {
       zip_code: checkoutData?.data?.checkout?.zip_code || '',
       state: checkoutData?.data?.checkout?.state || '',
       country: checkoutData?.data?.checkout?.country || '',
+      total_price: totalPrice,
       payment_method: {
         card_number: cardDetails.card_number,
         expiry_date: cardDetails.expiry_date,
@@ -354,8 +355,8 @@ function ReviewPackage () {
         return;
       }
   
-      toast.success('Payment processed successfully!');
-      setProcessing(false);
+      toast.success(`Payment of $${totalPrice.toFixed(2)} processed successfully!`);
+    setProcessing(false);
     } catch (error) {
       console.error('Error during payment processing:', error);
       toast.error('Failed to process the payment. Please try again.');
