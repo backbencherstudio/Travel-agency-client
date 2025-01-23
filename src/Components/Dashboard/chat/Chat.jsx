@@ -136,22 +136,39 @@ const Chat = () => {
   useEffect(() => {
     fetchMessages();
     
-    const handleNewMessage = (data) => {
-      // Show notification only when sender is not the current user and user is not in dashboard
-      if (data.data.sender.id !== user.id && !isInDashboard && document.hidden) {
-        NotificationManager.showNotification({
-          title: data.data.sender.name,
-          body: data.data.message,
-          icon: data.data.sender.avatar_url || defaultAvatar,
-          requireInteraction: true,
-          onClick: () => {
-            window.focus();
-            navigate('/dashboard/chat');
-            if (data.data.conversation_id) {
-              navigate(`/dashboard/chat/${data.data.conversation_id}`);
-            }
+    const handleNewMessage = async (data) => {
+      // Show notification only when:
+      // 1. Sender is not the current user
+      // 2. User is not in dashboard or tab is not active
+      // 3. Message is from a regular user (not admin)
+      if (
+        data.data.sender.id !== user.id && 
+        (!isInDashboard || document.hidden) &&
+        data.data.sender.role !== 'admin'  // Add role check if available in your user data
+      ) {
+        try {
+          const hasPermission = await NotificationManager.requestPermission();
+          
+          if (hasPermission) {
+            NotificationManager.showNotification({
+              title: `New message from ${data.data.sender.name}`,
+              body: data.data.message,
+              icon: data.data.sender.avatar_url || defaultAvatar,
+              requireInteraction: true,
+              silent: false,
+              timeout: 0,
+              onClick: () => {
+                window.focus();
+                navigate('/dashboard/chat');
+                if (data.data.conversation_id) {
+                  navigate(`/dashboard/chat/${data.data.conversation_id}`);
+                }
+              }
+            });
           }
-        });
+        } catch (error) {
+          console.error("Error showing notification:", error);
+        }
       }
 
       // Update messages if they belong to active conversation

@@ -33,6 +33,7 @@ const ChatToggle = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [conversations, setConversations] = useState([]);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const { user } = useContext(AuthContext);
@@ -82,19 +83,15 @@ const ChatToggle = () => {
         });
       }
     });
-    console.log('messages', messages);
-    
 
     return () => {
       socket.off("message");
     };
-  }, [activeConversation, user.id, conversations, isOpen]);
+  }, [activeConversation, conversations, isOpen]);
 
   const fetchConversations = async () => {
     try {
       const response = await ChatApis.fetchConversations();
-      console.log('conversations response', response);
-      
       setConversations(response);
     } catch (error) {
       console.error("Error fetching conversations:", error);
@@ -105,7 +102,6 @@ const ChatToggle = () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
       const admins = response.data.data.filter((user) => user.type === "admin");
-      console.log('admins', admins);
       setAdminUsers(admins);
     } catch (error) {
       console.error("Error fetching admin users:", error);
@@ -113,7 +109,7 @@ const ChatToggle = () => {
   };
 
   const fetchMessages = async () => {
-    if (activeConversation) {
+    if (activeConversation && activeConversation.id) {
       try {
         const response = await axiosClient.get(
           `/api/chat/message?conversation_id=${activeConversation.id}`
@@ -130,8 +126,6 @@ const ChatToggle = () => {
     fetchConversations();
     fetchAdminUsers();
   }, []);
-  console.log('fetching messages', messages);
-  
 
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
@@ -143,63 +137,74 @@ const ChatToggle = () => {
 
     if (existingConversation) {
       setActiveConversation(existingConversation);
-      return;
-    }
-
-    // Create new conversation
-    try {
-      const response = await axiosClient.post("/api/chat/conversation", {
-        creator_id: user.id,
-        participant_id: admin.id,
-      });
-
-      const newConversation = {
-        ...response.data.data,
+    } else {
+      setSelectedAdmin(admin);
+      setActiveConversation({
         participant: {
           id: admin.id,
           name: admin.name,
           avatar_url: admin.avatar
         }
-      };
-
-      setActiveConversation(newConversation);
-      setConversations([...conversations, newConversation]);
-    } catch (error) {
-      console.error("Error creating conversation:", error);
+      });
     }
   };
 
   // Fetch messages when conversation changes
   useEffect(() => {
-    fetchMessages();
-    console.log('fetching messages', messages);
-    
+    if (activeConversation?.id) {
+      fetchMessages();
+    }
   }, [activeConversation]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeConversation) return;
+    if (!newMessage.trim() || (!selectedAdmin && !activeConversation?.id)) return;
 
     try {
-      const receiverId = activeConversation.participant_id === user.id 
-        ? activeConversation.creator_id 
-        : activeConversation.participant_id;
+      let currentConversation = activeConversation;
+      let messageToSend = newMessage;
+      setNewMessage(""); // Clear input early for better UX
+
+      // Create conversation if it doesn't exist
+      if (!activeConversation.id && selectedAdmin) {
+        const response = await axiosClient.post("/api/chat/conversation", {
+          creator_id: user.id,
+          participant_id: selectedAdmin.id,
+        });
+
+        currentConversation = {
+          ...response.data.data,
+          participant: {
+            id: selectedAdmin.id,
+            name: selectedAdmin.name,
+            avatar_url: selectedAdmin.avatar
+          }
+        };
+        setActiveConversation(currentConversation);
+      }
+
+      const receiverId = currentConversation.participant_id === user.id 
+        ? currentConversation.creator_id 
+        : currentConversation.participant_id;
 
       const messagePayload = {
-        conversation_id: activeConversation.id,
+        conversation_id: currentConversation.id.toString(),
         receiver_id: receiverId,
-        message: newMessage,
+        message: messageToSend,
         sender_id: user.id,
         sender_name: user.name,
         sender_avatar: user.avatar_url,
-        receiver_name: activeConversation.participant?.name,
-        receiver_avatar: activeConversation.participant?.avatar_url,
+        receiver_name: currentConversation.participant?.name,
+        receiver_avatar: currentConversation.participant?.avatar_url,
       };
 
-      // Add message to local state immediately
+      // Send message to API first
+      const sentMessage = await ChatApis.sendMessage(messagePayload);
+
+      // Create new message object
       const newMsg = {
-        message: newMessage,
-        conversation_id: activeConversation.id,
+        message: messageToSend,
+        conversation_id: currentConversation.id,
         sender: {
           id: user.id,
           name: user.name,
@@ -207,26 +212,28 @@ const ChatToggle = () => {
         },
         receiver: {
           id: receiverId,
-          name: activeConversation.participant?.name,
-          avatar: activeConversation.participant?.avatar_url,
+          name: currentConversation.participant?.name,
+          avatar: currentConversation.participant?.avatar_url,
         },
         created_at: new Date().toISOString(),
       };
 
-      setMessages((prev) => [...prev, newMsg]);
+      // Update messages state
+      setMessages(prev => [...prev, newMsg]);
+      setSelectedAdmin(null);
 
-      // Send to API
-      await ChatApis.sendMessage(messagePayload);
-
-      // Emit socket event with conversation details
+      // Emit socket event
       socket.emit("sendMessage", {
         to: messagePayload.receiver_id,
         data: newMsg,
       });
 
-      setNewMessage("");
+      // Refresh conversations to get latest state
+      await fetchConversations();
+
     } catch (error) {
       console.error("Error sending message:", error);
+      setNewMessage(messageToSend); // Restore message if failed
     }
   };
 
@@ -295,7 +302,10 @@ const ChatToggle = () => {
             <div className="flex flex-col h-full">
               <div className="p-4 bg-gray-100 flex items-center">
                 <button
-                  onClick={() => setActiveConversation(null)}
+                  onClick={() => {
+                    setActiveConversation(null);
+                    setSelectedAdmin(null);
+                  }}
                   className="mr-4 px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
                 >
                   Back
