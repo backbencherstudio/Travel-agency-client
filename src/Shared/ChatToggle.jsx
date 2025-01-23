@@ -8,7 +8,7 @@ import ChatApis from "../Apis/ChatApis";
 import { io } from "socket.io-client";
 import NotificationManager from "./NotificationManager";
 const defaultAvatar = "https://via.placeholder.com/150";
-
+import { MdKeyboardArrowLeft } from "react-icons/md";
 
 const token = localStorage.getItem("token");
 
@@ -36,7 +36,10 @@ const ChatToggle = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const { user } = useContext(AuthContext);
+
+  console.log("user", user);
   
+
   // Request notification permission on component mount
   useEffect(() => {
     NotificationManager.requestPermission();
@@ -46,7 +49,7 @@ const ChatToggle = () => {
   useEffect(() => {
     socket.on("message", (data) => {
       console.log("New message received:", data.data);
-      
+
       // Show notification only when chat is closed and message is from others
       if (data.data.sender.id !== user.id && !isOpen) {
         NotificationManager.showNotification({
@@ -58,19 +61,26 @@ const ChatToggle = () => {
             window.focus();
             setIsOpen(true);
             if (data.data.conversation_id) {
-              const conversation = conversations.find(conv => conv.id === data.data.conversation_id);
+              const conversation = conversations.find(
+                (conv) => conv.id === data.data.conversation_id
+              );
               if (conversation) {
                 setActiveConversation(conversation);
               }
             }
-          }
+          },
         });
       }
 
       // Only update messages if it belongs to current conversation
-      if (activeConversation && data.data.conversation_id === activeConversation.id) {
+      if (
+        activeConversation &&
+        data.data.conversation_id === activeConversation.id
+      ) {
         setMessages((prevMessages) => {
-          const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+          const prevMessagesArray = Array.isArray(prevMessages)
+            ? prevMessages
+            : [];
           const messageExists = prevMessagesArray.some(
             (msg) =>
               msg.created_at === data.data.created_at &&
@@ -82,20 +92,18 @@ const ChatToggle = () => {
         });
       }
     });
-    console.log('messages', messages);
-    
-    
+    console.log("messages", messages);
 
     return () => {
       socket.off("message");
     };
-  }, [activeConversation,  conversations, isOpen]);
+  }, [activeConversation, conversations, isOpen]);
 
   const fetchConversations = async () => {
     try {
       const response = await ChatApis.fetchConversations();
-      console.log('conversations response', response);
-      
+      console.log("conversations response", response);
+
       setConversations(response);
     } catch (error) {
       console.error("Error fetching conversations:", error);
@@ -106,7 +114,7 @@ const ChatToggle = () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
       const admins = response.data.data.filter((user) => user.type === "admin");
-      console.log('admins', admins);
+      console.log("admins", admins);
       setAdminUsers(admins);
     } catch (error) {
       console.error("Error fetching admin users:", error);
@@ -131,13 +139,12 @@ const ChatToggle = () => {
     fetchConversations();
     fetchAdminUsers();
   }, []);
-  console.log('fetching messages', messages);
-  
+  console.log("fetching messages", messages);
 
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
     const existingConversation = conversations.find(
-      (conv) => 
+      (conv) =>
         (conv.creator_id === user.id && conv.participant_id === admin.id) ||
         (conv.creator_id === admin.id && conv.participant_id === user.id)
     );
@@ -159,12 +166,13 @@ const ChatToggle = () => {
         participant: {
           id: admin.id,
           name: admin.name,
-          avatar_url: admin.avatar
-        }
+          avatar_url: admin.avatar,
+        },
       };
 
       setActiveConversation(newConversation);
       setConversations([...conversations, newConversation]);
+      
     } catch (error) {
       console.error("Error creating conversation:", error);
     }
@@ -173,8 +181,7 @@ const ChatToggle = () => {
   // Fetch messages when conversation changes
   useEffect(() => {
     fetchMessages();
-    console.log('fetching messages', messages);
-    
+    console.log("fetching messages", messages);
   }, [activeConversation]);
 
   const handleSendMessage = async (e) => {
@@ -182,9 +189,10 @@ const ChatToggle = () => {
     if (!newMessage.trim() || !activeConversation) return;
 
     try {
-      const receiverId = activeConversation.participant_id === user.id 
-        ? activeConversation.creator_id 
-        : activeConversation.participant_id;
+      const receiverId =
+        activeConversation.participant_id === user.id
+          ? activeConversation.creator_id
+          : activeConversation.participant_id;
 
       const messagePayload = {
         conversation_id: activeConversation.id,
@@ -252,14 +260,19 @@ const ChatToggle = () => {
     }
   }, [activeConversation, messages]);
 
+  console.log("activeConversation", activeConversation);
+
   return (
     <div className="fixed bottom-[11%] right-[3%] z-50">
+      {
+        user && user.type === 'user' &&
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="p-3 bg-[#f974164b] text-[#f97316] rounded-full shadow-lg transition hover:bg-[#f97316] hover:text-[#f2f2f2]"
       >
         <IoChatbubbleEllipsesSharp className="h-8 w-8" />
       </button>
+      }
 
       {isOpen && (
         <div className="fixed bottom-[18%] right-[3%] w-[400px] h-[400px] bg-white shadow-lg rounded-lg overflow-hidden">
@@ -279,14 +292,14 @@ const ChatToggle = () => {
                         className="rounded-full h-10 w-10 object-cover"
                         alt={admin.name}
                         onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextElementSibling.style.display = 'flex';
+                          e.target.style.display = "none";
+                          e.target.nextElementSibling.style.display = "flex";
                         }}
                       />
                     ) : null}
-                    <div 
+                    <div
                       className={`rounded-full h-10 w-10 bg-gray-200 text-gray-600 flex items-center justify-center ${
-                        admin.avatar ? 'hidden' : ''
+                        admin.avatar ? "hidden" : ""
                       }`}
                     >
                       {admin.name.charAt(0).toUpperCase()}
@@ -312,19 +325,29 @@ const ChatToggle = () => {
                   onClick={() => setActiveConversation(null)}
                   className="mr-4 px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
                 >
-                  Back
+                  <MdKeyboardArrowLeft className="h-5 w-5" />
                 </button>
-                <img
-                  src={
-                    activeConversation.participant?.avatar ||
-                    defaultAvatar
-                  }
-                  className="rounded-full h-8 w-8 object-cover"
-                  alt={activeConversation.participant?.name}
-                />
-                <h5 className="ml-3 font-bold">
-                  {activeConversation.participant?.name}
-                </h5>
+                <div className="flex items-center">
+                  <div className="relative">
+                    <img
+                      src={activeConversation.participant?.avatar || ""}
+                      className="rounded-full h-8 w-8 object-cover"
+                      alt={activeConversation.participant?.name}
+                      onError={(e) => {
+                        e.target.style.display = "none"; // Hide the broken image
+                        e.target.nextElementSibling.style.display = "flex"; // Show the fallback
+                      }}
+                    />
+                    <div className="rounded-full h-9 w-9 bg-gray-200 text-gray-600 flex items-center justify-center hidden">
+                      {activeConversation.participant?.name
+                        ?.charAt(0)
+                        .toUpperCase()}
+                    </div>
+                  </div>
+                  <h5 className="ml-3 font-bold">
+                    {activeConversation.participant?.name}
+                  </h5>
+                </div>
               </div>
 
               <div
