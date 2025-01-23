@@ -21,7 +21,7 @@ const socket = io(import.meta.env.VITE_API_BASE_URL, {
 });
 
 socket.on("connect", () => {
-  console.log("Connected to server!");
+  // console.log("Connected to server!");
 });
 
 socket.on("disconnect", (reason) => {
@@ -35,6 +35,9 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isInDashboard, setIsInDashboard] = useState(true);
+
+  console.log('user', usersData);
+  
 
   const { conversationID } = useParams();
   const { user } = useContext(AuthContext);
@@ -349,7 +352,11 @@ const Chat = () => {
                         <User
                           active={activeConversation?.id === data.id}
                           id={chatUser.id}
-                          image={chatUser.avatar_url || defaultAvatar}
+                          image={chatUser.avatar_url || (
+                            <div className="w-9 h-9 rounded-full bg-[#eb5a2a20] text-[#eb5b2a] flex items-center justify-center text-lg font-semibold">
+                              {chatUser.name?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
                           name={chatUser.name}
                           hint={data.unread ? <strong>{lastMessage}</strong> : lastMessage}
                           time={data.updated_at
@@ -376,14 +383,23 @@ const Chat = () => {
           {/* Chat Header */}
           <div className="p-4 border-b border-gray-100">
             <div className="flex items-center">
-              <img
-                src={user.id === activeConversation.participant_id
-                  ? activeConversation.creator.avatar_url || defaultAvatar
-                  : activeConversation.participant.avatar_url || defaultAvatar
-                }
-                className="rounded-full h-9 w-9"
-                alt="User Avatar"
-              />
+              {(user.id === activeConversation.participant_id
+                ? activeConversation.creator.avatar_url
+                : activeConversation.participant.avatar_url) ? (
+                <img
+                  src={user.id === activeConversation.participant_id
+                    ? activeConversation.creator.avatar_url
+                    : activeConversation.participant.avatar_url}
+                  className="rounded-full h-9 w-9"
+                  alt="User Avatar"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-[#eb5a2a20] text-[#eb5b2a] flex items-center justify-center text-lg font-semibold">
+                  {(user.id === activeConversation.participant_id
+                    ? activeConversation.creator.name
+                    : activeConversation.participant.name)?.charAt(0).toUpperCase()}
+                </div>
+              )}
               <div className="ml-3">
                 <h5 className="text-gray-800 font-bold text-lg">
                   {user.id === activeConversation.participant_id
@@ -412,7 +428,11 @@ const Chat = () => {
                 return isUserSender ? (
                   <MessageRight
                     key={index}
-                    avatar={data.sender?.avatar_url || defaultAvatar}
+                    avatar={data.sender?.avatar_url || (
+                      <div className="w-9 h-9 rounded-full bg-[#eb5a2a20] text-[#eb5b2a] flex items-center justify-center text-lg font-semibold">
+                        {data.sender?.name?.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     naame={data.sender?.name || "Unknown"}
                     time={time}
                     text={data?.message}
@@ -420,7 +440,11 @@ const Chat = () => {
                 ) : (
                   <MessageLeft
                     key={index}
-                    avatar={data.sender?.avatar_url || defaultAvatar}
+                    avatar={data.sender?.avatar_url || (
+                      <div className="w-9 h-9 rounded-full bg-[#eb5a2a20] text-[#eb5b2a] flex items-center justify-center text-lg font-semibold">
+                        {data.sender?.name?.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     naame={data.sender?.name || "Unknown"}
                     time={time}
                     text={data?.message}
