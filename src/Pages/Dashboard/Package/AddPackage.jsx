@@ -14,7 +14,12 @@ import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const AddPackage = () => {
-  const { register, handleSubmit, setValue, formState: { errors }, } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors }, } = useForm({
+    defaultValues: {
+      destinations: [],
+      languages: []
+    }
+  });
   const [isDragging, setIsDragging] = useState(false);
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
@@ -26,14 +31,17 @@ const AddPackage = () => {
   const [images, setImages] = useState([]);
   const [extraServices, setExtraServices] = useState([]);
   const [serviceIds, setServicesIds] = useState([]);
+  const [languages, setLanguages] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
   const [loading, setLoading] = useState(false);
-
+  const [selectedDestinations, setSelectedDestinations] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  console.log('selectedLanguages', selectedLanguages)
   // const { id } = useParams();
   // const editId = id;
-//   console.log("editId", editId);
+  console.log("selectedDestinations", selectedDestinations);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -74,6 +82,8 @@ const AddPackage = () => {
         const resServices = await axiosClient.get("api/admin/extra-service");
         setExtraServices(resServices.data?.data);
 
+        const resLanguages = await axiosClient.get("api/admin/language");
+        setLanguages(resLanguages.data?.data);
         // if (editId) {
         //   const resPackage = await axiosClient.get(
         //     `api/admin/package/${editId}`
@@ -177,6 +187,19 @@ const AddPackage = () => {
   };
 
   const onSubmit = async (data) => {
+    // Count images and videos
+    const videoCount = images.filter(file => file.type === 'video' || file?.video_url).length;
+    const imageCount = images.filter(file => file.type !== 'video' && !file?.video_url).length;
+
+    // Validate minimum requirements
+    if (videoCount < 1) {
+      toast.error('Please upload at least 1 video');
+      return;
+    }
+    if (imageCount < 3) {
+      toast.error('Please upload at least 3 images');
+      return;
+    }
     const formDataObject = {
       ...data,
       includedPackages,
@@ -256,6 +279,10 @@ const AddPackage = () => {
         );
       } else if (key === "serviceIds") {
         form.append("extra_services", JSON.stringify(serviceIds));
+      } else if (key === "destinations") {
+        form.append("destinations", JSON.stringify(selectedDestinations));
+      }  else if (key === "languages") {
+        form.append("languages", JSON.stringify(selectedLanguages));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -312,6 +339,38 @@ const AddPackage = () => {
 
   console.log("serviceIds", serviceIds);
   console.log("includedPackages", includedPackages);
+
+  const handleDestinationChange = (selected) => {
+    if (Array.isArray(selected)) {
+      // For multiple selections (package type)
+      setSelectedDestinations(selected.map(item => ({ id: item.value })));
+      setValue('destinations', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      // For single selection (tour/cruise type)
+      setSelectedDestinations([{ id: selected.value }]);
+      setValue('destinations', [{ id: selected.value }]);
+    } else {
+      // Handle clearing the selection
+      setSelectedDestinations([]);
+      setValue('destinations', []);
+    }
+  };
+
+  const handleLanguageChange = (selected) => {
+    if (Array.isArray(selected)) {
+      // For multiple selections (package type)
+      setSelectedLanguages(selected.map(item => ({ id: item.value })));
+      setValue('languages', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      // For single selection (tour/cruise type)
+      setSelectedLanguages([{ id: selected.value }]);
+      setValue('languages', [{ id: selected.value }]);
+    } else {
+      // Handle clearing the selection
+      setSelectedLanguages([]);
+      setValue('languages', []);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -519,28 +578,35 @@ const AddPackage = () => {
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
-                    Destination
+                    Destination{packageType === 'package' ? 's' : ''}
                   </label>
-                  <select
-                    type="text"
-                    placeholder="Select a destination"
-                    {...register("destination_id", {
-                      required: "Destination is required",
-                    })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select a destination
-                    </option>
-                    {destinations.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option> // Ensure a return for each <option>
-                    ))}
-                  </select>
-                  {errors.destination_id && (
+                  {packageType === 'package' ? (
+                    <Select
+                      isMulti
+                      options={destinations}
+                      value={destinations.filter(option => 
+                        selectedDestinations.some(dest => dest.id === option.value)
+                      )}
+                      onChange={handleDestinationChange}
+                      placeholder="Select destinations"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                    />
+                  ) : (
+                    <Select
+                      options={destinations}
+                      value={destinations.find(option => 
+                        selectedDestinations[0]?.id === option.value
+                      )}
+                      onChange={handleDestinationChange}
+                      placeholder="Select a destination"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                    />
+                  )}
+                  {errors.destinations && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.destination_id.message}
+                      {errors.destinations.message}
                     </p>
                   )}
                 </div>
@@ -570,8 +636,22 @@ const AddPackage = () => {
                       placeholder="Write duration"
                       {...register("duration", {
                         required: "Package duration is required",
+                        validate: (value) => {
+                          const durationType = document.querySelector('[name="duration_type"]').value;
+                          if (packageType === "tour") {
+                            if (durationType === 'days' && value > 1) {
+                              return "Duration cannot exceed 1 day for tour packages";
+                            }
+                            if (durationType === 'hours' && value > 24) {
+                              return "Duration cannot exceed 24 hours for tour packages";
+                            }
+                            return true;
+                          }
+                        }
                       })}
                       className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                      min="1"
+                      max={packageType === "tour" ? (document.querySelector('[name="duration_type"]')?.value === 'days' ? 1 : 24) : undefined}
                     />
                     {errors.duration && (
                       <p className="text-red-500 text-xs mt-1">
@@ -585,7 +665,18 @@ const AddPackage = () => {
                     </label>
                     <select
                       placeholder="Select Package Type"
-                      {...register("duration_type", { required: "Duration Type is required" })}
+                      {...register("duration_type", { 
+                        required: "Duration Type is required",
+                        onChange: (e) => {
+                          // Reset duration if it exceeds the new type's limit
+                          const currentDuration = parseFloat(document.querySelector('[name="duration"]').value);
+                          if (e.target.value === 'days' && currentDuration > 1) {
+                            setValue('duration', 1);
+                          } else if (e.target.value === 'hours' && currentDuration > 24) {
+                            setValue('duration', 24);
+                          }
+                        }
+                      })}
                       className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     >
                       <option value="" className="text-base text-[#C9C9C9]">
@@ -720,31 +811,26 @@ const AddPackage = () => {
                   </ul>
                 </div>
                 <div>
-                  <select
-                    type="text"
-                    placeholder="Language"
-                    {...register("language")}
-                    className="text-base text-black w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-black">
-                      Language
-                    </option>
-                    <option value="en" className="text-base text-black">
-                      English
-                    </option>
-                    <option value="es" className="text-base text-black">
-                      Spanish
-                    </option>
-                    <option value="de" className="text-base text-black">
-                      German
-                    </option>
-                    <option value="fr" className="text-base text-black">
-                      French
-                    </option>
-                  </select>
-                  {/* {errors.language && (
-                          <p className="text-red-500 text-xs mt-1">{errors.language.message}</p>
-                      )} */}
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Language
+                  </label>
+                  <Select
+                    isMulti
+                    options={languages.map(lang => ({
+                      value: lang.id,
+                      label: lang.name
+                    }))}
+                    value={languages
+                      .filter(lang => selectedLanguages.some(sel => sel.id === lang.id))
+                      .map(lang => ({
+                        value: lang.id,
+                        label: lang.name
+                      }))}
+                    onChange={handleLanguageChange}
+                    placeholder="Select language"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">

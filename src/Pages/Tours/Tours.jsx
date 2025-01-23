@@ -3,6 +3,7 @@ import bgImg from "./../../assets/img/banner/tour.png";
 import "./Tour.css";
 import TravelWithUs from "../../Components/Home/TravelWithUs";
 import PackageTourCruise from "../../Components/PackageTourCruise/PackageTourCruise";
+import { Link } from "react-router-dom";
 function Tours() {
   return (
     <div>
@@ -25,7 +26,7 @@ function Tours() {
           className="text-center flex items-center justify-center flex-col text-white"
         >
           <h3 className="flex gap-2 justify-center items-center text-lg">
-            Home
+            <Link to="/">Home</Link>
             <span className="mx-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +46,7 @@ function Tours() {
             Tours
           </h3>
           <h4 className="pageTitle">Our Tours</h4>
-          <p className="mt-4 text-lg px-24 max-w-[622px]">
+          <p className="mt-4 text-lg px-20 max-w-[622px]">
             Explore our diverse range of guided tours, each designed to immerse
             you in captivating destinations and unforgettable experiences.
           </p>

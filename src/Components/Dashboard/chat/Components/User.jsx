@@ -12,11 +12,24 @@ const User = ({ id, image, name, hint, time, active = false }) => {
         <Link to={`/dashboard/chat/${id}`}>
           <div className="relative flex">
             <div className="relative self-center mr-3">
-              <img
-                src={image}
-                className="rounded-full w-9 h-9 object-cover"
-                alt="Avatar"
-              />
+              {typeof image === 'string' && image.startsWith('http') ? (
+                <img
+                  src={image}
+                  className="rounded-full w-9 h-9 object-cover"
+                  alt={name.charAt(0).toUpperCase()}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextElementSibling.style.display = 'flex';
+                  }}
+                />
+              ) : null}
+              <div 
+                className={`rounded-full w-9 h-9 bg-gray-200 text-gray-600 flex items-center justify-center ${
+                  typeof image === 'string' && image.startsWith('http') ? 'hidden' : ''
+                }`}
+              >
+                {name.charAt(0).toUpperCase()}
+              </div>
 
               {/* ========== active status ========== */}
               <span className="absolute w-2.5 h-2.5 border-2 border-white bg-red-400 rounded-full top-7 right-1"></span>

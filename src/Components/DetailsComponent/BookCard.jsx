@@ -24,6 +24,8 @@ const BookCard = ({ details, renderStars }) => {
 
   const duration = details?.duration || 0
 
+  // console.log("deatils", details)
+
   // Get today's date
   const today = new Date()
 
@@ -197,7 +199,7 @@ const BookCard = ({ details, renderStars }) => {
                   onChange={e => handleCheckboxChange(service, e.target.checked)}
                 />
                 <p className='text-base font-normal text-[#49556D]'>
-                  {service?.extra_service?.name}
+                  {service?.extra_service?.name} (${service?.extra_service?.price})
                 </p>
               </div>
             ))}

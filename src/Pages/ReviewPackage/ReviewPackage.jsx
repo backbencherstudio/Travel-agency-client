@@ -13,46 +13,15 @@ import PaymentMethod from '../../Components/Client/Booking/PaymentMethod'
 import PackageDetails from '../../Components/Client/Booking/PackageDetails'
 import ContactFrom from '../../Components/Client/Booking/ContactFrom'
 import Loading from '../../Shared/Loading'
+import {
+  applyCouponApi,
+  deleteCouponApi
+} from '../../Apis/clientApi/ClientCouponApis'
 
 function ReviewPackage () {
   const {
     formState: { errors }
   } = useForm()
-
-  const discountCoupons = [
-    {
-      id: 'cm5s2pg810000wv5osq7wk41c',
-      name: 'Coupon20$',
-      description: 'this is discount',
-      amount_type: 'fixed',
-      amount: 20,
-      max_uses: 15,
-      max_uses_per_user: 2,
-      starts_at: '2025-01-01T00:00:00.000Z',
-      expires_at: '2026-01-01T00:00:00.000Z',
-      min_type: 'amount',
-      min_amount: 20,
-      min_quantity: 5,
-      created_at: '2025-01-11T11:00:00.000Z',
-      updated_at: '2025-01-11T11:00:00.000Z'
-    },
-    {
-      id: 'cm5s2pg810000wv5osq7wk41c',
-      name: 'Coupon20',
-      description: 'this is discount',
-      amount_type: 'percentage',
-      amount: 20,
-      max_uses: 15,
-      max_uses_per_user: 2,
-      starts_at: '2025-01-01T00:00:00.000Z',
-      expires_at: '2026-01-01T00:00:00.000Z',
-      min_type: 'amount',
-      min_amount: 20,
-      min_quantity: 5,
-      created_at: '2025-01-11T11:00:00.000Z',
-      updated_at: '2025-01-11T11:00:00.000Z'
-    }
-  ]
 
   const [travelers, setTravelers] = useState([])
   const [totalPrice, setTotalPrice] = useState(0)
@@ -69,7 +38,21 @@ function ReviewPackage () {
   const { id } = useParams()
   const [showConfetti, setShowConfetti] = useState(false)
   const [showNewPart, setShowNewPart] = useState(false)
+  const [cardDetails, setCardDetails] = useState({
+    isValid: false,
+    error: null
+  })
+  const [processing, setProcessing] = useState(false)
 
+  useEffect(() => {
+    // Check localStorage for payment state for this checkout ID
+    const paymentState = localStorage.getItem(`payment_state_${id}`)
+    if (paymentState) {
+      setShowNewPart(JSON.parse(paymentState))
+    }
+  }, [id])
+
+  // fetch checkout data
   const fetchCheckoutData = async () => {
     setLoading(true)
     try {
@@ -78,6 +61,26 @@ function ReviewPackage () {
         setError(data.message || 'An error occurred while fetching data.')
       } else {
         setCheckoutData(data)
+        // Set applied coupons from temp_redeems
+        if (data?.data?.checkout?.temp_redeems?.length > 0) {
+          const coupons = data.data.checkout.temp_redeems.map(redeem => ({
+            ...redeem.coupon,
+            temp_redeem_id: redeem.id
+          }))
+          setAppliedCoupons(coupons)
+        }
+
+        // Set travelers from checkout_travellers, excluding the main traveler
+        if (data?.data?.checkout?.checkout_travellers?.length > 1) {
+          const additionalTravelers = data.data.checkout.checkout_travellers
+            .slice(1)
+            .map(traveler => ({
+              full_name: traveler.full_name,
+              type: traveler.type
+            }))
+          setTravelers(additionalTravelers)
+          setShowNewTravelerText(additionalTravelers.length > 0)
+        }
       }
     } catch (err) {
       console.error('API Error:', err)
@@ -97,25 +100,59 @@ function ReviewPackage () {
     const basePrice =
       checkoutData?.data?.checkout?.checkout_items?.[0]?.package?.price || 0
     const travelerCount = travelers.length + 1
-    let totalDiscount = 0
 
-    appliedCoupons.forEach(coupon => {
-      if (coupon.amount_type === 'percentage') {
-        totalDiscount += (basePrice * travelerCount * coupon.amount) / 100
-      } else if (coupon.amount_type === 'fixed') {
-        totalDiscount += coupon.amount
+    const sortedCoupons = [...appliedCoupons].sort((a, b) => {
+      const aAmount =
+        a.amount_type === 'percentage'
+          ? parseFloat(a.amount)
+          : (parseFloat(a.amount) / basePrice) * 100
+      const bAmount =
+        b.amount_type === 'percentage'
+          ? parseFloat(b.amount)
+          : (parseFloat(b.amount) / basePrice) * 100
+      return bAmount - aAmount
+    })
+
+    let remainingPrice = basePrice * travelerCount
+
+    // Apply coupon discounts sequentially
+    sortedCoupons.forEach(coupon => {
+      if (remainingPrice > 0) {
+        const couponAmount = parseFloat(coupon.amount)
+        if (coupon.amount_type === 'percentage') {
+          const discount = (remainingPrice * couponAmount) / 100
+          remainingPrice -= discount
+        } else if (coupon.amount_type === 'fixed') {
+          remainingPrice -= couponAmount
+        }
       }
     })
 
-    const calculatedTotal = travelerCount * basePrice + 200 * travelerCount - totalDiscount
+    // Ensure price doesn't go below 0
+    remainingPrice = Math.max(0, remainingPrice)
+
+    const extraServicesTotal =
+      (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
+        (total, service) => {
+          return total + Number(service.extra_service.price)
+        },
+        0
+      ) || 0) * travelerCount
+
+    const fees = checkoutData?.data?.fees || 0
+    const feesTotal = fees * travelerCount
+
+    const calculatedTotal = remainingPrice + extraServicesTotal + feesTotal
+
     setTotalPrice(calculatedTotal)
   }, [travelers.length, appliedCoupons, checkoutData])
-
+  // add traveler
   const addTraveler = () => {
     setTravelers(prev => [...prev, { full_name: '', type: 'Adult', email: '' }])
     setShowNewTravelerText(true)
   }
 
+  // Handle Traveler Change
   const handleTravelerChange = (index, e) => {
     const { name, value } = e.target
     setTravelers(prev => {
@@ -128,6 +165,7 @@ function ReviewPackage () {
     })
   }
 
+  // Remove Traveler
   const removeTraveler = index => {
     setTravelers(prev => {
       const updated = prev.filter((_, i) => i !== index)
@@ -138,48 +176,83 @@ function ReviewPackage () {
     })
   }
 
-  const applyCoupon = () => {
+  // Apply coupon
+  const applyCoupon = async () => {
     const enteredCode = couponCode.trim()
-    const coupon = discountCoupons.find(c => c.name === enteredCode)
 
-    if (!coupon) {
-      toast.error('Coupon not found or invalid')
+    if (!enteredCode) {
+      toast.error('Please enter a coupon code.')
       return
     }
 
-    if (appliedCoupons.some(c => c.name === enteredCode)) {
-      toast.error(`Coupon ${enteredCode} has already been used.`)
+    const basePrice =
+      checkoutData?.data?.checkout?.checkout_items?.[0]?.package?.price || 0
+    const currentDiscount = appliedCoupons.reduce((total, coupon) => {
+      if (coupon.amount_type === 'percentage') {
+        return total + parseFloat(coupon.amount)
+      }
+      return total + (parseFloat(coupon.amount) / basePrice) * 100
+    }, 0)
+
+    if (currentDiscount >= 100) {
+      toast.error('Maximum discount has already been applied')
       return
     }
 
-    const currentDate = new Date()
-    const startsAt = new Date(coupon.starts_at)
-    const expiresAt = new Date(coupon.expires_at)
+    try {
+      const response = await applyCouponApi(id, {
+        code: enteredCode
+      })
 
-    if (currentDate < startsAt) {
-      toast.warn(
-        `Coupon is not valid yet. It starts on ${startsAt.toLocaleDateString()}`
+      if (response.success && response.data) {
+        const newCoupon = response.data[0]
+        const newCouponDiscount =
+          newCoupon.amount_type === 'percentage'
+            ? parseFloat(newCoupon.amount)
+            : (parseFloat(newCoupon.amount) / basePrice) * 100
+
+        if (currentDiscount + newCouponDiscount > 100) {
+          toast.error(
+            'Cannot apply this coupon as it would exceed 100% discount'
+          )
+          return
+        }
+
+        setAppliedCoupons(prev => [...prev, newCoupon])
+        setCouponCode('')
+        setShowConfetti(true)
+        toast.success(
+          response.message || `Coupon ${enteredCode} applied successfully!`
+        )
+        setTimeout(() => setShowConfetti(false), 4000)
+
+        fetchCheckoutData()
+      } else {
+        toast.error(response.message || 'Failed to apply the coupon.')
+      }
+    } catch (error) {
+      console.error('Error applying coupon:', error)
+      toast.error(
+        error.message || 'An error occurred while applying the coupon.'
       )
-      return
     }
-
-    if (currentDate > expiresAt) {
-      toast.warn(
-        `Coupon has expired. It expired on ${expiresAt.toLocaleDateString()}`
-      )
-      return
-    }
-
-    setAppliedCoupons(prev => [...prev, coupon])
-    setCouponCode('')
-    setShowConfetti(true)
-    toast.success(`Coupon ${coupon.name} applied successfully!`)
-
-    setTimeout(() => setShowConfetti(false), 4000)
   }
 
-  const removeCoupon = code => {
-    setAppliedCoupons(prev => prev.filter(coupon => coupon !== code))
+  // Delete coupon
+  const deleteCoupon = async (couponId, tempRedeemId) => {
+    try {
+      const response = await deleteCouponApi(id, tempRedeemId)
+      if (response.success) {
+        setAppliedCoupons(prev => prev.filter(coupon => coupon.id !== couponId))
+        toast.success('Coupon removed successfully')
+        fetchCheckoutData()
+      } else {
+        toast.error(response.message || 'Failed to remove coupon')
+      }
+    } catch (error) {
+      console.error('Error deleting coupon:', error)
+      toast.error('Failed to remove coupon')
+    }
   }
 
   const handleContactFormSubmit = async contactData => {
@@ -218,6 +291,8 @@ function ReviewPackage () {
       setTimeout(() => {
         setIsProcessing(false)
         setShowNewPart(true)
+        // Save payment state to localStorage
+        localStorage.setItem(`payment_state_${id}`, JSON.stringify(true))
       }, 500)
     } catch (error) {
       console.error('Error updating checkout details:', error)
@@ -226,14 +301,81 @@ function ReviewPackage () {
     }
   }
 
+  // Payment Method
+
+  const handleCardDetailsChange = details => {
+    setCardDetails(details)
+  }
+
+  const handlePayment = async () => {
+    if (!cardDetails.isValid) {
+      toast.error(cardDetails.error || 'Please fill in valid card details.');
+      return;
+    }
+  
+    setProcessing(true);
+  
+    const travelersArray = [
+      {
+        full_name: 'Main Traveler',
+        type: 'Adult',
+      },
+      ...travelers.map((traveler) => ({
+        full_name: traveler.full_name,
+        type: traveler.type,
+      })),
+    ];
+  
+    const checkoutPayload = {
+      booking_travellers: JSON.stringify(travelersArray),
+      coupons: JSON.stringify(appliedCoupons.map((coupon) => coupon.id)),
+      phone_number: checkoutData?.data?.checkout?.phone_number || '',
+      email: checkoutData?.data?.checkout?.email || '',
+      address1: checkoutData?.data?.checkout?.address1 || '',
+      address2: checkoutData?.data?.checkout?.address2 || '',
+      city: checkoutData?.data?.checkout?.city || '',
+      zip_code: checkoutData?.data?.checkout?.zip_code || '',
+      state: checkoutData?.data?.checkout?.state || '',
+      country: checkoutData?.data?.checkout?.country || '',
+      total_price: totalPrice,
+      payment_method: {
+        card_number: cardDetails.card_number,
+        expiry_date: cardDetails.expiry_date,
+        cvc: cardDetails.cvc,
+        name: cardDetails.name,
+      },
+    };
+  
+    try {
+      const response = await updateCheckout(id, checkoutPayload);
+  
+      if (response.errors) {
+        toast.error(response.message || 'Failed to update checkout details.');
+        setProcessing(false);
+        return;
+      }
+  
+      toast.success(`Payment of $${totalPrice.toFixed(2)} processed successfully!`);
+    setProcessing(false);
+    } catch (error) {
+      console.error('Error during payment processing:', error);
+      toast.error('Failed to process the payment. Please try again.');
+      setProcessing(false);
+    }
+  };
+  
   const handleBackToReview = () => {
     setShowNewPart(false)
+    // Update localStorage when going back to review
+    localStorage.setItem(`payment_state_${id}`, JSON.stringify(false))
   }
 
   return (
     <div className='max-w-[1216px] mx-auto my-10 px-4 xl:px-0'>
       {showConfetti && (
-        <Confetti width={window.innerWidth} height={window.innerHeight} />
+        <div className='fixed inset-0 z-50'>
+          <Confetti width={window.innerWidth} height={window.innerHeight} />
+        </div>
       )}
       {isProcessing && (
         <div className='fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center'>
@@ -244,7 +386,10 @@ function ReviewPackage () {
         {showNewPart ? (
           <>
             <div className='w-full lg:w-8/12'>
-              <PaymentMethod onBack={handleBackToReview}/>
+              <PaymentMethod
+                onCardDetailsChange={handleCardDetailsChange}
+                onBack={handleBackToReview}
+              />
             </div>
           </>
         ) : (
@@ -257,7 +402,10 @@ function ReviewPackage () {
 
                 <PackageDetails checkoutData={checkoutData} />
 
-                <ContactFrom onFormSubmit={handleContactFormSubmit} />
+                <ContactFrom
+                  checkoutData={checkoutData}
+                  onFormSubmit={handleContactFormSubmit}
+                />
               </div>
 
               <div className=''>
@@ -357,6 +505,36 @@ function ReviewPackage () {
               ).toFixed(2)}
             </h4>
           </div>
+          <div className='flex items-start mt-5 border-b pb-5 justify-between'>
+            <div>
+              <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
+                Extra Services (Per Person)
+              </h4>
+              {checkoutData?.data?.checkout?.checkout_extra_services?.map(
+                (service, index) => (
+                  <p
+                    key={index}
+                    className='text-base text-[#0F1416] font-normal flex items-center gap-3'
+                  >
+                    {service.extra_service.name} (${service.extra_service.price}{' '}
+                    x {travelers.length + 1})
+                  </p>
+                )
+              )}
+            </div>
+            <h4 className='text-[20px] text-[#0F1416] font-bold'>
+              $
+              {(
+                (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
+                  (total, service) => {
+                    return total + Number(service.extra_service.price)
+                  },
+                  0
+                ) || 0) *
+                (travelers.length + 1)
+              ).toFixed(2)}
+            </h4>
+          </div>
 
           <div className='flex flex-col mt-5 border-b pb-5'>
             <div className='flex justify-between items-start'>
@@ -370,18 +548,17 @@ function ReviewPackage () {
                     {appliedCoupons.map((coupon, index) => (
                       <span
                         key={index}
-                        className='flex items-center bg-green-600 text-white px-2 py-1 rounded-2xl w-fit text-[10px]'
+                        className='flex items-center bg-green-600 text-white px-2 py-1 rounded-2xl w-fit text-[11px]'
                       >
-                        {coupon.name}
+                        {coupon.code}
+                        {/* ({coupon.amount_type === 'percentage' ? `${coupon.amount}%` : `$${coupon.amount}`}) */}
                         <button
                           onClick={() =>
-                            setAppliedCoupons(prev =>
-                              prev.filter((_, i) => i !== index)
-                            )
+                            deleteCoupon(coupon.id, coupon.temp_redeem_id)
                           }
-                          className='ml-2 text-[12px] font-bold'
+                          className='ml-1 text-[14px] '
                         >
-                          <RxCross2 className='text-md' />
+                          <RxCross2 className='text-md ' />
                         </button>
                       </span>
                     ))}
@@ -390,20 +567,19 @@ function ReviewPackage () {
               </div>
               <h4 className='text-[20px] text-[#0F1416] font-bold'>
                 -$
-                {appliedCoupons
-                  .reduce((total, coupon) => {
-                    const basePrice =
-                      checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                        ?.price || 0
-                    const travelerCount = travelers.length + 1
-                    return (
-                      total +
-                      (coupon.amount_type === 'percentage'
-                        ? (basePrice * travelerCount * coupon.amount) / 100
-                        : coupon.amount)
-                    )
-                  }, 0)
-                  .toFixed(2)}
+                {(
+                  (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                    ?.price || 0) *
+                    (travelers.length + 1) -
+                  totalPrice +
+                  (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
+                    (total, service) =>
+                      total + Number(service.extra_service.price),
+                    0
+                  ) || 0) *
+                    (travelers.length + 1) +
+                  (checkoutData?.data?.fees || 0) * (travelers.length + 1)
+                ).toFixed(2)}
               </h4>
             </div>
             <div className='flex gap-2 mt-2'>
@@ -429,13 +605,17 @@ function ReviewPackage () {
                 Fee & Taxes
               </h4>
               <p className='text-base font-normal flex items-center gap-3'>
-                <span>$200</span>
+                <span>${checkoutData?.data?.fees || 0}</span>
                 <span>x</span>
                 <span>{travelers.length + 1}</span> Travelers
               </p>
             </div>
             <h4 className='text-[20px] text-[#0F1416] font-bold'>
-              +${(200 * (travelers.length + 1)).toFixed(2)}
+              +$
+              {(
+                (checkoutData?.data?.fees || 0) *
+                (travelers.length + 1)
+              ).toFixed(2)}
             </h4>
           </div>
 
@@ -445,43 +625,41 @@ function ReviewPackage () {
                 Coupon Discount
               </h4>
               <p className='text-base font-normal flex items-center gap-3'>
-                <span>
-                  {appliedCoupons.length === 0
-                    ? '0'
-                    : appliedCoupons.map((coupon, index) => (
-                        <span key={index} className='text-[16px]'>
-                          {coupon.amount_type === 'percentage'
-                            ? `${coupon.amount}%`
-                            : `$${coupon.amount}`}
-                        </span>
-                      ))}
-                </span>
-                <span>x</span>
-                <span>{appliedCoupons.length}</span> Coupons
+                {appliedCoupons.map((coupon, index) => (
+                  <span key={index} className='text-[16px]'>
+                    {coupon.amount_type === 'percentage'
+                      ? `${coupon.amount}% off`
+                      : `$${coupon.amount} off`}
+                    {index < appliedCoupons.length - 1 ? ', ' : ''}
+                  </span>
+                ))}
               </p>
             </div>
             <h4 className='text-[20px] text-[#0F1416] font-bold'>
               -$
-              {appliedCoupons
-                .reduce((total, coupon) => {
-                  const basePrice =
-                    checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                      ?.price || 0
-                  const travelerCount = travelers.length + 1
-                  return (
-                    total +
-                    (coupon.amount_type === 'percentage'
-                      ? (basePrice * travelerCount * coupon.amount) / 100
-                      : coupon.amount)
-                  )
-                }, 0)
-                .toFixed(2)}
+              {(
+                (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                  ?.price || 0) *
+                  (travelers.length + 1) -
+                totalPrice +
+                (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
+                  (total, service) =>
+                    total + Number(service.extra_service.price),
+                  0
+                ) || 0) *
+                  (travelers.length + 1) +
+                (checkoutData?.data?.fees || 0) * (travelers.length + 1)
+              ).toFixed(2)}
             </h4>
           </div>
 
           {showNewPart ? (
-            <button className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'>
-              Payment
+            <button
+              onClick={handlePayment}
+              className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'
+              disabled={processing}
+            >
+              {processing ? 'Processing...' : 'Payment'}
             </button>
           ) : (
             <button

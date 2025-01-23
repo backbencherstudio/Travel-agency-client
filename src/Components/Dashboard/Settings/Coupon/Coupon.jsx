@@ -5,6 +5,7 @@ import CouponApis from '../../../../Apis/CouponApis'
 const Coupon = () => {
   const [columns] = useState({
       name: true,
+      code: true,
       description: true,
       amountType: true,
       amount: true,

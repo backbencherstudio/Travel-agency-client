@@ -28,6 +28,21 @@ const AddEditModal = ({ mode, openModal, handleCloseModal, handleSubmit, onSubmi
                     <span className="text-red-500 text-sm">{errors.name.message}</span>
                     )}
                 </div>
+                {/* Discount code */}
+                <div>
+                    <label className="block mb-2 font-medium">Code</label>
+                    <input
+                    type="text"
+                    {...register('code', { required: 'Code is required' })}
+                    placeholder="Enter discount code"
+                    className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+                        errors.code ? 'border-red-500' : ''
+                    }`}
+                    />
+                    {errors.code && (
+                    <span className="text-red-500 text-sm">{errors.code.message}</span>
+                    )}
+                </div>
 
                 {/* Description */}
                 <div>

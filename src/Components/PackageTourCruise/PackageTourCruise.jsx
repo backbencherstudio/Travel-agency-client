@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useNavigate } from 'react-router-dom';
 
 import { CiSearch } from 'react-icons/ci';
 import { FaRegCalendarAlt, FaStar } from 'react-icons/fa';
@@ -12,8 +13,10 @@ import ClientPackageApis from '../../Apis/clientApi/ClientPackageApis';
 import Loading from '../../Shared/Loading';
 import { useLocation } from 'react-router-dom';
 import CruiseCard from '../../Pages/Cruises/CruiseCard';
+import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext';
 
 function PackageTourCruise() {
+    const { destinations, cancellationPolicies } = useTravelData();
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [isDurationOpen, setIsDurationOpen] = useState(false);
@@ -72,7 +75,9 @@ function PackageTourCruise() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const location = useLocation();
+    const navigate = useNavigate();
     const isCruiseRoute = location.pathname.includes('cruises');
+    const isPackageRoute = location.pathname.includes('packages');
     // console.log('isCruiseRoute', isCruiseRoute)
     // const tours = [
     //     {
@@ -87,7 +92,7 @@ function PackageTourCruise() {
     //     },
     //     {
     //         id: 2,
-    //         name: "Explore Europe’s charm, history, and landscapes.",
+    //         name: "Explore Europe's charm, history, and landscapes.",
     //         description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
     //         rating: 4.6,
     //         days: 5,
@@ -97,7 +102,7 @@ function PackageTourCruise() {
     //     },
     //     {
     //         id: 3,
-    //         name: "Experience Africa’s wildlife, landscapes, and rich culture.",
+    //         name: "Experience Africa's wildlife, landscapes, and rich culture.",
     //         description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
     //         rating: 4.7,
     //         days: 10,
@@ -111,26 +116,123 @@ function PackageTourCruise() {
         max: 5000
     });
 
+    console.log('destinations', destinations)
+    console.log('cancellationPolicies', cancellationPolicies)
+    // console.log('priceRange', priceRange)
+
     const minPrice = 0;
     const maxPrice = 5000;
 
-    useEffect(() => {
-        getTourPackages();
-    }, [])
-
-    const getTourPackages = async () => {
+    const applyFilters = async () => {
         setLoading(true);
-        const res = await ClientPackageApis.all(`${isCruiseRoute ? 'cruise' : 'tour'}`);
-        // console.log('res', res)
-        if (res.success) {
-            setPackages(res?.data);
-            setLoading(false)
+        try {
+            const formattedStartDate = startDate ? startDate.toISOString().split('T')[0] : '';
+            const formattedEndDate = endDate ? endDate.toISOString().split('T')[0] : '';
+            
+            // Construct filter parameters
+            const filterParams = {
+                startDate: formattedStartDate,
+                endDate: formattedEndDate,
+                minPrice: priceRange.min,
+                maxPrice: priceRange.max,
+                rating: Object.entries(ratingFilters)
+                    .filter(([_, value]) => value)
+                    .map(([key]) => key),
+                freeCancellation: isFreeCancellation,
+                destinations: Object.entries(selectedDestinations)
+                    .filter(([_, value]) => value)
+                    .map(([key]) => key),
+                residences: Object.entries(selectedResidences)
+                    .filter(([_, value]) => value)
+                    .map(([key]) => key),
+                mealPlans: Object.entries(selectedMealPlans)
+                    .filter(([_, value]) => value)
+                    .map(([key]) => key),
+                popularAreas: Object.entries(selectedPopularAreas)
+                    .filter(([_, value]) => value)
+                    .map(([key]) => key),
+                searchQuery: searchDestination
+            };
+
+            // Update URL with all filter parameters
+            const params = new URLSearchParams(location.search);
+            Object.entries(filterParams).forEach(([key, value]) => {
+                if (Array.isArray(value)) {
+                    if (value.length > 0) {
+                        params.set(key, value.join(','));
+                    } else {
+                        params.delete(key);
+                    }
+                } else if (value) {
+                    params.set(key, value);
+                } else {
+                    params.delete(key);
+                }
+            });
+            
+            navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+
+            // Make API call with filters
+            const res = await ClientPackageApis.all(
+                `${isCruiseRoute ? 'cruise' : isPackageRoute ? 'package' : 'tour'}`,
+                filterParams
+            );
+
+            if (res.success) {
+                setPackages(res?.data);
+            }
+        } catch (err) {
+            setError('Failed to fetch filtered packages');
+            console.error(err);
+        } finally {
+            setLoading(false);
         }
-    }
+    };
+
+    useEffect(() => {
+        applyFilters();
+    }, [
+        startDate,
+        endDate,
+        priceRange,
+        ratingFilters,
+        isFreeCancellation,
+        selectedDestinations,
+        selectedResidences,
+        selectedMealPlans,
+        selectedPopularAreas,
+        searchDestination
+    ]);
+
+    const handleDateChange = (date, isStart) => {
+        if (isStart) {
+            setStartDate(date);
+            if (endDate && date > endDate) {
+                setEndDate(null);
+            }
+        } else {
+            if (!startDate) {
+                // Don't allow setting end date without start date
+                return;
+            }
+            if (date < startDate) {
+                // Don't allow end date before start date
+                return;
+            }
+            setEndDate(date);
+        }
+    };
+
+    const handleRatingChange = (stars) => {
+        setRatingFilters(prev => ({
+            ...prev,
+            [`${stars}Stars`]: !prev[`${stars}Stars`]
+        }));
+    };
 
     const handleMinChange = (e) => {
         const value = Math.min(Number(e.target.value), priceRange.max - 100);
-        setPriceR ({
+        setPriceRange({
             ...priceRange,
             min: value
         });
@@ -216,7 +318,7 @@ function PackageTourCruise() {
                                             <div className='flex border items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
                                                 <DatePicker
                                                     selected={startDate}
-                                                    onChange={(date) => setStartDate(date)}
+                                                    onChange={(date) => handleDateChange(date, true)}
                                                     selectsStart
                                                     startDate={startDate}
                                                     endDate={endDate}
@@ -235,7 +337,7 @@ function PackageTourCruise() {
                                             <div className='flex border mt-4 items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
                                                 <DatePicker
                                                     selected={endDate}
-                                                    onChange={(date) => setEndDate(date)}
+                                                    onChange={(date) => handleDateChange(date, false)}
                                                     selectsEnd
                                                     startDate={startDate}
                                                     endDate={endDate}
@@ -488,13 +590,16 @@ function PackageTourCruise() {
 
                             {isCancellationOpen && (
                                 <div className='mt-4 flex flex-col gap-4'>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() => setIsFreeCancellation((prev) => !prev)}
-                                        />
-                                        <p>Free Cancellation </p>
+                                    <div className='flex flex-col items-start gap-3'>
+                                        {cancellationPolicies.map((policy) => (
+                                            <div key={policy.id} className='flex items-center gap-2'>
+                                                <input
+                                                    type="checkbox"
+                                                    onChange={() => setIsFreeCancellation((prev) => !prev)}
+                                                />
+                                                <p>{policy.policy}</p>
+                                            </div>
+                                        ))}
 
                                     </div>
                                 </div>
@@ -526,85 +631,21 @@ function PackageTourCruise() {
 
                             {isDestinationOpen && (
                                 <div className='mt-4 flex flex-col gap-4'>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
+                                    {destinations?.map((destination) => (
+                                        <div key={destination.id} className='flex items-center gap-3'>
+                                            <input
+                                                type="checkbox"
                                         
                                             onChange={() =>
                                                 setSelectedDestinations((prevState) => ({
                                                     ...prevState,
-                                                    indonesia: !prevState.indonesia,
+                                                    [destination.name]: !prevState[destination.name],
                                                 }))
                                             }
                                         />
-
-                                        <p className='text-[#49556D]'>Indonesia </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    bali: !prevState.bali,
-                                                }))
-                                            }
-                                        />
-                                        <p className='text-[#49556D]'>Bali </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    iceland: !prevState.iceland,
-                                                }))
-                                            }
-                                        />
-                                        <p className='text-[#49556D]'>Iceland </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    japan: !prevState.japan,
-                                                }))
-                                            }
-                                        /> <p className='text-[#49556D]'>Japan </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    italy: !prevState.italy,
-                                                }))
-                                            }
-                                        />
-                                        <p className='text-[#49556D]'>Italy </p>
-                                    </div>
-                                    <div className='flex items-center gap-3'>
-                                        <input
-                                            type="checkbox"
-                                        
-                                            onChange={() =>
-                                                setSelectedDestinations((prevState) => ({
-                                                    ...prevState,
-                                                    paris: !prevState.paris,
-                                                }))
-                                            }
-                                        />
-                                        <p className='text-[#49556D]'>Paris </p>
-                                    </div>
+                                         <p className='text-[#49556D]'>{destination.name} </p>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
