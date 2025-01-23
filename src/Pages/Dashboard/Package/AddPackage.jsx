@@ -187,6 +187,19 @@ const AddPackage = () => {
   };
 
   const onSubmit = async (data) => {
+    // Count images and videos
+    const videoCount = images.filter(file => file.type === 'video' || file?.video_url).length;
+    const imageCount = images.filter(file => file.type !== 'video' && !file?.video_url).length;
+
+    // Validate minimum requirements
+    if (videoCount < 1) {
+      toast.error('Please upload at least 1 video');
+      return;
+    }
+    if (imageCount < 3) {
+      toast.error('Please upload at least 3 images');
+      return;
+    }
     const formDataObject = {
       ...data,
       includedPackages,

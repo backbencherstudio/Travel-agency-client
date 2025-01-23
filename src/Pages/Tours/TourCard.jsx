@@ -40,7 +40,7 @@ const navigate = useNavigate()
                                 fill="white"
                             />
                         </svg>
-                        {tour?.destination?.name}, {tour?.destination?.country?.name}
+                        {tour?.package_destinations[0]?.destination?.name}{tour?.package_destinations[1] && `, ${tour?.package_destinations[1]?.destination?.name}`}, {tour?.package_destinations[0]?.destination?.country?.name}
                     </div>
                     <div className="mb-5 bg-[#0E457D] text-white text-xs font-medium me-2 px-2.5 py-[5px] rounded-full border border-[#90A9C3] dark:bg-gray-700 dark:text-gray-300">
                         Hotel + All inclusive

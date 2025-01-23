@@ -193,7 +193,36 @@ const EditPackage = () => {
   ];
 
   const onImageDrop = (acceptedFiles) => {
-    const newFiles = acceptedFiles.map((file) => {
+    // Count existing images and videos
+    const existingVideos = images.filter(file => file.type === 'video' || file?.video_url).length;
+    const existingImages = images.filter(file => file.type !== 'video' && !file?.video_url).length;
+
+    // First, separate videos and images
+    const videoFiles = [];
+    const imageFiles = [];
+    
+    // Categorize new files
+    acceptedFiles.forEach(file => {
+      if (file.type.startsWith('video/')) {
+        videoFiles.push(file);
+      } else {
+        imageFiles.push(file);
+      }
+    });
+
+    // Check limits
+    if (existingVideos + videoFiles.length > 2) {
+      toast.error('Maximum 2 videos allowed');
+      return;
+    }
+
+    if (existingImages + imageFiles.length > 10) {
+      toast.error('Maximum 10 images allowed');
+      return;
+    }
+
+    // Process accepted files
+    const newFiles = [...videoFiles, ...imageFiles].map(file => {
       const isVideo = file.type.startsWith('video/');
       return {
         file,
@@ -201,7 +230,10 @@ const EditPackage = () => {
         type: isVideo ? 'video' : 'image',
       };
     });
-    setImages((prev) => [...prev, ...newFiles]);
+
+    if (newFiles.length > 0) {
+      setImages(prev => [...prev, ...newFiles]);
+    }
     setIsDragging(false);
   };
 
@@ -218,6 +250,19 @@ const EditPackage = () => {
   };
 
   const onSubmit = async (data) => {
+    // Count images and videos
+    const videoCount = images.filter(file => file.type === 'video' || file?.video_url).length;
+    const imageCount = images.filter(file => file.type !== 'video' && !file?.video_url).length;
+
+    // Validate minimum requirements
+    if (videoCount < 1) {
+      toast.error('Please upload at least 1 video');
+      return;
+    }
+    if (imageCount < 3) {
+      toast.error('Please upload at least 3 images');
+      return;
+    }
     const formDataObject = {
       ...data,
       includedPackages,

@@ -5,6 +5,9 @@ import removeIcon from '../../assets/img/tour-details/remove-circle.svg';
 import up from '../../assets/img/tour-details/direction-up.svg';
 import down from '../../assets/img/tour-details/direction-down.svg';
 import BookCard from './BookCard';
+import testImg from '../../assets/img/packages/banner.png';
+import { LuMessageSquareMore } from 'react-icons/lu';
+import { Tooltip } from '@mui/material';
 
 const Details = ({ details }) => {
     const [selectedImage, setSelectedImage] = useState();
@@ -58,17 +61,45 @@ const Details = ({ details }) => {
                     </div>
                     <div className="grid justify-end">
                         <p className="text-sm text-[#8993A0]">Location</p>
-                        <p className="text-base font-medium text-[#0F1416]">{details?.destination?.name}, {details?.destination?.country?.name}</p>
+                        <p className="text-base font-medium text-[#0F1416]">
+                            <span className='text-blue-500'>{details?.package_destinations[0]?.destination?.name}</span>
+                            <span className='text-blue-500'>{details?.package_destinations[1] && `, ${details?.package_destinations[1]?.destination?.name}`}, </span>
+                            <span className='text-blue-500'>{details?.package_destinations[0]?.destination?.country?.name}</span>
+                        </p>
                     </div>
                 </div>
                 <div className="flex flex-col gap-4">
                     {/* Show selected image */}
-                    <div className="">
+                    <div className="flex flex-col gap-2">
                         <img
-                            src={selectedImage}
+                            src={testImg}
+                            // src={selectedImage}
                             alt={selectedImage}
                             className="h-96 w-full object-cover rounded-xl"
                         />
+                        <div className='flex justify-end items-center gap-2'>
+                            <LuMessageSquareMore />
+                            <p className='text-sm text-[#0F1416]'>
+                                Offered in: {details?.package_languages[0]?.language?.name} 
+                                {details?.package_languages?.length > 1 && (
+                                    <Tooltip 
+                                        title={
+                                            <div className=''>
+                                                {details?.package_languages
+                                                    .slice(1)
+                                                    .map(lang => lang?.language?.name)
+                                                    .join(', ')
+                                                }
+                                            </div>
+                                        }
+                                    >
+                                        <button className='text-blue-500 ml-1'>
+                                            and {details?.package_languages?.length - 1} more
+                                        </button>
+                                    </Tooltip>
+                                )}
+                            </p>
+                        </div>
                     </div>
                     {/* Grid images */}
                     <div className="grid grid-cols-4 gap-4">
