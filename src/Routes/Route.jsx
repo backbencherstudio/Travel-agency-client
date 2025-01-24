@@ -48,6 +48,7 @@ import ClientPackages from '../Pages/Package/Packages'
 import ClientPackageDetails from '../Pages/Package/PackageDetails'
 import Language from '../Pages/Dashboard/Package/Language'
 import PaymentMethod from '../Components/Client/Booking/PaymentMethod'
+import PackageDisAllowTraveller from '../Pages/Dashboard/Package/PackageDisAllowTraveller'
 
 export const router = createBrowserRouter([
   {
@@ -201,6 +202,10 @@ export const router = createBrowserRouter([
       {
         path: 'package-extra-service',
         element: <PackageExtraService />
+      },
+      {
+        path: 'package-disallow-traveller',
+        element: <PackageDisAllowTraveller />
       },
       {
         path: 'packages',
