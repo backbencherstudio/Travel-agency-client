@@ -33,7 +33,6 @@ const ChatToggle = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [conversations, setConversations] = useState([]);
-  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const { user } = useContext(AuthContext);
@@ -51,8 +50,8 @@ const ChatToggle = () => {
     socket.on("message", (data) => {
       console.log("New message received:", data.data);
 
-      // Show notification only when chat is closed and message is from others
-      if (data.data.sender.id !== user.id && !isOpen) {
+      // Show notification when browser is not focused, regardless of chat toggle state
+      if (data.data.sender.id !== user.id && document.hidden) {
         NotificationManager.showNotification({
           title: "New Message from Admin",
           body: `Admin: ${data.data.message}`,
@@ -123,7 +122,7 @@ const ChatToggle = () => {
   };
 
   const fetchMessages = async () => {
-    if (activeConversation && activeConversation.id) {
+    if (activeConversation) {
       try {
         const response = await axiosClient.get(
           `/api/chat/message?conversation_id=${activeConversation.id}`
@@ -152,20 +151,31 @@ const ChatToggle = () => {
 
     if (existingConversation) {
       setActiveConversation(existingConversation);
-    } else {
-      setSelectedAdmin(admin);
-      setActiveConversation({
+      return;
+    }
+
+    // Create new conversation
+    try {
+      const response = await axiosClient.post("/api/chat/conversation", {
+        creator_id: user.id,
+        participant_id: admin.id,
+      });
+
+      const newConversation = {
+        ...response.data.data,
         participant: {
           id: admin.id,
           name: admin.name,
           avatar_url: admin.avatar,
         },
-      });
+      };
 
       setActiveConversation(newConversation);
       setConversations([...conversations, newConversation]);
       
-    } 
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    }
   };
 
   // Fetch messages when conversation changes
@@ -176,7 +186,7 @@ const ChatToggle = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || (!selectedAdmin && !activeConversation?.id)) return;
+    if (!newMessage.trim() || !activeConversation) return;
 
     try {
       const receiverId =
@@ -185,23 +195,20 @@ const ChatToggle = () => {
           : activeConversation.participant_id;
 
       const messagePayload = {
-        conversation_id: currentConversation.id.toString(),
+        conversation_id: activeConversation.id,
         receiver_id: receiverId,
-        message: messageToSend,
+        message: newMessage,
         sender_id: user.id,
         sender_name: user.name,
         sender_avatar: user.avatar_url,
-        receiver_name: currentConversation.participant?.name,
-        receiver_avatar: currentConversation.participant?.avatar_url,
+        receiver_name: activeConversation.participant?.name,
+        receiver_avatar: activeConversation.participant?.avatar_url,
       };
 
-      // Send message to API first
-      const sentMessage = await ChatApis.sendMessage(messagePayload);
-
-      // Create new message object
+      // Add message to local state immediately
       const newMsg = {
-        message: messageToSend,
-        conversation_id: currentConversation.id,
+        message: newMessage,
+        conversation_id: activeConversation.id,
         sender: {
           id: user.id,
           name: user.name,
@@ -209,28 +216,26 @@ const ChatToggle = () => {
         },
         receiver: {
           id: receiverId,
-          name: currentConversation.participant?.name,
-          avatar: currentConversation.participant?.avatar_url,
+          name: activeConversation.participant?.name,
+          avatar: activeConversation.participant?.avatar_url,
         },
         created_at: new Date().toISOString(),
       };
 
-      // Update messages state
-      setMessages(prev => [...prev, newMsg]);
-      setSelectedAdmin(null);
+      setMessages((prev) => [...prev, newMsg]);
 
-      // Emit socket event
+      // Send to API
+      await ChatApis.sendMessage(messagePayload);
+
+      // Emit socket event with conversation details
       socket.emit("sendMessage", {
         to: messagePayload.receiver_id,
         data: newMsg,
       });
 
-      // Refresh conversations to get latest state
-      await fetchConversations();
-
+      setNewMessage("");
     } catch (error) {
       console.error("Error sending message:", error);
-      setNewMessage(messageToSend); // Restore message if failed
     }
   };
 
@@ -270,7 +275,7 @@ const ChatToggle = () => {
       }
 
       {isOpen && (
-        <div className="fixed bottom-[18%] right-[3%] w-[400px] h-[400px] bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="fixed bottom-[18%] right-[3%] w-[500px] h-[550px] bg-white shadow-lg rounded-lg overflow-hidden">
           {!activeConversation ? (
             <div className="p-4">
               <h5 className="text-xl font-bold mb-4">Conversations</h5>
@@ -317,10 +322,7 @@ const ChatToggle = () => {
             <div className="flex flex-col h-full">
               <div className="p-4 bg-gray-100 flex items-center">
                 <button
-                  onClick={() => {
-                    setActiveConversation(null);
-                    setSelectedAdmin(null);
-                  }}
+                  onClick={() => setActiveConversation(null)}
                   className="mr-4 px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
                 >
                   <MdKeyboardArrowLeft className="h-5 w-5" />

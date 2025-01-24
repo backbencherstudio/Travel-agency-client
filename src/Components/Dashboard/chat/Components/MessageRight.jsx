@@ -20,7 +20,7 @@ const MessageRight = ({avatar, naame, time, text}) => {
           </div>
 
           {/* Message Content */}
-          <p className="text-base font-normal py-2.5 text-gray-900">{text}</p>
+          <p className="text-sm font-normal py-2.5 text-gray-900">{text}</p>
         </div>
 
         {isValidImageUrl(avatar?.avatar_url) ? (

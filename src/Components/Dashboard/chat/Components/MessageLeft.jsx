@@ -41,7 +41,7 @@ const MessageLeft = ({avatar, naame, time, text}) => {
           </div>
 
           {/* Message Content */}
-          <p className="text-base font-normal py-2.5 text-gray-900">
+          <p className="text-sm font-normal py-2.5 text-gray-900">
             {text}
           </p>
         </div>
