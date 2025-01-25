@@ -360,9 +360,9 @@ const ChatToggle = () => {
           ) : (
             <div className="flex flex-col h-full">
 
-              <div className="p-4 bg-gray-100 flex items-center justify-between">
+              <div className="p-4 bg-gray-100 flex items-center justify-between ">
 
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
 
 
                 <button
@@ -403,7 +403,7 @@ const ChatToggle = () => {
                             className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
                             aria-label="Close Chat"
                           >
-                            <IoClose className="h-8 w-8" />
+                            <IoClose className="h-6 w-6" />
                           </button>
                         </div>
 
