@@ -1,6 +1,7 @@
 import React from 'react'
 import bgImg from "./../../assets/img/Cruise/banner.png";
 import PackageTourCruise from '../../Components/PackageTourCruise/PackageTourCruise';
+import { Link } from 'react-router-dom';
 
 function Cruises() {
   return (
@@ -24,7 +25,7 @@ function Cruises() {
           className="text-center flex items-center justify-center flex-col text-white"
         >
           <h3 className="flex gap-2 justify-center items-center text-lg">
-            Home
+            <Link to="/">Home</Link>
             <span className="mx-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

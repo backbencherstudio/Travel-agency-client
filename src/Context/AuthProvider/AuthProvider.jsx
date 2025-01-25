@@ -76,6 +76,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     const token = localStorage.getItem("token");
     if (!token) {
       toast.warning("Logged out!");

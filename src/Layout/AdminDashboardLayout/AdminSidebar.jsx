@@ -63,7 +63,9 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
       tab === 'addPackage' ||
       tab === 'packageCategory&Tag' ||
       tab === 'packageDestination&Policy' ||
-      tab === 'packageExtraService'
+      tab === 'packageExtraService' ||
+      tab === 'language' ||
+      tab === 'disallowTraveller'
     ) {
       setSubmenuOpen(true)
     } else {
@@ -117,7 +119,9 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
               selectedTab === 'addPackage' ||
               selectedTab === 'packageCategory&Tag' ||
               selectedTab === 'packageDestination&Policy' ||
-              selectedTab === 'packageExtraService'
+              selectedTab === 'packageExtraService' ||
+              selectedTab === 'language' ||
+              selectedTab === 'disallowTraveller'
                 ? 'bg-[#eb5b2a] text-white font-semibold'
                 : 'hover:bg-[#0d3055]'
             }`}
@@ -191,6 +195,26 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 }`}
               >
                 <span>Package Extra Service</span>
+              </button>
+              <button
+                onClick={() => handleNavigation('language', 'language')}
+                className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${
+                  selectedTab === 'language'
+                    ? 'bg-[#eb5b2a] text-white font-semibold'
+                    : 'hover:bg-[#0d3055]'
+                }`}
+              >
+                <span>Package Language</span>
+              </button>
+              <button
+                onClick={() => handleNavigation('packageDisallowTraveller', 'package-disallow-traveller')}
+                className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${
+                  selectedTab === 'packageDisallowTraveller'
+                    ? 'bg-[#eb5b2a] text-white font-semibold'
+                    : 'hover:bg-[#0d3055]'
+                }`}
+              >
+                <span>Disallow Traveller</span>
               </button>
             </div>
           )}
@@ -275,7 +299,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             <span>Settings</span>
           </button>
 
-          <button onClick={(e) => handleLogOut(e)} className='flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 px-5 rounded-md text-white'>
+          <button onClick={(e) => handleLogOut(e)} className='flex gap-3 text-[16px] hover:bg-[#fdf0ea] hover:text-[#ec6931] p-2 rounded-md text-white'>
             <CiLogout className='mt-1' /> Logout
           </button>
         </nav>

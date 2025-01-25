@@ -31,12 +31,15 @@ const EditPackage = () => {
   const [policies, setPolicies] = useState([]);
   const [destinations, setDestinations] = useState([]);
   const [images, setImages] = useState([]);
-    const [extraServices, setExtraServices] = useState([]);
+  const [extraServices, setExtraServices] = useState([]);
   const [serviceIds, setServicesIds] = useState([]);
+  const [languages, setLanguages] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
   const [loading, setLoading] = useState(false);
+  const [selectedDestinations, setSelectedDestinations] = useState([]);
 
   const { id } = useParams();
   const editId = id;
@@ -81,6 +84,9 @@ const EditPackage = () => {
         const resServices = await axiosClient.get("api/admin/extra-service");
         setExtraServices(resServices.data?.data);
 
+        const resLanguages = await axiosClient.get("api/admin/language");
+        setLanguages(resLanguages.data?.data);
+
         if (editId) {
           const resPackage = await axiosClient.get(
             `api/admin/package/${editId}`
@@ -97,7 +103,25 @@ const EditPackage = () => {
             )
           );
           setPackageType(packageData.type);
-          setValue("destination_id", packageData.destination?.id);
+          if (packageData.package_destinations) {
+            setSelectedDestinations(
+              packageData.package_destinations.map(dest => ({ id: dest.destination.id }))
+            );
+            setValue('destinations', 
+              packageData.package_destinations.map(dest => ({ id: dest.destination.id }))
+            );
+          } else if (packageData.package_destinations) {
+            setSelectedDestinations([{ id: packageData.package_destinations.destination.id }]);
+            setValue('destinations', [{ id: packageData.package_destinations.destination.id }]);
+          }
+          if (packageData.package_languages) {
+            setSelectedLanguages(
+              packageData.package_languages.map(dest => ({ id: dest.language.id }))
+            );
+            setValue('languages', 
+              packageData.package_languages.map(dest => ({ id: dest.language.id }))
+            );
+          }
           setValue("price", packageData.price);
           setValue("duration", packageData.duration);
           setValue("duration_type", packageData.duration_type);
@@ -147,6 +171,7 @@ const EditPackage = () => {
   // console.log('tags', tags)
   // console.log('categories', categories)
 
+  console.log("selectedDestinations", selectedDestinations);
   // console.log('includedPackages', includedPackages)
   console.log("policies", policies);
   console.log("images", images);
@@ -168,7 +193,36 @@ const EditPackage = () => {
   ];
 
   const onImageDrop = (acceptedFiles) => {
-    const newFiles = acceptedFiles.map((file) => {
+    // Count existing images and videos
+    const existingVideos = images.filter(file => file.type === 'video' || file?.video_url).length;
+    const existingImages = images.filter(file => file.type !== 'video' && !file?.video_url).length;
+
+    // First, separate videos and images
+    const videoFiles = [];
+    const imageFiles = [];
+    
+    // Categorize new files
+    acceptedFiles.forEach(file => {
+      if (file.type.startsWith('video/')) {
+        videoFiles.push(file);
+      } else {
+        imageFiles.push(file);
+      }
+    });
+
+    // Check limits
+    if (existingVideos + videoFiles.length > 2) {
+      toast.error('Maximum 2 videos allowed');
+      return;
+    }
+
+    if (existingImages + imageFiles.length > 10) {
+      toast.error('Maximum 10 images allowed');
+      return;
+    }
+
+    // Process accepted files
+    const newFiles = [...videoFiles, ...imageFiles].map(file => {
       const isVideo = file.type.startsWith('video/');
       return {
         file,
@@ -176,7 +230,10 @@ const EditPackage = () => {
         type: isVideo ? 'video' : 'image',
       };
     });
-    setImages((prev) => [...prev, ...newFiles]);
+
+    if (newFiles.length > 0) {
+      setImages(prev => [...prev, ...newFiles]);
+    }
     setIsDragging(false);
   };
 
@@ -193,13 +250,26 @@ const EditPackage = () => {
   };
 
   const onSubmit = async (data) => {
+    // Count images and videos
+    const videoCount = images.filter(file => file.type === 'video' || file?.video_url).length;
+    const imageCount = images.filter(file => file.type !== 'video' && !file?.video_url).length;
+
+    // Validate minimum requirements
+    if (videoCount < 1) {
+      toast.error('Please upload at least 1 video');
+      return;
+    }
+    if (imageCount < 3) {
+      toast.error('Please upload at least 3 images');
+      return;
+    }
     const formDataObject = {
       ...data,
       includedPackages,
       excludedPackages,
       serviceIds,
       package_images: images.map((image) => (image.file ? image.file : image)),
-      // tourPlan,
+      destinations: selectedDestinations,
     };
 
     const package_images = [];
@@ -271,6 +341,10 @@ const EditPackage = () => {
         );
       } else if (key === "serviceIds") {
         form.append("extra_services", JSON.stringify(serviceIds));
+      } else if (key === "destinations") {
+        form.append("destinations", JSON.stringify(selectedDestinations));
+      } else if (key === "languages") {
+        form.append("languages", JSON.stringify(selectedLanguages));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -314,6 +388,35 @@ const EditPackage = () => {
     } else {
       // Remove the service ID object if unchecked
       setServicesIds((prev) => prev.filter((service) => service.id !== serviceId));
+    }
+  };
+
+  const handleDestinationChange = (selected) => {
+    if (Array.isArray(selected)) {
+      // For multiple selections (package type)
+      setSelectedDestinations(selected.map(item => ({ id: item.value })));
+      setValue('destinations', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      // For single selection (tour/cruise type)
+      setSelectedDestinations([{ id: selected.value }]);
+      setValue('destinations', [{ id: selected.value }]);
+    } else {
+      // Handle clearing the selection
+      setSelectedDestinations([]);
+      setValue('destinations', []);
+    }
+  };
+
+  const handleLanguageChange = (selected) => {
+    if (Array.isArray(selected)) {
+      setSelectedLanguages(selected.map(item => ({ id: item.value })));
+      setValue('languages', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      setSelectedLanguages([{ id: selected.value }]);
+      setValue('languages', [{ id: selected.value }]);
+    } else {
+      setSelectedLanguages([]);
+      setValue('languages', []);
     }
   };
 
@@ -536,28 +639,35 @@ const EditPackage = () => {
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
-                    Destination
+                    Destination{packageType === 'package' ? 's' : ''}
                   </label>
-                  <select
-                    type="text"
-                    placeholder="Select a destination"
-                    {...register("destination_id", {
-                      required: "Destination is required",
-                    })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select a destination
-                    </option>
-                    {destinations.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option> // Ensure a return for each <option>
-                    ))}
-                  </select>
-                  {errors.destination_id && (
+                  {packageType === 'package' ? (
+                    <Select
+                      isMulti
+                      options={destinations}
+                      value={destinations.filter(option => 
+                        selectedDestinations.some(dest => dest.id === option.value)
+                      )}
+                      onChange={handleDestinationChange}
+                      placeholder="Select destinations"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                    />
+                  ) : (
+                    <Select
+                      options={destinations}
+                      value={destinations.find(option => 
+                        selectedDestinations[0]?.id === option.value
+                      )}
+                      onChange={handleDestinationChange}
+                      placeholder="Select a destination"
+                      className="react-select-container"
+                      classNamePrefix="react-select"
+                    />
+                  )}
+                  {errors.destinations && (
                     <p className="text-red-500 text-xs mt-1">
-                      {errors.destination_id.message}
+                      {errors.destinations.message}
                     </p>
                   )}
                 </div>
@@ -739,28 +849,26 @@ const EditPackage = () => {
                   </ul>
                 </div>
                 <div>
-                  <select
-                    type="text"
-                    placeholder="Language"
-                    {...register("language")}
-                    className="text-base text-black w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  >
-                    <option value="" className="text-base text-black">
-                      Language
-                    </option>
-                    <option value="en" className="text-base text-black">
-                      English
-                    </option>
-                    <option value="es" className="text-base text-black">
-                      Spanish
-                    </option>
-                    <option value="de" className="text-base text-black">
-                      German
-                    </option>
-                    <option value="fr" className="text-base text-black">
-                      French
-                    </option>
-                  </select>
+                <label className="block text-gray-500 text-base font-medium mb-4">
+                    Language
+                  </label>
+                  <Select
+                    isMulti
+                    options={languages.map(lang => ({
+                      value: lang.id,
+                      label: lang.name
+                    }))}
+                    value={languages
+                      .filter(lang => selectedLanguages.some(sel => sel.id === lang.id))
+                      .map(lang => ({
+                        value: lang.id,
+                        label: lang.name
+                      }))}
+                    onChange={handleLanguageChange}
+                    placeholder="Select language"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                   {/* {errors.language && (
                           <p className="text-red-500 text-xs mt-1">{errors.language.message}</p>
                       )} */}

@@ -6,8 +6,9 @@ import axiosClient from "../axiosClient";
 import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 import ChatApis from "../Apis/ChatApis";
 import { io } from "socket.io-client";
+import NotificationManager from "./NotificationManager";
 const defaultAvatar = "https://via.placeholder.com/150";
-
+import { MdKeyboardArrowLeft } from "react-icons/md";
 
 const token = localStorage.getItem("token");
 
@@ -32,19 +33,55 @@ const ChatToggle = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [conversations, setConversations] = useState([]);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const { user } = useContext(AuthContext);
+
+  console.log("user", user);
   
+
+  // Request notification permission on component mount
+  useEffect(() => {
+    NotificationManager.requestPermission();
+  }, []);
 
   // Socket event listener for new messages
   useEffect(() => {
     socket.on("message", (data) => {
       console.log("New message received:", data.data);
+
+      // Show notification only when chat is closed and message is from others
+      if (data.data.sender.id !== user.id && !isOpen) {
+        NotificationManager.showNotification({
+          title: "New Message from Admin",
+          body: `Admin: ${data.data.message}`,
+          icon: data.data.sender.avatar || defaultAvatar,
+          requireInteraction: false,
+          onClick: () => {
+            window.focus();
+            setIsOpen(true);
+            if (data.data.conversation_id) {
+              const conversation = conversations.find(
+                (conv) => conv.id === data.data.conversation_id
+              );
+              if (conversation) {
+                setActiveConversation(conversation);
+              }
+            }
+          },
+        });
+      }
+
       // Only update messages if it belongs to current conversation
-      if (activeConversation && data.data.conversation_id === activeConversation.id) {
+      if (
+        activeConversation &&
+        data.data.conversation_id === activeConversation.id
+      ) {
         setMessages((prevMessages) => {
-          const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+          const prevMessagesArray = Array.isArray(prevMessages)
+            ? prevMessages
+            : [];
           const messageExists = prevMessagesArray.some(
             (msg) =>
               msg.created_at === data.data.created_at &&
@@ -56,19 +93,18 @@ const ChatToggle = () => {
         });
       }
     });
-    console.log('messages', messages);
-    
+    console.log("messages", messages);
 
     return () => {
       socket.off("message");
     };
-  }, [activeConversation]);
+  }, [activeConversation, conversations, isOpen]);
 
   const fetchConversations = async () => {
     try {
       const response = await ChatApis.fetchConversations();
-      console.log('conversations response', response);
-      
+      console.log("conversations response", response);
+
       setConversations(response);
     } catch (error) {
       console.error("Error fetching conversations:", error);
@@ -79,7 +115,7 @@ const ChatToggle = () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
       const admins = response.data.data.filter((user) => user.type === "admin");
-      console.log('admins', admins);
+      console.log("admins", admins);
       setAdminUsers(admins);
     } catch (error) {
       console.error("Error fetching admin users:", error);
@@ -87,7 +123,7 @@ const ChatToggle = () => {
   };
 
   const fetchMessages = async () => {
-    if (activeConversation) {
+    if (activeConversation && activeConversation.id) {
       try {
         const response = await axiosClient.get(
           `/api/chat/message?conversation_id=${activeConversation.id}`
@@ -104,79 +140,68 @@ const ChatToggle = () => {
     fetchConversations();
     fetchAdminUsers();
   }, []);
-  console.log('fetching messages', messages);
-  
+  console.log("fetching messages", messages);
 
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
     const existingConversation = conversations.find(
-      (conv) => 
+      (conv) =>
         (conv.creator_id === user.id && conv.participant_id === admin.id) ||
         (conv.creator_id === admin.id && conv.participant_id === user.id)
     );
 
     if (existingConversation) {
       setActiveConversation(existingConversation);
-      return;
-    }
-
-    // Create new conversation
-    try {
-      const response = await axiosClient.post("/api/chat/conversation", {
-        creator_id: user.id,
-        participant_id: admin.id,
-      });
-
-      const newConversation = {
-        ...response.data.data,
+    } else {
+      setSelectedAdmin(admin);
+      setActiveConversation({
         participant: {
           id: admin.id,
           name: admin.name,
-          avatar_url: admin.avatar
-        }
-      };
+          avatar_url: admin.avatar,
+        },
+      });
 
       setActiveConversation(newConversation);
       setConversations([...conversations, newConversation]);
-    } catch (error) {
-      console.error("Error creating conversation:", error);
-    }
+      
+    } 
   };
 
   // Fetch messages when conversation changes
   useEffect(() => {
     fetchMessages();
-    console.log('fetching messages', messages);
-    
+    console.log("fetching messages", messages);
   }, [activeConversation]);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeConversation) return;
-    console.log('new message', newMessage);
+    if (!newMessage.trim() || (!selectedAdmin && !activeConversation?.id)) return;
 
     try {
-      const receiverId = activeConversation.participant_id === user.id 
-        ? activeConversation.creator_id 
-        : activeConversation.participant_id;
+      const receiverId =
+        activeConversation.participant_id === user.id
+          ? activeConversation.creator_id
+          : activeConversation.participant_id;
 
-      // Create message object
       const messagePayload = {
-        conversation_id: activeConversation.id,
+        conversation_id: currentConversation.id.toString(),
         receiver_id: receiverId,
-        message: newMessage,
+        message: messageToSend,
         sender_id: user.id,
         sender_name: user.name,
         sender_avatar: user.avatar_url,
-        receiver_name: activeConversation.participant?.name,
-        receiver_avatar: activeConversation.participant?.avatar_url,
+        receiver_name: currentConversation.participant?.name,
+        receiver_avatar: currentConversation.participant?.avatar_url,
       };
-      console.log('message payload', messagePayload);
 
-      // Add message to local state immediately
+      // Send message to API first
+      const sentMessage = await ChatApis.sendMessage(messagePayload);
+
+      // Create new message object
       const newMsg = {
-        message: newMessage,
-        conversation_id: activeConversation.id,
+        message: messageToSend,
+        conversation_id: currentConversation.id,
         sender: {
           id: user.id,
           name: user.name,
@@ -184,32 +209,28 @@ const ChatToggle = () => {
         },
         receiver: {
           id: receiverId,
-          name: activeConversation.participant?.name,
-          avatar: activeConversation.participant?.avatar_url,
+          name: currentConversation.participant?.name,
+          avatar: currentConversation.participant?.avatar_url,
         },
         created_at: new Date().toISOString(),
       };
 
-      setMessages((prev) => [...prev, newMsg]);
-      console.log('new message', newMsg);
-
-      // Send to API
-      await ChatApis.sendMessage(messagePayload);
+      // Update messages state
+      setMessages(prev => [...prev, newMsg]);
+      setSelectedAdmin(null);
 
       // Emit socket event
       socket.emit("sendMessage", {
         to: messagePayload.receiver_id,
         data: newMsg,
       });
-      console.log('socket event emitted');
-      console.log('new ', newMsg);
-      console.log('new message', newMessage);
-      
 
-      // Clear input
-      setNewMessage("");
+      // Refresh conversations to get latest state
+      await fetchConversations();
+
     } catch (error) {
       console.error("Error sending message:", error);
+      setNewMessage(messageToSend); // Restore message if failed
     }
   };
 
@@ -234,14 +255,19 @@ const ChatToggle = () => {
     }
   }, [activeConversation, messages]);
 
+  console.log("activeConversation", activeConversation);
+
   return (
     <div className="fixed bottom-[11%] right-[3%] z-50">
+      {
+        user && user.type === 'user' &&
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="p-3 bg-[#f974164b] text-[#f97316] rounded-full shadow-lg transition hover:bg-[#f97316] hover:text-[#f2f2f2]"
       >
         <IoChatbubbleEllipsesSharp className="h-8 w-8" />
       </button>
+      }
 
       {isOpen && (
         <div className="fixed bottom-[18%] right-[3%] w-[400px] h-[400px] bg-white shadow-lg rounded-lg overflow-hidden">
@@ -255,11 +281,24 @@ const ChatToggle = () => {
                     onClick={() => handleAdminClick(admin)}
                     className="flex items-center p-3 cursor-pointer hover:bg-gray-50 rounded-lg"
                   >
-                    <img
-                      src={admin.avatar || defaultAvatar}
-                      className="rounded-full h-10 w-10 object-cover"
-                      alt={admin.name}
-                    />
+                    {admin.avatar ? (
+                      <img
+                        src={admin.avatar}
+                        className="rounded-full h-10 w-10 object-cover"
+                        alt={admin.name}
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextElementSibling.style.display = "flex";
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className={`rounded-full h-10 w-10 bg-gray-200 text-gray-600 flex items-center justify-center ${
+                        admin.avatar ? "hidden" : ""
+                      }`}
+                    >
+                      {admin.name.charAt(0).toUpperCase()}
+                    </div>
                     <div className="ml-3">
                       <h6 className="font-medium">{admin.name}</h6>
                       <p className="text-sm text-gray-500">
@@ -278,22 +317,35 @@ const ChatToggle = () => {
             <div className="flex flex-col h-full">
               <div className="p-4 bg-gray-100 flex items-center">
                 <button
-                  onClick={() => setActiveConversation(null)}
+                  onClick={() => {
+                    setActiveConversation(null);
+                    setSelectedAdmin(null);
+                  }}
                   className="mr-4 px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
                 >
-                  Back
+                  <MdKeyboardArrowLeft className="h-5 w-5" />
                 </button>
-                <img
-                  src={
-                    activeConversation.participant?.avatar ||
-                    defaultAvatar
-                  }
-                  className="rounded-full h-8 w-8 object-cover"
-                  alt={activeConversation.participant?.name}
-                />
-                <h5 className="ml-3 font-bold">
-                  {activeConversation.participant?.name}
-                </h5>
+                <div className="flex items-center">
+                  <div className="relative">
+                    <img
+                      src={activeConversation.participant?.avatar || ""}
+                      className="rounded-full h-8 w-8 object-cover"
+                      alt={activeConversation.participant?.name}
+                      onError={(e) => {
+                        e.target.style.display = "none"; // Hide the broken image
+                        e.target.nextElementSibling.style.display = "flex"; // Show the fallback
+                      }}
+                    />
+                    <div className="rounded-full h-9 w-9 bg-gray-200 text-gray-600 flex items-center justify-center hidden">
+                      {activeConversation.participant?.name
+                        ?.charAt(0)
+                        .toUpperCase()}
+                    </div>
+                  </div>
+                  <h5 className="ml-3 font-bold">
+                    {activeConversation.participant?.name}
+                  </h5>
+                </div>
               </div>
 
               <div
