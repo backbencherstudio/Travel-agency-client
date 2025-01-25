@@ -36,7 +36,7 @@ import Settings from '../Pages/Dashboard/Settings/Settings'
 import PackageExtraService from '../Pages/Dashboard/Package/PackageExtraService'
 import AddBlog from '../Pages/Dashboard/Blogs/AddBlog'
 import AdminLogin from '../Pages/Auth/Admin/AdminLogin'
-import Chat from "../Components/Dashboard/chat/Chat";
+import Chat from '../Components/Dashboard/chat/Chat'
 import Contacts from '../Pages/Contacts/Contacts'
 import Cancellation from '../Pages/Contacts/Cancellation'
 import PrivateRoute from './Private/PrivateRoute'
@@ -49,7 +49,16 @@ import ClientPackageDetails from '../Pages/Package/PackageDetails'
 import Language from '../Pages/Dashboard/Package/Language'
 import PaymentMethod from '../Components/Client/Booking/PaymentMethod'
 import PackageDisAllowTraveller from '../Pages/Dashboard/Package/PackageDisAllowTraveller'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+import PaymentSuccess from '../Components/Client/Booking/PaymentSuccess'
+if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
+  throw new Error(
+    'VITE_STRIPE_PUBLISHABLE_KEY is not set in the environment variables'
+  )
+}
 
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -127,8 +136,17 @@ export const router = createBrowserRouter([
       },
       {
         path: '/booking/:id',
-        element: <ReviewPackage />
+        element: (
+          <Elements stripe={stripePromise}>
+            <ReviewPackage />
+          </Elements>
+        )
       },
+      {
+        path: '/success/:id',
+        element: <PaymentSuccess />
+      },
+
       {
         path: '/contacts',
         element: <Contacts />
@@ -144,17 +162,17 @@ export const router = createBrowserRouter([
       {
         path: '/profile',
         element: <Profile />
-      },
-      // {
-      //   path: '/payment/:id',
-      //   element: <PaymentMethod/>
-      // },
+      }
     ]
   },
   {
     path: '/dashboard',
     // element: <DashboardLayout />,
-    element: <PrivateRoute role={["admin"]}><AdminLayout /></PrivateRoute>,
+    element: (
+      <PrivateRoute role={['admin']}>
+        <AdminLayout />
+      </PrivateRoute>
+    ),
     children: [
       {
         index: true,
@@ -169,31 +187,29 @@ export const router = createBrowserRouter([
         element: <Language />
       },
       {
-        path: "chat",
-        element: <Chat/>,
+        path: 'chat',
+        element: <Chat />
       },
       {
-        path: "chat/:conversationID?",
-        element: <Chat/>,
+        path: 'chat/:conversationID?',
+        element: <Chat />
       },
-      { path: "edit-package/:id",
-        element: <EditPackage />,
+      { path: 'edit-package/:id', element: <EditPackage /> },
+      {
+        path: 'edit-package/:name/tour-plan/:id',
+        element: <EditTourPlan />
       },
       {
-        path: "edit-package/:name/tour-plan/:id",
-        element: <EditTourPlan />,
+        path: 'package/:packageId/tour-plan',
+        element: <TourPlanForm />
       },
       {
-        path: "package/:packageId/tour-plan",
-        element: <TourPlanForm />,
+        path: 'package/:packageId/tour-plan/:planId',
+        element: <TourPlanForm />
       },
       {
-        path: "package/:packageId/tour-plan/:planId",
-        element: <TourPlanForm />,
-      },
-      {
-        path: "package-category-&-tag",
-        element: <PackageCategoryTag />,
+        path: 'package-category-&-tag',
+        element: <PackageCategoryTag />
       },
       {
         path: 'package-destination-&-policy',
@@ -241,17 +257,17 @@ export const router = createBrowserRouter([
       },
       {
         path: 'add-blog/:id',
-        element: <AddBlog/>
+        element: <AddBlog />
       },
       {
         path: 'add-blog',
-        element: <AddBlog/>
+        element: <AddBlog />
       },
       {
         path: 'settings',
-        element: <Settings/>
+        element: <Settings />
       }
-    ],
+    ]
   },
   {
     path: 'vendor/dashboard',
