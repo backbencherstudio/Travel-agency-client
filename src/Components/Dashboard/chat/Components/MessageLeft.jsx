@@ -31,9 +31,9 @@ const MessageLeft = ({avatar, naame, time, text}) => {
         )}
 
         {/* Message Container */}
-        <div className="flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-[#eb5a2a15] rounded-xl rounded-tl-none">
+        <div className="flex flex-col w-full max-w-[280px] leading-1.5 p-4 border-gray-200 bg-[#eb5a2a15] rounded-xl rounded-tl-none">
           {/* Sender Info */}
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
+          <div className="flex justify-between space-x-2 rtl:space-x-reverse">
             <span className="text-sm font-semibold text-gray-900">
             {naame}
             </span>
