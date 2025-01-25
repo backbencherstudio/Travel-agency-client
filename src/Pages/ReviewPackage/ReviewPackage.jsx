@@ -21,7 +21,6 @@ import {
 
 import {
   CardElement,
-  Elements,
   useElements,
   useStripe
 } from '@stripe/react-stripe-js'
@@ -125,6 +124,10 @@ function ReviewPackage () {
       fetchCheckoutData()
     }
   }, [id])
+
+
+
+  console.log("checkoutData", checkoutData)
 
   useEffect(() => {
     const basePrice =
@@ -394,7 +397,7 @@ function ReviewPackage () {
 
       const clientSecret = bookingResponse.data?.client_secret
       if (!clientSecret) {
-        toast.error('Payment client secret is missing. Please contact support.')
+        toast.error(reponse.error)
         setProcessing(false)
         return
       }
@@ -402,7 +405,7 @@ function ReviewPackage () {
       // Step 3: Confirm payment using Stripe
       const cardElement = elements.getElement(CardElement)
       if (!cardElement) {
-        toast.error('Card element not found')
+        toast.error(response.error)
         setProcessing(false)
         return
       }
