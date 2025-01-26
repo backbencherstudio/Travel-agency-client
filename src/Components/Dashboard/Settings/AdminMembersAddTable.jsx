@@ -16,12 +16,24 @@ import {
 import { FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi'
 import { useForm } from 'react-hook-form'
 import { FaRegSquarePlus } from 'react-icons/fa6'
-import { addUser, deleteUser, updateUser } from '../../../Apis/CreateNewUser'
+import {
+  addUser,
+  deleteUser,
+  searchUsers,
+  updateUser
+} from '../../../Apis/CreateNewUser'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
+import debounce from 'lodash.debounce'
+import { useLocation, useNavigate } from 'react-router-dom'
+
 
 const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
-  const [searchQuery, setSearchQuery] = useState('')
+  const navigate = useNavigate()
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const initialQuery = queryParams.get('q') || ''
+  const [searchQuery, setSearchQuery] = useState(initialQuery)
   const [filteredData, setFilteredData] = useState(data)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -33,14 +45,35 @@ const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
   const [showRePassword, setShowRePassword] = useState(false)
 
   useEffect(() => {
-    const filtered = data.filter(
-      item =>
-        item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.type?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    setFilteredData(filtered)
-  }, [searchQuery, data])
+    // Fetch data when the search query changes, debounced
+    const fetchData = debounce(async () => {
+      if (searchQuery.trim()) {
+        navigate(`?q=${searchQuery}`)
+        setLoading(true)
+        try {
+          const response = await searchUsers(searchQuery)
+          setFilteredData(response.data)
+        } catch (error) {
+          toast.error(
+            error.response?.data?.message ||
+              error.message ||
+              'An error occurred while searching.'
+          )
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        navigate(location.pathname)
+        setFilteredData(data)
+      }
+    }, 500)
+
+    fetchData()
+
+    return () => {
+      fetchData.cancel()
+    }
+  }, [searchQuery, data, navigate, location.pathname])
 
   const handleChangePage = (event, newPage) => setPage(newPage)
 
@@ -48,7 +81,6 @@ const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
-
   const handleRowClick = id => {
     const memberToEdit = data.find(member => member.id === id)
     if (memberToEdit) {
