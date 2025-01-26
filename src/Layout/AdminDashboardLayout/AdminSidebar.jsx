@@ -65,7 +65,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
       tab === 'packageDestination&Policy' ||
       tab === 'packageExtraService' ||
       tab === 'language' ||
-      tab === 'disallowTraveller'
+      tab === 'packageDisallowTraveller'
     ) {
       setSubmenuOpen(true)
     } else {
@@ -121,7 +121,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
               selectedTab === 'packageDestination&Policy' ||
               selectedTab === 'packageExtraService' ||
               selectedTab === 'language' ||
-              selectedTab === 'disallowTraveller'
+              selectedTab === 'packageDisallowTraveller'
                 ? 'bg-[#eb5b2a] text-white font-semibold'
                 : 'hover:bg-[#0d3055]'
             }`}

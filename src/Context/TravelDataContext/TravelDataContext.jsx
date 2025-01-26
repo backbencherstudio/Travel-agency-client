@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import ClientDestinationApis from '../../Apis/clientApi/ClientDestinationApis';
 import ClientCancellationPolicyApis from '../../Apis/clientApi/ClientCancellationPolicyApis';
+import ClientHomeApis from '../../Apis/clientApi/ClientHomeApis';
 
 const TravelDataContext = createContext();
 
 export const TravelDataProvider = ({ children }) => {
     const [destinations, setDestinations] = useState([]);
     const [cancellationPolicies, setCancellationPolicies] = useState([]);
+    const [homeData, setHomeData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -15,6 +17,12 @@ export const TravelDataProvider = ({ children }) => {
             try {
                 setLoading(true);
                 
+                // Fetch home data
+                const homeResponse = await ClientHomeApis.get();
+                if (homeResponse.success) {
+                    setHomeData(homeResponse.data);
+                }
+
                 // Fetch destinations
                 const destinationsResponse = await ClientDestinationApis.get();
                 if (destinationsResponse.success) {
@@ -39,9 +47,10 @@ export const TravelDataProvider = ({ children }) => {
 
     const value = {
         destinations,
+        homeData,
         cancellationPolicies,
         loading,
-        error
+        error,
     };
 
     return (

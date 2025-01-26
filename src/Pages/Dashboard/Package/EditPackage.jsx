@@ -35,11 +35,15 @@ const EditPackage = () => {
   const [serviceIds, setServicesIds] = useState([]);
   const [languages, setLanguages] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [travellerTypes, setTravellerTypes] = useState([]);
+  const [selectedTravellerTypes, setSelectedTravellerTypes] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
   const [loading, setLoading] = useState(false);
   const [selectedDestinations, setSelectedDestinations] = useState([]);
+
+  console.log('selectedTravellerTypes', selectedTravellerTypes)
 
   const { id } = useParams();
   const editId = id;
@@ -87,6 +91,9 @@ const EditPackage = () => {
         const resLanguages = await axiosClient.get("api/admin/language");
         setLanguages(resLanguages.data?.data);
 
+        const resTravellerTypes = await axiosClient.get("api/admin/traveller-type");
+        setTravellerTypes(resTravellerTypes.data?.data);
+
         if (editId) {
           const resPackage = await axiosClient.get(
             `api/admin/package/${editId}`
@@ -120,6 +127,14 @@ const EditPackage = () => {
             );
             setValue('languages', 
               packageData.package_languages.map(dest => ({ id: dest.language.id }))
+            );
+          }
+          if (packageData.package_traveller_types) {
+            setSelectedTravellerTypes(
+              packageData.package_traveller_types.map(dest => ({ id: dest.traveller_type.id }))
+            );
+            setValue('travellerTypes', 
+              packageData.package_traveller_types.map(dest => ({ id: dest.traveller_type.id }))
             );
           }
           setValue("price", packageData.price);
@@ -255,14 +270,14 @@ const EditPackage = () => {
     const imageCount = images.filter(file => file.type !== 'video' && !file?.video_url).length;
 
     // Validate minimum requirements
-    if (videoCount < 1) {
-      toast.error('Please upload at least 1 video');
-      return;
-    }
-    if (imageCount < 3) {
-      toast.error('Please upload at least 3 images');
-      return;
-    }
+    // if (videoCount < 1) {
+    //   toast.error('Please upload at least 1 video');
+    //   return;
+    // }
+    // if (imageCount < 3) {
+    //   toast.error('Please upload at least 3 images');
+    //   return;
+    // }
     const formDataObject = {
       ...data,
       includedPackages,
@@ -345,6 +360,8 @@ const EditPackage = () => {
         form.append("destinations", JSON.stringify(selectedDestinations));
       } else if (key === "languages") {
         form.append("languages", JSON.stringify(selectedLanguages));
+      } else if (key === "travellerTypes") {
+        form.append("traveller_types", JSON.stringify(selectedTravellerTypes));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -419,6 +436,19 @@ const EditPackage = () => {
       setValue('languages', []);
     }
   };
+
+  const handleTravellerTypesChange = (selected) => {
+    if (Array.isArray(selected)) {
+      setSelectedTravellerTypes(selected.map(item => ({ id: item.value })));
+      setValue('travellerTypes', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      setSelectedTravellerTypes([{ id: selected.value }]);
+      setValue('travellerTypes', [{ id: selected.value }]);
+    } else {
+      setSelectedTravellerTypes([]);
+      setValue('travellerTypes', []);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -670,6 +700,28 @@ const EditPackage = () => {
                       {errors.destinations.message}
                     </p>
                   )}
+                </div>
+                <div>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Traveller Type
+                  </label>
+                  <Select
+                    isMulti
+                    options={travellerTypes?.map(type => ({
+                      value: type.id,
+                      label: type.type
+                    }))}
+                    value={travellerTypes
+                      ?.filter(type => selectedTravellerTypes?.some(sel => sel.id === type.id))
+                      .map(type => ({
+                        value: type.id,
+                        label: type.type
+                      }))}
+                    onChange={handleTravellerTypesChange}
+                    placeholder="Select traveller types"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
