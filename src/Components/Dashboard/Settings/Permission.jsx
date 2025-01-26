@@ -1,7 +1,9 @@
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import AdminMembersAddTable from './AdminMembersAddTable'
-import { adminData } from '../../../data/PermissionDataAdmin'
+
 import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
+import { getUsers } from '../../../Apis/CreateNewUser'
+import Loading from '../../../Shared/Loading'
 
 const Permission = () => {
   const [columns] = useState({
@@ -9,16 +11,40 @@ const Permission = () => {
     name: true,
     email: true,
     memberImg: true,
-    status: true
+    type: true
   })
+
   const { user } = useContext(AuthContext)
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  const fetchUsers = async () => {
+    try {
+      const response = await getUsers()
+      setData(response.data)
+      setLoading(false)
+    } catch (error) {
+      setError('Failed to load user data. Please try again later.')
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchUsers()
+  }, [])
+
   return (
     <div>
-      <AdminMembersAddTable
-        title={user.type}
-        data={adminData}
-        columns={columns}
-      />
+      {loading ? (
+        <p>
+          <Loading />
+        </p>
+      ) : error ? (
+        <p className='text-red-500'>{error}</p>
+      ) : (
+        <AdminMembersAddTable title={user.type} data={data} columns={columns} />
+      )}
     </div>
   )
 }
