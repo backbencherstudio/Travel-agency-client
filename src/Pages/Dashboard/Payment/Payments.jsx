@@ -19,7 +19,7 @@ const Payments = () => {
   return (
     <>
       <div className='flex justify-between items-center mb-5'>
-        <h1 className='text-[#0D0E0D] text-[20px] capitalize'>
+        <h1 className='text-[#0D0E0D] text-[20px] font-semibold capitalize'>
           Payment Overview
         </h1>
         <div className='relative md:col-span-1'>

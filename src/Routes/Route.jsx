@@ -48,6 +48,7 @@ import ClientPackages from '../Pages/Package/Packages'
 import ClientPackageDetails from '../Pages/Package/PackageDetails'
 import Language from '../Pages/Dashboard/Package/Language'
 import PaymentMethod from '../Components/Client/Booking/PaymentMethod'
+import Review from '../Components/Dashboard/Review/Review'
 
 export const router = createBrowserRouter([
   {
@@ -229,6 +230,10 @@ export const router = createBrowserRouter([
       {
         path: 'payment',
         element: <Payments />
+      },
+      {
+        path: 'review',
+        element: <Review />
       },
       {
         path: 'blog',

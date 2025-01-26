@@ -10,6 +10,8 @@ import { FiCompass } from 'react-icons/fi'
 import { RiArticleLine } from 'react-icons/ri'
 import { LuMessageSquareText } from "react-icons/lu";
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
+import { VscFeedback } from "react-icons/vsc";
+
 
 const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate()
@@ -250,6 +252,20 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             <MdOutlinePayment className='h-5 w-5' />
             <span>Payment</span>
           </button>
+
+
+          <button
+            onClick={() => handleNavigation('Review', 'review')}
+            className={`flex items-center space-x-2 p-2 rounded ${
+              selectedTab === 'Review'
+                ? 'bg-[#eb5b2a] text-white font-semibold'
+                : 'hover:bg-[#0d3055]'
+            }`}
+          >
+            <VscFeedback className='h-5 w-5' />
+            <span>Review</span>
+          </button>
+
 
           <button
             onClick={() => handleNavigation('Blog', 'blog')}
