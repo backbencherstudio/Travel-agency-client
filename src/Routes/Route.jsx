@@ -53,6 +53,7 @@ import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import PaymentSuccess from '../Components/Client/Booking/PaymentSuccess'
 import PaymentErros from '../Components/Client/Booking/PaymentErros'
+import BookingHistoryTable from '../Pages/BookingHistory/BookingHistoryTable'
 if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
   throw new Error(
     'VITE_STRIPE_PUBLISHABLE_KEY is not set in the environment variables'
@@ -167,6 +168,10 @@ export const router = createBrowserRouter([
       {
         path: '/profile',
         element: <Profile />
+      },
+      {
+        path: '/booking-history',
+        element: <BookingHistoryTable />
       }
     ]
   },
