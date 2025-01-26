@@ -10,6 +10,7 @@ import {
   Paper,
   TablePagination,
 } from "@mui/material";
+import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { LuTrash2 } from "react-icons/lu";
@@ -57,6 +58,48 @@ const BookingTable = ({ title }) => {
     setPage(0);
   };
 
+
+  // try {
+  //   const response = await TransactionApis.deleteTransaction(transactionId);
+  //   if (response.data.success) {
+  //     fetchTransactions();
+  //   }
+  // } catch (error) {
+  //   console.error("Error deleting transaction:", error);
+  // }
+
+
+
+
+
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await TransactionApis.deleteTransaction(id);
+          if (response.data.success) {
+            // Fetch the updated list of transactions
+            fetchTransactions();
+          } else {
+            console.error('Failed to delete the transaction');
+          }
+        } catch (error) {
+          console.error('Error while deleting:', error);
+        }
+      }
+    });
+  };
+
+
+
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-center  py-5">
@@ -103,19 +146,34 @@ const BookingTable = ({ title }) => {
           <Table sx={{ border: "1px solid #e0e0e0" }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>
+                <TableCell
+                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
+                >
                   Invoice Number
                 </TableCell>
-                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>
+                <TableCell
+                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
+                >
                   Traveler's Name
                 </TableCell>
-                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>
+                <TableCell
+                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
+                >
                   Amount
                 </TableCell>
-                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>
+                <TableCell
+                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
+                >
                   Status
                 </TableCell>
-                <TableCell sx={{ textAlign: "center", color: "#475467", fontSize: "13px", fontWeight: 600 }}>
+                <TableCell
+                  sx={{
+                    textAlign: "center",
+                    color: "#475467",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                  }}
+                >
                   Action
                 </TableCell>
               </TableRow>
@@ -125,7 +183,9 @@ const BookingTable = ({ title }) => {
               {loading ? (
                 <TableRow>
                   <TableCell colSpan={5} align="center">
-                    <p className="text-[#475467] font-medium py-6">Loading...</p>
+                    <p className="text-[#475467] font-medium py-6">
+                      Loading...
+                    </p>
                   </TableCell>
                 </TableRow>
               ) : filteredData.length > 0 ? (
@@ -142,7 +202,10 @@ const BookingTable = ({ title }) => {
                         <div className="flex items-center gap-3">
                           <img
                             className="rounded-full"
-                            src={item.booking?.user?.avatar || "/default-avatar.png"}
+                            src={
+                              item.booking?.user?.avatar ||
+                              "/default-avatar.png"
+                            }
                             alt={item.booking?.user?.name}
                             style={{ width: "40px", height: "40px" }}
                           />
@@ -157,17 +220,22 @@ const BookingTable = ({ title }) => {
                         </p>
                       </TableCell>
                       <TableCell>
-                        <span className={`px-3 py-1 rounded-full ${
-                          item.status === "succeeded" 
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}>
+                        <span
+                          className={`px-3 py-1 rounded-full ${
+                            item.status === "succeeded"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
                           {item.status}
                         </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center justify-center gap-4">
-                          <button className="text-[#475467] hover:text-red-600 transform duration-300">
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="text-[#475467] hover:text-red-600 transform duration-300"
+                          >
                             <LuTrash2 className="text-xl" />
                           </button>
                           <button className="text-[#475467] hover:text-blue-700 transform duration-300">
@@ -180,7 +248,9 @@ const BookingTable = ({ title }) => {
               ) : (
                 <TableRow>
                   <TableCell colSpan={5} align="center">
-                    <p className="text-[#475467] font-medium py-6">No transactions found</p>
+                    <p className="text-[#475467] font-medium py-6">
+                      No transactions found
+                    </p>
                   </TableCell>
                 </TableRow>
               )}
