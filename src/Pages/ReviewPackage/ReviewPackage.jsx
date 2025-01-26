@@ -378,6 +378,7 @@ function ReviewPackage () {
     setProcessing(true)
 
     try {
+
       // Step 1: Validate checkout details
       const checkoutResponse = await updateCheckout(id)
 
@@ -492,14 +493,12 @@ function ReviewPackage () {
       <div className='flex flex-col lg:flex-row justify-between gap-10'>
         {showNewPart ? (
           <>
-            {/* <Elements stripe={stripePromise}> */}
             <div className='w-full lg:w-8/12'>
               <PaymentMethod
                 onCardDetailsChange={handleCardDetailsChange}
                 onBack={handleBackToReview}
               />
             </div>
-            {/* </Elements> */}
           </>
         ) : (
           <>
