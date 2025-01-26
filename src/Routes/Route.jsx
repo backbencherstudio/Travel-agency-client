@@ -52,6 +52,7 @@ import PackageDisAllowTraveller from '../Pages/Dashboard/Package/PackageDisAllow
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import PaymentSuccess from '../Components/Client/Booking/PaymentSuccess'
+import PaymentErros from '../Components/Client/Booking/PaymentErros'
 if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
   throw new Error(
     'VITE_STRIPE_PUBLISHABLE_KEY is not set in the environment variables'
@@ -145,6 +146,10 @@ export const router = createBrowserRouter([
       {
         path: '/success/:id',
         element: <PaymentSuccess />
+      },
+      {
+        path: '/payment-error/:id',
+        element: <PaymentErros />
       },
 
       {

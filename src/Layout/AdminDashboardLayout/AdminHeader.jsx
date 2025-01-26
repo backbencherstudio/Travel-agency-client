@@ -1,8 +1,11 @@
 import { FaRegBell } from 'react-icons/fa'
 import image from '../../assets/img/logo.png'
 import { IoMenu } from 'react-icons/io5'
+import { AuthContext } from '../../Context/AuthProvider/AuthProvider';
+import { useContext } from 'react';
 
 const AdminHeader = ({ showSidebar, setShowSidebar }) => {
+  const { user } = useContext(AuthContext);
   return (
     <div className='fixed top-0 left-0 w-full z-40'>
       <div className='ml-0 lg:ml-[200px] px-6 bg-zinc-50 py-4 shadow-md'>
@@ -18,7 +21,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
           {/* This section will display the route name */}
           <div className='hidden lg:flex lg:ms-20'>
             <p className='text-[#1D1F2C] text-[14px] font-medium'>
-              Welcome, admin name
+              Welcome, {user?.name}
             </p>
           </div>
 
@@ -47,7 +50,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
               </div>
               <div>
                 <h1 className='font-semibold text-[16px]'>Tren bold</h1>
-                <p className='text-[12px] text-[#72777F]'>admin</p>
+                <p className='text-[12px] text-[#72777F]'>{user?.type}</p>
               </div>
             </div>
           </div>
