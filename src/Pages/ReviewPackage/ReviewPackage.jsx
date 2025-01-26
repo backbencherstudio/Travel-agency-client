@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FiPlusCircle, FiTrash2 } from 'react-icons/fi'
 import { RxCross2 } from 'react-icons/rx'
 import {
+  createBookingFromCheckout,
   getCheckoutById,
   updateCheckout
 } from '../../Apis/clientApi/ClientBookApi'
@@ -17,6 +18,13 @@ import {
   applyCouponApi,
   deleteCouponApi
 } from '../../Apis/clientApi/ClientCouponApis'
+
+import {
+  CardElement,
+  useElements,
+  useStripe
+} from '@stripe/react-stripe-js'
+import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 
 function ReviewPackage () {
   const {
@@ -43,6 +51,24 @@ function ReviewPackage () {
     error: null
   })
   const [processing, setProcessing] = useState(false)
+  const stripe = useStripe()
+  const elements = useElements()
+  const [newTraveler, setNewTraveler] = useState(null)
+  const { user } = useContext(AuthContext)
+  const [editingFirstTraveler, setEditingFirstTraveler] = useState(false)
+
+  // Initialize first traveler with user data
+  useEffect(() => {
+    if (user?.name) {
+      setTravelers([
+        {
+          full_name: user.name,
+          type: 'Adult',
+          isEditing: false
+        }
+      ])
+    }
+  }, [user])
 
   useEffect(() => {
     // Check localStorage for payment state for this checkout ID
@@ -78,7 +104,10 @@ function ReviewPackage () {
               full_name: traveler.full_name,
               type: traveler.type
             }))
-          setTravelers(additionalTravelers)
+          setTravelers(prev => {
+            // Keep first traveler (user) and add additional travelers
+            return [prev[0], ...additionalTravelers]
+          })
           setShowNewTravelerText(additionalTravelers.length > 0)
         }
       }
@@ -96,10 +125,14 @@ function ReviewPackage () {
     }
   }, [id])
 
+
+
+  console.log("checkoutData", checkoutData)
+
   useEffect(() => {
     const basePrice =
       checkoutData?.data?.checkout?.checkout_items?.[0]?.package?.price || 0
-    const travelerCount = travelers.length + 1
+    const travelerCount = travelers.length
 
     const sortedCoupons = [...appliedCoupons].sort((a, b) => {
       const aAmount =
@@ -139,41 +172,66 @@ function ReviewPackage () {
         0
       ) || 0) * travelerCount
 
-    const fees = checkoutData?.data?.fees || 0
-    const feesTotal = fees * travelerCount
-
-    const calculatedTotal = remainingPrice + extraServicesTotal + feesTotal
+    const calculatedTotal = remainingPrice + extraServicesTotal
 
     setTotalPrice(calculatedTotal)
   }, [travelers.length, appliedCoupons, checkoutData])
-  // add traveler
-  const addTraveler = () => {
-    setTravelers(prev => [...prev, { full_name: '', type: 'Adult', email: '' }])
-    setShowNewTravelerText(true)
-  }
 
-  // Handle Traveler Change
-  const handleTravelerChange = (index, e) => {
+  // Handle input changes for the new traveler
+  const handleNewTravelerChange = e => {
     const { name, value } = e.target
-    setTravelers(prev => {
-      const updated = [...prev]
-      updated[index] = {
-        ...updated[index],
-        [name]: value
-      }
-      return updated
+    setNewTraveler(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  // Handle first traveler edit
+  const handleFirstTravelerEdit = () => {
+    setEditingFirstTraveler(true)
+    setNewTraveler({
+      full_name: travelers[0].full_name,
+      type: travelers[0].type
     })
   }
 
-  // Remove Traveler
+  // Save first traveler edits
+  const saveFirstTravelerEdit = () => {
+    if (newTraveler?.full_name?.trim()) {
+      setTravelers(prev => [{ ...newTraveler }, ...prev.slice(1)])
+      setEditingFirstTraveler(false)
+      setNewTraveler(null)
+    } else {
+      toast.error('Please enter a valid name for the traveler')
+    }
+  }
+
+  // Cancel first traveler edit
+  const cancelFirstTravelerEdit = () => {
+    setEditingFirstTraveler(false)
+    setNewTraveler(null)
+  }
+
+  // Save the new traveler and add to the list
+  const saveNewTraveler = () => {
+    if (newTraveler?.full_name?.trim()) {
+      setTravelers(prev => [...prev, newTraveler])
+      setNewTraveler(null)
+    } else {
+      alert('Please enter a valid name for the traveler')
+    }
+  }
+
+  // Cancel adding a new traveler
+  const cancelNewTraveler = () => {
+    setNewTraveler(null)
+  }
+
+  // Remove traveler
   const removeTraveler = index => {
-    setTravelers(prev => {
-      const updated = prev.filter((_, i) => i !== index)
-      if (updated.length === 0) {
-        setShowNewTravelerText(false)
-      }
-      return updated
-    })
+    // Don't allow removing the first traveler (user)
+    if (index === 0) return
+    setTravelers(prev => prev.filter((_, i) => i !== index))
   }
 
   // Apply coupon
@@ -259,10 +317,6 @@ function ReviewPackage () {
     setIsProcessing(true)
     try {
       const travelersArray = [
-        {
-          full_name: 'Main Traveler',
-          type: 'Adult'
-        },
         ...travelers.map(traveler => ({
           full_name: traveler.full_name,
           type: traveler.type
@@ -301,69 +355,123 @@ function ReviewPackage () {
     }
   }
 
+
   // Payment Method
 
   const handleCardDetailsChange = details => {
     setCardDetails(details)
   }
 
+
+  // Payment Method
   const handlePayment = async () => {
+    if (!stripe || !elements) {
+      toast.error('Stripe has not been initialized properly.')
+      return
+    }
+
     if (!cardDetails.isValid) {
-      toast.error(cardDetails.error || 'Please fill in valid card details.');
-      return;
+      toast.error(cardDetails.error || 'Please fill in valid card details.')
+      return
     }
-  
-    setProcessing(true);
-  
-    const travelersArray = [
-      {
-        full_name: 'Main Traveler',
-        type: 'Adult',
-      },
-      ...travelers.map((traveler) => ({
-        full_name: traveler.full_name,
-        type: traveler.type,
-      })),
-    ];
-  
-    const checkoutPayload = {
-      booking_travellers: JSON.stringify(travelersArray),
-      coupons: JSON.stringify(appliedCoupons.map((coupon) => coupon.id)),
-      phone_number: checkoutData?.data?.checkout?.phone_number || '',
-      email: checkoutData?.data?.checkout?.email || '',
-      address1: checkoutData?.data?.checkout?.address1 || '',
-      address2: checkoutData?.data?.checkout?.address2 || '',
-      city: checkoutData?.data?.checkout?.city || '',
-      zip_code: checkoutData?.data?.checkout?.zip_code || '',
-      state: checkoutData?.data?.checkout?.state || '',
-      country: checkoutData?.data?.checkout?.country || '',
-      total_price: totalPrice,
-      payment_method: {
-        card_number: cardDetails.card_number,
-        expiry_date: cardDetails.expiry_date,
-        cvc: cardDetails.cvc,
-        name: cardDetails.name,
-      },
-    };
-  
+
+    setProcessing(true)
+
     try {
-      const response = await updateCheckout(id, checkoutPayload);
-  
-      if (response.errors) {
-        toast.error(response.message || 'Failed to update checkout details.');
-        setProcessing(false);
-        return;
+
+      // Step 1: Validate checkout details
+      const checkoutResponse = await updateCheckout(id)
+
+      if (checkoutResponse.errors) {
+        toast.error(
+          checkoutResponse.message || 'Failed to update checkout details.'
+        )
+        setProcessing(false)
+        return
       }
-  
-      toast.success(`Payment of $${totalPrice.toFixed(2)} processed successfully!`);
-    setProcessing(false);
+
+      // Step 2: Create booking from checkout
+      const bookingResponse = await createBookingFromCheckout(id)
+
+      if (bookingResponse.errors) {
+        toast.error(bookingResponse.message || 'Failed to create booking.')
+        setProcessing(false)
+        return
+      }
+
+      const clientSecret = bookingResponse.data?.client_secret
+      if (!clientSecret) {
+        toast.error(reponse.error)
+        setProcessing(false)
+        return
+      }
+
+      // Step 3: Confirm payment using Stripe
+      const cardElement = elements.getElement(CardElement)
+      if (!cardElement) {
+        toast.error(response.error)
+        setProcessing(false)
+        return
+      }
+
+      const { error: paymentMethodError, paymentMethod } =
+        await stripe.createPaymentMethod({
+          type: 'card',
+          card: cardElement,
+          billing_details: {
+            name: cardDetails.name || 'Unknown'
+          }
+        })
+      if (paymentMethodError) {
+        toast.error(`Payment method error: ${paymentMethodError.message}`)
+        setProcessing(false)
+        return
+      }
+
+      // Step 4: Confirm payment using Stripe
+      const { error, paymentIntent } = await stripe.confirmCardPayment(
+        clientSecret,
+        {
+          payment_method: paymentMethod.id
+        }
+      )
+
+      if (error) {
+        console.error('Payment failed:', error)
+        toast.error(`Payment failed: ${error.message}`)
+        setProcessing(false)
+        return
+      }
+
+      if (paymentIntent.status === 'succeeded') {
+        toast.success(
+          `Payment succeeded for a total of $${totalPrice.toFixed(2)}!`
+        )
+
+        // Clear payment state from localStorage
+        localStorage.removeItem(`payment_state_${id}`)
+
+        // Reset CardElement
+        elements.getElement(CardElement)?.clear()
+
+        // Redirect to the success page with additional payment details
+        const successParams = new URLSearchParams({
+          amount: totalPrice.toFixed(2),
+          payment_id: paymentIntent.id,
+          status: 'success',
+          timestamp: new Date().toISOString()
+        })
+        window.location.href = `/success/${id}?${successParams.toString()}`
+      }
+
+      setProcessing(false)
     } catch (error) {
-      console.error('Error during payment processing:', error);
-      toast.error('Failed to process the payment. Please try again.');
-      setProcessing(false);
+      console.error('Error during booking or payment processing:', error)
+      toast.error('Failed to process the booking. Please try again.')
+      setProcessing(false)
     }
-  };
-  
+  }
+
   const handleBackToReview = () => {
     setShowNewPart(false)
     // Update localStorage when going back to review
@@ -408,67 +516,144 @@ function ReviewPackage () {
                 />
               </div>
 
-              <div className=''>
-                <h1 className='text-xl font-semibold mt-10'>Add Traveler</h1>
+              <div>
+                <h1 className='text-xl font-semibold mt-10'>Travelers</h1>
 
+                {/* List of travelers */}
                 <div className='my-5'>
-                  {showNewTravelerText && (
-                    <h1 className='text-3xl font-bold mt-10 text-[#0F1416]'>
-                      New Traveler Details
-                    </h1>
-                  )}
-                </div>
-                <div className='flex flex-col gap-5'>
                   {travelers.map((traveler, index) => (
                     <div
                       key={index}
-                      className='flex flex-col border rounded-lg p-4 mb-3'
+                      className='flex items-center gap-4 border rounded-lg p-4 mb-3'
                     >
-                      <div className='flex items-center justify-between'>
-                        <h2 className='text-lg font-semibold mb-3'>
-                          Traveler {index + 2}
-                        </h2>
-                        <button
-                          className='ml-3 text-red-600 hover:text-red-800'
-                          onClick={() => removeTraveler(index)}
-                        >
-                          <FiTrash2 size={24} />
-                        </button>
-                      </div>
-                      <div className='flex flex-col'>
-                        <label className='text-sm font-medium'>Name</label>
-                        <input
-                          type='text'
-                          name='full_name'
-                          placeholder='Enter Full Name'
-                          value={traveler.full_name}
-                          className='border rounded px-4 py-2 mt-1'
-                          onChange={e => handleTravelerChange(index, e)}
-                        />
-                        <label className='text-sm font-medium mt-3'>
-                          Traveler Type
-                        </label>
-                        <select
-                          name='type'
-                          value={traveler.type}
-                          className='border rounded px-4 py-2 mt-1'
-                          onChange={e => handleTravelerChange(index, e)}
-                        >
-                          <option value='Adult'>Adult</option>
-                          <option value='Child'>Child</option>
-                        </select>
-                      </div>
+                      {index === 0 && editingFirstTraveler ? (
+                        <div className='flex-1'>
+                          <h2 className='text-lg font-semibold mb-3'>
+                            Edit First Traveler
+                          </h2>
+                          <label className='text-sm font-medium'>Name</label>
+                          <input
+                            type='text'
+                            name='full_name'
+                            placeholder='Enter Full Name'
+                            value={newTraveler?.full_name || ''}
+                            onChange={handleNewTravelerChange}
+                            className='border rounded px-4 py-2 mt-1 w-full'
+                          />
+                          <label className='text-sm font-medium mt-3 block'>
+                            Traveler Type
+                          </label>
+                          <select
+                            name='type'
+                            value={newTraveler?.type || 'Adult'}
+                            onChange={handleNewTravelerChange}
+                            className='border rounded px-4 py-2 mt-1 w-full'
+                          >
+                            <option value='Adult'>Adult</option>
+                            <option value='Child'>Child</option>
+                          </select>
+                          <div className='flex gap-4 mt-4'>
+                            <button
+                              onClick={saveFirstTravelerEdit}
+                              className='bg-green-600 text-white px-3 py-1 rounded-md'
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={cancelFirstTravelerEdit}
+                              className='bg-red-600 text-white px-3 py-1 rounded-md'
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div>
+                            <p className='font-semibold'>
+                              Traveler {index + 1}
+                            </p>
+                            <p className='text-gray-700'>
+                              {traveler.full_name}
+                            </p>
+                            <p className='text-sm text-gray-500'>
+                              {traveler.type}
+                            </p>
+                          </div>
+                          {index === 0 ? (
+                            <button
+                              onClick={handleFirstTravelerEdit}
+                              className='ml-auto text-blue-600 hover:text-blue-800'
+                            >
+                              Edit
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => removeTraveler(index)}
+                              className='ml-auto text-red-600 hover:text-red-800'
+                            >
+                              <FiTrash2 size={24} />
+                            </button>
+                          )}
+                        </>
+                      )}
                     </div>
                   ))}
                 </div>
-                <button
-                  className='bg-[#EB5B2A] hover:bg-[#eb5a2ae4] transform duration-300 px-7 py-3 rounded-full text-white flex items-center gap-2 mt-4'
-                  onClick={addTraveler}
-                  type='button'
-                >
-                  <FiPlusCircle className='text-xl' />
-                  Add Traveler
-                </button>
+
+                {/* Form for adding a new traveler */}
+                {newTraveler && !editingFirstTraveler ? (
+                  <div className='flex flex-col border rounded-lg p-4 mb-3'>
+                    <h2 className='text-lg font-semibold mb-3'>New Traveler</h2>
+                    <label className='text-sm font-medium'>Name</label>
+                    <input
+                      type='text'
+                      name='full_name'
+                      placeholder='Enter Full Name'
+                      value={newTraveler.full_name || ''}
+                      onChange={handleNewTravelerChange}
+                      className='border rounded px-4 py-2 mt-1'
+                    />
+                    <label className='text-sm font-medium mt-3'>
+                      Traveler Type
+                    </label>
+                    <select
+                      name='type'
+                      value={newTraveler.type || 'Adult'}
+                      onChange={handleNewTravelerChange}
+                      className='border rounded px-4 py-2 mt-1'
+                    >
+                      <option value='Adult'>Adult</option>
+                      <option value='Child'>Child</option>
+                    </select>
+                    <div className='flex gap-4 mt-4'>
+                      <button
+                        onClick={saveNewTraveler}
+                        className='bg-green-600 text-white px-3 py-1 rounded-md'
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={cancelNewTraveler}
+                        className='bg-red-600 text-white px-3 py-1 rounded-md'
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  !editingFirstTraveler && (
+                    <button
+                      onClick={() =>
+                        setNewTraveler({ full_name: '', type: 'Adult' })
+                      }
+                      className='bg-[#EB5B2A] hover:bg-[#eb5a2ae4] transform duration-300 px-7 py-3 rounded-full text-white flex items-center gap-2 mt-4'
+                    >
+                      <FiPlusCircle className='text-xl' />
+                      Add Traveler
+                    </button>
+                  )
+                )}
               </div>
             </div>
           </>
@@ -493,13 +678,13 @@ function ReviewPackage () {
                     ?.price || '0'}
                 </span>
                 <span>x</span>
-                <span>{travelers.length + 1}</span> Travelers
+                <span>{travelers.length}</span> Travelers
               </p>
             </div>
             <h4 className='text-[20px] text-[#0F1416] font-bold'>
               $
               {(
-                (travelers.length + 1) *
+                travelers.length *
                 (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
                   ?.price || 0)
               ).toFixed(2)}
@@ -516,8 +701,8 @@ function ReviewPackage () {
                     key={index}
                     className='text-base text-[#0F1416] font-normal flex items-center gap-3'
                   >
-                    {service.extra_service.name} (${service.extra_service.price}{' '}
-                    x {travelers.length + 1})
+                    {service.extra_service.name} ($
+                    {service.extra_service.price} x {travelers.length})
                   </p>
                 )
               )}
@@ -530,8 +715,7 @@ function ReviewPackage () {
                     return total + Number(service.extra_service.price)
                   },
                   0
-                ) || 0) *
-                (travelers.length + 1)
+                ) || 0) * travelers.length
               ).toFixed(2)}
             </h4>
           </div>
@@ -570,15 +754,14 @@ function ReviewPackage () {
                 {(
                   (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
                     ?.price || 0) *
-                    (travelers.length + 1) -
+                    travelers.length -
                   totalPrice +
                   (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
                     (total, service) =>
                       total + Number(service.extra_service.price),
                     0
                   ) || 0) *
-                    (travelers.length + 1) +
-                  (checkoutData?.data?.fees || 0) * (travelers.length + 1)
+                    travelers.length
                 ).toFixed(2)}
               </h4>
             </div>
@@ -599,7 +782,7 @@ function ReviewPackage () {
             </div>
           </div>
 
-          <div className='flex items-start mt-5 border-b pb-5 justify-between'>
+          {/* <div className='flex items-start mt-5 border-b pb-5 justify-between'>
             <div>
               <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
                 Fee & Taxes
@@ -607,17 +790,17 @@ function ReviewPackage () {
               <p className='text-base font-normal flex items-center gap-3'>
                 <span>${checkoutData?.data?.fees || 0}</span>
                 <span>x</span>
-                <span>{travelers.length + 1}</span> Travelers
+                <span>{travelers.length}</span> Travelers
               </p>
             </div>
             <h4 className='text-[20px] text-[#0F1416] font-bold'>
               +$
               {(
                 (checkoutData?.data?.fees || 0) *
-                (travelers.length + 1)
+                travelers.length
               ).toFixed(2)}
             </h4>
-          </div>
+          </div> */}
 
           <div className='flex items-start mt-5 border-b pb-5 justify-between'>
             <div>
@@ -640,27 +823,28 @@ function ReviewPackage () {
               {(
                 (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
                   ?.price || 0) *
-                  (travelers.length + 1) -
+                  travelers.length -
                 totalPrice +
                 (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
                   (total, service) =>
                     total + Number(service.extra_service.price),
                   0
                 ) || 0) *
-                  (travelers.length + 1) +
-                (checkoutData?.data?.fees || 0) * (travelers.length + 1)
+                  travelers.length
               ).toFixed(2)}
             </h4>
           </div>
 
           {showNewPart ? (
-            <button
-              onClick={handlePayment}
-              className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'
-              disabled={processing}
-            >
-              {processing ? 'Processing...' : 'Payment'}
-            </button>
+            <>
+              <button
+                onClick={handlePayment}
+                className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'
+                disabled={processing}
+              >
+                {processing ? 'Processing...' : 'Payment'}
+              </button>
+            </>
           ) : (
             <button
               onClick={() => {

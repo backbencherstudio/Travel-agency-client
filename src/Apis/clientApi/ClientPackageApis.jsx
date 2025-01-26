@@ -11,38 +11,48 @@ ClientPackageApis.all = async (type, filterParams = {}) => {
         queryParams.append('type', type);
 
         // Add filter parameters if they exist
-        if (filterParams.startDate) {
-            queryParams.append('startDate', filterParams.startDate);
+        if (filterParams.duration_start) {
+            queryParams.append('duration_start', filterParams.duration_start);
         }
-        if (filterParams.endDate) {
-            queryParams.append('endDate', filterParams.endDate);
+        if (filterParams.duration_end) {
+            queryParams.append('duration_end', filterParams.duration_end);
         }
-        if (filterParams.minPrice) {
-            queryParams.append('minPrice', filterParams.minPrice);
+        if (filterParams.budget_start !== undefined && filterParams.budget_start !== null) {
+            queryParams.append('budget_start', filterParams.budget_start);
         }
-        if (filterParams.maxPrice) {
-            queryParams.append('maxPrice', filterParams.maxPrice);
+        if (filterParams.budget_end) {
+            queryParams.append('budget_end', filterParams.budget_end);
         }
-        if (filterParams.rating?.length) {
-            queryParams.append('rating', filterParams.rating.join(','));
+        if (filterParams.ratings?.length) {
+            filterParams.ratings.forEach(rating => 
+                queryParams.append('ratings', rating));
         }
-        if (filterParams.freeCancellation) {
-            queryParams.append('freeCancellation', filterParams.freeCancellation);
+        if (filterParams.policies?.length) {
+            filterParams.policies.forEach(policy => 
+                queryParams.append('free_cancellation', policy));
         }
         if (filterParams.destinations?.length) {
-            queryParams.append('destinations', filterParams.destinations.join(','));
+            filterParams.destinations.forEach(destination => 
+                queryParams.append('destinations', destination));
         }
         if (filterParams.residences?.length) {
-            queryParams.append('residences', filterParams.residences.join(','));
+            filterParams.residences.forEach(residence => 
+                queryParams.append('residence_types', residence));
         }
         if (filterParams.mealPlans?.length) {
-            queryParams.append('mealPlans', filterParams.mealPlans.join(','));
+            filterParams.mealPlans.forEach(mealPlan => 
+                queryParams.append('meal_plans', mealPlan));
         }
         if (filterParams.popularAreas?.length) {
-            queryParams.append('popularAreas', filterParams.popularAreas.join(','));
+            filterParams.popularAreas.forEach(area => 
+                queryParams.append('area_types', area));
         }
         if (filterParams.searchQuery) {
             queryParams.append('search', filterParams.searchQuery);
+        }
+        if (filterParams.languages?.length) {
+            filterParams.languages.forEach(language => 
+                queryParams.append('languages', language));
         }
 
         const url = `/api/package?${queryParams.toString()}`;
