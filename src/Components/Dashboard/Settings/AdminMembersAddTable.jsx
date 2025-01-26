@@ -154,7 +154,7 @@ const AdminMembersAddTable = ({
     <>
       <div className=' p-4 sm:p-6'>
         <div className='flex gap-2 items-center'>
-          <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
+          <h1 className='text-[#0D0E0D] capitalize text-[20px]'>{title}</h1>
           <h2 className='text-[#687588] capitalize bg-[#E9EAEC] text-start px-2 py-1 text-[12px] rounded-md'>
             Deafult
           </h2>
@@ -230,7 +230,7 @@ const AdminMembersAddTable = ({
                   .map(item => (
                     <TableRow
                       key={item.id}
-                      onClick={() => handleRowClick(item.id)}
+                     
                     >
                       {columns.name && (
                         <TableCell>

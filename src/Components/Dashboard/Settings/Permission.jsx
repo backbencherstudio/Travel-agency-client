@@ -1,6 +1,7 @@
-import  { useState } from 'react'
+import { useContext, useState } from 'react'
 import AdminMembersAddTable from './AdminMembersAddTable'
 import { adminData } from '../../../data/PermissionDataAdmin'
+import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
 
 const Permission = () => {
   const [columns] = useState({
@@ -8,13 +9,13 @@ const Permission = () => {
     name: true,
     email: true,
     memberImg: true,
-    status: true,
-   
+    status: true
   })
+  const { user } = useContext(AuthContext)
   return (
     <div>
       <AdminMembersAddTable
-        title={'Admin'}
+        title={user.type}
         data={adminData}
         columns={columns}
       />
