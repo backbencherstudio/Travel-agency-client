@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const Language = () => {
+    // Initialize form handling and states
     const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
     const [displayText, setDisplayText] = useState('Add Language');
     const [editLanguageId, setEditLanguageId] = useState(null);
@@ -17,7 +18,7 @@ const Language = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    // Fetch languages
+    // Fetch languages using React Query
     const { data: languages, refetch } = useQuery({
         queryKey: ['languages'],
         queryFn: async () => {
@@ -26,6 +27,7 @@ const Language = () => {
         },
     });
 
+    // Update the form's display text based on edit state
     useEffect(() => {
         const timer = setTimeout(() => {
             setDisplayText(editLanguageId ? 'Edit Language' : 'Add Language');
@@ -34,6 +36,7 @@ const Language = () => {
         return () => clearTimeout(timer); // Cleanup on unmount
     }, [editLanguageId]);
 
+    // Pagination handlers
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -43,7 +46,7 @@ const Language = () => {
         setPage(0);
     };
 
-    // Save mutation
+    // Mutation for saving a new language
     const saveMutation = useMutation({
         mutationFn: (data) => axiosClient.post('/api/admin/language', data),
         onSuccess: () => {
@@ -56,7 +59,7 @@ const Language = () => {
         }
     });
 
-    // Update mutation
+    // Mutation for updating an existing language
     const updateMutation = useMutation({
         mutationFn: ({ id, data }) => axiosClient.patch(`/api/admin/language/${id}`, data),
         onSuccess: () => {
@@ -70,7 +73,7 @@ const Language = () => {
         }
     });
 
-    // Delete mutation
+    // Mutation for deleting a language
     const deleteMutation = useMutation({
         mutationFn: (id) => axiosClient.delete(`/api/admin/language/${id}`),
         onSuccess: () => {
@@ -82,6 +85,7 @@ const Language = () => {
         }
     });
 
+    // Submit handler for adding or updating a language
     const onSubmit = async (data) => {
         try {
             if (editLanguageId) {
@@ -103,16 +107,17 @@ const Language = () => {
         }
     };
 
+    // Handle edit button click
     const handleEdit = (language) => {
-        // Prevent any default behavior
-        event.preventDefault();
-        event.stopPropagation();
+        event.preventDefault(); // Prevent default event
+        event.stopPropagation(); // Stop event propagation
         
         setEditLanguageId(language.id);
-        setValue('name', language.name);
-        setValue('content', language.code);
+        setValue('name', language.name); // Set the name field
+        setValue('content', language.code); // Set the content field
     };
 
+    // Handle delete button click
     const handleDelete = (id) => {
         Swal.fire({
             title: 'Are you sure?',
@@ -129,21 +134,24 @@ const Language = () => {
         });
     };
 
+    // Handle canceling edit mode
     const handleCancelEdit = () => {
         setEditLanguageId(null);
-        reset();
+        reset(); // Reset the form fields
     };
 
     return (
         <div>
+            {/* Form for adding/editing a language */}
             <form onSubmit={handleSubmit(onSubmit)} className="">
                 <div className="bg-white h-fit pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
                     <div className="md:grid md:grid-cols-3 gap-8">
                         <div className="flex flex-col gap-8 col-span-2">
+                            {/* Display add/edit form heading */}
                             <h3 className="text-2xl font-semibold text-[#080613]">
                                 {displayText}
                             </h3>
-                            {/* Language Name */}
+                            {/* Language Name field */}
                             <div>
                                 <label className="block text-gray-500 text-base font-medium mb-2">
                                     Language Name
@@ -158,7 +166,7 @@ const Language = () => {
                                     <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
                                 )}
                             </div>
-                            {/* Language Content */}
+                            {/* Language Content field */}
                             <div>
                                 <label className="block text-gray-500 text-base font-medium mb-2">
                                     Language Content
@@ -173,6 +181,7 @@ const Language = () => {
                                     <p className="text-red-500 text-xs mt-1">{errors.content.message}</p>
                                 )}
                             </div>
+                            {/* Save/Update and Cancel buttons */}
                             <div className="flex flex-row justify-start items-center gap-4">
                                 {editLanguageId && (
                                     <button
@@ -193,6 +202,7 @@ const Language = () => {
                         </div>
                     </div>
 
+                    {/* Language list table */}
                     <div className="mt-8">
                         <h3 className="text-2xl font-semibold text-[#080613] mb-4">Language List</h3>
                         {languages?.data?.length === 0 ? (
@@ -216,6 +226,7 @@ const Language = () => {
                                                 <TableCell>{language.code}</TableCell>
                                                 <TableCell>
                                                     <div className="flex gap-2">
+                                                        {/* Edit button */}
                                                         <button
                                                             onClick={(event) => handleEdit(language)}
                                                             className="flex items-center justify-center text-blue-600 hover:text-blue-800"
@@ -223,6 +234,7 @@ const Language = () => {
                                                         >
                                                             <FontAwesomeIcon icon={faEdit} style={{ width: '20px', height: '20px' }} />
                                                         </button>
+                                                        {/* Delete button */}
                                                         <button
                                                             onClick={() => handleDelete(language.id)}
                                                             className="flex items-center justify-center text-red-600 hover:text-red-800"
@@ -239,6 +251,7 @@ const Language = () => {
                             </TableContainer>
                         )}
                     </div>
+                    {/* Pagination controls */}
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component="div"

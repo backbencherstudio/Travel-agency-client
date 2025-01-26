@@ -57,6 +57,7 @@ if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
     'VITE_STRIPE_PUBLISHABLE_KEY is not set in the environment variables'
   )
 }
+import Review from '../Components/Dashboard/Review/Review'
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 export const router = createBrowserRouter([
@@ -250,6 +251,10 @@ export const router = createBrowserRouter([
       {
         path: 'payment',
         element: <Payments />
+      },
+      {
+        path: 'review',
+        element: <Review />
       },
       {
         path: 'blog',
