@@ -10,7 +10,7 @@ import Faqs from "../../Components/Home/Faqs";
 
 const Home = () => {
   return (
-    <div className="">
+    <div className="animate-from-middle">
       <div className="pb-20 pt-4">
         <Hero />
       </div>
