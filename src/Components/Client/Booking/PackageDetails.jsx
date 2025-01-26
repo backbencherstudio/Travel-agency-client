@@ -98,10 +98,10 @@ const PackageDetails = ({ checkoutData }) => {
             <p className='text-[#4A4C56] text-[14px] mb-3'>Location</p>
             <p className='font-semibold'>
               {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                ?.destination?.name || 'Default Location'}
+                ?.package_destinations?.[0]?.destination?.name || 'Default Location'}
               ,{' '}
               {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                ?.destination?.country?.name || 'Default Country'}
+                ?.package_destinations?.[0]?.destination?.country?.name || 'Default Country'}
             </p>
           </div>
         </div>

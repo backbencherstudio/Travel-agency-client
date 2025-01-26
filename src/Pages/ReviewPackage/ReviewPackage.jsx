@@ -355,12 +355,15 @@ function ReviewPackage () {
     }
   }
 
+
   // Payment Method
 
   const handleCardDetailsChange = details => {
     setCardDetails(details)
   }
 
+
+  // Payment Method
   const handlePayment = async () => {
     if (!stripe || !elements) {
       toast.error('Stripe has not been initialized properly.')
