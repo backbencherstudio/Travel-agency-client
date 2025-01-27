@@ -33,7 +33,13 @@ ReviewApis.getAllReviews = async () => {
   });
 
   return res;
+};
 
+// Delete review
+ReviewApis.deleteReview = async (reviewId) => {
+  const url = `/api/admin/reviews/${reviewId}`;
+  const res = await axiosClient.delete(url);
+  return res;
 };
 
 

@@ -17,12 +17,8 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 import { LuTrash2 } from "react-icons/lu";
 import TransactionApis from "../../../Apis/TransectionApis";
 import { Modal, Box, Typography, Fade, Backdrop, Button } from '@mui/material';
-
-
-
-
-
-
+import { Receipt, Package, User, Calendar, CreditCard } from 'lucide-react';
+import { format } from 'date-fns';
 
 const BookingTable = ({ title }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,11 +35,15 @@ const BookingTable = ({ title }) => {
     try {
       setLoading(true);
       const response = await TransactionApis.getAllTransactions();
-      if (response.data.success) {
+      if (response.success && response.data?.data) {
         setTransactions(response.data.data);
+      } else {
+        setTransactions([]);
+        console.error("Invalid data format received:", response);
       }
     } catch (error) {
       console.error("Error fetching transactions:", error);
+      setTransactions([]);
     } finally {
       setLoading(false);
     }
@@ -53,9 +53,11 @@ const BookingTable = ({ title }) => {
     fetchTransactions();
   }, []);
 
-  const filteredData = transactions.filter((item) =>
-    item?.booking?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredData = Array.isArray(transactions) 
+    ? transactions.filter((item) =>
+        (item?.reference_number || "").toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -66,26 +68,18 @@ const BookingTable = ({ title }) => {
     setPage(0);
   };
 
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [open, setOpen] = useState(false);
 
-  // try {
-  //   const response = await TransactionApis.deleteTransaction(transactionId);
-  //   if (response.data.success) {
-  //     fetchTransactions();
-  //   }
-  // } catch (error) {
-  //   console.error("Error deleting transaction:", error);
-  // }
-
-
-
-
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-
-
-
+  const handleOpen = (transaction) => {
+    setSelectedTransaction(transaction);
+    setOpen(true);
+  };
+  
+  const handleClose = () => {
+    setSelectedTransaction(null);
+    setOpen(false);
+  };
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -101,7 +95,6 @@ const BookingTable = ({ title }) => {
         try {
           const response = await TransactionApis.deleteTransaction(id);
           if (response.data.success) {
-            // Fetch the updated list of transactions
             fetchTransactions();
           } else {
             console.error('Failed to delete the transaction');
@@ -113,7 +106,16 @@ const BookingTable = ({ title }) => {
     });
   };
 
+  const formatCurrency = (amount, currency) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency?.toUpperCase() || 'USD'
+    }).format(amount);
+  };
 
+  const formatDate = (dateString) => {
+    return format(new Date(dateString), 'MMM dd, yyyy');
+  };
 
   return (
     <>
@@ -210,7 +212,7 @@ const BookingTable = ({ title }) => {
                     <TableRow key={item.id}>
                       <TableCell>
                         <p className="text-[#475467] text-[12px]">
-                          #{item.booking?.invoice_number}
+                          #{item?.booking?.invoice_number}
                         </p>
                       </TableCell>
                       <TableCell style={{ minWidth: "200px" }}>
@@ -218,14 +220,14 @@ const BookingTable = ({ title }) => {
                           <img
                             className="rounded-full"
                             src={
-                              item.booking?.user?.avatar ||
+                              item?.avatar ||
                               "/default-avatar.png"
                             }
-                            alt={item.booking?.user?.name}
+                            alt={item?.booking?.user?.name}
                             style={{ width: "40px", height: "40px" }}
                           />
                           <span className="truncate text-[#1D1F2C] text-[15px] font-medium">
-                            {item.booking?.user?.name}
+                            {item?.booking?.user?.name}
                           </span>
                         </div>
                       </TableCell>
@@ -254,38 +256,10 @@ const BookingTable = ({ title }) => {
                             <LuTrash2 className="text-xl" />
                           </button>
                           <button className="text-[#475467] hover:text-blue-700 transform duration-300">
-                            <FaEye className="text-xl"onClick={handleOpen} />
-
-      <div>
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-            sx: {
-              backgroundColor: 'rgba(0, 0, 0, 0.15)', // 25% opacity
-            },
-          },
-        }}
-      >
-        <Fade in={open}>
-          <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] md:w-[600px] lg:w-[800px] bg-white border-2 border-[#f2f2f2] shadow-md rounded-[10px] p-4">
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              Jhine marneka wada saccha mera
-            </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
-          </Box>
-        </Fade>
-      </Modal>
-    </div>
-
+                            <FaEye 
+                              className="text-xl" 
+                              onClick={() => handleOpen(item)}
+                            />
                           </button>
                         </div>
                       </TableCell>
@@ -315,13 +289,100 @@ const BookingTable = ({ title }) => {
         />
       </Paper>
 
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+            sx: {
+              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+            },
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="bg-[#EB5B2A] p-6 text-white">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <Receipt className="h-6 w-6" />
+                  <span className="text-lg font-semibold">
+                    Invoice #{selectedTransaction?.booking?.invoice_number}
+                  </span>
+                </div>
+                <span className="px-3 py-1 bg-[#d44718] rounded-full text-sm font-medium capitalize">
+                  {selectedTransaction?.status}
+                </span>
+              </div>
+            </div>
 
+            <div className="p-6 space-y-6">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-black">
+                  {formatCurrency(selectedTransaction?.amount, selectedTransaction?.currency)}
+                </div>
+                <div className="text-sm text-gray-600 mt-1">Total Amount</div>
+              </div>
 
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Package className="h-5 w-5 text-[#EB5B2A]" />
+                  <div>
+                    <div className="text-sm text-gray-600">Package</div>
+                    <div className="text-black font-medium">
+                      {selectedTransaction?.booking?.booking_items[0]?.package?.name}
+                    </div>
+                  </div>
+                </div>
 
+                <div className="flex items-center space-x-3">
+                  <User className="h-5 w-5 text-[#EB5B2A]" />
+                  <div>
+                    <div className="text-sm text-gray-600">Client</div>
+                    <div className="text-black font-medium">
+                      {selectedTransaction?.booking?.user?.name}
+                    </div>
+                  </div>
+                </div>
 
+                <div className="flex items-center space-x-3">
+                  <Calendar className="h-5 w-5 text-[#EB5B2A]" />
+                  <div>
+                    <div className="text-sm text-gray-600">Date Issued</div>
+                    <div className="text-black font-medium">
+                      {selectedTransaction?.created_at && formatDate(selectedTransaction.created_at)}
+                    </div>
+                  </div>
+                </div>
 
+                <div className="flex items-center space-x-3">
+                  <CreditCard className="h-5 w-5 text-[#EB5B2A]" />
+                  <div>
+                    <div className="text-sm text-gray-600">Reference</div>
+                    <div className="text-black font-medium font-mono text-sm">
+                      {selectedTransaction?.reference_number}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-
+            <div className="border-t border-gray-100 p-6 bg-gray-50">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">Payment Status</span>
+                <span className="text-[#EB5B2A] font-medium capitalize">
+                  {selectedTransaction?.status}
+                </span>
+              </div>
+            </div>
+          </Box>
+        </Fade>
+      </Modal>
     </>
   );
 };

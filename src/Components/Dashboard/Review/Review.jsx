@@ -1,57 +1,46 @@
+
+
 // Review.js
 import React, { useState, useEffect, useRef } from 'react';
-import { FaSearch} from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { MdKeyboardArrowDown } from "react-icons/md";
+import { FaSearch } from "react-icons/fa";
 import { LuTrash2 } from "react-icons/lu";
+import { MdKeyboardArrowDown } from "react-icons/md";
 import Swal from 'sweetalert2';
-import TransactionApis from "../../../Apis/TransectionApis";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TablePagination
+  Table, TableBody, TableCell, TableContainer, TableHead,
+  TableRow, Paper, TablePagination
 } from "@mui/material";
+import ReviewApis from "../../../Apis/ReviewApis";
 
-const Review = () => {
-  // ---------------------------
-  // Begin BookingTable Code
-  // ---------------------------
-
+const Review = ({ title }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [transactions, setTransactions] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
   const dropdownRef = useRef(null);
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const fetchTransactions = async () => {
+  const fetchReviews = async () => {
     try {
       setLoading(true);
-      const response = await TransactionApis.getAllTransactions();
-      if (response.data.success) {
-        setTransactions(response.data.data);
+      const response = await ReviewApis.getAllReviews();
+      if (response.success) {
+        setReviews(response.data);
       }
     } catch (error) {
-      console.error("Error fetching transactions:", error);
+      console.error("Error fetching reviews:", error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchTransactions();
+    fetchReviews();
   }, []);
 
-  const filteredData = transactions.filter((item) =>
-    item?.booking?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = reviews.filter((item) =>
+    item?.package?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleChangePage = (event, newPage) => {
@@ -62,10 +51,6 @@ const Review = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -79,12 +64,11 @@ const Review = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await TransactionApis.deleteTransaction(id);
-          if (response.data.success) {
-            // Fetch the updated list of transactions
-            fetchTransactions();
+          const response = await ReviewApis.deleteReview(id);
+          if (response.success) {
+            fetchReviews();
           } else {
-            console.error('Failed to delete the transaction');
+            console.error('Failed to delete the review');
           }
         } catch (error) {
           console.error('Error while deleting:', error);
@@ -93,15 +77,10 @@ const Review = () => {
     });
   };
 
-  // ---------------------------
-  // End BookingTable Code
-  // ---------------------------
-
   return (
     <>
-      {/* BookingTable JSX */}
       <div className="flex flex-col sm:flex-row justify-between items-center py-5">
-        <h1 className="text-[#0D0E0D] font-semibold text-[20px]"> Review </h1>
+        <h1 className="text-[#0D0E0D] text-[20px] font-semibold">Review</h1>
         <div className="flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl">
           <div className="relative md:col-span-1">
             <input
@@ -121,69 +100,30 @@ const Review = () => {
                 className="inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200"
               >
                 {"All Status"}
-                <span>
-                  <MdKeyboardArrowDown className="text-xl" />
-                </span>
+                <span><MdKeyboardArrowDown className="text-xl" /></span>
               </button>
-
-              {isOpen && (
-                <div className="absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0">
-                  <div className="absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45"></div>
-
-                  <div className="bg-white rounded-md">
-                    {/* Status Dropdown has been removed */}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </div>
+
       <Paper style={{ borderRadius: "10px" }}>
         <TableContainer sx={{ padding: "16px" }}>
           <Table sx={{ border: "1px solid #e0e0e0" }}>
             <TableHead>
               <TableRow>
-                <TableCell
-                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
-                >
-                  Traveler's Name
-                </TableCell>
-                <TableCell
-                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
-                >
-                  Package Name
-                </TableCell>
-                <TableCell
-                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
-                >
-                  Comment
-                </TableCell>
-                <TableCell
-                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
-                >
-                  Rating
-                </TableCell>
-                <TableCell
-                  sx={{
-                    textAlign: "center",
-                    color: "#475467",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                  }}
-                >
-                  Action
-                </TableCell>
+                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Package Name</TableCell>
+                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Comment</TableCell>
+                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Rating</TableCell>
+                <TableCell sx={{ textAlign: "center", color: "#475467", fontSize: "13px", fontWeight: 600 }}>Action</TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody className="text-nowrap">
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    <p className="text-[#475467] font-medium py-6">
-                      Loading...
-                    </p>
+                  <TableCell colSpan={4} align="center">
+                    <p className="text-[#475467] font-medium py-6">Loading...</p>
                   </TableCell>
                 </TableRow>
               ) : filteredData.length > 0 ? (
@@ -192,42 +132,14 @@ const Review = () => {
                   .map((item) => (
                     <TableRow key={item.id}>
                       <TableCell>
-                        <p className="text-[#475467] text-[12px]">
-                          #{item.booking?.invoice_number}
-                        </p>
-                      </TableCell>
-                      <TableCell style={{ minWidth: "200px" }}>
                         <div className="flex items-center gap-3">
-                          <img
-                            className="rounded-full"
-                            src={
-                              item.booking?.user?.avatar ||
-                              "/default-avatar.png"
-                            }
-                            alt={item.booking?.user?.name}
-                            style={{ width: "40px", height: "40px" }}
-                          />
                           <span className="truncate text-[#1D1F2C] text-[15px] font-medium">
-                            {item.booking?.user?.name}
+                            {item.package?.name}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell style={{ minWidth: "200px" }}>
-                        <p className="truncate text-[#475467]">
-                          ${item?.paid_amount || 0}
-                        </p>
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          className={`px-3 py-1 rounded-full ${
-                            item.status === "succeeded"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      </TableCell>
+                      <TableCell>{item.comment}</TableCell>
+                      <TableCell>{item.rating_value}</TableCell>
                       <TableCell>
                         <div className="flex items-center justify-center gap-4">
                           <button
@@ -242,10 +154,8 @@ const Review = () => {
                   ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    <p className="text-[#475467] font-medium py-6">
-                      No transactions found
-                    </p>
+                  <TableCell colSpan={4} align="center">
+                    <p className="text-[#475467] font-medium py-6">No reviews found</p>
                   </TableCell>
                 </TableRow>
               )}
