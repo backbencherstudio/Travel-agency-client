@@ -140,14 +140,10 @@ const Chat = () => {
     fetchMessages();
     
     const handleNewMessage = async (data) => {
-      // Show notification only when:
-      // 1. Sender is not the current user
-      // 2. User is not in dashboard or tab is not active
-      // 3. Message is from a regular user (not admin)
       if (
         data.data.sender.id !== user.id && 
         (!isInDashboard || document.hidden) &&
-        data.data.sender.role !== 'admin'  // Add role check if available in your user data
+        data.data.sender.role !== 'admin'
       ) {
         try {
           const hasPermission = await NotificationManager.requestPermission();
@@ -157,9 +153,9 @@ const Chat = () => {
               title: `New message from ${data.data.sender.name}`,
               body: data.data.message,
               icon: data.data.sender.avatar_url || defaultAvatar,
-              requireInteraction: true,
+              requireInteraction: false,
               silent: false,
-              timeout: 0,
+              timeout: 5000,
               onClick: () => {
                 window.focus();
                 navigate('/dashboard/chat');
@@ -309,7 +305,7 @@ const Chat = () => {
       <div className="chat-leftsidebar lg:w-auto shadow col-span-12 overflow-y-hidden border-none sm:col-span-4">
         <div className="bg-[#f2f2f2] overflow-y-auto h-[87.9vh]">
           <div className="px-6 pt-6">
-            <h4 className="mb-0 text-gray-700">Chats</h4>
+            <h4 className="mb-0 text-gray-700 text-2xl">Chats</h4>
 
             {/* Search Bar */}
             <div className="w-full max-w-sm min-w-full my-3 p-2 rounded-md bg-[#eb5a2a20]">
@@ -330,7 +326,7 @@ const Chat = () => {
             <div className="h-full" data-simplebar>
               <ul className="chat-user-list">
                 {usersData.length === 0 ? (
-                  <p className="text-gray-500 p-4">No conversations found</p>
+                  <p className="text-gray-500 p-4 text-2xl text-center">No conversations found</p>
                 ) : (
                   usersData.map((data, index) => {
                     const chatUser =
@@ -498,8 +494,8 @@ const Chat = () => {
           </div>
         </div>
       ) : (
-        <div className="w-full h-[87.9vh] flex items-center justify-center bg-white sm:col-span-8 shadow hidden sm:block">
-          <p className="text-gray-500">Select a conversation to start chatting</p>
+        <div className="w-full h-full  sm:col-span-8 shadow hidden sm:block">
+          <p className="text-gray-500 text-center text-xl lg:text-3xl mt-80">Select a conversation to start chatting</p>
         </div>
       )}
     </div>
