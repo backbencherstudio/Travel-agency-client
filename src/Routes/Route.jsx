@@ -180,7 +180,7 @@ export const router = createBrowserRouter([
     path: '/dashboard',
     // element: <DashboardLayout />,
     element: (
-      <PrivateRoute role={['admin']}>
+      <PrivateRoute role={['admin', 'vendor']}>
         <AdminLayout />
       </PrivateRoute>
     ),
@@ -284,24 +284,24 @@ export const router = createBrowserRouter([
       }
     ]
   },
-  {
-    path: 'vendor/dashboard',
-    element: <MainLayout />,
-    children: [
-      {
-        index: true,
-        element: <IndexDashboard />
-      },
-      {
-        path: 'add-package',
-        element: <VendorAddPackage />
-      },
-      {
-        path: 'packages',
-        element: <VendorPackages />
-      }
-    ]
-  },
+  // {
+  //   path: 'vendor/dashboard',
+  //   element: <MainLayout />,
+  //   children: [
+  //     {
+  //       index: true,
+  //       element: <IndexDashboard />
+  //     },
+  //     {
+  //       path: 'add-package',
+  //       element: <VendorAddPackage />
+  //     },
+  //     {
+  //       path: 'packages',
+  //       element: <VendorPackages />
+  //     }
+  //   ]
+  // },
 
   {
     path: 'signup',

@@ -5,6 +5,7 @@ import { IoMenu } from 'react-icons/io5'
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 import { useContext, useState, useEffect, useRef } from 'react'
 import moment from 'moment'
+import NotificationApis from '../../Apis/NotificationApis'
 
 const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   const { user } = useContext(AuthContext)
@@ -32,11 +33,21 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
     }
   }, [])
 
+  useEffect(() => {
+    getNotification();
+  }, [])
+  
+  const getNotification = async () => {
+    const res = await NotificationApis.getNotification();
+    console.log(res);
+  }
+
   const clearNotification = id => {
     setNotifications(
       notifications.filter(notification => notification.id !== id)
     )
   }
+
 
   const clearAllNotifications = () => {
     setNotifications([])
@@ -54,6 +65,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
       return notificationTime.format('MMM D, h:mm A') // "Jan 25, 2:50 PM"
     }
   }
+
 
   return (
     <div className='fixed top-0 left-0 w-full z-40'>

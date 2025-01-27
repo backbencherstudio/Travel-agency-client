@@ -42,8 +42,9 @@ const statusStyles = {
 }
 
 const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
+  
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredData, setFilteredData] = useState(data)
+  const [filteredData, setFilteredData] = useState()
   const [selectedStatus, setSelectedStatus] = useState('All Status')
   const [isOpen, setIsOpen] = useState(false)
   const statuses = [
@@ -60,6 +61,10 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
   // Pagination states
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
+
+  useEffect(() => {
+    setFilteredData(data)
+  }, [data])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -81,7 +86,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
     setFilteredData(
       status === 'All Status'
         ? data
-        : data.filter(
+        : data?.filter(
             item => item.status.toLowerCase() === status.toLowerCase()
           )
     )
@@ -100,6 +105,8 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+  console.log('filteredData', filteredData);
 
   return (
     <div>
@@ -206,7 +213,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                     Status
                   </TableCell>
                 )}
-                {selectedStatus === 'Requests' && (
+                {selectedStatus === 'Requests' || selectedStatus === 'Pending' && (
                   <TableCell
                     sx={{
                       textAlign: 'center',
@@ -223,23 +230,19 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
 
             <TableBody className='text-nowrap'>
               {filteredData?.filter(item =>
-                item.customerName
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase())
+                item?.user?.name?.toLowerCase()?.includes(searchQuery.toLowerCase())
               ).length > 0 ? (
                 filteredData
                   ?.filter(item =>
-                    item.customerName
-                      .toLowerCase()
-                      .includes(searchQuery.toLowerCase())
+                    item?.user?.name?.toLowerCase()?.includes(searchQuery.toLowerCase())
                   )
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
-                    <TableRow key={item?.bookingId}   onClick={() => handleRowClick(item.id)} >
+                    <TableRow key={item?.id} onClick={() => handleRowClick(item.id)}>
                       {columns?.bookingId && (
                         <TableCell>
                           <p className='text-[#475467] text-[12px]'>
-                            #{item.bookingId}
+                            #{item?.invoice_number}
                           </p>
                         </TableCell>
                       )}
@@ -248,12 +251,12 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                           <div className='flex items-center gap-3'>
                             <img
                               className='rounded-full'
-                              src={item.customerImg}
-                              alt={item.customerName}
+                              src={item.user?.image || 'default-image-url'}
+                              alt={item.user?.name}
                               style={{ width: '40px', height: '40px' }}
                             />
                             <span className='truncate text-[#1D1F2C] text-[15px] font-medium'>
-                              {item.customerName}
+                              {item.user?.name}
                             </span>
                           </div>
                         </TableCell>
@@ -261,13 +264,15 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                       {columns?.packageName && (
                         <TableCell style={{ minWidth: '200px' }}>
                           <p className='truncate text-[#475467]'>
-                            {item.packageInformation?.[0]?.packageName || 'N/A'}
+                            {item.booking_items?.[0]?.package?.name || 'N/A'}
                           </p>
                         </TableCell>
                       )}
                       {columns?.date && (
                         <TableCell style={{ textAlign: 'center' }}>
-                          <p className='text-[#475467]'>{item.date}</p>
+                          <p className='text-[#475467]'>
+                            {new Date(item.created_at).toLocaleDateString()}
+                          </p>
                         </TableCell>
                       )}
                       {columns?.status && (
@@ -279,31 +284,31 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                               justifyContent: 'center',
                               gap: '8px',
                               backgroundColor:
-                                statusStyles[item.status]?.backgroundColor ||
+                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.backgroundColor ||
                                 'transparent',
                               color:
-                                statusStyles[item.status]?.color || 'black',
+                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.color || 'black',
                               padding: '1px 14px',
                               borderRadius: '50px',
                               fontSize: '12px',
                               fontWeight: 'bold',
                               border:
-                                statusStyles[item.status]?.border || 'none',
+                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.border || 'none',
                               height: '32px'
                             }}
                           >
-                            {statusStyles[item.status]?.icon}
-                            <span>{item.status}</span>
+                            {statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.icon}
+                            <span>{item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}</span>
                           </span>
                         </TableCell>
                       )}
-                      {selectedStatus === 'Requests' && (
+                      {selectedStatus === 'Requests' || selectedStatus === 'Pending' && (
                         <TableCell style={{ textAlign: 'center' }}>
                           <button
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
                             onClick={() =>
                               navigate(
-                                `/dashboard/booking-request/${item.bookingId}`
+                                `/dashboard/booking-request/${item.id}`
                               )
                             }
                           >

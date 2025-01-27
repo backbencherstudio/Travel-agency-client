@@ -440,6 +440,7 @@ const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
                 >
                   <option value=''>Select type</option>
                   <option value='manager'>Manager</option>
+                  <option value='vendor'>Vendor</option>
                 </select>
                 {errors.type && (
                   <span className='text-red-500 text-sm'>
