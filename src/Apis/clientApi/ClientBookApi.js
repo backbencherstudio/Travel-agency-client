@@ -168,3 +168,77 @@ export const searchBookings = async query => {
     throw error
   }
 }
+
+// Function to get booking data by ID
+export const getBookingById = async bookingId => {
+  try {
+    const response = await axiosClient.get(`/api/booking/${bookingId}`)
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      console.error('Error response from server:', error.response.data)
+      if (error.response.status === 400) {
+        console.error('Bad Request. Check the request parameters.')
+      }
+      if (error.response.status === 500) {
+        console.error('Server error. Try again later.')
+      }
+    } else if (error.request) {
+      console.error('No response received:', error.request)
+    } else {
+      console.error('Error occurred during the request:', error.message)
+    }
+
+    throw error
+  }
+}
+// Function to submit a review
+export const submitReview = async (packageId, reviewData) => {
+  try {
+    const response = await axiosClient.post(
+      `/api/package/${packageId}/review`,
+      reviewData
+    )
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      console.error('Error response from server:', error.response.data)
+      if (error.response.status === 400) {
+        console.error('Bad Request. Check the request parameters.')
+      }
+      if (error.response.status === 500) {
+        console.error('Server error. Try again later.')
+      }
+    } else if (error.request) {
+      console.error('No response received:', error.request)
+    } else {
+      console.error('Error occurred during the request:', error.message)
+    }
+    throw error
+  }
+}
+
+// Function to delete a review
+export const deleteReview = async (packageId, reviewId) => {
+  try {
+    const response = await axiosClient.delete(
+      `/api/package/${packageId}/review/${reviewId}`
+    )
+    return response.data 
+  } catch (error) {
+    if (error.response) {
+      console.error('Error response from server:', error.response.data)
+      if (error.response.status === 400) {
+        console.error('Bad Request. Check the request parameters.')
+      }
+      if (error.response.status === 500) {
+        console.error('Server error. Try again later.')
+      }
+    } else if (error.request) {
+      console.error('No response received:', error.request)
+    } else {
+      console.error('Error occurred during the request:', error.message)
+    }
+    throw error
+  }
+}

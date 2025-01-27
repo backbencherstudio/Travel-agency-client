@@ -54,6 +54,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import PaymentSuccess from '../Components/Client/Booking/PaymentSuccess'
 import PaymentErros from '../Components/Client/Booking/PaymentErros'
 import BookingHistoryTable from '../Pages/BookingHistory/BookingHistoryTable'
+import ReviewBooking from '../Components/ReviewBooking'
 if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
   throw new Error(
     'VITE_STRIPE_PUBLISHABLE_KEY is not set in the environment variables'
@@ -172,6 +173,10 @@ export const router = createBrowserRouter([
       {
         path: '/booking-history',
         element: <BookingHistoryTable />
+      },
+      {
+        path: '/booking-history-review/:id',
+        element: <ReviewBooking />
       }
     ]
   },

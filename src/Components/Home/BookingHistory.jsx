@@ -8,13 +8,20 @@ import {
   TablePagination,
   TableRow
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { FaEye, FaSearch } from 'react-icons/fa'
-import { FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import debounce from 'lodash.debounce'
+import { searchBookings } from '../../Apis/clientApi/ClientBookApi'
 
 const BookingHistory = ({ title, data = [], columns = {} }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10)
   const [page, setPage] = useState(0)
+  const [filteredData, setFilteredData] = useState(data)
+  const [loading, setLoading] = useState(false)
+
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const handleChangePage = (event, newPage) => setPage(newPage)
 
@@ -23,16 +30,66 @@ const BookingHistory = ({ title, data = [], columns = {} }) => {
     setPage(0)
   }
 
-  // console.log("data", data)
+  // Debounced function to handle search
+  const handleSearch = useCallback(
+    debounce(async query => {
+      if (query.trim()) {
+        navigate(`?q=${query}`, { replace: true })
+        setLoading(true)
+        try {
+          const response = await searchBookings(query)
+          setFilteredData(response.data)
+        } catch (error) {
+          console.error('Error during search:', error)
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        navigate(location.pathname, { replace: true })
+        setFilteredData(data)
+      }
+    }, 500),
+    [navigate, location.pathname, data]
+  )
+
+  // Handle input change and trigger debounce
+  const handleSearchInputChange = event => {
+    const query = event.target.value
+    handleSearch(query)
+  }
+
+  // Fetch data when component mounts or when the URL changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const query = params.get('q') || ''
+    if (query.trim()) {
+      setLoading(true)
+      searchBookings(query)
+        .then(response => setFilteredData(response.data))
+        .catch(error => console.error('Error during data fetch:', error))
+        .finally(() => setLoading(false))
+    } else {
+      setFilteredData(data)
+    }
+  }, [location.search, data])
+
+  useEffect(() => {
+    return () => {
+      handleSearch.cancel()
+    }
+  }, [handleSearch])
+
+  // console.log(data)
 
   return (
-    <div className='mx-auto max-w-[1216px] px-4 xl:px-0 py-10'>
+    <div className='mx-auto max-w-[1216px] px-4 xl:px-0 py-10 '>
       {/* Title and Search */}
       <div className='flex gap-2 items-center justify-between pb-10'>
         <h1 className='text-[#0D0E0D] capitalize text-[20px]'>{title}</h1>
         <div className='relative'>
           <input
             type='text'
+            onChange={handleSearchInputChange}
             placeholder='Search...'
             className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
           />
@@ -80,6 +137,13 @@ const BookingHistory = ({ title, data = [], columns = {} }) => {
                     Date
                   </TableCell>
                 )}
+                {columns.booking_status && (
+                  <TableCell
+                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                  >
+                    Booking Status
+                  </TableCell>
+                )}
                 <TableCell
                   sx={{
                     textAlign: 'center',
@@ -93,8 +157,19 @@ const BookingHistory = ({ title, data = [], columns = {} }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data.length > 0 ? (
-                data
+              {loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={Object.keys(columns).length + 1}
+                    align='center'
+                  >
+                    <p className='text-[#475467] font-medium py-6'>
+                      Loading...
+                    </p>
+                  </TableCell>
+                </TableRow>
+              ) : filteredData.length > 0 ? (
+                filteredData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map(item => (
                     <TableRow key={item.id}>
@@ -124,12 +199,15 @@ const BookingHistory = ({ title, data = [], columns = {} }) => {
                           <p className='truncate text-[#475467]'>
                             <span
                               className={`px-2 py-1 rounded-md ${
-                                item.payment_status === 'successed'
+                                !item.payment_status ||
+                                item.payment_status === 'pending'
+                                  ? 'bg-red-100 text-red-800 py-1 px-2'
+                                  : item.payment_status === 'successed'
                                   ? 'bg-red-100 text-red-800 py-1 px-2'
                                   : 'bg-green-100 text-green-800'
                               }`}
                             >
-                              {item.payment_status}
+                              {item.payment_status || 'pending'}
                             </span>
                           </p>
                         </TableCell>
@@ -150,11 +228,26 @@ const BookingHistory = ({ title, data = [], columns = {} }) => {
                           </p>
                         </TableCell>
                       )}
+                       {columns.booking_status && (
+                        <TableCell>
+                          <p className='truncate text-[#475467]'>
+                            <span className={`px-2 py-1 rounded-md ${
+                              item.status === 'success' 
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {item.status}
+                            </span>
+                          </p>
+                        </TableCell>
+                      )}
                       <TableCell>
                         <div className='flex items-center justify-center gap-4'>
-                          <button className='text-[#475467] hover:text-blue-700 transform duration-300'>
-                            <FaEye className='text-xl' />
-                          </button>
+                          <Link to={`/booking-history-review/${item.id}`}>
+                            <button className='text-[#475467] hover:text-blue-700 transform duration-300'>
+                              <FaEye className='text-xl' />
+                            </button>
+                          </Link>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -178,7 +271,7 @@ const BookingHistory = ({ title, data = [], columns = {} }) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={data.length}
+          count={filteredData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

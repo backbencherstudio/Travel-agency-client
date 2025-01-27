@@ -9,7 +9,8 @@ const BookingHistoryTable = () => {
     package_name: true,
     total_amount: true,
     date: true,
-    payment_status: true
+    payment_status: true,
+    booking_status: true
   })
 
   const [data, setData] = useState([])
