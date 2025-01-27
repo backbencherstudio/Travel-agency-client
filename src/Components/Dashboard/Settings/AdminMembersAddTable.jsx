@@ -1,4 +1,4 @@
-import { FaSearch } from 'react-icons/fa'
+import { FaEye, FaEyeSlash, FaSearch, FaTrash } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
 import {
   Table,
@@ -13,40 +13,67 @@ import {
   Dialog,
   DialogContent
 } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
-import { FiEdit2, FiPlus } from 'react-icons/fi'
+import { FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi'
 import { useForm } from 'react-hook-form'
-import { IoMdClose } from 'react-icons/io'
-import { CiImageOn } from 'react-icons/ci'
 import { FaRegSquarePlus } from 'react-icons/fa6'
+import {
+  addUser,
+  deleteUser,
+  searchUsers,
+  updateUser
+} from '../../../Apis/CreateNewUser'
+import { toast } from 'react-toastify'
+import Swal from 'sweetalert2'
+import debounce from 'lodash.debounce'
+import { useLocation, useNavigate } from 'react-router-dom'
 
-const AdminMembersAddTable = ({
-  tableType = '',
-  title,
-  data = [],
-  columns = {}
-}) => {
-  const [searchQuery, setSearchQuery] = useState('')
+
+const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const initialQuery = queryParams.get('q') || ''
+  const [searchQuery, setSearchQuery] = useState(initialQuery)
   const [filteredData, setFilteredData] = useState(data)
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [openModal, setOpenModal] = useState(false)
-  const [imagePreview, setImagePreview] = useState(null)
-  const [imageError, setImageError] = useState(false)
   const [mode, setMode] = useState('add')
   const [selectedMember, setSelectedMember] = useState(null)
-  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showRePassword, setShowRePassword] = useState(false)
 
   useEffect(() => {
-    const filtered = data.filter(
-      item =>
-        item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.status?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    setFilteredData(filtered)
-  }, [searchQuery, data])
+    // Fetch data when the search query changes, debounced
+    const fetchData = debounce(async () => {
+      if (searchQuery.trim()) {
+        navigate(`?q=${searchQuery}`)
+        setLoading(true)
+        try {
+          const response = await searchUsers(searchQuery)
+          setFilteredData(response.data)
+        } catch (error) {
+          toast.error(
+            error.response?.data?.message ||
+              error.message ||
+              'An error occurred while searching.'
+          )
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        navigate(location.pathname)
+        setFilteredData(data)
+      }
+    }, 500)
+
+    fetchData()
+
+    return () => {
+      fetchData.cancel()
+    }
+  }, [searchQuery, data, navigate, location.pathname])
 
   const handleChangePage = (event, newPage) => setPage(newPage)
 
@@ -54,7 +81,6 @@ const AdminMembersAddTable = ({
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
-
   const handleRowClick = id => {
     const memberToEdit = data.find(member => member.id === id)
     if (memberToEdit) {
@@ -87,6 +113,7 @@ const AdminMembersAddTable = ({
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors }
   } = useForm()
 
@@ -95,66 +122,109 @@ const AdminMembersAddTable = ({
       // Populate form with selected member's data
       setValue('name', selectedMember.name)
       setValue('email', selectedMember.email)
-      setValue('status', selectedMember.status)
-      setImagePreview(selectedMember.image || null)
+      setValue('type', selectedMember.type)
+      // setImagePreview(selectedMember.image || null)
     }
   }, [mode, selectedMember, setValue])
 
-  // Handle image upload
-  const handleImageUpload = e => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result)
-        setValue('logo', reader.result)
-        setImageError(false)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  // Handle image deletion (clear the selected image)
-  const handleImageDelete = () => {
-    setImagePreview(null)
-    setValue('logo', null)
-  }
-
-  // Handle form submission
-  const onSubmit = async data => {
-    if (!imagePreview) {
-      setImageError(true)
-      return
-    }
-
+  // handle add and edit user
+  const onSubmit = async formData => {
     setLoading(true)
 
-    setTimeout(() => {
-      console.log('Form Data:', data)
-
-      // Reset form and close modal
-      reset()
-      setImagePreview(null)
-      setImageError(false)
-      setOpenModal(false)
-      setLoading(false)
-
-      // For now, just log the data
+    try {
+      // Remove email from the payload in edit mode
       if (mode === 'edit') {
-        console.log('Editing Member', selectedMember.id)
-        // Make API call to update the member
-      } else {
-        console.log('Adding new member')
-        // Make API call to add the new member
+        delete formData.email
       }
-    }, 2000)
+
+      if (mode === 'add') {
+        // Add new member
+        const response = await addUser(formData)
+        if (response.success) {
+          toast.success('Member added successfully!')
+          setFilteredData(prevData => [...prevData, response.data])
+        } else {
+          toast.error(response.message || 'Failed to add member.')
+        }
+      } else if (mode === 'edit') {
+        // Update existing member
+        const response = await updateUser(selectedMember.id, formData)
+        if (response.success) {
+          toast.success('Member updated successfully!')
+          setFilteredData(prevData =>
+            prevData.map(member =>
+              member.id === selectedMember.id ? response.data : member
+            )
+          )
+        } else {
+          toast.error(response.message || 'Failed to update member.')
+        }
+      }
+
+      reset()
+      setOpenModal(false)
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          'An error occurred while submitting.'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Toggle password visibility
+  const togglePasswordVisibility = () => setShowPassword(!showPassword)
+  const toggleRePasswordVisibility = () => setShowRePassword(!showRePassword)
+
+  // handle delete user
+  const handleDeleteUser = async userId => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    })
+
+    if (result.isConfirmed) {
+      setLoading(true)
+      try {
+        const response = await deleteUser(userId)
+        if (response.success) {
+          Swal.fire('Deleted!', 'Member has been deleted.', 'success')
+          setFilteredData(prevData =>
+            prevData.filter(member => member.id !== userId)
+          )
+        } else {
+          Swal.fire(
+            'Error!',
+            response.message || 'Failed to delete member.',
+            'error'
+          )
+        }
+      } catch (error) {
+        console.error('Error deleting member:', error)
+        Swal.fire(
+          'Error!',
+          error.message || 'An error occurred while deleting.',
+          'error'
+        )
+      } finally {
+        setLoading(false)
+      }
+    }
   }
 
   return (
     <>
       <div className=' p-4 sm:p-6'>
         <div className='flex gap-2 items-center'>
-          <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
+          <h1 className='text-[#0D0E0D] capitalize text-[20px]'>{title}</h1>
           <h2 className='text-[#687588] capitalize bg-[#E9EAEC] text-start px-2 py-1 text-[12px] rounded-md'>
             Deafult
           </h2>
@@ -204,11 +274,11 @@ const AdminMembersAddTable = ({
                     Email
                   </TableCell>
                 )}
-                {columns.status && (
+                {columns.type && (
                   <TableCell
                     sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
                   >
-                    Status
+                    type
                   </TableCell>
                 )}
                 <TableCell
@@ -228,19 +298,16 @@ const AdminMembersAddTable = ({
                 filteredData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map(item => (
-                    <TableRow
-                      key={item.id}
-                      onClick={() => handleRowClick(item.id)}
-                    >
+                    <TableRow key={item.id}>
                       {columns.name && (
                         <TableCell>
                           <div className='flex items-center gap-3'>
-                            <img
+                            {/* <img
                               className='rounded-lg'
                               src={item.memberImg}
                               alt={item.name}
                               style={{ width: '50px', height: '50px' }}
-                            />
+                            /> */}
                             <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
                               {item.name}
                             </span>
@@ -254,11 +321,9 @@ const AdminMembersAddTable = ({
                           </p>
                         </TableCell>
                       )}
-                      {columns.status && (
+                      {columns.type && (
                         <TableCell>
-                          <p className='truncate text-[#475467]'>
-                            {item.status}
-                          </p>
+                          <p className='truncate text-[#475467]'>{item.type}</p>
                         </TableCell>
                       )}
                       <TableCell>
@@ -271,6 +336,12 @@ const AdminMembersAddTable = ({
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
                           >
                             <FiEdit2 className='text-xl' />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(item.id)}
+                            className='text-[#475467] hover:text-red-700 transform duration-300'
+                          >
+                            <FiTrash2 className='text-xl' />
                           </button>
                         </div>
                       </TableCell>
@@ -335,7 +406,7 @@ const AdminMembersAddTable = ({
                 <input
                   type='email'
                   {...register('email', {
-                    required: 'Email is required',
+                    required: mode === 'add' ? 'Email is required' : false,
                     pattern: {
                       value:
                         /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/,
@@ -346,6 +417,7 @@ const AdminMembersAddTable = ({
                   className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
                     errors.email ? 'border-red-500' : ''
                   }`}
+                  disabled={mode === 'edit'}
                 />
                 {errors.email && (
                   <span className='text-red-500 text-sm'>
@@ -355,75 +427,107 @@ const AdminMembersAddTable = ({
               </div>
             </div>
 
-            {/* Status and Image Upload in same line */}
+            {/* type and Image Upload in same line */}
             <div className='grid grid-cols-1 gap-4'>
-              {/* Status */}
+              {/* type */}
               <div>
-                <label className='block mb-2 font-medium'>Status</label>
+                <label className='block mb-2 font-medium'>type</label>
                 <select
-                  {...register('status', { required: 'Status is required' })}
+                  {...register('type', { required: 'type is required' })}
                   className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                    errors.status ? 'border-red-500' : ''
+                    errors.type ? 'border-red-500' : ''
                   }`}
                 >
-                  <option value=''>Select Status</option>
-                  <option value='Manager'>Manager</option>
-                  <option value='Co-Member'>Co-Member</option>
+                  <option value=''>Select type</option>
+                  <option value='manager'>Manager</option>
                 </select>
-                {errors.status && (
+                {errors.type && (
                   <span className='text-red-500 text-sm'>
-                    {errors.status.message}
+                    {errors.type.message}
                   </span>
                 )}
               </div>
 
-              {/* Image Upload */}
-              <div>
-                <label className='block mb-2 font-medium'>Upload Image</label>
-                <input
-                  type='file'
-                  accept='image/*'
-                  onChange={handleImageUpload}
-                  className='hidden'
-                  id='logoUpload'
-                />
-                <label
-                  htmlFor='logoUpload'
-                  className='border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-orange-400 transition-colors block'
-                >
-                  {imagePreview ? (
-                    <div className='flex flex-col items-center gap-2'>
-                      <div className='relative'>
-                        <img
-                          src={imagePreview}
-                          alt='Preview'
-                          className='w-32 h-32 object-contain'
-                        />
-                        <button
-                          type='button'
-                          onClick={handleImageDelete}
-                          className='absolute top-0 right-0 text-red-500'
-                        >
-                          <IoMdClose size={20} />
-                        </button>
-                      </div>
-                      <span className='text-sm text-gray-500'>
-                        Click to change image
-                      </span>
+              {/* Password field with real-time validation */}
+              {/* Password field with real-time validation - Only for Add Mode */}
+              {mode === 'add' && (
+                <>
+                  <div>
+                    <label className='block mb-2 font-medium'>Password</label>
+                    <div className='relative'>
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        {...register('password', {
+                          required: 'Password is required',
+                          minLength: {
+                            value: 8,
+                            message:
+                              'Password must be at least 8 characters long'
+                          }
+                        })}
+                        placeholder='Enter password'
+                        className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+                          errors.password ? 'border-red-500' : ''
+                        }`}
+                      />
+                      <button
+                        type='button'
+                        onClick={togglePasswordVisibility}
+                        className='absolute right-3 top-3 text-gray-500 hover:text-black'
+                      >
+                        {showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
                     </div>
-                  ) : (
-                    <p className='flex justify-center gap-2 items-center'>
-                      <CiImageOn className='text-xl' />
-                      <span className='text-gray-500'>Choose file</span>
-                    </p>
-                  )}
-                </label>
-                {imageError && (
-                  <span className='text-red-500 text-sm'>
-                    Please upload a logo
-                  </span>
-                )}
-              </div>
+                    {errors.password && (
+                      <span className='text-red-500 text-sm'>
+                        {errors.password.message}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Re-Password field with real-time validation */}
+                  <div>
+                    <label className='block mb-2 font-medium'>
+                      Re-Password
+                    </label>
+                    <div className='relative'>
+                      <input
+                        type={showRePassword ? 'text' : 'password'}
+                        {...register('rePassword', {
+                          required: 'Please confirm your password',
+                          validate: value =>
+                            value === watch('password') ||
+                            'Passwords do not match'
+                        })}
+                        placeholder='Re-enter password'
+                        className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+                          errors.rePassword ? 'border-red-500' : ''
+                        }`}
+                      />
+                      <button
+                        type='button'
+                        onClick={toggleRePasswordVisibility}
+                        className='absolute right-3 top-3 text-gray-500 hover:text-black'
+                      >
+                        {showRePassword ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
+                    {/* Show real-time error message when passwords don't match */}
+                    {watch('password') !== watch('rePassword') &&
+                      watch('rePassword') &&
+                      !errors.rePassword && (
+                        <span className='text-red-500 text-sm'>
+                          Passwords do not match
+                        </span>
+                      )}
+                    {errors.rePassword && (
+                      <span className='text-red-500 text-sm'>
+                        {errors.rePassword.message}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </form>
 
@@ -440,7 +544,7 @@ const AdminMembersAddTable = ({
               className='bg-[#EB5B2A] text-md px-4 py-2 text-white rounded-lg'
               disabled={loading}
             >
-              Save
+              {mode === 'add' ? 'Add Member' : 'Update Member'}
             </button>
           </div>
           {loading && (

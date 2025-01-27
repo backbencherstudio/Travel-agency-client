@@ -289,11 +289,18 @@ const Navbar = () => {
                           </Link>
                         )}
                         <Link
+                          to='/booking-history'
+                          className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
+                        >
+                          Booking History
+                        </Link>
+                        <Link
                           to='/profile'
                           className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
                         >
                           My Profile
                         </Link>
+
                         <Link
                           onClick={handleLogout}
                           className='text-base xl:text-xl text-red-400 hover:text-[#b24b7d] duration-300'
@@ -437,6 +444,7 @@ const Navbar = () => {
                         Dashboard
                       </Link>
                     )}
+
                     <Link
                       to='/profile'
                       className='block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md'

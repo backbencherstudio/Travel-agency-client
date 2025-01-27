@@ -27,7 +27,7 @@ const Coupon = () => {
     }
 
   }
-  console.log('couporData', couponData)
+  // console.log('couporData', couponData)
   return (
     <div>
       <CouponTable
