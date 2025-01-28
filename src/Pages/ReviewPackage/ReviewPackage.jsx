@@ -469,6 +469,7 @@ function ReviewPackage () {
       console.error('Error during booking or payment processing:', error)
       toast.error('Failed to process the booking. Please try again.')
       setProcessing(false)
+      // window.location.href = `/payment-error/${id}`
     }
   }
 

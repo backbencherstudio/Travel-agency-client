@@ -52,11 +52,15 @@ import PackageDisAllowTraveller from '../Pages/Dashboard/Package/PackageDisAllow
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
 import PaymentSuccess from '../Components/Client/Booking/PaymentSuccess'
+import PaymentErros from '../Components/Client/Booking/PaymentErros'
+import BookingHistoryTable from '../Pages/BookingHistory/BookingHistoryTable'
+import ReviewBooking from '../Components/ReviewBooking'
 if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
   throw new Error(
     'VITE_STRIPE_PUBLISHABLE_KEY is not set in the environment variables'
   )
 }
+import Review from '../Components/Dashboard/Review/Review'
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 export const router = createBrowserRouter([
@@ -146,6 +150,10 @@ export const router = createBrowserRouter([
         path: '/success/:id',
         element: <PaymentSuccess />
       },
+      {
+        path: '/payment-error/:id',
+        element: <PaymentErros />
+      },
 
       {
         path: '/contacts',
@@ -162,6 +170,14 @@ export const router = createBrowserRouter([
       {
         path: '/profile',
         element: <Profile />
+      },
+      {
+        path: '/booking-history',
+        element: <BookingHistoryTable />
+      },
+      {
+        path: '/booking-history-review/:id',
+        element: <ReviewBooking />
       }
     ]
   },
@@ -169,7 +185,7 @@ export const router = createBrowserRouter([
     path: '/dashboard',
     // element: <DashboardLayout />,
     element: (
-      <PrivateRoute role={['admin']}>
+      <PrivateRoute role={['admin', 'vendor']}>
         <AdminLayout />
       </PrivateRoute>
     ),
@@ -252,6 +268,10 @@ export const router = createBrowserRouter([
         element: <Payments />
       },
       {
+        path: 'review',
+        element: <Review />
+      },
+      {
         path: 'blog',
         element: <BlogsPost />
       },
@@ -269,24 +289,24 @@ export const router = createBrowserRouter([
       }
     ]
   },
-  {
-    path: 'vendor/dashboard',
-    element: <MainLayout />,
-    children: [
-      {
-        index: true,
-        element: <IndexDashboard />
-      },
-      {
-        path: 'add-package',
-        element: <VendorAddPackage />
-      },
-      {
-        path: 'packages',
-        element: <VendorPackages />
-      }
-    ]
-  },
+  // {
+  //   path: 'vendor/dashboard',
+  //   element: <MainLayout />,
+  //   children: [
+  //     {
+  //       index: true,
+  //       element: <IndexDashboard />
+  //     },
+  //     {
+  //       path: 'add-package',
+  //       element: <VendorAddPackage />
+  //     },
+  //     {
+  //       path: 'packages',
+  //       element: <VendorPackages />
+  //     }
+  //   ]
+  // },
 
   {
     path: 'signup',

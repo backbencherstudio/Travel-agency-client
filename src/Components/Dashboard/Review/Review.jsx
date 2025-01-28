@@ -1,6 +1,11 @@
-import * as React from 'react';
-import { FaSearch, FaEye } from "react-icons/fa";
-import { useState, useEffect, useRef } from "react";
+// Review.js
+import React, { useState, useEffect, useRef } from 'react';
+import { FaSearch} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import { LuTrash2 } from "react-icons/lu";
+import Swal from 'sweetalert2';
+import TransactionApis from "../../../Apis/TransectionApis";
 import {
   Table,
   TableBody,
@@ -9,22 +14,14 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TablePagination,
+  TablePagination
 } from "@mui/material";
-import Swal from 'sweetalert2';
-import { useNavigate } from "react-router-dom";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import { LuTrash2 } from "react-icons/lu";
-import TransactionApis from "../../../Apis/TransectionApis";
-import { Modal, Box, Typography, Fade, Backdrop, Button } from '@mui/material';
 
+const Review = () => {
+  // ---------------------------
+  // Begin BookingTable Code
+  // ---------------------------
 
-
-
-
-
-
-const BookingTable = ({ title }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,26 +63,9 @@ const BookingTable = ({ title }) => {
     setPage(0);
   };
 
-
-  // try {
-  //   const response = await TransactionApis.deleteTransaction(transactionId);
-  //   if (response.data.success) {
-  //     fetchTransactions();
-  //   }
-  // } catch (error) {
-  //   console.error("Error deleting transaction:", error);
-  // }
-
-
-
-
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-
-
-
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -113,12 +93,15 @@ const BookingTable = ({ title }) => {
     });
   };
 
-
+  // ---------------------------
+  // End BookingTable Code
+  // ---------------------------
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row justify-between items-center  py-5">
-        <h1 className="text-[#0D0E0D] text-[20px] font-semibold">{title}</h1>
+      {/* BookingTable JSX */}
+      <div className="flex flex-col sm:flex-row justify-between items-center py-5">
+        <h1 className="text-[#0D0E0D] font-semibold text-[20px]"> Review </h1>
         <div className="flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl">
           <div className="relative md:col-span-1">
             <input
@@ -164,22 +147,22 @@ const BookingTable = ({ title }) => {
                 <TableCell
                   sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
                 >
-                  Invoice Number
-                </TableCell>
-                <TableCell
-                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
-                >
                   Traveler's Name
                 </TableCell>
                 <TableCell
                   sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
                 >
-                  Amount
+                  Package Name
                 </TableCell>
                 <TableCell
                   sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
                 >
-                  Status
+                  Comment
+                </TableCell>
+                <TableCell
+                  sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}
+                >
+                  Rating
                 </TableCell>
                 <TableCell
                   sx={{
@@ -253,40 +236,6 @@ const BookingTable = ({ title }) => {
                           >
                             <LuTrash2 className="text-xl" />
                           </button>
-                          <button className="text-[#475467] hover:text-blue-700 transform duration-300">
-                            <FaEye className="text-xl"onClick={handleOpen} />
-
-      <div>
-      <Modal
-        aria-labelledby="transition-modal-title"
-        aria-describedby="transition-modal-description"
-        open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        slots={{ backdrop: Backdrop }}
-        slotProps={{
-          backdrop: {
-            timeout: 500,
-            sx: {
-              backgroundColor: 'rgba(0, 0, 0, 0.15)', // 25% opacity
-            },
-          },
-        }}
-      >
-        <Fade in={open}>
-          <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] md:w-[600px] lg:w-[800px] bg-white border-2 border-[#f2f2f2] shadow-md rounded-[10px] p-4">
-            <Typography id="transition-modal-title" variant="h6" component="h2">
-              Jhine marneka wada saccha mera
-            </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
-              Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-            </Typography>
-          </Box>
-        </Fade>
-      </Modal>
-    </div>
-
-                          </button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -314,16 +263,8 @@ const BookingTable = ({ title }) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-
-
-
-
-
-
-
-
     </>
   );
 };
 
-export default BookingTable;
+export default Review;

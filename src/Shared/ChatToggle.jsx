@@ -1,4 +1,5 @@
-import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
+// Import necessary dependencies and components
+import { IoChatbubbleEllipsesSharp, IoClose } from "react-icons/io5";
 import MessageRight from "../Components/Dashboard/chat/Components/MessageLeft";
 import MessageLeft from "../Components/Dashboard/chat/Components/MessageRight";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -7,50 +8,57 @@ import { AuthContext } from "../Context/AuthProvider/AuthProvider";
 import ChatApis from "../Apis/ChatApis";
 import { io } from "socket.io-client";
 import NotificationManager from "./NotificationManager";
+
+// Define constants for default values
 const defaultAvatar = "https://via.placeholder.com/150";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 
+// Get token from local storage
 const token = localStorage.getItem("token");
 
+// Initialize socket connection
 const socket = io(import.meta.env.VITE_API_BASE_URL, {
   auth: {
     token: token,
   },
 });
 
+// Socket connection established
 socket.on("connect", () => {
   console.log("Connected to server!");
 });
 
+// Socket disconnected
 socket.on("disconnect", (reason) => {
   console.log("Disconnected:", reason);
 });
 
 const ChatToggle = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [adminUsers, setAdminUsers] = useState([]);
-  const [activeConversation, setActiveConversation] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [conversations, setConversations] = useState([]);
-  const messagesEndRef = useRef(null);
-  const messagesContainerRef = useRef(null);
-  const { user } = useContext(AuthContext);
+
+  // Define state variables
+  const [isOpen, setIsOpen] = useState(false); // Toggle chatbox
+  const [adminUsers, setAdminUsers] = useState([]); // List of admin users
+  const [activeConversation, setActiveConversation] = useState(null); // Active conversation
+  const [messages, setMessages] = useState([]); // Messages in conversation
+  const [newMessage, setNewMessage] = useState(""); // New message input
+  const [conversations, setConversations] = useState([]); // List of conversations
+  const messagesEndRef = useRef(null); // Ref for scrolling to the bottom
+  const messagesContainerRef = useRef(null); // Ref for messages container
+  const { user } = useContext(AuthContext); // User context
 
   console.log("user", user);
-  
 
   // Request notification permission on component mount
   useEffect(() => {
     NotificationManager.requestPermission();
   }, []);
 
-  // Socket event listener for new messages
+  // Listen for new messages through socket
   useEffect(() => {
     socket.on("message", (data) => {
       console.log("New message received:", data.data);
 
-      // Show notification when browser is not focused, regardless of chat toggle state
+      // Show notification if the browser is not focused
       if (data.data.sender.id !== user.id && document.hidden) {
         NotificationManager.showNotification({
           title: "New Message from Admin",
@@ -72,7 +80,7 @@ const ChatToggle = () => {
         });
       }
 
-      // Only update messages if it belongs to current conversation
+      // Update messages only for the current conversation
       if (
         activeConversation &&
         data.data.conversation_id === activeConversation.id
@@ -99,6 +107,7 @@ const ChatToggle = () => {
     };
   }, [activeConversation, conversations, isOpen]);
 
+  // Fetch list of conversations
   const fetchConversations = async () => {
     try {
       const response = await ChatApis.fetchConversations();
@@ -110,6 +119,7 @@ const ChatToggle = () => {
     }
   };
 
+  // Fetch list of admin users
   const fetchAdminUsers = async () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
@@ -121,6 +131,7 @@ const ChatToggle = () => {
     }
   };
 
+  // Fetch messages for the active conversation
   const fetchMessages = async () => {
     if (activeConversation) {
       try {
@@ -134,13 +145,14 @@ const ChatToggle = () => {
     }
   };
 
-  // Fetch conversations
+  // Fetch conversations and admin users on component mount
   useEffect(() => {
     fetchConversations();
     fetchAdminUsers();
   }, []);
   console.log("fetching messages", messages);
 
+  // Handle click on admin to initiate or continue conversation
   const handleAdminClick = async (admin) => {
     // Check if conversation exists
     const existingConversation = conversations.find(
@@ -172,18 +184,18 @@ const ChatToggle = () => {
 
       setActiveConversation(newConversation);
       setConversations([...conversations, newConversation]);
-      
     } catch (error) {
       console.error("Error creating conversation:", error);
     }
   };
 
-  // Fetch messages when conversation changes
+  // Fetch messages when the active conversation changes
   useEffect(() => {
     fetchMessages();
     console.log("fetching messages", messages);
   }, [activeConversation]);
 
+  // Handle sending a new message
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeConversation) return;
@@ -263,7 +275,9 @@ const ChatToggle = () => {
   console.log("activeConversation", activeConversation);
 
   return (
-    <div className="fixed bottom-[11%] right-[3%] z-50">
+
+    // Container for the Chat Toggle
+    <div className="fixed bottom-[5%] md:bottom-[8%] lg:bottom-[11%] right-[3%] z-50">
       {
         user && user.type === 'user' &&
       <button
@@ -275,10 +289,32 @@ const ChatToggle = () => {
       }
 
       {isOpen && (
-        <div className="fixed bottom-[18%] right-[3%] w-[500px] h-[550px] bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="fixed bottom-[12%] md:bottom-[15%] lg:bottom-[18%] right-[3%] w-[85vw] sm:w-[460px] h-[60vh] bg-white shadow-lg rounded-lg overflow-hidden">
           {!activeConversation ? (
             <div className="p-4">
-              <h5 className="text-xl font-bold mb-4">Conversations</h5>
+
+              {/* conversation list start */}
+
+<div className="flex justify-between items-center">
+    <h5 className="text-xl font-bold mb-4">Conversations</h5>
+
+
+    {/* Close Button Added Here */}
+        <div className="col-span-4 sm:col-span-8 flex justify-end transi">
+          <button
+            onClick={() => setIsOpen(false)} // Chatbox will close onClick
+            className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
+            aria-label="Close Chat"
+          >
+            <IoClose className="h-8 w-8" />
+          </button>
+        </div>
+</div>
+
+
+
+
+                        
               <div className="overflow-y-auto h-[calc(100%-50px)]">
                 {adminUsers.map((admin) => (
                   <div
@@ -317,17 +353,26 @@ const ChatToggle = () => {
                   </div>
                 ))}
               </div>
+
+                            {/* conversation list end */}
+
             </div>
           ) : (
             <div className="flex flex-col h-full">
-              <div className="p-4 bg-gray-100 flex items-center">
+
+              <div className="p-4 bg-gray-100 flex items-center justify-between ">
+
+                <div className="flex items-center justify-center">
+
+
                 <button
                   onClick={() => setActiveConversation(null)}
                   className="mr-4 px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
                 >
                   <MdKeyboardArrowLeft className="h-5 w-5" />
                 </button>
-                <div className="flex items-center">
+
+
                   <div className="relative">
                     <img
                       src={activeConversation.participant?.avatar || ""}
@@ -338,21 +383,36 @@ const ChatToggle = () => {
                         e.target.nextElementSibling.style.display = "flex"; // Show the fallback
                       }}
                     />
-                    <div className="rounded-full h-9 w-9 bg-gray-200 text-gray-600 flex items-center justify-center hidden">
+                    <div className="rounded-full h-9 w-9 bg-gray-200 text-gray-600 flex items-center justify-center ">
                       {activeConversation.participant?.name
                         ?.charAt(0)
                         .toUpperCase()}
                     </div>
                   </div>
+
                   <h5 className="ml-3 font-bold">
                     {activeConversation.participant?.name}
                   </h5>
                 </div>
+
+
+                        {/* Close Button Added Here */}
+                        <div className="  ">
+                          <button
+                            onClick={() => setIsOpen(false)} // Chatbox will close onClick
+                            className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
+                            aria-label="Close Chat"
+                          >
+                            <IoClose className="h-6 w-6" />
+                          </button>
+                        </div>
+
+
               </div>
 
               <div
                 ref={messagesContainerRef}
-                className="flex-1 p-4 overflow-y-auto"
+                className="h-[73vh] p-4 lg:p-6 overflow-y-auto"
               >
                 {messages.map((message, index) => {
                   if (!message || !message.sender || !message.receiver) {
@@ -389,21 +449,23 @@ const ChatToggle = () => {
               </div>
 
               <form onSubmit={handleSendMessage} className="p-4 border-t">
-                <div className="flex gap-2">
+
+                <div className="w-[100%] gap-2 grid grid-cols-12 grid-flow-col ">
                   <input
                     type="text"
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    className="flex-1 px-4 py-2 border rounded-lg"
+                    className="col-span-9 px-4 py-2 border rounded-lg"
                     placeholder="Type a message..."
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#f97316] text-white rounded-lg"
+                    className="col-span-3 px-4 py-2 bg-[#f97316] text-white rounded-lg"
                   >
                     Send
                   </button>
                 </div>
+
               </form>
             </div>
           )}
