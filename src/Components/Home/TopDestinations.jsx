@@ -6,8 +6,11 @@ import image4 from '../../assets/img/top-destinations/image-4.png';
 import image5 from '../../assets/img/top-destinations/image-5.png';
 import image6 from '../../assets/img/top-destinations/image-6.png';
 import './home.css'
+import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext';
 
 const TopDestinations = () => {
+    const { homeData } = useTravelData();
+    // console.log("homeData", homeData);
 
     const destinations = [
         { name: "Indonesia", tours: "78 Times Tour", image: image1 },
@@ -25,7 +28,7 @@ const TopDestinations = () => {
         </div>
         <div className="py-12 md:py-20">
             <div className="grid grid-cols-12 gap-6">
-            {destinations.map((destination, index) => (
+            {homeData?.destinations?.map((destination, index) => (
                 <div
                 key={index}
                 className={`relative isolate flex flex-col justify-end overflow-hidden rounded-2xl px-5 pb-5 pt-40 h-[400px] ${
@@ -39,8 +42,8 @@ const TopDestinations = () => {
                 }`}
                 >
                 <img
-                    src={destination.image}
-                    alt={destination.name}
+                    src={destination?.destination_images[0]?.image}
+                    alt={destination?.destination_images[0]?.image}
                     className="absolute inset-0 h-full w-full object-cover"
                 />
                 <div className={`absolute inset-0 ${

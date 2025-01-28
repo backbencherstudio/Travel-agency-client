@@ -6,8 +6,11 @@ import image4 from "../../assets/img/destinations/image-4.png";
 import image5 from "../../assets/img/destinations/image-5.png";
 import image6 from "../../assets/img/destinations/image-6.png";
 import ChatToggle from "../../Shared/ChatToggle";
+import { useTravelData } from "../../Context/TravelDataContext/TravelDataContext";
 
 const Destinations = () => {
+  const { homeData } = useTravelData();
+  // console.log('homeData', homeData);
   const destinations = [
     {
       id: 1,

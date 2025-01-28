@@ -32,13 +32,15 @@ const AddPackage = () => {
   const [extraServices, setExtraServices] = useState([]);
   const [serviceIds, setServicesIds] = useState([]);
   const [languages, setLanguages] = useState([]);
+  const [travellerTypes, setTravellerTypes] = useState([]);
   const [tourPlan, setTourPlan] = useState([
       { id: null, day: 1, title: "", description: "", images: [] },
     ]);
   const [loading, setLoading] = useState(false);
   const [selectedDestinations, setSelectedDestinations] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
-  console.log('selectedLanguages', selectedLanguages)
+  const [selectedTravellerTypes, setSelectedTravellerTypes] = useState([]);
+  console.log('travellerTypes', travellerTypes)
   // const { id } = useParams();
   // const editId = id;
   console.log("selectedDestinations", selectedDestinations);
@@ -77,7 +79,11 @@ const AddPackage = () => {
             value: cat?.id,
             label: cat?.name,
           }))
-        );
+        );  
+
+        const resTravellerTypes = await axiosClient.get("api/admin/traveller-type");
+        setTravellerTypes(resTravellerTypes.data?.data);
+        console.log('travellerTypes', travellerTypes)
 
         const resServices = await axiosClient.get("api/admin/extra-service");
         setExtraServices(resServices.data?.data);
@@ -192,14 +198,14 @@ const AddPackage = () => {
     const imageCount = images.filter(file => file.type !== 'video' && !file?.video_url).length;
 
     // Validate minimum requirements
-    if (videoCount < 1) {
-      toast.error('Please upload at least 1 video');
-      return;
-    }
-    if (imageCount < 3) {
-      toast.error('Please upload at least 3 images');
-      return;
-    }
+    // if (videoCount < 1) {
+    //   toast.error('Please upload at least 1 video');
+    //   return;
+    // }
+    // if (imageCount < 3) {
+    //   toast.error('Please upload at least 3 images');
+    //   return;
+    // }
     const formDataObject = {
       ...data,
       includedPackages,
@@ -283,6 +289,8 @@ const AddPackage = () => {
         form.append("destinations", JSON.stringify(selectedDestinations));
       }  else if (key === "languages") {
         form.append("languages", JSON.stringify(selectedLanguages));
+      } else if (key === "travellerTypes") {
+        form.append("traveller_types", JSON.stringify(selectedTravellerTypes));
       } else {
         form.append(key, formDataObject[key]);
       }
@@ -369,6 +377,19 @@ const AddPackage = () => {
       // Handle clearing the selection
       setSelectedLanguages([]);
       setValue('languages', []);
+    }
+  };
+
+  const handleTravellerTypeChange = (selected) => {
+    if (Array.isArray(selected)) {
+      setSelectedTravellerTypes(selected.map(item => ({ id: item.value })));
+      setValue('travellerTypes', selected.map(item => ({ id: item.value })));
+    } else if (selected) {
+      setSelectedTravellerTypes([{ id: selected.value }]);
+      setValue('travellerTypes', [{ id: selected.value }]);
+    } else {
+      setSelectedTravellerTypes([]);
+      setValue('travellerTypes', []);
     }
   };
 
@@ -609,6 +630,25 @@ const AddPackage = () => {
                       {errors.destinations.message}
                     </p>
                   )}
+                </div>
+                <div>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Traveller Type
+                  </label>
+                  <Select
+                    isMulti
+                    options={travellerTypes.map(type => ({
+                      value: type.id,
+                      label: type.type
+                    }))}
+                    value={travellerTypes.find(option => 
+                      selectedTravellerTypes.some(sel => sel.id === option.value)
+                    )}
+                    onChange={handleTravellerTypeChange}
+                    placeholder="Select traveller type"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">

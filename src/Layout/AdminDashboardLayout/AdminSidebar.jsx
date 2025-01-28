@@ -66,7 +66,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
       tab === 'packageCategory&Tag' ||
       tab === 'packageDestination&Policy' ||
       tab === 'packageExtraService' ||
-      tab === 'language'
+      tab === 'language' ||
+      tab === 'packageDisallowTraveller'
     ) {
       setSubmenuOpen(true)
     } else {
@@ -121,7 +122,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
               selectedTab === 'packageCategory&Tag' ||
               selectedTab === 'packageDestination&Policy' ||
               selectedTab === 'packageExtraService' ||
-              selectedTab === 'language'
+              selectedTab === 'language' ||
+              selectedTab === 'packageDisallowTraveller'
                 ? 'bg-[#eb5b2a] text-white font-semibold'
                 : 'hover:bg-[#0d3055]'
             }`}
@@ -205,6 +207,16 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 }`}
               >
                 <span>Package Language</span>
+              </button>
+              <button
+                onClick={() => handleNavigation('packageDisallowTraveller', 'package-disallow-traveller')}
+                className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${
+                  selectedTab === 'packageDisallowTraveller'
+                    ? 'bg-[#eb5b2a] text-white font-semibold'
+                    : 'hover:bg-[#0d3055]'
+                }`}
+              >
+                <span>Disallow Traveller</span>
               </button>
             </div>
           )}

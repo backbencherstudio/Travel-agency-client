@@ -601,7 +601,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                                 }
                                 className='absolute bg-white p-4  flex flex-col top-full right-0 mt-2 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
                               >
-                                {item?.user?.type === 'admin' ? (
+                                {item?.user?.type === 'admin' || item?.user?.type === 'vendor' ? (
                                   <>
                                     <button
                                       className={`flex item-center gap-3 p-3 rounded-md text-base ${
@@ -630,7 +630,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                                       Deactive
                                     </button>
                                   </>
-                                ) : item?.user?.type === 'vendor' ? (
+                                ) : item?.user?.type === 'admin' ? (
                                   <>
                                     <button
                                       className={`flex item-center gap-3 p-3 rounded-md text-base ${
