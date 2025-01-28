@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GiProfit } from "react-icons/gi";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { PiUserCirclePlusBold } from "react-icons/pi";
@@ -10,12 +10,22 @@ import DashboardCard from "./DashboardCard";
 import Chart from "./Chart";
 import CustomTable from "../../../Shared/CustomTable";
 import TravelChart from "./TravelChart";
-import { bookingData, statusData } from "../../../data/data";
+import { statusData } from "../../../data/data";
+import DashboardApis from "../../../Apis/DashboardApis";
 
 const DashboardAnalysis = () => {
   const [chartType, setChartType] = useState("Booking");
   const [timeInterval, setTimeInterval] = useState("monthly");
-  // const [tourDateFilter, setTourDateFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stats, setStats] = useState({
+    total_bookings: 0,
+    total_users: 0,
+    total_vendors: 0,
+    total_revenue: 0,
+    revenue_per_month: [],
+    bookings: [],
+  });
   const [columns] = useState({
     bookingId: true,
     name: true,
@@ -25,165 +35,115 @@ const DashboardAnalysis = () => {
     status: true,
   });
 
+  const processBookingData = (bookings) => {
+    return bookings.map((booking) => ({
+      id: booking.id,
+      bookingId: booking.id?.slice(-8)?.toUpperCase() || "N/A",
+      name: booking.user?.name || "N/A",
+      date: new Date(booking.created_at).toLocaleDateString(),
+      destination: booking.booking_items?.[0]?.package?.name || "N/A",
+      amount: `$${parseFloat(booking.total_amount || 0).toLocaleString()}`,
+      status: booking.status?.charAt(0)?.toUpperCase() + booking.status?.slice(1) || "N/A",
+    }));
+  };
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await DashboardApis.getDashboardData();
+      console.log("Dashboard API Response:", response.data);
+      if (response.success) {
+        const data = response.data;
+        setStats({
+          total_bookings: data.total_bookings || 0,
+          total_users: data.total_users || 0,
+          total_vendors: data.total_vendors || 0,
+          total_revenue: data.total_revenue || 0,
+          revenue_per_month: data.revenue_per_month || [],
+          bookings: processBookingData(data.bookings || []),
+        });
+      } else {
+        setError(response.message || "Failed to load dashboard data");
+      }
+    } catch (err) {
+      console.error("Dashboard data fetch error:", err);
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
   const dashboardData = [
     {
       title: "Booking",
-      amount: "1,930",
+      amount: loading ? "Loading..." : error ? "0" : stats.total_bookings.toLocaleString(),
       icon: FaRegCalendarCheck,
       image: revenue,
-      revenueData: [
-        { x: "Jan", y: 12000 },
-        { x: "Feb", y: 15000 },
-        { x: "Mar", y: 17000 },
-        { x: "Apr", y: 19000 },
-        { x: "May", y: 27000 },
-        { x: "June", y: 17000 },
-        { x: "Week 1", y: 1000 },
-        { x: "Week 2", y: 1200 },
-        { x: "Week 3", y: 1100 },
-        { x: "Week 4", y: 1400 },
-        { x: "Week 5", y: 1100 },
-        { x: "Week 6", y: 1800 },
-        { x: "2021", y: 25000 },
-        { x: "2022", y: 30000 },
-        { x: "2023", y: 35000 },
-        { x: "2024", y: 20000 },
-        { x: "2025", y: 50000 },
-      ],
+      revenueData: stats.revenue_per_month,
     },
     {
       title: "User",
-      amount: "2,930",
+      amount: loading ? "Loading..." : error ? "0" : stats.total_users.toLocaleString(),
       icon: PiUserCirclePlusBold,
       image: traveler,
-      travelerData: [
-        { x: "Jan", y: 12000 },
-        { x: "Feb", y: 15000 },
-        { x: "Mar", y: 17000 },
-        { x: "Apr", y: 19000 },
-        { x: "May", y: 27000 },
-        { x: "June", y: 17000 },
-        { x: "Week 1", y: 1000 },
-        { x: "Week 2", y: 1200 },
-        { x: "Week 3", y: 1100 },
-        { x: "Week 4", y: 1400 },
-        { x: "Week 5", y: 1100 },
-        { x: "Week 6", y: 1800 },
-        { x: "2021", y: 25000 },
-        { x: "2022", y: 30000 },
-        { x: "2023", y: 35000 },
-        { x: "2024", y: 20000 },
-        { x: "2025", y: 50000 },
-      ],
+      travelerData: stats.users_per_month,
     },
     {
       title: "Guides",
-      amount: "140+ ",
+      amount: loading ? "Loading..." : error ? "0" : `${stats.total_vendors.toLocaleString()}+ `,
       icon: GrUserWorker,
       image: profit,
-      profitData: [
-        { x: "Jan", y: 12000 },
-        { x: "Feb", y: 15000 },
-        { x: "Mar", y: 17000 },
-        { x: "Apr", y: 19000 },
-        { x: "May", y: 27000 },
-        { x: "June", y: 17000 },
-        { x: "Week 1", y: 1000 },
-        { x: "Week 2", y: 1200 },
-        { x: "Week 3", y: 1100 },
-        { x: "Week 4", y: 1400 },
-        { x: "Week 5", y: 1100 },
-        { x: "Week 6", y: 1800 },
-        { x: "2021", y: 25000 },
-        { x: "2022", y: 30000 },
-        { x: "2023", y: 35000 },
-        { x: "2024", y: 20000 },
-        { x: "2025", y: 50000 },
-      ],
+      profitData: stats.guides_per_month,
     },
     {
       title: "Earnings",
-      amount: "$12,930",
+      amount: loading ? "Loading..." : error ? "$0" : `$${parseFloat(stats.total_revenue).toLocaleString()}`,
       icon: GiProfit,
       image: profit,
-      profitData: [
-        { x: "Jan", y: 12000 },
-        { x: "Feb", y: 15000 },
-        { x: "Mar", y: 17000 },
-        { x: "Apr", y: 19000 },
-        { x: "May", y: 27000 },
-        { x: "June", y: 17000 },
-        { x: "Week 1", y: 1000 },
-        { x: "Week 2", y: 1200 },
-        { x: "Week 3", y: 1100 },
-        { x: "Week 4", y: 1400 },
-        { x: "Week 5", y: 1100 },
-        { x: "Week 6", y: 1800 },
-        { x: "2021", y: 25000 },
-        { x: "2022", y: 30000 },
-        { x: "2023", y: 35000 },
-        { x: "2024", y: 20000 },
-        { x: "2025", y: 50000 },
-      ],
+      profitData: stats.revenue_per_month,
     },
   ];
 
   return (
-    <div className="">
-      <div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mt-4">
-          {dashboardData?.map((data, index) => (
-            <DashboardCard
-              key={index}
-              title={data.title}
-              amount={data.amount}
-              icon={data.icon}
-              image={data.image}
-              chartType={chartType}
-              setChartType={setChartType}
-            />
-          ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-3">
-          <div className="md:col-span-2">
-            {chartType === "Booking" ? (
-              <Chart
-                title="Booking"
-                data={dashboardData[0].revenueData}
-                timeInterval={timeInterval}
-                setTimeInterval={setTimeInterval}
-              />
-            ) : chartType === "User" ? (
-              <Chart
-                title="User"
-                data={dashboardData[1].travelerData}
-                timeInterval={timeInterval}
-                setTimeInterval={setTimeInterval}
-              />
-            ) : chartType === "Guides" ? (
-              <Chart
-                title="Guides"
-                data={dashboardData[1].travelerData}
-                timeInterval={timeInterval}
-                setTimeInterval={setTimeInterval}
-              />
-            ) : (
-              <Chart
-                title="Profit"
-                data={dashboardData[2].profitData}
-                timeInterval={timeInterval}
-                setTimeInterval={setTimeInterval}
-              />
-            )}
-          </div>
-          <TravelChart statusData={statusData} />
-        </div>
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mt-4">
+        {dashboardData.map((data, index) => (
+          <DashboardCard
+            key={index}
+            title={data.title}
+            amount={data.amount}
+            icon={data.icon}
+            image={data.image}
+            chartType={chartType}
+            setChartType={setChartType}
+          />
+        ))}
       </div>
-      <CustomTable
-        title={"Recent Booking"}
-        data={bookingData}
-        columns={columns}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-3">
+        <div className="md:col-span-2">
+          <Chart
+            title={chartType}
+            data={
+              chartType === "Booking"
+                ? stats.revenue_per_month
+                : chartType === "User"
+                ? stats.users_per_month || []
+                : chartType === "Guides"
+                ? stats.guides_per_month || []
+                : stats.revenue_per_month
+            }
+            timeInterval={timeInterval}
+            setTimeInterval={setTimeInterval}
+          />
+        </div>
+        <TravelChart statusData={statusData} />
+      </div>
+      <CustomTable title={"Recent Booking"} data={stats.bookings} columns={columns} loading={loading} />
     </div>
   );
 };

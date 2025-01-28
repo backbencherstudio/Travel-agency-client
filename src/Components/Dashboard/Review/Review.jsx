@@ -1,16 +1,16 @@
-
-
 // Review.js
 import React, { useState, useEffect, useRef } from 'react';
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaEye } from "react-icons/fa";
 import { LuTrash2 } from "react-icons/lu";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import Swal from 'sweetalert2';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Paper, TablePagination
+  TableRow, Paper, TablePagination, Modal, Backdrop, Fade, Box, Button
 } from "@mui/material";
 import ReviewApis from "../../../Apis/ReviewApis";
+import { format } from 'date-fns';
+import { Package, User, Calendar } from 'lucide-react';
 
 const Review = ({ title }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,6 +20,10 @@ const Review = ({ title }) => {
   const dropdownRef = useRef(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  // Modal states
+  const [selectedReview, setSelectedReview] = useState(null);
+  const [open, setOpen] = useState(false);
+  ``
 
   const fetchReviews = async () => {
     try {
@@ -65,16 +69,30 @@ const Review = ({ title }) => {
       if (result.isConfirmed) {
         try {
           const response = await ReviewApis.deleteReview(id);
-          if (response.success) {
-            fetchReviews();
+          if (response.data.success) {
+            // Directly update the state instead of fetching
+            setReviews(prevReviews => prevReviews.filter(review => review.id !== id));
+            Swal.fire('Deleted!', 'Review has been deleted.', 'success');
           } else {
-            console.error('Failed to delete the review');
+            Swal.fire('Error!', 'Failed to delete the review.', 'error');
           }
         } catch (error) {
           console.error('Error while deleting:', error);
+          Swal.fire('Error!', 'Something went wrong while deleting.', 'error');
         }
       }
     });
+  };
+
+  // Modal handlers
+  const handleOpen = (review) => {
+    setSelectedReview(review);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setSelectedReview(null);
+    setOpen(false);
   };
 
   return (
@@ -112,10 +130,10 @@ const Review = ({ title }) => {
           <Table sx={{ border: "1px solid #e0e0e0" }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Package Name</TableCell>
-                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Comment</TableCell>
-                <TableCell sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Rating</TableCell>
-                <TableCell sx={{ textAlign: "center", color: "#475467", fontSize: "13px", fontWeight: 600 }}>Action</TableCell>
+                <TableCell width="20%" sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Package Name</TableCell>
+                <TableCell width="55%" sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Comment</TableCell>
+                <TableCell width="9%" sx={{ color: "#475467", fontSize: "13px", fontWeight: 600 }}>Rating</TableCell>
+                <TableCell width="16%" sx={{ textAlign: "center", color: "#475467", fontSize: "13px", fontWeight: 600 }}>Action</TableCell>
               </TableRow>
             </TableHead>
 
@@ -131,22 +149,38 @@ const Review = ({ title }) => {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell>
+                      <TableCell width="25%">
                         <div className="flex items-center gap-3">
                           <span className="truncate text-[#1D1F2C] text-[15px] font-medium">
                             {item.package?.name}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell>{item.comment}</TableCell>
-                      <TableCell>{item.rating_value}</TableCell>
-                      <TableCell>
+                      <TableCell 
+                        width="50%"
+                        sx={{
+                          maxWidth: 0, // Forces truncation
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis'
+                        }}
+                      >
+                        {item.comment}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: '600', width: '9%' }}>{item.rating_value}/5</TableCell>
+                      <TableCell width="16%">
                         <div className="flex items-center justify-center gap-4">
                           <button
                             onClick={() => handleDelete(item.id)}
                             className="text-[#475467] hover:text-red-600 transform duration-300"
                           >
                             <LuTrash2 className="text-xl" />
+                          </button>
+                          <button
+                            className="text-[#475467] hover:text-blue-700 transform duration-300"
+                            onClick={() => handleOpen(item)}
+                          >
+                            <FaEye className="text-xl" />
                           </button>
                         </div>
                       </TableCell>
@@ -173,6 +207,100 @@ const Review = ({ title }) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+
+      {/* Review Details Modal */}
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        scroller
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+            sx: {
+              backgroundColor: "rgba(0, 0, 0, 0.45)",
+            },
+          },
+        }}
+      >
+        <Fade in={open}>
+          <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
+            {/* Modal Header */}
+            <div className="bg-[#EB5B2A] p-6 text-white">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-2">
+                  <Package className="h-6 w-6" />
+                  <span className="text-lg font-semibold">
+                    Review Details
+                  </span>
+                </div>
+                <span className="px-3 py-1 bg-[#d44718] rounded-full text-sm font-medium">
+                  Rating: {selectedReview?.rating_value}/5
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Package className="h-5 w-5 text-[#EB5B2A]" />
+                  <div>
+                    <div className="text-sm text-gray-600">Package</div>
+                    <div className="text-black font-medium">
+                      {selectedReview?.package?.name}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-3">
+                  <User className="h-5 w-5 text-[#EB5B2A]" />
+                  <div>
+                    <div className="text-sm text-gray-600">User</div>
+                    <div className="text-black font-medium">
+                      {selectedReview?.user?.name}
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="mt-4">
+                  <div className="text-sm text-gray-600">Comment</div>
+                  <div 
+                    className="mt-2 p-4 bg-gray-50 rounded-lg text-black"
+                    style={{
+                      maxHeight: '120px', // Shows approximately 4-6 lines
+                      overflowY: 'auto',
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: '#EB5B2A #f1f1f1'
+                    }}
+                  >
+                    {selectedReview?.comment}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="border-t border-gray-100 p-6 bg-gray-50">
+              <Button
+                onClick={handleClose}
+                variant="contained"
+                fullWidth
+                sx={{
+                  backgroundColor: "#EB5B2A",
+                  "&:hover": { backgroundColor: "#d44718" }
+                }}
+              >
+                Close
+              </Button>
+            </div>
+          </Box>
+        </Fade>
+      </Modal>
     </>
   );
 };

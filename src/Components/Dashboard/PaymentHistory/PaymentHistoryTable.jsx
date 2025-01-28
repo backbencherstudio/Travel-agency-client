@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import { FaSearch, FaEye } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import {
@@ -11,14 +11,14 @@ import {
   Paper,
   TablePagination,
 } from "@mui/material";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { LuTrash2 } from "react-icons/lu";
 import TransactionApis from "../../../Apis/TransectionApis";
-import { Modal, Box, Typography, Fade, Backdrop, Button } from '@mui/material';
-import { Receipt, Package, User, Calendar, CreditCard } from 'lucide-react';
-import { format } from 'date-fns';
+import { Modal, Box, Typography, Fade, Backdrop, Button } from "@mui/material";
+import { Receipt, Package, User, Calendar, CreditCard } from "lucide-react";
+import { format } from "date-fns";
 
 const BookingTable = ({ title }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,7 +27,6 @@ const BookingTable = ({ title }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -53,7 +52,7 @@ const BookingTable = ({ title }) => {
     fetchTransactions();
   }, []);
 
-  const filteredData = Array.isArray(transactions) 
+  const filteredData = Array.isArray(transactions)
     ? transactions.filter((item) =>
         (item?.reference_number || "").toLowerCase().includes(searchQuery.toLowerCase())
       )
@@ -75,7 +74,7 @@ const BookingTable = ({ title }) => {
     setSelectedTransaction(transaction);
     setOpen(true);
   };
-  
+
   const handleClose = () => {
     setSelectedTransaction(null);
     setOpen(false);
@@ -83,13 +82,13 @@ const BookingTable = ({ title }) => {
 
   const handleDelete = (id) => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -97,24 +96,24 @@ const BookingTable = ({ title }) => {
           if (response.data.success) {
             fetchTransactions();
           } else {
-            console.error('Failed to delete the transaction');
+            console.error("Failed to delete the transaction");
           }
         } catch (error) {
-          console.error('Error while deleting:', error);
+          console.error("Error while deleting:", error);
         }
       }
     });
   };
 
   const formatCurrency = (amount, currency) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency?.toUpperCase() || 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency?.toUpperCase() || "USD",
     }).format(amount);
   };
 
   const formatDate = (dateString) => {
-    return format(new Date(dateString), 'MMM dd, yyyy');
+    return format(new Date(dateString), "MMM dd, yyyy");
   };
 
   return (
@@ -132,7 +131,6 @@ const BookingTable = ({ title }) => {
             />
             <FaSearch className="absolute top-3 left-3 text-zinc-400" />
           </div>
-
           <div className="flex justify-center" ref={dropdownRef}>
             <div className="relative inline-block text-left">
               <button
@@ -144,14 +142,10 @@ const BookingTable = ({ title }) => {
                   <MdKeyboardArrowDown className="text-xl" />
                 </span>
               </button>
-
               {isOpen && (
                 <div className="absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0">
                   <div className="absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45"></div>
-
-                  <div className="bg-white rounded-md">
-                    {/* Status Dropdown has been removed */}
-                  </div>
+                  <div className="bg-white rounded-md"></div>
                 </div>
               )}
             </div>
@@ -195,7 +189,6 @@ const BookingTable = ({ title }) => {
                 </TableCell>
               </TableRow>
             </TableHead>
-
             <TableBody className="text-nowrap">
               {loading ? (
                 <TableRow>
@@ -219,10 +212,7 @@ const BookingTable = ({ title }) => {
                         <div className="flex items-center gap-3">
                           <img
                             className="rounded-full"
-                            src={
-                              item?.avatar ||
-                              "/default-avatar.png"
-                            }
+                            src={item?.avatar || "/default-avatar.png"}
                             alt={item?.booking?.user?.name}
                             style={{ width: "40px", height: "40px" }}
                           />
@@ -255,11 +245,11 @@ const BookingTable = ({ title }) => {
                           >
                             <LuTrash2 className="text-xl" />
                           </button>
-                          <button className="text-[#475467] hover:text-blue-700 transform duration-300">
-                            <FaEye 
-                              className="text-xl" 
-                              onClick={() => handleOpen(item)}
-                            />
+                          <button
+                            className="text-[#475467] hover:text-blue-700 transform duration-300"
+                            onClick={() => handleOpen(item)}
+                          >
+                            <FaEye className="text-xl" />
                           </button>
                         </div>
                       </TableCell>
@@ -277,7 +267,6 @@ const BookingTable = ({ title }) => {
             </TableBody>
           </Table>
         </TableContainer>
-
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
@@ -288,7 +277,6 @@ const BookingTable = ({ title }) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -300,7 +288,7 @@ const BookingTable = ({ title }) => {
           backdrop: {
             timeout: 500,
             sx: {
-              backgroundColor: 'rgba(0, 0, 0, 0.45)',
+              backgroundColor: "rgba(0, 0, 0, 0.45)",
             },
           },
         }}
@@ -320,15 +308,16 @@ const BookingTable = ({ title }) => {
                 </span>
               </div>
             </div>
-
             <div className="p-6 space-y-6">
               <div className="text-center">
                 <div className="text-3xl font-bold text-black">
-                  {formatCurrency(selectedTransaction?.amount, selectedTransaction?.currency)}
+                  {formatCurrency(
+                    selectedTransaction?.amount,
+                    selectedTransaction?.currency
+                  )}
                 </div>
                 <div className="text-sm text-gray-600 mt-1">Total Amount</div>
               </div>
-
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <Package className="h-5 w-5 text-[#EB5B2A]" />
@@ -339,7 +328,6 @@ const BookingTable = ({ title }) => {
                     </div>
                   </div>
                 </div>
-
                 <div className="flex items-center space-x-3">
                   <User className="h-5 w-5 text-[#EB5B2A]" />
                   <div>
@@ -349,17 +337,16 @@ const BookingTable = ({ title }) => {
                     </div>
                   </div>
                 </div>
-
                 <div className="flex items-center space-x-3">
                   <Calendar className="h-5 w-5 text-[#EB5B2A]" />
                   <div>
                     <div className="text-sm text-gray-600">Date Issued</div>
                     <div className="text-black font-medium">
-                      {selectedTransaction?.created_at && formatDate(selectedTransaction.created_at)}
+                      {selectedTransaction?.created_at &&
+                        formatDate(selectedTransaction.created_at)}
                     </div>
                   </div>
                 </div>
-
                 <div className="flex items-center space-x-3">
                   <CreditCard className="h-5 w-5 text-[#EB5B2A]" />
                   <div>
@@ -371,7 +358,6 @@ const BookingTable = ({ title }) => {
                 </div>
               </div>
             </div>
-
             <div className="border-t border-gray-100 p-6 bg-gray-50">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600">Payment Status</span>
