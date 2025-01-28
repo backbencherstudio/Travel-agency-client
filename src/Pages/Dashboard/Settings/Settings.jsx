@@ -5,7 +5,7 @@ import Permission from '../../../Components/Dashboard/Settings/Permission'
 import Password from '../../../Components/Dashboard/Settings/Password'
 import { IoMdInformationCircleOutline } from 'react-icons/io'
 import { RxCrossCircled } from 'react-icons/rx'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { GoShieldLock } from 'react-icons/go'
 import { IoLockOpenOutline } from 'react-icons/io5'
 import { RiCoupon2Line, RiQuestionAnswerLine } from 'react-icons/ri'
@@ -14,6 +14,7 @@ import FaqAdded from '../Faq/FaqAdded'
 import Coupon from '../../../Components/Dashboard/Settings/Coupon/Coupon'
 import SocialCopyRight from '../../../Components/Dashboard/Settings/SocialCopyRight'
 import { MdCopyright } from 'react-icons/md'
+import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -24,24 +25,42 @@ const Settings = () => {
   const defaultTab = queryParams.get('tab') || 'Company Info'
   const [activeTab, setActiveTab] = useState(defaultTab)
 
+  const { user } = useContext(AuthContext);
+
   const menuItems = [
     {
       icon: <IoMdInformationCircleOutline className='text-xl' />,
       label: 'Company Info'
     },
-    { icon: <RxCrossCircled className='text-xl' />, label: 'Cancellation' },
-    { icon: <GoShieldLock className='text-lg' />, label: 'Permission' },
-    { icon: <IoLockOpenOutline className='text-lg' />, label: 'Password' },
-    { icon: <RiCoupon2Line  className='text-lg' />, label: 'Coupon' },
+    { 
+      icon: <RxCrossCircled className='text-xl' />, 
+      label: 'Cancellation', 
+      adminOnly: true 
+    },
+    { 
+      icon: <GoShieldLock className='text-lg' />, 
+      label: 'Permission', 
+      adminOnly: true 
+    },
+    { 
+      icon: <IoLockOpenOutline className='text-lg' />, 
+      label: 'Password' 
+    },
+    { 
+      icon: <RiCoupon2Line className='text-lg' />, 
+      label: 'Coupon' 
+    },
     {
       icon: <RiQuestionAnswerLine className='text-xl' />,
-      label: 'FAQ'
+      label: 'FAQ',
+      adminOnly: true
     },
     {
       icon: <MdCopyright className="text-xl" />, 
       label: 'Social & Copyright',
+      adminOnly: true
     },
-  ]
+  ].filter(item => !item.adminOnly || user?.type === 'admin')
 
   // Save active tab to localStorage and update the URL when it changes
   useEffect(() => {

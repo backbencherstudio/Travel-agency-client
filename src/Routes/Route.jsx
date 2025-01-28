@@ -91,6 +91,10 @@ export const router = createBrowserRouter([
     ]
   },
   {
+    path: 'become-a-vendor',
+    element: <Signup />
+  },
+  {
     path: 'signup',
     element: <Signup />
   },

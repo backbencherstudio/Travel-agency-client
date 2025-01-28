@@ -60,7 +60,7 @@ const Blogs = () => {
       <div className='bg-[#F0F4F9]'>
         <ParentComponent>
           {/* Featured Section */}
-          <Featured />
+          <Featured blogs={displayedBlogs} />
 
           {/* All Blogs Section */}
           {loading ? (

@@ -94,6 +94,38 @@ const Navbar = () => {
     }
   }
 
+  const handleLanguageChange = (lang) => {
+    console.log(lang)
+    // Map our language names to Google Translate codes
+    const languageMap = {
+      'English': 'en',
+      'Spanish': 'es',
+      'French': 'fr',
+      'German': 'de',
+      'Bangla': 'bn'
+    };
+    
+    const langCode = languageMap[lang];
+    if (langCode) {
+      // Get the Google Translate element
+      const googleTranslateElement = document.querySelector('#google_translate_element');
+      if (googleTranslateElement) {
+        // Find the select element within any iframes
+        const selectElement = googleTranslateElement.querySelector('select.goog-te-combo') || 
+                            document.querySelector('.goog-te-combo');
+        
+        if (selectElement) {
+          // Change the value and trigger the change event
+          selectElement.value = langCode;
+          selectElement.dispatchEvent(new Event('change'));
+        } else {
+          console.log('Translation dropdown not found');
+        }
+      }
+    }
+    setLanguageDropDown(false);
+  };
+
   return (
     <header className='z-10 bg-white nav-style'>
       <div className='mx-auto max-w-[1216px] px-4 xl:px-0 '>
@@ -217,26 +249,33 @@ const Navbar = () => {
                   </svg>
                 </button>
                 {languageDropDown && (
-                  <div className='absolute right-0 z-10 mt-2 w-56 rounded-md bg-white shadow-lg ring-1 ring-black/5'>
+                  <div className='absolute right-0 z-10 mt-2 w-36 rounded-md bg-white shadow-lg ring-1 ring-black/5'>
                     <div className='py-1'>
-                      <Link
-                        to='#'
-                        className='block px-4 py-2 text-sm text-gray-700'
+                      <button
+                        onClick={() => handleLanguageChange('English')}
+                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full'
                       >
                         English
-                      </Link>
-                      <Link
-                        to='#'
-                        className='block px-4 py-2 text-sm text-gray-700'
+                      </button>
+                      <button
+                        onClick={() => handleLanguageChange('Spanish')}
+                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full'
                       >
                         Spanish
-                      </Link>
-                      <Link
-                        to='#'
-                        className='block px-4 py-2 text-sm text-gray-700'
+                      </button>
+                      <button
+                        onClick={() => handleLanguageChange('French')}
+                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full'
                       >
                         French
-                      </Link>
+                      </button>
+                      <button
+                        onClick={() => handleLanguageChange('German')}
+                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full'
+                      >
+                        German
+                      </button>
+                      
                     </div>
                   </div>
                 )}
@@ -280,7 +319,7 @@ const Navbar = () => {
                         className={`bg-white p-6 absolute z-50 flex flex-col top-full -right-6 mt-3 gap-5 border rounded-lg shadow popup w-60`}
                       >
                         <div className='w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block'></div>
-                        {user?.type === 'admin' && (
+                        {user?.type === 'admin' || user?.type === 'vendor' && (
                           <Link
                             to='/dashboard'
                             className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
@@ -288,14 +327,12 @@ const Navbar = () => {
                             Dashboard
                           </Link>
                         )}
-                        {user?.type === 'user' && (
-                          <Link
-                            to='/booking-history'
-                            className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
-                          >
-                            Booking History
-                          </Link>
-                        )}
+                        <Link
+                          to='/booking-history'
+                          className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
+                        >
+                          Booking History
+                        </Link>
                         <Link
                           to='/profile'
                           className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
@@ -438,7 +475,7 @@ const Navbar = () => {
                     <div className='block px-6 py-3 text-center text-gray-800'>
                       {user?.name}
                     </div>
-                    {user?.type === 'admin' && (
+                    {user?.type === 'admin' || user?.type === 'vendor' && (
                       <Link
                         to='/dashboard'
                         className='block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md'

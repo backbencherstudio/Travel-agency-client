@@ -4,3 +4,30 @@
     /* background: var(--W, #FFF); */
     box-shadow: 0px 4px 35px 0px rgba(0, 102, 255, 0.08);
 }
+
+/* Hide Google Translate widget */
+.goog-te-banner-frame,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+
+/* Hide Google Translate top frame */
+.goog-te-gadget {
+  display: none !important;
+}
+
+/* Remove the top margin that Google Translate adds to the body */
+body {
+  top: 0 !important;
+  position: static !important;
+}
+
+/* Hide Google Translate popup */
+.skiptranslate,
+.goog-te-spinner-pos {
+  display: none !important;
+}
