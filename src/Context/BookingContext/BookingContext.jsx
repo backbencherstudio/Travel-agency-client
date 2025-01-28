@@ -2,6 +2,8 @@ import React, { createContext, useState, useContext } from 'react';
 
 // Create the context
 const BookingContext = createContext();
+// console.log('BookingContext', BookingContext);
+
 
 // Provider component
 export const BookingProvider = ({ children }) => {

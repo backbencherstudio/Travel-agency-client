@@ -25,12 +25,12 @@ const socket = io(import.meta.env.VITE_API_BASE_URL, {
 
 // Socket connection established
 socket.on("connect", () => {
-  console.log("Connected to server!");
+  // console.log("Connected to server!");
 });
 
 // Socket disconnected
 socket.on("disconnect", (reason) => {
-  console.log("Disconnected:", reason);
+  // console.log("Disconnected:", reason);
 });
 
 const ChatToggle = () => {
