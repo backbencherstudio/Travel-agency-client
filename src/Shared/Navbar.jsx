@@ -188,7 +188,7 @@ const Navbar = () => {
                   </NavLink>
                 </li>
 
-                <li>
+                {/* <li>
                   <NavLink
                     to='/reservations'
                     className={({ isActive }) =>
@@ -198,7 +198,7 @@ const Navbar = () => {
                     {' '}
                     Reservations{' '}
                   </NavLink>
-                </li>
+                </li> */}
 
                 <li>
                   <NavLink
@@ -319,7 +319,7 @@ const Navbar = () => {
                         className={`bg-white p-6 absolute z-50 flex flex-col top-full -right-6 mt-3 gap-5 border rounded-lg shadow popup w-60`}
                       >
                         <div className='w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block'></div>
-                        {user?.type === 'admin' || user?.type === 'vendor' && (
+                        {(user?.type === 'admin' || user?.type === 'vendor') && (
                           <Link
                             to='/dashboard'
                             className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
@@ -327,12 +327,14 @@ const Navbar = () => {
                             Dashboard
                           </Link>
                         )}
-                        <Link
-                          to='/booking-history'
-                          className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
+                        {user?.type === 'user' && (
+                          <Link
+                            to='/booking-history'
+                            className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
                         >
-                          Booking History
-                        </Link>
+                            Booking History
+                          </Link>
+                        )}
                         <Link
                           to='/profile'
                           className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
@@ -446,9 +448,10 @@ const Navbar = () => {
                   { name: 'Tours', to: '/tours' },
                   { name: 'Cruises', to: '/cruises' },
                   { name: 'Packages', to: '/packages' },
-                  { name: 'Reservations', to: '/reservations' },
+                  { name: 'Bookings', to: '/booking-history' },
+                  // { name: 'Reservations', to: '/reservations' },
                   { name: 'Blogs', to: '/blogs' }
-                ].map((item, index) => (
+                ].filter(item => item.name !== 'Bookings' || user?.type === 'user').map((item, index) => (
                   <li key={index}>
                     <NavLink
                       to={item.to}
@@ -475,7 +478,7 @@ const Navbar = () => {
                     <div className='block px-6 py-3 text-center text-gray-800'>
                       {user?.name}
                     </div>
-                    {user?.type === 'admin' || user?.type === 'vendor' && (
+                    {(user?.type === 'admin' || user?.type === 'vendor') && (
                       <Link
                         to='/dashboard'
                         className='block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md'
