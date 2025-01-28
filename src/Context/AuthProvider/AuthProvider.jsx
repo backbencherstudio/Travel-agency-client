@@ -104,6 +104,7 @@ const AuthProvider = ({ children }) => {
     };
 
     const userInfo = {
+        fetchUserInfo,
         user,
         loading,
         signup,

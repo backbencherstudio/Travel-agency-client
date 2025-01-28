@@ -10,6 +10,9 @@ import moment from 'moment/moment';
 import EmailVerifyOtp from '../ChangeEmail/EmailVerifyOtp';
 import EmailChangeApis from '../../Apis/EmailChangeApis';
 import Loading from '../../Shared/Loading';
+import Swal from 'sweetalert2';
+import AccountConvertApis from '../../Apis/clientApi/AccountConvertApis';
+import { useNavigate } from 'react-router-dom';
 
 const UserProfile = () => {
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
@@ -18,7 +21,8 @@ const UserProfile = () => {
   const [newEmail, setNewEmail] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [apiLoading, setApiapiLoading] = useState(false);
-  const { user, loading } = useContext(AuthContext);
+  const { user, loading, fetchUserInfo } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -44,9 +48,11 @@ const UserProfile = () => {
     const res = await AuthApis.update(form);
     if (res?.success) {
       setApiapiLoading(false);
-      const sendOtpRes = await EmailChangeApis.send({email: data?.email})
-      if (sendOtpRes?.success) {
-        setIsModalOpen(true);
+      if (data?.email !== user?.email) {
+        const sendOtpRes = await EmailChangeApis.send({email: data?.email})
+        if (sendOtpRes?.success) {
+          setIsModalOpen(true);
+        }
       }
     }
     // Handle form submission, e.g., send data to the server
@@ -63,6 +69,32 @@ const UserProfile = () => {
 
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
+  }
+
+  const handleVendorConvert = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You want to convert your account to vendor',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, convert it!',
+      cancelButtonText: 'Cancel'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const res = await AccountConvertApis.convertToVendor();
+        if (res?.success) {
+          fetchUserInfo();
+          Swal.fire({
+            title: 'Success',
+            text: 'Your account has been converted to vendor',
+            icon: 'success'
+          })
+          setTimeout(() => {
+            navigate('/dashboard')
+          }, 500)
+        }
+      }
+    })
   }
 
   console.log('imageFile', imageFile)
@@ -209,6 +241,14 @@ const UserProfile = () => {
                   {apiLoading ? 'apiLoading...' : 'Update Profile'}
                 </button>
               </div>
+              {user?.type !== 'vendor' && (
+                <div className='flex flex-col justify-center items-center gap-2 mt-8'>
+                  <p>Do you want to be a vendor?</p>
+                  <button onClick={handleVendorConvert} className='flex flex-row items-center gap-2 text-sm font-normal bg-orange-500 text-white px-4 py-2 rounded-md'>
+                    Convert your account to Vendor
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </form>

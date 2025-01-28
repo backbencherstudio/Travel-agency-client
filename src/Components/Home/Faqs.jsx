@@ -44,7 +44,7 @@ const Faqs = () => {
 
         <div className='w-full md:w-8/12'>
           <div className='grid gap-4 divide-gray-200'>
-            {/* {faqs.length > 0 ? (
+            {faqs.length > 0 ? (
               faqs.map((faq, index) => (
                 <div
                   key={faq.id}
@@ -120,7 +120,7 @@ const Faqs = () => {
               <p className='text-gray-500 text-center'>
                 No FAQs available at the moment.
               </p>
-            )} */}
+            )}
           </div>
         </div>
       </div>

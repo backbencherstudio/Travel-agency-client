@@ -27,8 +27,9 @@ const CardComponent = ({ blog }) => {
         <div className='relative flex flex-col group bg-white shadow-md hover:shadow-lg hover:border-orange-500 transform duration-300 border border-slate-200 rounded-xl h-full'>
           <div className='relative h-56 overflow-hidden text-white rounded-t-xl'>
             <img
-              src={blog?.blog_images[0]?.image_url || 'https://via.placeholder.com/300x200'}
-              alt={blog?.blog_images[0]?.image_url}
+              src={blog?.image}
+              // src={blog?.blog_images[0]?.image_url || 'https://via.placeholder.com/300x200'}
+              // alt={blog?.blog_images[0]?.image_url}
               className='object-cover w-full h-full'
             />
             <div className='absolute top-0 left-0 bg-[#F5F7F9] text-[#323B47] px-3 pb-1 m-4 rounded-full text-xs font-bold'>

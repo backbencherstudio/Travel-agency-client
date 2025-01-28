@@ -23,7 +23,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false)
   const [showCloseIcon, setShowCloseIcon] = useState(false)
   const [isSubmenuOpen, setSubmenuOpen] = useState(false)
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   useEffect(() => {
     localStorage.setItem('tab', selectedTab)
@@ -153,6 +153,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
               >
                 <span>Add Package</span>
               </button>
+              {user?.type === 'admin' && (
               <button
                 onClick={() =>
                   handleNavigation(
@@ -168,6 +169,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
               >
                 <span>Package Categories & Tags</span>
               </button>
+              )}
               <button
                 onClick={() =>
                   handleNavigation(
@@ -183,9 +185,11 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
               >
                 <span>Package Destinations & Policies</span>
               </button>
-              <button
-                onClick={() =>
-                  handleNavigation(
+              {user?.type === 'admin' && (
+                <>
+                  <button
+                    onClick={() =>
+                      handleNavigation(
                     'packageExtraService',
                     'package-extra-service'
                   )
@@ -199,25 +203,27 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 <span>Package Extra Service</span>
               </button>
               <button
-                onClick={() => handleNavigation('language', 'language')}
+              onClick={() => handleNavigation('language', 'language')}
                 className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${
                   selectedTab === 'language'
-                    ? 'bg-[#eb5b2a] text-white font-semibold'
-                    : 'hover:bg-[#0d3055]'
-                }`}
-              >
+                  ? 'bg-[#eb5b2a] text-white font-semibold'
+                  : 'hover:bg-[#0d3055]'
+                  }`}
+                  >
                 <span>Package Language</span>
               </button>
               <button
                 onClick={() => handleNavigation('packageDisallowTraveller', 'package-disallow-traveller')}
                 className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${
                   selectedTab === 'packageDisallowTraveller'
-                    ? 'bg-[#eb5b2a] text-white font-semibold'
-                    : 'hover:bg-[#0d3055]'
-                }`}
-              >
+                  ? 'bg-[#eb5b2a] text-white font-semibold'
+                  : 'hover:bg-[#0d3055]'
+                  }`}
+                  >
                 <span>Disallow Traveller</span>
               </button>
+              </>
+              )}
             </div>
           )}
           <button
@@ -242,6 +248,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             <LuBookmarkCheck className='h-5 w-5' />
             <span>Bookings</span>
           </button>
+          {user?.type === 'admin' && (
           <button
             onClick={() => handleNavigation('Vendor', 'vendor')}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -251,8 +258,9 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             }`}
           >
             <FiCompass className='h-5 w-5' />
-            <span>Vendor</span>
-          </button>
+              <span>Vendor</span>
+            </button>
+          )}
           <button
             onClick={() => handleNavigation('Payment', 'payment')}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -291,6 +299,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             <span>Blog</span>
           </button>
 
+          {user?.type === 'admin' && (
           <button
             onClick={() => handleNavigation('Chat', 'chat')}
             className={`flex items-center space-x-2 p-2 rounded ${
@@ -302,6 +311,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             <LuMessageSquareText className='h-5 w-5' />
             <span>Messages</span>
           </button>
+          )}
 
           <button
             onClick={() => handleNavigation('Settings', 'settings')}

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import image from "../../assets/img/form-img/signup-img.png";
 import logo from '../../assets/img/form-img/logo.png';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthApis from "../../Apis/AuthApis";
 import { toast } from "react-toastify";
 
 const Signup = () => {
-  const { register, handleSubmit, formState: { errors, isLoading } } = useForm();
+  const location = useLocation();
+  const isVendor = location.pathname === '/become-a-vendor';
+  const { register, handleSubmit, formState: { errors, isLoading } } = useForm({defaultValues: {type: isVendor ? 'vendor' : ''}});
   const [resMessage, setResMessage] = useState();
   const navigate = useNavigate();
   
@@ -39,7 +41,7 @@ const Signup = () => {
           </div>
           <div className="w-full max-w-xl mx-auto  flex flex-col gap-8">
             <div className="flex flex-col gap-3 mt-8">
-              <h2 className="text-[32px] font-bold text-[#101828]">Create New Account</h2>
+              <h2 className="text-[32px] font-bold text-[#101828]">Create { isVendor ? 'Vendor' : 'New'} Account</h2>
               <p className="text-[#475467] text-base">Please enter details</p>
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
