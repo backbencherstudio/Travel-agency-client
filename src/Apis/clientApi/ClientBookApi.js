@@ -224,12 +224,42 @@ export const deleteReview = async (packageId, reviewId) => {
     const response = await axiosClient.delete(
       `/api/package/${packageId}/review/${reviewId}`
     )
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      console.error('Error response from server:', error.response.data)
+      if (error.response.status === 400) {
+        console.error('Bad Request. Check the request parameters.')
+      }
+      if (error.response.status === 500) {
+        console.error('Server error. Try again later.')
+      }
+    } else if (error.request) {
+      console.error('No response received:', error.request)
+    } else {
+      console.error('Error occurred during the request:', error.message)
+    }
+    throw error
+  }
+}
+
+
+// Function to update or soft-delete a comment
+export const updateComment = async (packageId, reviewId, data) => {
+  try {
+    const response = await axiosClient.patch(
+      `/api/package/${packageId}/review/${reviewId}`,
+      data
+    )
     return response.data 
   } catch (error) {
     if (error.response) {
       console.error('Error response from server:', error.response.data)
       if (error.response.status === 400) {
         console.error('Bad Request. Check the request parameters.')
+      }
+      if (error.response.status === 404) {
+        console.error('Review not found or invalid package ID.')
       }
       if (error.response.status === 500) {
         console.error('Server error. Try again later.')
