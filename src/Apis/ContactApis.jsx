@@ -30,5 +30,4 @@ ContactApis.save = async (data) => {
     return res;
 }
 
-
 export default ContactApis;

@@ -40,7 +40,7 @@ const AddPackage = () => {
   const [selectedDestinations, setSelectedDestinations] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedTravellerTypes, setSelectedTravellerTypes] = useState([]);
-  console.log('selectedTravellerTypes', selectedTravellerTypes)
+  console.log('travellerTypes', travellerTypes)
   // const { id } = useParams();
   // const editId = id;
   console.log("selectedDestinations", selectedDestinations);
@@ -290,7 +290,7 @@ const AddPackage = () => {
       }  else if (key === "languages") {
         form.append("languages", JSON.stringify(selectedLanguages));
       } else if (key === "travellerTypes") {
-        form.append("traveller_types", JSON.stringify(travellerTypes));
+        form.append("traveller_types", JSON.stringify(selectedTravellerTypes));
       } else {
         form.append(key, formDataObject[key]);
       }

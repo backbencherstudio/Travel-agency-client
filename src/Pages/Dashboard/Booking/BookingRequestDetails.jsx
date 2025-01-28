@@ -1,31 +1,39 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { booking } from '../../../data/booking'
+import { useQuery } from '@tanstack/react-query'
+import BookManageApis from '../../../Apis/BookManageApis'
+import { toast } from 'react-toastify'
+import moment from 'moment'
 
 const BookingRequestDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [bookingDetails, setBookingDetails] = useState(null)
   const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    const fetchBookingDetails = () => {
-      const requestDetails = booking.find(
-        item => item.bookingId.toString() === id
-      )
-      setTimeout(() => {
-        setBookingDetails(requestDetails)
-        setLoading(false)
-      }, 1000)
+
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ['booking-request-details'],
+    queryFn: () => BookManageApis.getOne(id)
+  }); 
+
+  console.log(data);
+
+  const handleUpdateStatus = async (status) => {
+    const res = await BookManageApis.update(id, { status: status })
+    console.log('res', res)
+    if(res.success){
+      toast.success(res.message);
+      navigate(-1);
+      refetch();
     }
+  }
 
-    fetchBookingDetails()
-  }, [id])
-
-  if (loading) {
+  if (isLoading) {
     return <div className='text-center mt-4'>Loading...</div>
   }
 
-  if (!bookingDetails) {
+  if (!data) {
     return (
       <div className='text-center text-red-500 mt-4'>
         Booking request not found!
@@ -45,22 +53,22 @@ const BookingRequestDetails = () => {
           <div className='grid grid-cols-2 gap-4'>
             <p className='text-gray-600 text-sm'>Traveler's Name:</p>
             <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.customerName || 'N/A'}
+              {data?.data?.user?.name || 'N/A'}
             </p>
 
             <p className='text-gray-600 text-sm'>Email:</p>
             <p className='font-medium text-[#111827] text-[14px] break-words max-w-full overflow-hidden overflow-ellipsis whitespace-normal'>
-              {bookingDetails.email || 'N/A'}
+              {data?.data?.user?.email || 'N/A'}
             </p>
 
             <p className='text-gray-600 text-sm'>Booking Date:</p>
             <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.date || 'N/A'}
+              {moment(data?.data?.created_at).format('DD MMMM YYYY') || 'N/A'}
             </p>
 
             <p className='text-gray-600 text-sm'>Phone:</p>
             <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.phone || 'N/A'}
+              {data?.data?.user?.phone || 'N/A'}
             </p>
           </div>
         </div>
@@ -69,39 +77,58 @@ const BookingRequestDetails = () => {
         <div className='w-full'>
           <h3 className='font-semibold text-lg mb-6'>Package Information</h3>
           <div className='grid grid-cols-2 gap-4'>
-            <p className='text-gray-600 text-sm'>Package:</p>
-            <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.packageInformation?.[0]?.packageName || 'N/A'}
-            </p>
+            <p className='text-gray-600 text-sm'>Package Name:</p>
+            <Link 
+              to={`/dashboard/packages/${data?.data?.booking_items?.[0]?.package?.id}`} 
+              target="_blank"
+              rel="noopener noreferrer"
+              className='font-medium text-[#111827] text-[14px] hover:text-blue-600 flex items-center gap-1'
+            >
+              {data?.data?.booking_items?.[0]?.package?.name || 'N/A'}
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="h-[14px] w-[14px]" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                />
+              </svg>
+            </Link>
 
-            <p className='text-gray-600 text-sm'>Tour Category:</p>
+            <p className='text-gray-600 text-sm'>Package Price:</p>
             <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.packageInformation?.[0]?.tourCategory || 'N/A'}
-            </p>
-
-            <p className='text-gray-600 text-sm'>Geofencing:</p>
-            <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.packageInformation?.[0]?.geofencing || 'N/A'}
-            </p>
-
-            <p className='text-gray-600 text-sm'>Package Duration (Days):</p>
-            <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.packageInformation?.[0]?.packageDuration || 'N/A'}
+              ${data?.data?.booking_items?.[0]?.package?.price || 'N/A'}
             </p>
 
             <p className='text-gray-600 text-sm'>Extra Service:</p>
             <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.packageInformation?.[0]?.extraServices || 'N/A'}
+              {data?.data?.booking_extra_services?.map((item) => `${item?.extra_service?.name} ($${item.extra_service.price})`).join(', ') || 'N/A'}
             </p>
+
+            {/* <p className='text-gray-600 text-sm'>Extra Service Price:</p>
+            <p className='font-medium text-[#111827] text-[14px]'>
+              ${data?.data?.booking_extra_services?.[0]?.extra_service?.price || 'N/A'}
+            </p> */}
 
             <p className='text-gray-600 text-sm'>Total Amount:</p>
             <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.packageInformation?.[0]?.totalAmount || 'N/A'}
+              ${data?.data?.total_amount || 'N/A'}
             </p>
 
-            <p className='text-gray-600 text-sm'>Total Status:</p>
-            <p className='font-medium text-[#111827] text-[14px]'>
-              {bookingDetails.packageInformation?.[0]?.totalStatus || 'N/A'}
+            <p className='text-gray-600 text-sm'>Payment Status:</p>
+            <p className='font-medium text-[#111827] text-[14px] capitalize'>
+              {data?.data?.payment_status || 'N/A'}
+            </p>
+
+            <p className='text-gray-600 text-sm'>Booking Status:</p>
+            <p className='font-medium text-[#111827] text-[14px] capitalize'>
+              {data?.data?.status || 'N/A'}
             </p>
           </div>
         </div>
@@ -109,10 +136,10 @@ const BookingRequestDetails = () => {
 
       {/* Action Buttons */}
       <div className='mt-8 flex flex-col sm:flex-row justify-center gap-4'>
-        <button className='bg-[#4CAF50] hover:bg-green-600 text-[14px] transform duration-300 text-white font-medium py-2 px-5 rounded shadow'>
+        <button onClick={() => handleUpdateStatus('approved')} className='bg-[#4CAF50] hover:bg-green-600 text-[14px] transform duration-300 text-white font-medium py-2 px-5 rounded shadow'>
           Approve
         </button>
-        <button className='bg-[#FF5252] hover:bg-red-600 text-[14px] transform duration-300 text-white font-medium py-2 px-5 rounded shadow'>
+        <button onClick={() => handleUpdateStatus('rejected')} className='bg-[#FF5252] hover:bg-red-600 text-[14px] transform duration-300 text-white font-medium py-2 px-5 rounded shadow'>
           Reject
         </button>
         <button

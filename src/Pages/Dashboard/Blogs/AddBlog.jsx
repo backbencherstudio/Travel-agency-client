@@ -28,7 +28,8 @@ const AddBlog = () => {
   } = useForm({
     defaultValues: {
       title: '',
-      body: ''
+      body: '',
+      description: ''
     }
   })
 
@@ -49,12 +50,13 @@ const AddBlog = () => {
 
         if (response?.data) {
           setBlogData(response.data)
-          const { title, body: blogBody, blog_images } = response.data
+          const { title, body: blogBody, blog_images, description } = response.data
 
           // Set form data
           reset({
             title: title || '',
-            body: blogBody || ''
+            body: blogBody || '',
+            description: description || ''
           })
 
           setBody(blogBody || '')
@@ -142,6 +144,7 @@ const AddBlog = () => {
       const reqData = new FormData()
       reqData.append('title', formData.title)
       reqData.append('body', formData.body)
+      reqData.append('description', formData.description)
 
       // Handle images - separate new and existing images
       const newImages = images.filter(img => img.isNew)
@@ -175,7 +178,7 @@ const AddBlog = () => {
         }
 
         if (!id) {
-          reset({ title: '', body: '' })
+          reset({ title: '', body: '', description: '' })
           setBody('')
           setImages([])
           clearErrors()
@@ -191,7 +194,7 @@ const AddBlog = () => {
 
   // Form reset handler
   const handleFormReset = () => {
-    reset({ title: '', body: '' })
+    reset({ title: '', body: '', description: '' })
     setBody('')
     setImages([])
     clearErrors()
@@ -245,7 +248,17 @@ const AddBlog = () => {
             <span className='text-red-500 text-sm'>{errors.title.message}</span>
           )}
         </div>
-
+        {/* Summary */}
+        <div className='mt-6'>
+          <label className='block mb-2 font-medium'>Description</label>
+          <textarea
+            type='text'
+            {...register('description')}
+            placeholder='Enter blog description'
+            className={`w-full p-2 border rounded-md focus:outline-none focus:border-orange-400 
+              ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+          />
+        </div>
         {/* Image Upload */}
         <div className='mt-6'>
           <h2 className='block mb-2 font-medium'>Upload Images</h2>

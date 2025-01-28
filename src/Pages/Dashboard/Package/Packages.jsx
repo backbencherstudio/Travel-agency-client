@@ -13,6 +13,8 @@ const Packages = () => {
     budget: true,
     status: true,
     action: true,
+    approval: true,
+    created_at: true,
   });
 
   const { isLoading, isError, data = [], error, refetch } = useQuery({

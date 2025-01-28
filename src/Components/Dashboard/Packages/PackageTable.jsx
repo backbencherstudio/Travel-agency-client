@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   Paper,
   TablePagination,
 } from "@mui/material";
-import { FaRegTrashAlt, FaSearch } from "react-icons/fa";
+import { FaCheck, FaRegTrashAlt, FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FiEdit3 } from "react-icons/fi";
 import { MdDeleteOutline, MdEdit } from "react-icons/md";
@@ -20,8 +20,12 @@ import { BsThreeDots } from "react-icons/bs";
 import noPreview from '../../../assets/dashboard/no-preview.png'
 import axios from "axios";
 import axiosClient from "../../../axiosClient";
+import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
+import Swal from "sweetalert2";
+import PackageApis from "../../../Apis/PackageApis";
 
 const PackageTable = ({ tableType = "", title, data, columns, refetch }) => {
+    const { user } = useContext(AuthContext);
     const [searchQuery, setSearchQuery] = useState("");
     const [isOpenAction, setIsOpenAction] = useState(null);
     const [showTab, setShowTab] = useState('all');
@@ -72,6 +76,59 @@ const PackageTable = ({ tableType = "", title, data, columns, refetch }) => {
       document.addEventListener("mousedown", handleClickOutside);
       return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Approval and reject
+  const handleApproveClick = async id => {
+    const result = await Swal.fire({
+      title: 'Approve this package?',
+      text: 'Are you sure you want to approve this package?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, approve',
+      cancelButtonText: 'Cancel'
+    })
+
+    if (result.isConfirmed) {
+      const response = await PackageApis.approvePackage(id)
+      if (response.errors) {
+        await Swal.fire('Error', response.message, 'error')
+      } else {
+        await Swal.fire('Approved!', 'The package has been approved.', 'success')
+        refetch();
+      }
+    }
+  }
+
+  const handleRejectClick = async id => {
+    const result = await Swal.fire({
+      title: 'Reject this package?',
+      text: 'Are you sure you want to reject this package?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, reject',
+      cancelButtonText: 'Cancel'
+    })
+
+    if (result.isConfirmed) {
+      const response = await PackageApis.rejectPackage(id)
+      if (response.errors) {
+        await Swal.fire('Error', response.message, 'error')
+      } else {
+        await Swal.fire('Rejected!', 'The package has been rejected.', 'success')
+        refetch();
+      }
+    }
+  }
+
+  const handleActiveClick = async (id, value) => {
+    const response = await PackageApis.activePackage(id, {status: value})
+    if (response.errors) {
+      await Swal.fire('Error', response.message, 'error')
+    } else {
+      await Swal.fire('Active!', 'The package has been active.', 'success')
+      refetch();
+    }
+  }
 
   const handlePackageDelete = async (e, id) => {
     e.preventDefault();
@@ -156,6 +213,7 @@ const PackageTable = ({ tableType = "", title, data, columns, refetch }) => {
                   <TableCell>Details</TableCell>
                   <TableCell>Budget</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Approval</TableCell>
                   <TableCell>Action</TableCell>
                 </TableRow>
               </TableHead>
@@ -234,6 +292,39 @@ const PackageTable = ({ tableType = "", title, data, columns, refetch }) => {
                         )}
                         </p>
                       </TableCell>}
+                        <TableCell style={{ minWidth: '200px' }}>
+                            <>
+                              <p className='truncate text-[#475467]'>
+                                {item.approved_at === null ? (
+                                  <span
+                                    className='bg-[#FEF3F2] border text-[#B42318] text-[13px] border-[#FECDCA] px-2 py-1 rounded-full'
+                                    style={{
+                                      height: '30px',
+                                      width: '100px',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    Reject
+                                  </span>
+                                ) : (
+                                  <span
+                                    className='bg-[#ECFDF3] border-[#ABEFC6] border text-[13px] text-[#067647] px-2 py-1 rounded-full'
+                                    style={{
+                                      height: '30px',
+                                      width: '100px',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center'
+                                    }}
+                                  >
+                                    Approved
+                                  </span>
+                                )}
+                              </p>
+                            </>
+                        </TableCell>
                       {columns?.action && (
                         <TableCell>
                           <div className="relative">
@@ -248,11 +339,43 @@ const PackageTable = ({ tableType = "", title, data, columns, refetch }) => {
                                   ref && actionRefs.current.set(item.id, ref)
                                 }>
                                   <div className="w-4 h-4 bg-white rotate-45 absolute -top-[7px] right-[45px] hidden xl:block shadow-2xl"></div>
+                                  {user?.type === 'admin' && (
+                                    <>
+                                    <button onClick={() => handleActiveClick(item.id, 1)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                          {/* <FaCheck className="mt-1" /> */}
+                                          Active
+                                      </button>
+                                      <button onClick={() => handleActiveClick(item.id, 0)} className="flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                          {/* <RxCross2 className="text-xl" /> */}
+                                          Inactive
+                                      </button>
+                                    <button onClick={() => handleApproveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                      <FaCheck className="mt-1" />
+                                      Approve
+                                  </button>
+                                  <button onClick={() => handleRejectClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                    <RxCross2 className="text-xl" />
+                                    Reject
+                                  </button>
+                                    </>
+                                  )}
+                                  {user?.id === item?.user?.id && (
+                                    <>
+                                      <button onClick={() => handleActiveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                        <FaCheck className="mt-1" />
+                                        Active
+                                    </button>
+                                    <button onClick={() => handleInactiveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                        <RxCross2 className="text-xl" />
+                                        Inactive
+                                    </button>
+                                    </>
+                                  )}
                                   <Link to={`/dashboard/edit-package/${item?.id}`} className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
                                     <MdEdit className="text-2xl" /> 
                                     Edit Package Details
                                   </Link>
-                                  <button onClick={(e) => handlePackageDelete(e, item.id)} className="flex item-center gap-3 p-3 hover:bg-[#EB5B2A] rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                  <button onClick={(e) => handlePackageDelete(e, item.id)} className="flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
                                     <FaRegTrashAlt className="text-xl" />
                                       Delete Forever
                                   </button>
