@@ -288,12 +288,14 @@ const Navbar = () => {
                             Dashboard
                           </Link>
                         )}
-                        <Link
-                          to='/booking-history'
-                          className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
-                        >
-                          Booking History
-                        </Link>
+                        {user?.type === 'user' && (
+                          <Link
+                            to='/booking-history'
+                            className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
+                          >
+                            Booking History
+                          </Link>
+                        )}
                         <Link
                           to='/profile'
                           className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'

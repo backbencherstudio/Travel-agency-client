@@ -89,7 +89,7 @@ const PaymentMethod = ({ onCardDetailsChange, onPaymentMethodChange }) => {
         </div> */}
 
         {/* Cash on Delivery */}
-        <div
+        {/* <div
           className={`p-4 border rounded-lg cursor-pointer ${
             selectedMethod === 'cod' ? 'border-[#EB5B2A]' : 'border-gray-200'
           }`}
@@ -104,7 +104,7 @@ const PaymentMethod = ({ onCardDetailsChange, onPaymentMethodChange }) => {
             />
             <span className='font-medium'>Cash on Delivery</span>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )
