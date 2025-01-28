@@ -17,6 +17,7 @@ const BookingManagement = () => {
     queryKey: ['booking-management'],
     queryFn: BookManageApis.get
   });
+  // console.log('booking data', data);
 
 
   return (

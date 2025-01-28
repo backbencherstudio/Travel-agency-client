@@ -31,7 +31,7 @@ const Chart = ({ title, data, timeInterval, setTimeInterval }) => {
   };
 
   const filteredData = getFilteredData();
-  console.log(filteredData); // Debugging to check the filtered data
+  // console.log(filteredData); // Debugging to check the filtered data
 
   return (
     <div className="border rounded-xl p-4 my-4 bg-white">
