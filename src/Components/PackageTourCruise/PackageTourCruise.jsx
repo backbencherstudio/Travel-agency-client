@@ -319,7 +319,7 @@ function PackageTourCruise() {
         <div className='max-w-[1200px] mx-auto'>
             <div className='px-4 xl:px-0 py-10 xl:py-20 flex items-start justify-start lg:gap-6 flex-col lg:flex-row'>
                 {/* Filter Section */}
-                <div className='p-6 lg:max-w-[300px] mb-6 lg:mb-0 bg-white  rounded-xl shadow-md  flex flex-col  w-full gap-3'>
+                <div className='p-6 sticky top-10 lg:max-w-[300px] mb-6 lg:mb-0 bg-white  rounded-xl shadow-md  flex flex-col  w-full gap-3'>
                     {/* Search Input */}
                     <div className='flex gap-2 border items-center py-2 px-5 rounded-md'>
                         <CiSearch className='text-3xl' />
