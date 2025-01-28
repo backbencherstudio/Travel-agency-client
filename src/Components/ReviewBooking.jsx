@@ -13,7 +13,7 @@ import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 
 const ReviewBooking = () => {
-  const { id } = useParams()
+  const { id } = useParams()   
   const [bookingData, setBookingData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -22,21 +22,21 @@ const ReviewBooking = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user } = useContext(AuthContext)
 
-  useEffect(() => {
-    const fetchBookingData = async () => {
-      try {
-        setLoading(true)
-        const data = await getBookingById(id)
-        setBookingData(data)
-        setReviews(data.reviews || [])
-      } catch (err) {
-        console.error('Error fetching booking data:', err)
-        setError('Failed to fetch booking details. Please try again.')
-      } finally {
-        setLoading(false)
-      }
+  const fetchBookingData = async () => {
+    try {
+      setLoading(true)
+      const data = await getBookingById(id)
+      setBookingData(data)
+      setReviews(data.reviews || [])
+    } catch (err) {
+      console.error('Error fetching booking data:', err)
+      setError('Failed to fetch booking details. Please try again.')
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchBookingData()
   }, [id])
 
@@ -50,6 +50,8 @@ const ReviewBooking = () => {
     setNewReview(prev => ({ ...prev, [name]: value }))
   }
 
+
+  // Submit Review Functionality
   const handleReviewSubmit = async () => {
     if (!newReview.rating_value || !newReview.comment.trim()) {
       toast.error('Please provide both rating and comment')
@@ -67,33 +69,14 @@ const ReviewBooking = () => {
     try {
       const response = await submitReview(packageId, newReview)
       if (response.success) {
-        // Add the new review to bookingData
-        const updatedBookingData = { ...bookingData }
-        const newReviewData = {
-          ...response.data,
-          id: Date.now(),
-          user_id: user.id,
-          rating_value: newReview.rating_value,
-          comment: newReview.comment,
-          updated_at: new Date().toISOString()
-        }
-
-        if (!updatedBookingData.data.booking_items[0].package.reviews) {
-          updatedBookingData.data.booking_items[0].package.reviews = []
-        }
-
-        updatedBookingData.data.booking_items[0].package.reviews.push(
-          newReviewData
-        )
-        setBookingData(updatedBookingData)
-
+        // Fetch updated data after submitting review
+        await fetchBookingData()
         setNewReview({ rating_value: 0, comment: '' })
-        toast.success('Review submitted successfully')
+        toast.success(response.message || 'Review submitted successfully')
       } else {
         toast.error(response.message || 'Failed to submit review')
       }
     } catch (error) {
-      console.error('Error submitting review:', error)
       if (error.response?.data?.message === 'Package not found') {
         toast.error(
           'Package not found. Please check the package ID and try again.'
@@ -113,6 +96,11 @@ const ReviewBooking = () => {
     bookingData?.data?.booking_items?.[0]?.package?.reviews?.some(
       review => review.user_id === user.id
     )
+
+  // Get user's review if exists
+  const userReview = bookingData?.data?.booking_items?.[0]?.package?.reviews?.find(
+    review => review.user_id === user.id
+  )
 
   // Delete Review Functionality
   const handleDeleteReview = async reviewId => {
@@ -142,18 +130,8 @@ const ReviewBooking = () => {
       try {
         const response = await deleteReview(packageId, reviewId)
         if (response.success) {
-          // Update the reviews list by removing the deleted review
-          const updatedReviews = reviews.filter(
-            review => review.id !== reviewId
-          )
-          setReviews(updatedReviews)
-
-          // Update the booking data reviews
-          const updatedBookingData = { ...bookingData }
-          updatedBookingData.data.booking_items[0].package.reviews =
-            updatedReviews
-          setBookingData(updatedBookingData)
-
+          // Fetch updated data after deleting review
+          await fetchBookingData()
           Swal.fire('Deleted!', 'Your review has been deleted.', 'success')
         } else {
           Swal.fire(
@@ -268,7 +246,10 @@ const ReviewBooking = () => {
             <label className='block text-gray-600 mb-2'>Your Rating:</label>
             <div className='flex items-center space-x-2'>
               {[1, 2, 3, 4, 5].map(num => (
-                <FaStar key={num} className={`text-2xl text-yellow-500`} />
+                <FaStar 
+                  key={num} 
+                  className={`text-2xl ${num <= userReview.rating_value ? 'text-yellow-500' : 'text-gray-300'}`} 
+                />
               ))}
             </div>
           </div>
@@ -297,7 +278,7 @@ const ReviewBooking = () => {
           <textarea
             id='comment'
             name='comment'
-            value={newReview.comment}
+            value={hasUserReviewed ? userReview.comment : newReview.comment}
             onChange={handleInputChange}
             rows='4'
             className='w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:border-blue-500'
@@ -375,7 +356,7 @@ const ReviewBooking = () => {
                 </div>
 
                 {/* Comment */}
-                <p className='text-gray-700'>
+                <p className='text-gray-700 whitespace-pre-wrap break-words'>
                   {review.comment || 'No comment provided.'}
                 </p>
               </div>
