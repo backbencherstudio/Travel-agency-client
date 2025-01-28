@@ -243,7 +243,7 @@ export const deleteReview = async (packageId, reviewId) => {
   }
 }
 
-// update comment data
+
 // Function to update or soft-delete a comment
 export const updateComment = async (packageId, reviewId, data) => {
   try {

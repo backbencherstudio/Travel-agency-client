@@ -1022,15 +1022,15 @@ function PackageTourCruise() {
                 (
                     <div className='w-full'><Loading /></div>
                 ) : (
-                    <div className='animate-from-middle'>
+                    <div className='animate-from-middle w-full lg:w-10/12'>
                         {/* Tour Display Section */}
                         <div className=''>
                             {error && <div className="text-red-500">{error}</div>}
                             {isCruiseRoute ? (
                                 <div className='flex flex-col gap-6'>
-                                    {packages.map((cruise) => (
+                                    {/* {packages.map((cruise) => (
                                         <CruiseCard key={cruise.id} cruise={cruise} />
-                                    ))}
+                                    ))} */}
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
