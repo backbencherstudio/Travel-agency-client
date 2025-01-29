@@ -9,6 +9,7 @@ const Footer = () => {
   const [links, setLinks] = useState([]);
   const contentRefs = useRef([]);
   const { user } = useContext(AuthContext);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -22,6 +23,10 @@ const Footer = () => {
 
     fetchLinks();
   }, []);
+
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
 
   return (
     <div className="max-w-[1216px] px-4 lg:px-6 xl:px-0 md:px-8 mx-auto text-white">
@@ -71,16 +76,16 @@ const Footer = () => {
         <div className="flex flex-col gap-6">
           <div className="text-base font-bold">Quick Links</div>
           <div className="flex flex-col gap-3">
-            <Link to="/" className="text-base">
+            <Link to="/" onClick={handleLinkClick} className="text-base hover:text-orange-500">
               Home
             </Link>
-            <Link className="text-base">Tours</Link>
-            <Link className="text-base">Cruises</Link>
-            <Link className="text-base">Packages</Link>
-            <Link className="text-base">Reservations</Link>
-            <Link className="text-base">Blogs</Link>
-            <Link className="text-base">About</Link>
-            <Link className="text-base">Contact Us</Link>
+            <Link to="/tours" onClick={handleLinkClick} className="text-base hover:text-orange-500">Tours</Link>
+            <Link to="/cruises" onClick={handleLinkClick} className="text-base hover:text-orange-500">Cruises</Link>
+            <Link to="/packages" onClick={handleLinkClick} className="text-base hover:text-orange-500">Packages</Link>
+            <Link to="/reservations" onClick={handleLinkClick} className="text-base hover:text-orange-500">Reservations</Link>
+            <Link to="/blogs" onClick={handleLinkClick} className="text-base hover:text-orange-500">Blogs</Link>
+            {/* <Link to="/about" onClick={handleLinkClick} className="text-base hover:text-orange-500">About</Link> */}
+            <Link to="/contacts" onClick={handleLinkClick} className="text-base hover:text-orange-500">Contact Us</Link>
           </div>
         </div>
         {/* contact */}

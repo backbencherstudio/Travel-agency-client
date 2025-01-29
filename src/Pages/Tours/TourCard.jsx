@@ -2,8 +2,9 @@ import React from 'react'
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 
-function TourCard ({ tour }) {
+function TourCard ({ tour, isPackageRoute }) {
   const navigate = useNavigate()
+  console.log("isPackageRoute", isPackageRoute)
   // Function to render stars based on rating
   const renderStars = rating => {
     const stars = []
@@ -38,7 +39,11 @@ function TourCard ({ tour }) {
   )
 
   const handleBookNow = () => {
-    navigate(`/tours/${tour?.id}`)
+    if (isPackageRoute) {
+      navigate(`/packages/${tour?.id}`)
+    } else {
+      navigate(`/tours/${tour?.id}`)
+    }
   }
 
   return (

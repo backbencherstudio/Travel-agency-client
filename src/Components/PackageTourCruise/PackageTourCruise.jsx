@@ -1035,7 +1035,7 @@ function PackageTourCruise() {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                                     {packages.map((tour) => (
-                                        <TourCard key={tour.id} tour={tour} />
+                                        <TourCard key={tour.id} tour={tour} isPackageRoute={isPackageRoute} />
                                     ))}
                                 </div>
                             )}
