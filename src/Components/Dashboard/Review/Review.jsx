@@ -1,5 +1,5 @@
 // Review.js
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { FaSearch, FaEye } from "react-icons/fa";
 import { LuTrash2 } from "react-icons/lu";
 import { MdKeyboardArrowDown } from "react-icons/md";
@@ -12,9 +12,12 @@ import ReviewApis from "../../../Apis/ReviewApis";
 import { format } from 'date-fns';
 import { Package, User, Calendar } from 'lucide-react';
 import { Helmet } from 'react-helmet-async'
+import debounce from 'lodash/debounce';
+
 const Review = ({ title }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [reviews, setReviews] = useState([]);
+  const [filteredReviews, setFilteredReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -23,7 +26,26 @@ const Review = ({ title }) => {
   // Modal states
   const [selectedReview, setSelectedReview] = useState(null);
   const [open, setOpen] = useState(false);
-  ``
+
+  // Create debounced search function
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((searchValue, reviewsList) => {
+        if (!searchValue.trim()) {
+          setFilteredReviews(reviewsList);
+          return;
+        }
+        const filtered = reviewsList.filter((item) =>
+          item?.package?.name?.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        setFilteredReviews(filtered);
+        // Update URL with search query
+        const searchParams = new URLSearchParams(window.location.search);
+        searchParams.set('search', searchValue);
+        window.history.pushState(null, '', `?${searchParams.toString()}`);
+      }, 500),
+    []
+  );
 
   const fetchReviews = async () => {
     try {
@@ -31,6 +53,15 @@ const Review = ({ title }) => {
       const response = await ReviewApis.getAllReviews();
       if (response.success) {
         setReviews(response.data);
+        setFilteredReviews(response.data);
+        
+        // Get search query from URL on initial load
+        const searchParams = new URLSearchParams(window.location.search);
+        const searchQuery = searchParams.get('search');
+        if (searchQuery) {
+          setSearchQuery(searchQuery);
+          debouncedSearch(searchQuery, response.data);
+        }
       }
     } catch (error) {
       console.error("Error fetching reviews:", error);
@@ -42,10 +73,6 @@ const Review = ({ title }) => {
   useEffect(() => {
     fetchReviews();
   }, []);
-
-  const filteredData = reviews.filter((item) =>
-    item?.package?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -95,6 +122,20 @@ const Review = ({ title }) => {
     setOpen(false);
   };
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    debouncedSearch(value, reviews);
+  };
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
   return (
     <>  
       <Helmet>
@@ -109,7 +150,7 @@ const Review = ({ title }) => {
               placeholder="Search..."
               className="py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
             />
             <FaSearch className="absolute top-3 left-3 text-zinc-400" />
           </div>
@@ -147,8 +188,8 @@ const Review = ({ title }) => {
                     <p className="text-[#475467] font-medium py-6">Loading...</p>
                   </TableCell>
                 </TableRow>
-              ) : filteredData.length > 0 ? (
-                filteredData
+              ) : filteredReviews.length > 0 ? (
+                filteredReviews
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((item) => (
                     <TableRow key={item.id}>
@@ -203,7 +244,7 @@ const Review = ({ title }) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={filteredData.length}
+          count={filteredReviews.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
