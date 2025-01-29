@@ -72,11 +72,16 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
       
       // Filter by search query
       if (query) {
-        filtered = data.filter(item => 
-          item.user?.name?.toLowerCase().includes(query.toLowerCase()) ||
-          item.booking_items?.[0]?.package?.name?.toLowerCase().includes(query.toLowerCase()) ||
-          item.invoice_number?.toLowerCase().includes(query.toLowerCase())
-        );
+        filtered = data.filter(item => {
+          const userName = item.user?.name?.toLowerCase() || '';
+          const packageName = item.booking_items?.[0]?.package?.name?.toLowerCase() || '';
+          const invoiceNumber = item.invoice_number?.toLowerCase() || '';
+          const searchTerm = query.toLowerCase();
+          
+          return userName.includes(searchTerm) || 
+                 packageName.includes(searchTerm) || 
+                 invoiceNumber.includes(searchTerm);
+        });
       }
 
       // Filter by status
@@ -141,8 +146,6 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
-
-  console.log('filteredData', filteredData);
 
   return (
     <div>
