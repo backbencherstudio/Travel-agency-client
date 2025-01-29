@@ -19,6 +19,7 @@ import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 import Swal from 'sweetalert2'
 import { RiDeleteBin6Line } from 'react-icons/ri'
 import { toast } from 'react-toastify'
+import { Helmet } from 'react-helmet-async'
 
 const debounce = (func, delay) => {
   let timer
@@ -248,6 +249,9 @@ const SingleBlog = () => {
   }
   return (
     <div className='bg-[#F0F4F9]'>
+      <Helmet>
+        <title>Around 360 - Blog Details</title>
+      </Helmet>
       <HeroSection
         bgImg={blogImage}
         pageName='Our Blogs'

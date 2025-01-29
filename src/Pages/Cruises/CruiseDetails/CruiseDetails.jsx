@@ -14,6 +14,7 @@ import ClientPackageApis from '../../../Apis/clientApi/ClientPackageApis'
 import { useEffect, useState } from 'react'
 import TravelWithUs from '../../../Components/Home/TravelWithUs'
 import Loading from '../../../Shared/Loading'
+import { Helmet } from 'react-helmet-async'
 
 const CruiseDetails = () => {
   const links = [
@@ -42,6 +43,9 @@ const CruiseDetails = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Around 360 - Cruise Details</title>
+      </Helmet>
       {loading ? (
         <Loading />
       ) : (

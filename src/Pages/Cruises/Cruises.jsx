@@ -2,10 +2,14 @@ import React from 'react'
 import bgImg from "./../../assets/img/Cruise/banner.png";
 import PackageTourCruise from '../../Components/PackageTourCruise/PackageTourCruise';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 function Cruises() {
   return (
     <div>
+      <Helmet>
+        <title>Around 360 - Cruises</title>
+      </Helmet>
       {/* Banner Section with Background Image */}
       <div
         className="flex items-center justify-center h-[483px]"

@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import ClientPackageApis from "../../Apis/clientApi/ClientPackageApis";
 import { useEffect, useState } from "react";
 import Loading from "../../Shared/Loading";
+import { Helmet } from 'react-helmet-async';
 
 const PackageDetails = () => {
   const links = [{name: "Home", path: "/"}, {name: "Packages", path: "/packages"}, {name: "Package Details", path: ""},]
@@ -30,6 +31,9 @@ const PackageDetails = () => {
   }
   return (
     <div>
+      <Helmet>
+        <title>Around 360 - Package Details</title>
+      </Helmet>
       {loading ? (
         <Loading />
       ) : (

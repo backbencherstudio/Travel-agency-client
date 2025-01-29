@@ -19,12 +19,9 @@ import {
   deleteCouponApi
 } from '../../Apis/clientApi/ClientCouponApis'
 
-import {
-  CardElement,
-  useElements,
-  useStripe
-} from '@stripe/react-stripe-js'
+import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
+import { Helmet } from 'react-helmet-async'
 
 function ReviewPackage () {
   const {
@@ -125,9 +122,7 @@ function ReviewPackage () {
     }
   }, [id])
 
-
-
-  console.log("checkoutData", checkoutData)
+  console.log('checkoutData', checkoutData)
 
   useEffect(() => {
     const basePrice =
@@ -355,13 +350,11 @@ function ReviewPackage () {
     }
   }
 
-
   // Payment Method
 
   const handleCardDetailsChange = details => {
     setCardDetails(details)
   }
-
 
   // Payment Method
   const handlePayment = async () => {
@@ -378,7 +371,6 @@ function ReviewPackage () {
     setProcessing(true)
 
     try {
-
       // Step 1: Validate checkout details
       const checkoutResponse = await updateCheckout(id)
 
@@ -481,6 +473,9 @@ function ReviewPackage () {
 
   return (
     <div className='max-w-[1216px] mx-auto my-10 px-4 xl:px-0'>
+      <Helmet>
+        <title>Around 360 - Review Package</title>
+      </Helmet>
       {showConfetti && (
         <div className='fixed inset-0 z-50'>
           <Confetti width={window.innerWidth} height={window.innerHeight} />

@@ -11,6 +11,7 @@ import blogImage from '../../assets/img/blogs/blogImage.png'
 import { allBlogsGet } from '../../Apis/clientApi/ClientBlogApi'
 
 import { Skeleton, Box } from '@mui/material'
+import { Helmet } from 'react-helmet-async'
 
 const Blogs = () => {
   const links = [
@@ -51,6 +52,9 @@ const Blogs = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Around 360 - Blogs</title>
+      </Helmet>
       <HeroSection
         bgImg={blogImage}
         pageName='Our Blogs'

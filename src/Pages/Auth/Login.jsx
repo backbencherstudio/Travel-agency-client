@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthApis from "../../Apis/AuthApis";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../Context/AuthProvider/AuthProvider";
+import { Helmet } from "react-helmet-async";
 
 const Login = () => {
   const { register, handleSubmit, formState: { errors, isLoading } } = useForm();
@@ -53,6 +54,9 @@ const Login = () => {
 
   return (
     <>
+    <Helmet>
+        <title>Around 360 - Login</title>
+      </Helmet>
     <div className='flex flex-col lg:flex-row items-center'>
         <div className='hidden md:block'>
             <img src={image} className='md:w-0 md:h-0 lg:h-[1024px] lg:w-[432px] xl:w-[732px] lg:rounded-r-[80px] object-cover max-h-screen' alt="" />

@@ -127,7 +127,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className='z-10 bg-white nav-style'>
+    <header className='bg-white nav-style sticky top-0 z-50 py-2'>
       <div className='mx-auto max-w-[1216px] px-4 xl:px-0 '>
         <div className='flex lg:gap-6 h-16 items-center justify-between'>
           <div className='md:flex md:items-center md:gap-12'>
