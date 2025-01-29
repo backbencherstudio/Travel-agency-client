@@ -213,7 +213,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                     Status
                   </TableCell>
                 )}
-                {selectedStatus === 'Requests' || selectedStatus === 'Pending' && (
+                {/* {selectedStatus === 'Requests' || selectedStatus === 'Pending' && ( */}
                   <TableCell
                     sx={{
                       textAlign: 'center',
@@ -224,7 +224,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                   >
                     Action
                   </TableCell>
-                )}
+                {/* )} */}
               </TableRow>
             </TableHead>
 
@@ -302,7 +302,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                           </span>
                         </TableCell>
                       )}
-                      {selectedStatus === 'Requests' || selectedStatus === 'Pending' && (
+                      {/* {selectedStatus === 'Requests' || selectedStatus === 'Pending' && ( */}
                         <TableCell style={{ textAlign: 'center' }}>
                           <button
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
@@ -315,7 +315,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                             <FaEye className='text-xl' />
                           </button>
                         </TableCell>
-                      )}
+                      {/* )} */}
                     </TableRow>
                   ))
               ) : (

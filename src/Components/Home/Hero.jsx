@@ -9,10 +9,12 @@ import image2 from '../../assets/img/hero-img/image-2.png';
 import image3 from '../../assets/img/hero-img/image-3.png';
 import image4 from '../../assets/img/hero-img/image-4.png';
 import image5 from '../../assets/img/hero-img/image-5.png';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
     const [input, setInput] = useState();
     const [selectedDate, setSelectedDate] = useState(null);
+    const navigate = useNavigate();
 
     const sliderSettings = {
         dots: true,
@@ -44,7 +46,8 @@ const Hero = () => {
       }
 
       const handleSubmit = async() => {
-        const data = { destination: input, selectedDate: selectedDate }
+        const data = { q: input, selectedDate: selectedDate }
+        navigate(`/search-results?${new URLSearchParams(data).toString()}`, { replace: true });
         // console.log('data', data)
       }
 

@@ -32,6 +32,7 @@ function PackageTourCruise() {
     const [maxBudget, setMaxBudget] = useState(5000);
     const [minBudget, setMinBudget] = useState(0);
     const [searchDestination, setSearchDestination] = useState('');
+    const [queryParam, setQueryParam] = useState('');
     const [ratingFilters, setRatingFilters] = useState({
         fiveStars: false,
         fourStars: false,
@@ -67,46 +68,17 @@ function PackageTourCruise() {
         historical: false,
         personalizedTours: false,
     });
+    const location = useLocation();
+    const isCruiseRoute = location.pathname.includes('cruises');
+    const isPackageRoute = location.pathname.includes('packages');
+    const isSearchResultsRoute = location.pathname.includes('search-results');
     const [packages, setPackages] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const location = useLocation();
     const navigate = useNavigate();
-    const isCruiseRoute = location.pathname.includes('cruises');
-    const isPackageRoute = location.pathname.includes('packages');
+    const searchParams = new URLSearchParams(location.search);
+    console.log('searchParams', searchParams)
     // console.log('isCruiseRoute', isCruiseRoute)
-    // const tours = [
-    //     {
-    //         id: 1,
-    //         name: "The Allure Italy's Rich Culture. History. And Cuisine.",
-    //         description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-    //         rating: 4.8,
-    //         days: 7,
-    //         location: "Beijing, China",
-    //         starting_price: 2999,
-    //         images: [package1, package2],
-    //     },
-    //     {
-    //         id: 2,
-    //         name: "Explore Europe's charm, history, and landscapes.",
-    //         description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-    //         rating: 4.6,
-    //         days: 5,
-    //         location: "Beijing, China",
-    //         starting_price: 3999,
-    //         images: [package2, package3],
-    //     },
-    //     {
-    //         id: 3,
-    //         name: "Experience Africa's wildlife, landscapes, and rich culture.",
-    //         description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-    //         rating: 4.7,
-    //         days: 10,
-    //         location: "Beijing, China",
-    //         starting_price: 4999,
-    //         images: [package3, package1],
-    //     },
-    // ];
     const [priceRange, setPriceRange] = useState({
         min: 0,
         max: 10000
@@ -121,6 +93,20 @@ function PackageTourCruise() {
 
     const minPrice = 0;
     const maxPrice = 10000;
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const queryParam = params.get('q');
+        const startDateParam = params.get('selectedDate');
+        
+        if (queryParam) {
+            setQueryParam(queryParam);
+        }
+        
+        if (startDateParam) {
+            setStartDate(new Date(startDateParam));
+        }
+    }, [location.search]);
 
     // Create a debounced version of setPriceRange
     const debouncedSetPriceRange = useRef(
@@ -160,6 +146,7 @@ function PackageTourCruise() {
     }, []);
 
     const applyFilters = async () => {
+        console.log('queryParam', queryParam)
         setLoading(true);
         try {
             const formattedStartDate = startDate ? startDate.toISOString().split('T')[0] : '';
@@ -167,6 +154,7 @@ function PackageTourCruise() {
             
             // Construct filter parameters
             const filterParams = {
+                q: queryParam || '',
                 duration_start: formattedStartDate,
                 duration_end: formattedEndDate,
                 budget_start: priceRange.min,
@@ -215,7 +203,7 @@ function PackageTourCruise() {
 
             // Make API call with filters
             const res = await ClientPackageApis.all(
-                `${isCruiseRoute ? 'cruise' : isPackageRoute ? 'package' : 'tour'}`,
+                `${isCruiseRoute ? 'cruise' : isPackageRoute ? 'package' : isSearchResultsRoute ? '' : 'tour'}`,
                 filterParams
             );
             console.log('filterParams', filterParams)
@@ -246,7 +234,8 @@ function PackageTourCruise() {
         selectedMealPlans,
         selectedPopularAreas,
         searchDestination,
-        selectedLanguages
+        selectedLanguages,
+        queryParam
     ]);
 
     const handleDateChange = (date, isStart) => {

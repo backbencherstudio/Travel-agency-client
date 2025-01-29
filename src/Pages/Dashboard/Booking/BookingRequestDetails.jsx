@@ -11,20 +11,29 @@ const BookingRequestDetails = () => {
   const navigate = useNavigate()
   const [bookingDetails, setBookingDetails] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [selectedStatus, setSelectedStatus] = useState('');
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['booking-request-details'],
     queryFn: () => BookManageApis.getOne(id)
   }); 
 
+  useEffect(() => {
+    if (data?.data?.status) {
+      setSelectedStatus(data.data.status);
+    }
+  }, [data]);
+
   console.log(data);
 
-  const handleUpdateStatus = async (status) => {
-    const res = await BookManageApis.update(id, { status: status })
+  const handleUpdateStatus = async () => {
+    if (!selectedStatus) return;
+    
+    const res = await BookManageApis.update(id, { status: selectedStatus })
     console.log('res', res)
     if(res.success){
       toast.success(res.message);
-      navigate(-1);
+      // navigate(-1);
       refetch();
     }
   }
@@ -135,19 +144,38 @@ const BookingRequestDetails = () => {
       </div>
 
       {/* Action Buttons */}
-      <div className='mt-8 flex flex-col sm:flex-row justify-center gap-4'>
-        <button onClick={() => handleUpdateStatus('approved')} className='bg-[#4CAF50] hover:bg-green-600 text-[14px] transform duration-300 text-white font-medium py-2 px-5 rounded shadow'>
-          Approve
-        </button>
-        <button onClick={() => handleUpdateStatus('rejected')} className='bg-[#FF5252] hover:bg-red-600 text-[14px] transform duration-300 text-white font-medium py-2 px-5 rounded shadow'>
-          Reject
-        </button>
+      <div className='mt-8 flex flex-col-reverse md:flex-row justify-between gap-6 md:gap-6'>
         <button
-          className='bg-[#E7ECF2] hover:bg-gray-400  text-[14px] text-[#3B82F6] transform duration-300 font-medium py-2 px-5 rounded shadow'
+          className='bg-[#E7ECF2] hover:bg-gray-400 text-[14px] text-[#3B82F6] transform duration-300 font-medium py-2 px-5 rounded shadow'
           onClick={() => navigate(-1)}
         >
           Back
         </button>
+        <div className='flex gap-4 justify-between'>
+          <select 
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className='bg-white border border-gray-300 text-[14px] text-gray-700 py-2 px-5 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500'
+            value={selectedStatus}
+          >
+            <option value="" disabled>Select Status</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="paused">Paused</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button 
+            onClick={handleUpdateStatus} 
+            disabled={!selectedStatus}
+            className={`${
+              selectedStatus 
+                ? 'bg-[#4CAF50] hover:bg-green-600' 
+                : 'bg-gray-400 cursor-not-allowed'
+            } text-[14px] transform duration-300 text-white font-medium py-2 px-5 rounded shadow`}
+          >
+            Update Status
+          </button>
+        </div>
       </div>
     </div>
   )

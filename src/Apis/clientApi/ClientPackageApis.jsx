@@ -10,6 +10,9 @@ ClientPackageApis.all = async (type, filterParams = {}) => {
         // Add type parameter
         queryParams.append('type', type);
 
+        if (filterParams.q) {
+            queryParams.append('q', filterParams.q);
+        }
         // Add filter parameters if they exist
         if (filterParams.duration_start) {
             queryParams.append('duration_start', filterParams.duration_start);

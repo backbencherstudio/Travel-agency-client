@@ -341,22 +341,14 @@ const PackageTable = ({ tableType = "", title, data, columns, refetch }) => {
                                   <div className="w-4 h-4 bg-white rotate-45 absolute -top-[7px] right-[45px] hidden xl:block shadow-2xl"></div>
                                   {user?.type === 'admin' && (
                                     <>
-                                    <button onClick={() => handleActiveClick(item.id, 1)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
-                                          {/* <FaCheck className="mt-1" /> */}
-                                          Active
+                                      <button onClick={() => handleApproveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                        <FaCheck className="mt-1" />
+                                        Approve
                                       </button>
-                                      <button onClick={() => handleActiveClick(item.id, 0)} className="flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
-                                          {/* <RxCross2 className="text-xl" /> */}
-                                          Inactive
+                                      <button onClick={() => handleRejectClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                        <RxCross2 className="text-xl" />
+                                        Reject
                                       </button>
-                                    <button onClick={() => handleApproveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
-                                      <FaCheck className="mt-1" />
-                                      Approve
-                                  </button>
-                                  <button onClick={() => handleRejectClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
-                                    <RxCross2 className="text-xl" />
-                                    Reject
-                                  </button>
                                     </>
                                   )}
                                   {user?.id === item?.user?.id && (

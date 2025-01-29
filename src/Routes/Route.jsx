@@ -62,6 +62,7 @@ if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
 }
 import Review from "../Components/Dashboard/Review/Review";
 import { SocketNotificationProvider } from "../Shared/SocketNotificationProvider";
+import SearchResults from "../Pages/GlobalSearch/SearchResults";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 export const router = createBrowserRouter([
@@ -366,6 +367,10 @@ export const router = createBrowserRouter([
       {
         path: "/blog-details/:id",
         element: <BlogDetails />,
+      },
+      {
+        path: "/search-results",
+        element: <SearchResults />,
       },
     ],
   },
