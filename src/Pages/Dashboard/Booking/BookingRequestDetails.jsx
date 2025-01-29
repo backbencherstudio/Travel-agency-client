@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import BookManageApis from '../../../Apis/BookManageApis'
 import { toast } from 'react-toastify'
 import moment from 'moment'
+import { Helmet } from 'react-helmet-async'
 
 const BookingRequestDetails = () => {
   const { id } = useParams()
@@ -43,6 +44,9 @@ const BookingRequestDetails = () => {
 
   return (
     <div className='p-8 bg-white shadow-lg rounded-lg w-full  mx-auto'>
+       <Helmet>
+        <title>Around 360 - Booking Request Details</title>
+      </Helmet>
       <h2 className='text-2xl font-semibold mb-8 text-center'>
         Booking Request Details
       </h2>

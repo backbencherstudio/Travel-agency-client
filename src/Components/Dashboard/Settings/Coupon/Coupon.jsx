@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import CouponTable from './CouponTable'
 import CouponApis from '../../../../Apis/CouponApis'
+import { Helmet } from 'react-helmet-async';
 
 const Coupon = () => {
   const [columns] = useState({
@@ -29,14 +30,17 @@ const Coupon = () => {
   }
   // console.log('couporData', couponData)
   return (
-    <div>
+    <>
+      <Helmet>
+        <title>Around 360 - Coupon</title>
+      </Helmet>
       <CouponTable
         title={'Coupon'}
         data={couponData}
         columns={columns}
         getCoupons={getCoupons}
       />
-    </div>
+    </>
   )
 }
 

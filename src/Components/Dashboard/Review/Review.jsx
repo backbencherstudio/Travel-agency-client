@@ -11,7 +11,7 @@ import {
 import ReviewApis from "../../../Apis/ReviewApis";
 import { format } from 'date-fns';
 import { Package, User, Calendar } from 'lucide-react';
-
+import { Helmet } from 'react-helmet-async'
 const Review = ({ title }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [reviews, setReviews] = useState([]);
@@ -96,7 +96,10 @@ const Review = ({ title }) => {
   };
 
   return (
-    <>
+    <>  
+      <Helmet>
+        <title>Around 360 - Review</title>
+      </Helmet>
       <div className="flex flex-col sm:flex-row justify-between items-center py-5">
         <h1 className="text-[#0D0E0D] text-[20px] font-semibold">Review</h1>
         <div className="flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl">

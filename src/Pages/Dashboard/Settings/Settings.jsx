@@ -15,6 +15,7 @@ import Coupon from '../../../Components/Dashboard/Settings/Coupon/Coupon'
 import SocialCopyRight from '../../../Components/Dashboard/Settings/SocialCopyRight'
 import { MdCopyright } from 'react-icons/md'
 import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
+import { Helmet } from 'react-helmet-async'
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -91,6 +92,9 @@ const Settings = () => {
 
   return (
     <div className='min-h-[calc(100vh-80px)] w-full'>
+       <Helmet>
+        <title>Around 360 - Settings</title>
+      </Helmet>
       {/* Header with Search */}
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5'>
         <h1 className='text-[#0D0E0D] text-2xl font-semibold capitalize'>Settings</h1>

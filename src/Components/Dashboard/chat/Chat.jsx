@@ -10,6 +10,7 @@ import ChatApis from "../../../Apis/ChatApis";
 import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
 import { io } from "socket.io-client";
 import NotificationManager from "../../../Shared/NotificationManager";
+import { Helmet } from 'react-helmet-async'
 const defaultAvatar = "https://via.placeholder.com/150";
 
 const token = localStorage.getItem("token");
@@ -301,6 +302,9 @@ const Chat = () => {
 
   return (
     <div className="grid grid-cols-12 gap-5">
+       <Helmet>
+        <title>Around 360 - Chat</title>
+      </Helmet>
       {/* Chat Left Sidebar */}
       <div className="chat-leftsidebar lg:w-auto shadow col-span-12 overflow-y-hidden border-none sm:col-span-4">
         <div className="bg-[#f2f2f2] overflow-y-auto h-[87.9vh]">

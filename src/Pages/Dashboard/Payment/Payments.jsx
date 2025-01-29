@@ -3,6 +3,7 @@ import { AiOutlineDollar } from 'react-icons/ai'
 import PaymentHistoryTable from '../../../Components/Dashboard/PaymentHistory/PaymentHistoryTable'
 import { useState } from 'react'
 import { paymentHistory } from '../../../data/paymentHistory'
+import { Helmet } from 'react-helmet-async'
 const Payments = () => {
   const data = [
     { icon: <AiOutlineDollar />, label: 'Total Earnings', value: '$12,890' },
@@ -18,6 +19,9 @@ const Payments = () => {
   })
   return (
     <>
+      <Helmet>
+        <title>Around 360 - Payment Overview</title>
+      </Helmet>
       <div className='flex justify-between items-center mb-5'>
         <h1 className='text-[#0D0E0D] text-[20px] font-semibold capitalize'>
           Payment Overview

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { FaCheckCircle } from 'react-icons/fa'
 import Confetti from 'react-confetti'
+import { Helmet } from 'react-helmet-async'
 
 const PaymentSuccess = () => {
   const [showConfetti, setShowConfetti] = useState(true)
@@ -19,6 +20,9 @@ const PaymentSuccess = () => {
 
   return (
     <div className='min-h-[80vh] flex items-center justify-center px-4 relative'>
+       <Helmet>
+        <title>Around 360 - Payment Success</title>
+      </Helmet>
       {showConfetti && (
         <Confetti
           width={window.innerWidth}

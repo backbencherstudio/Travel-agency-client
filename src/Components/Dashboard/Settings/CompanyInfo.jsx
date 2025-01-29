@@ -7,6 +7,7 @@ import WebsiteInfoApis from '../../../Apis/WebsiteInfoApis';
 import AuthApis from '../../../Apis/AuthApis';
 import EmailVerifyOtp from '../../ChangeEmail/EmailVerifyOtp';
 import { Box, Modal } from '@mui/material';
+import { Helmet } from 'react-helmet-async';
 
 const CompanyInfo = () => {
   const {
@@ -108,6 +109,9 @@ const CompanyInfo = () => {
 
   return (
     <div className='flex-1 p-6'>
+       <Helmet>
+        <title>Around 360 - Company Info</title>
+      </Helmet>
       <div className='mb-6'>
         <h2 className='text-xl font-semibold mb-2 text-[#080613]'>
           Manage Company Information

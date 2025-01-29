@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import PackageTable from "../../../Components/Dashboard/Packages/PackageTable";
-import axiosClient from "../../../axiosClient";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from 'react'
+import PackageTable from '../../../Components/Dashboard/Packages/PackageTable'
+import axiosClient from '../../../axiosClient'
+import { useQuery } from '@tanstack/react-query'
+import { Helmet } from 'react-helmet-async'
 
 const Packages = () => {
-  const [tourDateFilter, setTourDateFilter] = useState("all");
-  const [packageData, setPackageData] = useState([]);
+  const [tourDateFilter, setTourDateFilter] = useState('all')
+  const [packageData, setPackageData] = useState([])
   const [columns] = useState({
     packageName: true,
     package: true,
@@ -14,18 +15,24 @@ const Packages = () => {
     status: true,
     action: true,
     approval: true,
-    created_at: true,
-  });
+    created_at: true
+  })
 
-  const { isLoading, isError, data = [], error, refetch } = useQuery({
+  const {
+    isLoading,
+    isError,
+    data = [],
+    error,
+    refetch
+  } = useQuery({
     queryKey: ['packages'],
     queryFn: async () => {
-        const response = await axiosClient.get('/api/admin/package');
-        return response.data;
-    },
-  });
+      const response = await axiosClient.get('/api/admin/package')
+      return response.data
+    }
+  })
 
-console.log('data', data)
+  console.log('data', data)
 
   // useEffect(() => {
   //   const fetchPackages = async () => {
@@ -42,26 +49,24 @@ console.log('data', data)
 
   return (
     <div>
+      <Helmet>
+        <title>Around 360 - Packages</title>
+      </Helmet>
       {isLoading ? (
-        <div>
-          Loading...
-        </div>
-      )
-      :
-      (
+        <div>Loading...</div>
+      ) : (
         <PackageTable
-          tableType="package"
-          title={"Travel Packages"}
+          tableType='package'
+          title={'Travel Packages'}
           data={data?.data}
           setDateFilter={setTourDateFilter}
           dateFilter={tourDateFilter}
           columns={columns}
           refetch={refetch}
         />
-      )
-    }
+      )}
     </div>
-  );
-};
+  )
+}
 
-export default Packages;
+export default Packages

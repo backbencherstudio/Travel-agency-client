@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import BookingHistory from '../../Components/Home/BookingHistory'
 import { getAllBookings } from '../../Apis/clientApi/ClientBookApi'
 import Loading from '../../Shared/Loading'
+import { Helmet } from 'react-helmet-async'
 
 const BookingHistoryTable = () => {
   const [columns] = useState({
@@ -41,6 +42,9 @@ const BookingHistoryTable = () => {
 
   return (
     <div>
+       <Helmet>
+        <title>Around 360 - Booking History</title>
+      </Helmet>
       {loading ? (
         <p>
           <Loading />

@@ -6,6 +6,8 @@ import { LuTrash2 } from 'react-icons/lu'
 import Swal from 'sweetalert2'
 import { toast } from 'react-toastify'
 import { FaEdit } from 'react-icons/fa'
+import { Helmet } from 'react-helmet-async';
+
 
 const FaqAdded = () => {
   const [showForm, setShowForm] = useState(false)
@@ -111,6 +113,9 @@ const FaqAdded = () => {
 
   return (
     <div className='p-4 sm:p-6'>
+       <Helmet>
+        <title>Around 360 - FAQ</title>
+      </Helmet>
       <div className='mb-6 flex flex-col sm:flex-row justify-between items-center'>
         <div>
           <h2 className='text-xl font-semibold mb-2 text-[#080613]'>

@@ -1,9 +1,9 @@
 import { useContext, useState, useEffect } from 'react'
 import AdminMembersAddTable from './AdminMembersAddTable'
-
 import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
 import { getUsers } from '../../../Apis/CreateNewUser'
 import Loading from '../../../Shared/Loading'
+import { Helmet } from 'react-helmet-async'
 
 const Permission = () => {
   const [columns] = useState({
@@ -35,17 +35,26 @@ const Permission = () => {
   }, [])
 
   return (
-    <div>
-      {loading ? (
-        <p>
-          <Loading />
-        </p>
-      ) : error ? (
-        <p className='text-red-500'>{error}</p>
-      ) : (
-        <AdminMembersAddTable title={user.type} data={data} columns={columns} />
-      )}
-    </div>
+    <>
+      <Helmet>
+        <title>Around 360 - Permission</title>
+      </Helmet>
+      <div>
+        {loading ? (
+          <p>
+            <Loading />
+          </p>
+        ) : error ? (
+          <p className='text-red-500'>{error}</p>
+        ) : (
+          <AdminMembersAddTable
+            title={user.type}
+            data={data}
+            columns={columns}
+          />
+        )}
+      </div>
+    </>
   )
 }
 
