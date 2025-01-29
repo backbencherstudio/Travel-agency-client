@@ -71,23 +71,27 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
 
   // Debounced function
   const fetchSearchResults = async (query = '', status = 'All Status') => {
-    setIsLoading(true)
-
+    setIsLoading(true);
+  
     try {
-      let apiStatus = ''
-      if (status === 'Active') apiStatus = '1'
-      if (status === 'Deactivated') apiStatus = '0'
-
-      const response = await BlogApis.searchBlogs(query, apiStatus)
-      if (!response.errors) {
-        setFilteredData(response.data || data)
+      let apiStatus = '';
+      if (status === 'Active') apiStatus = '1';
+      if (status === 'Deactivated') apiStatus = '0';
+  
+      const response = await BlogApis.searchBlogs(query, apiStatus);
+      if (!response.errors && Array.isArray(response.data)) {
+        setFilteredData(response.data);
+      } else {
+        setFilteredData([]); // Set to empty array to prevent undefined error
       }
     } catch (error) {
-      console.error('Search error:', error)
+      console.error('Search error:', error);
+      setFilteredData([]); // Prevents crashes due to undefined data
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+  
   // Apply the debounce hook
   // Increase debounce delay to 1 second
   const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300) // 1000ms delay
@@ -107,11 +111,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
   const handleStatusChange = status => {
     setSelectedStatus(status)
     setIsOpen(false)
-    if (status === 'All Status') {
-      setFilteredData(data)
-    } else {
-      fetchSearchResults(searchQuery, status)
-    }
+    fetchSearchResults(searchQuery, status)
     navigate({
       pathname: location.pathname,
       search: `?search=${searchQuery}&status=${status}`
@@ -136,14 +136,17 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
 
   // Update filtered data when the status changes
   useEffect(() => {
-    let filtered = data
+    if (!data) return; // Ensure `data` is not undefined
+  
+    let filtered = data;
     if (selectedStatus !== 'All Status') {
       filtered = filtered.filter(item =>
         selectedStatus === 'Active' ? item.status === 1 : item.status === 0
-      )
+      );
     }
-    setFilteredData(filtered)
-  }, [selectedStatus, data])
+    setFilteredData(filtered);
+  }, [selectedStatus, data]);
+  
 
   const handleAddBlogClick = () => {
     navigate('/dashboard/add-blog')
@@ -451,7 +454,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
 
                       {columns?.approved_at && (
                         <TableCell style={{ minWidth: '200px' }}>
-                          {item?.user?.type === 'admin' ? (
+                          {item?.user?.type === 'admin' || item?.user?.type === 'vendor' ? (
                             <>
                               <p className='truncate text-[#475467]'>
                                 {item.approved_at === null ? (
@@ -483,7 +486,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                                 )}
                               </p>
                             </>
-                          ) : item?.user?.type === 'vendor' ? (
+                          ) : item?.user?.type === 'admin' ? (
                             <>
                               <p className='truncate text-[#475467]'>
                                 {item.approved_at === null ? (
