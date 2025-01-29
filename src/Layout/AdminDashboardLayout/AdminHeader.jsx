@@ -30,6 +30,8 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   const [notifications, setNotifications] = useState([]);
   const notificationRef = useRef(null);
 
+  // console.log('user', user);
+  
   // Request browser notification permission on component mount
   useEffect(() => {
     if ("Notification" in window) {
@@ -40,68 +42,91 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   }, []);
 
   // Fetch existing notifications from the backend
-  useEffect(() => {
-    getNotification();
-  }, []);
-
-  const getNotification = async () => {
+  const fetchNotifications = async () => {
     try {
-      const res = await NotificationApis.getNotification();
-
-      const existingNotifications = res.data.map((notif) => ({
-        id: notif.notification_event.id,
-        message: notif.notification_event.text,
-        type: notif.notification_event.type,
-        time: Date.now(),
-      }));
-
-      setNotifications(existingNotifications);
+      const response = await NotificationApis.getNotification();
+      console.log("fetch response", response.data.data);
+      
+      if (response.success) {
+        // Filter out review notifications that have been handled
+        const filteredNotifications = response.data.data.filter(notification => {
+          const isReviewNotification = notification.notification_event?.type?.toLowerCase() === 'review';
+          const hasBeenHandled = notification.is_read || notification.is_deleted;
+          return !isReviewNotification || !hasBeenHandled;
+        });
+        setNotifications(filteredNotifications);
+      } else {
+        console.error("Error fetching notifications:", response.message);
+      }
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("Error:", error);
     }
   };
+  console.log('notifications', notifications);
+  
+
+  // Use useEffect to fetch notifications when component mounts
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
 
   // Handle real-time notifications
   useEffect(() => {
     socket.on("notification", (notification) => {
-      console.log("New Notification:", notification);
+      console.log('notification', notification);
+      
+      // Check receiver_id and user type conditions
+      if (notification.receiver_id === null) {
+        // Show notification only to admin users
+        if (user?.type?.toLowerCase() === 'admin') {
+          addNewNotification(notification);
+        }
+      } else {
+        // Show notification if receiver_id matches user's ID
+        if (notification.receiver_id === user?.id) {
+          addNewNotification(notification);
+        }
+      }
+    });
 
-      // Add the notification to the list
+    // Helper function to add new notification
+    const addNewNotification = (notification) => {
       const newNotification = {
         id: notification.entity_id,
-        message: notification.text,
-        type: notification.type,
-        time: new Date(),
+        notification_event: {
+          text: notification.text,
+          type: notification.type
+        },
+        created_at: new Date().toISOString(),
+        is_read: false,
+        is_deleted: false
       };
 
       setNotifications((prev) => [newNotification, ...prev]);
 
-      // Show a browser notification (if permission is granted)
+      // Show browser notification if permitted
       if (Notification.permission === "granted") {
         const browserNotification = new Notification(
-          `New ${newNotification.type}`,
+          `New ${notification.type}`,
           {
-            body: newNotification.message,
-            icon: "/default-avatar.png", // Replace with an appropriate icon if available
+            body: notification.text,
+            icon: "/default-avatar.png",
           }
         );
 
-        // Handle browser notification click
         browserNotification.onclick = () => {
           window.focus();
           if (newNotification.id) {
             window.location.href = `/admin/notifications/${newNotification.id}`;
           }
         };
-      } else {
-        console.log("Browser notifications are not enabled.");
       }
-    });
+    };
 
     return () => {
       socket.off("notification");
     };
-  }, []);
+  }, [user]); // Added user to dependency array
 
   const handleClickOutside = (event) => {
     if (
@@ -122,32 +147,35 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   const clearNotification = async (id) => {
     try {
       const res = await NotificationApis.deleteNotification(id);
-      if (res.message) {
-        console.log(res.message);
+      console.log('delete response', res);
+      
+      if (res.success) {
+        // Remove the notification from state
+        setNotifications((prev) =>
+          prev.filter((notification) => notification.id !== id)
+        );
+      } else {
+        console.error("Failed to delete notification:", res.message);
       }
-
-      setNotifications((prev) =>
-        prev.filter((notification) => notification.id !== id)
-      );
     } catch (error) {
       console.error("Error deleting notification:", error);
     }
   };
 
-  const clearAllNotifications = () => {
-    setNotifications([]);
-  };
-
-  const formatNotificationTime = (time) => {
-    const now = moment();
-    const notificationTime = moment(time);
-
-    if (now.isSame(notificationTime, "day")) {
-      return notificationTime.fromNow(); // "1 minute ago", "2 hours ago", etc.
-    } else if (now.diff(notificationTime, "days") < 7) {
-      return notificationTime.format("dddd h:mm A"); // "Sunday 1:10 PM"
-    } else {
-      return notificationTime.format("MMM D, h:mm A"); // "Jan 25, 2:50 PM"
+  const clearAllNotifications = async () => {
+    try {
+      const res = await NotificationApis.deleteAllNotifications();
+      console.log("delete all response", res);
+      
+      
+      if (res.success) {
+        // Clear all notifications from state
+        setNotifications([]);
+      } else {
+        console.error("Failed to delete all notifications:", res.message);
+      }
+    } catch (error) {
+      console.error("Error deleting all notifications:", error);
     }
   };
 
@@ -223,17 +251,22 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
                     {notifications.length > 0 ? (
                       notifications.map((notification) => (
                         <li
-                          key={notification.id}
-                          className="flex justify-between items-center text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-md"
+                          key={notification?.entity_id}
+                          className="flex justify-between items-start gap-2 text-sm text-gray-600 bg-gray-50 hover:bg-gray-100 p-3 rounded-lg transition-colors duration-200"
                         >
-                          <div>
-                            <span>{notification.message}</span>
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-800 mb-1">
+                              {notification?.notification_event?.text}
+                            </p>
+                            <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full mb-1">
+                              {notification?.notification_event?.type}
+                            </span>
                             <p className="text-xs text-gray-400">
-                              {formatNotificationTime(notification.time)}
+                              {moment(notification?.created_at).format('MMMM Do YYYY, h:mm:ss a')}
                             </p>
                           </div>
                           <button
-                            className="text-red-500 hover:text-red-700"
+                            className="text-gray-400 hover:text-red-500 transition-colors duration-200 p-1"
                             onClick={() => clearNotification(notification.id)}
                           >
                             <FaTimes />
@@ -241,7 +274,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
                         </li>
                       ))
                     ) : (
-                      <li className="text-sm text-gray-600">
+                      <li className="text-sm text-gray-500 text-center py-4">
                         No new notifications
                       </li>
                     )}
