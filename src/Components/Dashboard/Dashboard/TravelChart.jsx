@@ -1,12 +1,47 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import DashboardApis from "../../../Apis/DashboardApis";
 
-const TravelChart = ({ statusData }) => {
-  const total =
-    statusData.complete +
-    statusData.pending +
-    statusData.cancel +
-    statusData.notReady;
+const TravelChart = () => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [statusData, setStatusData] = useState({
+    complete: 0,
+    pending: 0,
+    cancel: 0,
+    notReady: 0
+  });
+
+  // Fetch booking status data
+  useEffect(() => {
+    const fetchStatusData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await DashboardApis.getDashboardData();
+        
+        if (response.success) {
+          setStatusData({
+            complete: response.data?.confirmed_bookings || 0,
+            pending: response.data?.pending_bookings || 0,
+            cancel: response.data?.cancelled_bookings || 0,
+            notReady: response.data?.processing_bookings || 0,
+          });
+        } else {
+          setError(response.message || "Failed to load status data");
+        }
+      } catch (err) {
+        console.error("Status data fetch error:", err);
+        setError("An unexpected error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatusData();
+  }, []);
+
+  const total = statusData.complete + statusData.pending + statusData.cancel + statusData.notReady;
 
   const completePercentage = (statusData.complete / total) * 100;
   const pendingPercentage = (statusData.pending / total) * 100;
@@ -41,90 +76,96 @@ const TravelChart = ({ statusData }) => {
   return (
     <div className="bg-white my-5 p-4 rounded-lg shadow md:col-span-1">
       <h1 className="text-[16px]">Travel Packages</h1>
-      <div className="flex rounded-lg gap-1 mt-4 relative">
-        {/* Complete */}
-        <div
-          className="h-16 rounded-l-lg"
-          style={{
-            width: `${completePercentage}%`,
-            backgroundColor: "#fdefea",
-          }}
-          onMouseEnter={() =>
-            handleMouseEnter({
-              name: "Confirmed",
-              count: statusData.complete,
-              percentage: completePercentage,
-            })
-          }
-          onMouseLeave={handleMouseLeave}
-        >
-          {tooltip && tooltip.name === "Confirmed" && (
-            <div className="absolute top-[-30px] left-[50%] transform -translate-x-[50%]">
-              {getTooltipContent(tooltip)}
-            </div>
-          )}
+      {loading ? (
+        <div className="text-center py-4">Loading...</div>
+      ) : error ? (
+        <div className="text-red-500 text-center py-4">{error}</div>
+      ) : (
+        <div className="flex rounded-lg gap-1 mt-4 relative">
+          {/* Complete */}
+          <div
+            className="h-16 rounded-l-lg"
+            style={{
+              width: `${completePercentage}%`,
+              backgroundColor: "#fdefea",
+            }}
+            onMouseEnter={() =>
+              handleMouseEnter({
+                name: "Confirmed",
+                count: statusData.complete,
+                percentage: completePercentage,
+              })
+            }
+            onMouseLeave={handleMouseLeave}
+          >
+            {tooltip && tooltip.name === "Confirmed" && (
+              <div className="absolute top-[-30px] left-[50%] transform -translate-x-[50%]">
+                {getTooltipContent(tooltip)}
+              </div>
+            )}
+          </div>
+          {/* Pending */}
+          <div
+            className="h-16"
+            style={{ width: `${pendingPercentage}%`, backgroundColor: "#e7ecf2" }}
+            onMouseEnter={() =>
+              handleMouseEnter({
+                name: "Pending",
+                count: statusData.pending,
+                percentage: pendingPercentage,
+              })
+            }
+            onMouseLeave={handleMouseLeave}
+          >
+            {tooltip && tooltip.name === "Pending" && (
+              <div className="absolute top-[-30px] left-[50%] transform -translate-x-[50%]">
+                {getTooltipContent(tooltip)}
+              </div>
+            )}
+          </div>
+          {/* Cancel */}
+          <div
+            className="h-16"
+            style={{ width: `${cancelPercentage}%`, backgroundColor: "#b4c5d7" }}
+            onMouseEnter={() =>
+              handleMouseEnter({
+                name: "Cancel",
+                count: statusData.cancel,
+                percentage: cancelPercentage,
+              })
+            }
+            onMouseLeave={handleMouseLeave}
+          >
+            {tooltip && tooltip.name === "Cancel" && (
+              <div className="absolute top-[-30px] left-[50%] transform -translate-x-[50%]">
+                {getTooltipContent(tooltip)}
+              </div>
+            )}
+          </div>
+          {/* Not Ready */}
+          <div
+            className="h-16 rounded-r-lg"
+            style={{
+              width: `${notReadyPercentage}%`,
+              backgroundColor: "#90a9c3",
+            }}
+            onMouseEnter={() =>
+              handleMouseEnter({
+                name: "Not Ready",
+                count: statusData.notReady,
+                percentage: notReadyPercentage,
+              })
+            }
+            onMouseLeave={handleMouseLeave}
+          >
+            {tooltip && tooltip.name === "Not Ready" && (
+              <div className="absolute top-[-30px] left-[50%] transform -translate-x-[50%]">
+                {getTooltipContent(tooltip)}
+              </div>
+            )}
+          </div>
         </div>
-        {/* Pending */}
-        <div
-          className="h-16"
-          style={{ width: `${pendingPercentage}%`, backgroundColor: "#e7ecf2" }}
-          onMouseEnter={() =>
-            handleMouseEnter({
-              name: "Pending",
-              count: statusData.pending,
-              percentage: pendingPercentage,
-            })
-          }
-          onMouseLeave={handleMouseLeave}
-        >
-          {tooltip && tooltip.name === "Pending" && (
-            <div className="absolute top-[-30px] left-[50%] transform -translate-x-[50%]">
-              {getTooltipContent(tooltip)}
-            </div>
-          )}
-        </div>
-        {/* Cancel */}
-        <div
-          className="h-16"
-          style={{ width: `${cancelPercentage}%`, backgroundColor: "#b4c5d7" }}
-          onMouseEnter={() =>
-            handleMouseEnter({
-              name: "Cancel",
-              count: statusData.cancel,
-              percentage: cancelPercentage,
-            })
-          }
-          onMouseLeave={handleMouseLeave}
-        >
-          {tooltip && tooltip.name === "Cancel" && (
-            <div className="absolute top-[-30px] left-[50%] transform -translate-x-[50%]">
-              {getTooltipContent(tooltip)}
-            </div>
-          )}
-        </div>
-        {/* Not Ready */}
-        <div
-          className="h-16 rounded-r-lg"
-          style={{
-            width: `${notReadyPercentage}%`,
-            backgroundColor: "#90a9c3",
-          }}
-          onMouseEnter={() =>
-            handleMouseEnter({
-              name: "Not Ready",
-              count: statusData.notReady,
-              percentage: notReadyPercentage,
-            })
-          }
-          onMouseLeave={handleMouseLeave}
-        >
-          {tooltip && tooltip.name === "Not Ready" && (
-            <div className="absolute top-[-30px] left-[50%] transform -translate-x-[50%]">
-              {getTooltipContent(tooltip)}
-            </div>
-          )}
-        </div>
-      </div>
+      )}
       <div className="grid grid-cols-2 mt-10 gap-6">
         <div className="border-l-8 border-[#fdefea] rounded-md pl-3">
           <p className="text-[12px] font-medium">Confirmed</p>
@@ -139,7 +180,7 @@ const TravelChart = ({ statusData }) => {
           <p className="text-[24px] font-semibold">{statusData?.cancel}</p>
         </div>
         <div className="border-l-8 border-[#90a9c3] rounded-md pl-3">
-          <p className="text-[12px] font-medium">Not Ready</p>
+          <p className="text-[12px] font-medium">Processing</p>
           <p className="text-[24px] font-semibold">{statusData?.notReady}</p>
         </div>
       </div>
