@@ -1,6 +1,6 @@
 import React from 'react';
-import starFull from '../../assets/img/star.svg';
-import starNone from '../../assets/img/star-none.svg';
+// import starFull from '../../assets/img/star.svg';
+// import starNone from '../../assets/img/star-none.svg';
 import avatar1 from '../../assets/img/avatar/avatar-1.jpg';
 import avatar2 from '../../assets/img/avatar/avatar-2.png';
 import avatar3 from '../../assets/img/avatar/avatar-3.png';
