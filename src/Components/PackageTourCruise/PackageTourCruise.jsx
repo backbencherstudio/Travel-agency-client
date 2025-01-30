@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 
 import { CiSearch } from 'react-icons/ci';
 import { FaRegCalendarAlt, FaStar } from 'react-icons/fa';
@@ -86,6 +87,9 @@ function PackageTourCruise() {
     const [isLanguageOpen, setLanguageOpen] = useState(false);
     const [languages, setLanguages] = useState([]);
     const [selectedLanguages, setSelectedLanguages] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+    const [pageLoading, setPageLoading] = useState(false);
 
     console.log('destinations', destinations)
     console.log('cancellationPolicies', cancellationPolicies)
@@ -303,6 +307,30 @@ function PackageTourCruise() {
     // console.log('packages', packages)
     const startDatePickerRef = useRef(null);
     const endDatePickerRef = useRef(null);
+
+    // Calculate pagination values
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = packages.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(packages.length / itemsPerPage);
+
+    // Handle page changes with smooth transition
+    const handlePageChange = async (pageNumber) => {
+        setPageLoading(true);
+        setCurrentPage(pageNumber);
+        // Add a small delay to create a smooth transition effect
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setPageLoading(false);
+    };
+
+    // Generate page numbers array
+    const getPageNumbers = () => {
+        const pageNumbers = [];
+        for (let i = 1; i <= totalPages; i++) {
+            pageNumbers.push(i);
+        }
+        return pageNumbers;
+    };
 
     return (
         <div className='max-w-[1200px] mx-auto'>
@@ -1022,11 +1050,59 @@ function PackageTourCruise() {
                                     ))} */}
                                 </div>
                             ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-                                    {packages.map((tour) => (
-                                        <TourCard key={tour.id} tour={tour} isPackageRoute={isPackageRoute} />
-                                    ))}
-                                </div>
+                                <>
+                                    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 transition-opacity duration-300 ${pageLoading ? 'opacity-50' : 'opacity-100'}`}>
+                                        {pageLoading ? (
+                                            // Show loading skeleton or spinner while changing pages
+                                            <div className="col-span-2 flex justify-center items-center">
+                                                <Loading />
+                                            </div>
+                                        ) : (
+                                            currentItems.map((tour) => (
+                                                <TourCard key={tour.id} tour={tour} isPackageRoute={isPackageRoute} />
+                                            ))
+                                        )}
+                                    </div>
+
+                                    {/* Pagination */}
+                                    {packages.length > 0 && (
+                                        <div className="flex justify-center items-center mt-10 mb-4">
+                                            <div className="flex items-center gap-2 bg-white rounded-lg shadow-md px-4 py-2">
+                                                <button
+                                                    onClick={() => handlePageChange(currentPage - 1)}
+                                                    disabled={currentPage === 1}
+                                                    className={`flex items-center gap-1 px-3 py-1 ${currentPage === 1 ? 'text-gray-400' : 'text-gray-700 hover:text-blue-600'}`}
+                                                >
+                                                    <MdKeyboardArrowLeft className="text-xl" />
+                                                    Previous
+                                                </button>
+
+                                                {getPageNumbers().map((number) => (
+                                                    <button
+                                                        key={number}
+                                                        onClick={() => handlePageChange(number)}
+                                                        className={`w-8 h-8 rounded-full ${
+                                                            currentPage === number
+                                                                ? 'bg-orange-600 text-white'
+                                                                : 'text-gray-700 hover:bg-gray-100'
+                                                        }`}
+                                                    >
+                                                        {number}
+                                                    </button>
+                                                ))}
+
+                                                <button
+                                                    onClick={() => handlePageChange(currentPage + 1)}
+                                                    disabled={currentPage === totalPages}
+                                                    className={`flex items-center gap-1 px-3 py-1 ${currentPage === totalPages ? 'text-gray-400' : 'text-gray-700 hover:text-blue-600'}`}
+                                                >
+                                                    Next
+                                                    <MdKeyboardArrowRight className="text-xl" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     </div>

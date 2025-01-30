@@ -1,4 +1,6 @@
 import React from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import image1 from '../../assets/img/top-destinations/image-1.png';
 import image2 from '../../assets/img/top-destinations/image-2.png';
 import image3 from '../../assets/img/top-destinations/image-3.png';
@@ -41,9 +43,10 @@ const TopDestinations = () => {
                     : ""
                 }`}
                 >
-                <img
+                <LazyLoadImage
                     src={destination?.destination_images[0]?.image}
                     alt={destination?.destination_images[0]?.image}
+                    effect="blur"
                     className="absolute inset-0 h-full w-full object-cover"
                 />
                 <div className={`absolute inset-0 ${

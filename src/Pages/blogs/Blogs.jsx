@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Pagination, Stack } from '@mui/material'
 import Featured from '../../Components/BlogComponents/Featured'
 import Subscribe from '../../Components/BlogComponents/Subscribe'
 import CardComponent from '../../Components/CardComponent/CardComponent'
@@ -12,6 +11,7 @@ import { allBlogsGet } from '../../Apis/clientApi/ClientBlogApi'
 
 import { Skeleton, Box } from '@mui/material'
 import { Helmet } from 'react-helmet-async'
+import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md'
 
 const Blogs = () => {
   const links = [
@@ -22,7 +22,7 @@ const Blogs = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [page, setPage] = useState(1)
-  const blogsPerPage = 6
+  const blogsPerPage = 4
 
   // Fetching blogs
   useEffect(() => {
@@ -120,15 +120,46 @@ const Blogs = () => {
           )}
 
           {/* Pagination */}
-          <div className='flex justify-center mt-20'>
-            <Stack spacing={2}>
-              <Pagination
-                count={Math.ceil(blogs.length / blogsPerPage)}
-                color='primary'
-                page={page}
-                onChange={handleChangePage}
-              />
-            </Stack>
+          <div className="flex justify-center mt-20">
+            <div className="flex items-center gap-2 bg-white rounded-lg shadow-md px-4 py-2">
+              <button
+                onClick={() => handleChangePage(null, page - 1)}
+                disabled={page === 1}
+                className={`flex items-center gap-1 px-3 py-1 ${
+                  page === 1 ? 'text-gray-400' : 'text-gray-700 hover:text-blue-600'
+                }`}
+              >
+                <MdKeyboardArrowLeft className="text-xl" />
+                Previous
+              </button>
+
+              {[...Array(Math.ceil(blogs.length / blogsPerPage))].map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleChangePage(null, index + 1)}
+                  className={`w-8 h-8 rounded-full ${
+                    page === index + 1
+                      ? 'bg-orange-600 text-white'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handleChangePage(null, page + 1)}
+                disabled={page === Math.ceil(blogs.length / blogsPerPage)}
+                className={`flex items-center gap-1 px-3 py-1 ${
+                  page === Math.ceil(blogs.length / blogsPerPage)
+                    ? 'text-gray-400'
+                    : 'text-gray-700 hover:text-blue-600'
+                }`}
+              >
+                Next
+                <MdKeyboardArrowRight className="text-xl" />
+              </button>
+            </div>
           </div>
 
           {/* Subscribe Section */}
