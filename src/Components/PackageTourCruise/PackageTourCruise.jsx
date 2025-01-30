@@ -16,6 +16,7 @@ import { useLocation } from 'react-router-dom';
 // import CruiseCard from '../../Pages/Cruises/CruiseCard';
 import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext';
 import ClientLanguageApis from '../../Apis/clientApi/ClientLanguageApis';
+import TourCard from '../../Pages/Tours/tourCard';
 
 function PackageTourCruise() {
     const { destinations, cancellationPolicies } = useTravelData();

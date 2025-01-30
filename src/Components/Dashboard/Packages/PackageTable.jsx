@@ -299,6 +299,11 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
                           </p>
                           <p className='text-xs font-medium text-black'>
                             {item.name}
+                            {user?.id === item?.user?.id && (
+                              <span className='text-xs font-normal text-[#475467]'>
+                                me
+                              </span>
+                            )}
                           </p>
                         </div>
                       </div>
@@ -440,6 +445,21 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
                                       </button>
                                     </>
                                   )}
+                                  {user?.id === item?.user?.id && (
+                                    <>
+                                      <button onClick={() => handleActiveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                        {/* <FaCheck className="mt-1" /> */}
+                                        Active
+                                    </button>
+                                    <button
+                                      onClick={() => handleRejectClick(item.id)}
+                                      className='flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300'
+                                    >
+                                      {/* <RxCross2 className='text-xl' /> */}
+                                      Inactive
+                                    </button>
+                                  </>
+                                )}
                                 </div>
                               </DropdownPortal>
                             )}
