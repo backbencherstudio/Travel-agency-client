@@ -5,6 +5,7 @@ import TravelWithUs from '../../Components/Home/TravelWithUs'
 import PackageTourCruise from '../../Components/PackageTourCruise/PackageTourCruise'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
 function Tours () {
   return (
     <div>

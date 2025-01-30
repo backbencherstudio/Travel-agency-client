@@ -10,6 +10,8 @@ import image3 from '../../assets/img/hero-img/image-3.png';
 import image4 from '../../assets/img/hero-img/image-4.png';
 import image5 from '../../assets/img/hero-img/image-5.png';
 import { useNavigate } from 'react-router-dom';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 const Hero = () => {
     const [input, setInput] = useState();
@@ -84,51 +86,81 @@ const Hero = () => {
             <div className="md:hidden container mx-auto mt-8">
                 <Slider {...sliderSettings} className="mx-4 md:mx-auto">
                     <div>
-                    <img
-                        src={image1}
-                        alt=""
-                        className="w-[268px] h-[301px]  flex-shrink-0 rounded-2xl object-cover"
-                    />
+                        <LazyLoadImage
+                            src={image1}
+                            alt="Travel destination scenic view 1"
+                            effect="blur"
+                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
+                        />
                     </div>
                     <div>
-                    <img
-                        src={image2}
-                        alt=""
-                        className="w-[268px] h-[301px]  flex-shrink-0 rounded-2xl object-cover"
-                    />
+                        <LazyLoadImage
+                            src={image2}
+                            alt="Travel destination scenic view 2"
+                            effect="blur"
+                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
+                        />
                     </div>
                     <div>
-                    <img
-                        src={image3}
-                        alt=""
-                        className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
-                    />
+                        <LazyLoadImage
+                            src={image3}
+                            alt="Scenic travel destination"
+                            effect="blur"
+                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
+                        />
                     </div>
                     <div>
-                    <img
-                        src={image4}
-                        alt=""
-                        className="w-[268px] h-[301px]  flex-shrink-0 rounded-2xl object-cover scale-x-[-1]"
-                    />
+                        <LazyLoadImage
+                            src={image4}
+                            alt="Travel landscape view"
+                            effect="blur"
+                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]"
+                        />
                     </div>
                     <div>
-                    <img
-                        src={image5}
-                        alt=""
-                        className="w-[268px] h-[301px]  flex-shrink-0 rounded-2xl object-cover scale-x-[-1]"
-                    />
+                        <LazyLoadImage
+                            src={image5}
+                            alt="Travel destination view"
+                            effect="blur"
+                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]"
+                        />
                     </div>
                 </Slider>
             </div>
         </div>
         {/* image section */}
         <div className='hidden md:block'>
-            <div className=' container mx-auto grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] md:mx-auto mt-8'>
-                <img src={image1} alt="" className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image2} alt="" className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image3} alt="" className='w-[190px] h-[180px] xl:w-[268px] xl:h-[301px] flex-shrink-0 rounded-2xl object-cover' />
-                <img src={image4} alt="" className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
-                <img src={image5} alt="" className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]' />
+            <div className='container mx-auto grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] md:mx-auto mt-8'>
+                <LazyLoadImage
+                    src={image1}
+                    alt="Travel destination scenic view 1"
+                    effect="blur"
+                    className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover'
+                />
+                <LazyLoadImage
+                    src={image2}
+                    alt="Travel destination scenic view 2"
+                    effect="blur"
+                    className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover'
+                />
+                <LazyLoadImage
+                    src={image3}
+                    alt="Scenic travel destination"
+                    effect="blur"
+                    className='w-[190px] h-[180px] xl:w-[268px] xl:h-[301px] flex-shrink-0 rounded-2xl object-cover'
+                />
+                <LazyLoadImage
+                    src={image4}
+                    alt="Travel landscape view"
+                    effect="blur"
+                    className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]'
+                />
+                <LazyLoadImage
+                    src={image5}
+                    alt="Travel destination view"
+                    effect="blur"
+                    className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]'
+                />
             </div>
         </div>
     </div>

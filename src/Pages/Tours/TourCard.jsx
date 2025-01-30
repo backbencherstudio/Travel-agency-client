@@ -1,6 +1,8 @@
 import React from 'react'
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
+import { LazyLoadImage } from 'react-lazy-load-image-component'
+import 'react-lazy-load-image-component/src/effects/blur.css'
 
 function TourCard ({ tour, isPackageRoute }) {
   const navigate = useNavigate()
@@ -52,9 +54,11 @@ function TourCard ({ tour, isPackageRoute }) {
       className='relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]'
     >
       <div className='relative h-56 overflow-hidden text-white rounded-t-[10px]'>
-        <img
+        <LazyLoadImage
           src={tour?.package_files?.[0]?.file_url || ''}
           alt={tour?.package_files?.[0]?.file_url || 'Tour image'}
+          effect="blur"
+          className='w-full h-full object-cover'
         />
       </div>
       <div className='p-4'>
