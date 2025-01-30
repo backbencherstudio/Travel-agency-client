@@ -27,6 +27,7 @@ const DashboardAnalysis = () => {
     revenue_per_month: [],
     bookings: [],
   });
+  
   const [columns] = useState({
     bookingId: true,
     name: true,
