@@ -18,6 +18,7 @@ import { BsThreeDots } from 'react-icons/bs'
 import Swal from 'sweetalert2'
 import { deleteUser, approveUser, rejectUser } from '../../../Apis/GetUserApis'
 import { RxCross2 } from 'react-icons/rx'
+import DropdownPortal from '../../../Shared/DropdownPortal'
 
 const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -32,6 +33,7 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const actionRefs = useRef(new Map())
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
 
   // Debounced filter function
   const debouncedFilter = useCallback(
@@ -164,6 +166,11 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
   // drop down
   const handleThreeDotsClick = (e, id) => {
     e.stopPropagation()
+    const rect = e.currentTarget.getBoundingClientRect()
+    setDropdownPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX
+    })
     setIsOpenAction(isOpenAction === id ? null : id)
   }
 
@@ -397,42 +404,44 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
                             >
                               {/* Conditionally render icons with fade-in/out */}
                               {isOpenAction === item.id ? (
-                                <RxCross2 className='text-xl opacity-100 scale-100 transition-transform duration-300 ease-in-out' />
+                                <RxCross2 className='text-xl' />
                               ) : (
-                                <BsThreeDots className='text-xl opacity-100 scale-100 transition-transform duration-300 ease-in-out' />
+                                <BsThreeDots className='text-xl' />
                               )}
                             </button>
 
                             {isOpenAction === item.id && (
-                              <div
-                                ref={ref =>
-                                  actionRefs.current.set(item.id, ref)
-                                }
-                                className='absolute bg-white p-4  flex flex-col top-full right-0 mt-2 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
-                              >
-                                <button
-                                  className={`flex item-center gap-3 p-3 rounded-md text-base ${
-                                    item.approved_at !== null
-                                      ? 'bg-green-600 text-white cursor-default'
-                                      : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
-                                  }`}
-                                  disabled={item.approved_at !== null}
-                                  onClick={() => handleApproveUser(item.id)}
+                              <DropdownPortal isOpen={isOpenAction === item.id} position={dropdownPosition}>
+                                <div
+                                  ref={ref =>
+                                    actionRefs.current.set(item.id, ref)
+                                  }
+                                  className='absolute bg-white py-5 px-4 flex flex-col  -right-20 top-5 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
                                 >
-                                  Approve
-                                </button>
-                                <button
-                                  className={`flex item-center gap-3 p-3 rounded-md text-base ${
-                                    item.approved_at === null
-                                      ? 'bg-red-600 text-white cursor-default'
-                                      : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
-                                  }`}
-                                  disabled={item.approved_at === null}
-                                  onClick={() => handleRejectUser(item.id)}
-                                >
-                                  Reject
-                                </button>
-                              </div>
+                                  <button
+                                    className={`flex item-center gap-3 py-2 px-4  rounded-md text-base ${
+                                      item.approved_at !== null
+                                        ? 'bg-green-600 text-white cursor-default text-sm'
+                                        : 'hover:bg-green-600 text-zinc-600 text-sm hover:text-white duration-300'
+                                    }`}
+                                    disabled={item.approved_at !== null}
+                                    onClick={() => handleApproveUser(item.id)}
+                                  >
+                                    Approve
+                                  </button>
+                                  <button
+                                    className={`flex item-center gap-3 py-2 px-4 rounded-md text-base ${
+                                      item.approved_at === null
+                                        ? 'bg-red-600 text-white cursor-default text-sm'
+                                        : 'hover:bg-red-600 text-zinc-600 text-sm hover:text-white duration-300'
+                                    }`}
+                                    disabled={item.approved_at === null}
+                                    onClick={() => handleRejectUser(item.id)}
+                                  >
+                                    Reject
+                                  </button>
+                                </div>
+                              </DropdownPortal>
                             )}
                           </div>
                           <button
