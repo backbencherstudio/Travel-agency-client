@@ -15,7 +15,7 @@ const Signup = () => {
   const navigate = useNavigate();
   
   const onSubmit = async (data) => {
-      console.log('data', data)
+      // console.log('data', data)
       const res = await AuthApis.save(data);
       console.log('res', res)
       if (res.success) {

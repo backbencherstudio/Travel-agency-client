@@ -32,7 +32,7 @@ const TourDetails = () => {
         setTour(res?.data)
         setLoading(false);
       }
-      console.log('res', res)
+      // console.log('res', res)
     }
         
     // const tour =  {

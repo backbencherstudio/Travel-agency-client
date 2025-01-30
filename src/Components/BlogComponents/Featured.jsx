@@ -3,7 +3,7 @@ import moment from "moment";
 import Nature from "../../assets/img/blogs/nature.jpg"
 
 const Featured = ({ blogs }) => {
-    console.log('blogs', blogs)
+    // console.log('blogs', blogs)
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-10 bg-[#FFFFFF] px-2 md:px-10 py-6 rounded-lg mb-8 ">
             <div >

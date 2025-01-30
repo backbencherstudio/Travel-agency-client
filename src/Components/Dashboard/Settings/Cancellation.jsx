@@ -32,7 +32,7 @@ const Cancellation = () => {
 
   const getCancellationData = async () => {
     const res = await CancellationApi.getAllCancellation();
-    console.log('res', res)
+    // console.log('res', res)
     if (res.success) {
       setBody(res.data?.cancellation_policy)
     }
