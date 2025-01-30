@@ -16,7 +16,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import { AiOutlineDelete } from 'react-icons/ai'
 import { RxCross2 } from 'react-icons/rx'
-import { FiEdit2 } from 'react-icons/fi'
+
 import {
   deleteSocialMediaData,
   postSocialMediaData,
@@ -24,6 +24,7 @@ import {
 } from '../../../Apis/SocialMediaCreateAPi'
 import { LuTrash2 } from 'react-icons/lu'
 import Swal from 'sweetalert2'
+import { FaEdit } from 'react-icons/fa'
 
 const SocialMdiaTable = ({
   data = [],
@@ -264,16 +265,16 @@ const SocialMdiaTable = ({
                       <TableCell>
                         <div className='flex items-center justify-center gap-4'>
                           <button
-                            className='text-[#475467] hover:text-blue-700 transform duration-300'
+                            className='text-blue-500 hover:text-blue-600 transform duration-300'
                             onClick={() => openEditModal(item.id)}
                           >
-                            <FiEdit2 className='text-xl' />
+                            <FaEdit  className='text-lg' />
                           </button>
                           <button
                             onClick={() => handleDelete(item.id)}
                             className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <LuTrash2 className='text-xl' />
+                            <LuTrash2 className='text-lg'/>
                           </button>
                         </div>
                       </TableCell>

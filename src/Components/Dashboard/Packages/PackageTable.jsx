@@ -9,7 +9,7 @@ import {
   Paper,
   TablePagination
 } from '@mui/material'
-import { FaRegTrashAlt, FaSearch } from 'react-icons/fa'
+import { FaSearch } from 'react-icons/fa'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { IoIosCheckmark } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
@@ -21,6 +21,7 @@ import Swal from 'sweetalert2'
 import PackageApis from '../../../Apis/PackageApis'
 import debounce from 'lodash.debounce'
 import DropdownPortal from '../../../Shared/DropdownPortal'
+import { LuTrash2 } from 'react-icons/lu'
 
 const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
   const { user } = useContext(AuthContext)
@@ -446,9 +447,9 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
 
                           <button
                             onClick={e => handlePackageDelete(e, item.id)}
-                            className='text-[#475467] hover:text-red-600 transform duration-300'
+                            className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <FaRegTrashAlt className='text-xl' />
+                              <LuTrash2 className='text-lg' />
                           </button>
                         </div>
                       </TableCell>

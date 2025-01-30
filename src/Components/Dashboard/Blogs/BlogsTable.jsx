@@ -1,4 +1,4 @@
-import { FaSearch, FaCheckCircle } from 'react-icons/fa'
+import { FaSearch, FaCheckCircle, FaEdit } from 'react-icons/fa'
 import { useState, useEffect, useRef } from 'react'
 import {
   Table,
@@ -13,7 +13,6 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
-import { FiEdit2 } from 'react-icons/fi'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import BlogApis from '../../../Apis/BlogApi'
 import Swal from 'sweetalert2'
@@ -671,9 +670,9 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                               e.stopPropagation()
                               handleEditClick(item.id)
                             }}
-                            className='text-blue-600'
+                            className='text-blue-500 hover:text-blue-600 transform duration-300'
                           >
-                            <FiEdit2 className='text-xl' />
+                            <FaEdit className='text-lg' />
                           </button>
                           <button
                             onClick={e => {
@@ -682,7 +681,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                             }}
                             className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <LuTrash2 className='text-xl' />
+                            <LuTrash2 className='text-lg' />
                           </button>
                         </div>
                       </TableCell>

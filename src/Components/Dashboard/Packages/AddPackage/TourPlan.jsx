@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FaPlus, FaTrash } from 'react-icons/fa';
+import { FaPlus} from 'react-icons/fa';
 import uploadIcon from '../../../../assets/dashboard/upload-icon.svg';
+import { LuTrash2 } from 'react-icons/lu';
 
 const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -117,10 +118,10 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                             {tourPlan.length > 1 && index > 0 && (
                                 <button
                                     onClick={() => deleteDay(index)}
-                                    className=" bg-red-500 text-white p-2 rounded-full"
+                                   className='text-red-600 hover:text-red-700 transform duration-300'
                                     title="Delete Day"
                                 >
-                                    <FaTrash />
+                                    <LuTrash2  className='text-lg'/>
                                 </button>
                             )}
                         </div>

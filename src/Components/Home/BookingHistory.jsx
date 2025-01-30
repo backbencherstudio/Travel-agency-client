@@ -245,7 +245,7 @@ const BookingHistory = ({ title, data = [], columns = {} }) => {
                         <div className='flex items-center justify-center gap-4'>
                           <Link to={`/booking-history-review/${item.id}`}>
                             <button className='text-[#475467] hover:text-blue-700 transform duration-300'>
-                              <FaEye className='text-xl' />
+                              <FaEye className='text-lg' />
                             </button>
                           </Link>
                         </div>

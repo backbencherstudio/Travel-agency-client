@@ -1,4 +1,4 @@
-import { FaEye, FaEyeSlash, FaSearch, FaTrash } from 'react-icons/fa'
+import { FaEdit, FaEye, FaEyeSlash, FaSearch } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
 import {
   Table,
@@ -13,7 +13,7 @@ import {
   Dialog,
   DialogContent
 } from '@mui/material'
-import { FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi'
+import {  FiTrash2 } from 'react-icons/fi'
 import { useForm } from 'react-hook-form'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import {
@@ -26,6 +26,7 @@ import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import debounce from 'lodash.debounce'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { LuTrash2 } from 'react-icons/lu'
 
 
 const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
@@ -333,15 +334,15 @@ const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
                               e.stopPropagation()
                               handleOpenModal(item)
                             }}
-                            className='text-[#475467] hover:text-blue-700 transform duration-300'
+                            className='text-blue-500 hover:text-blue-600 transform duration-300'
                           >
-                            <FiEdit2 className='text-xl' />
+                            <FaEdit  className='text-lg' />
                           </button>
                           <button
                             onClick={() => handleDeleteUser(item.id)}
-                            className='text-[#475467] hover:text-red-700 transform duration-300'
+                            className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <FiTrash2 className='text-xl' />
+                            <LuTrash2 className='text-lg' />
                           </button>
                         </div>
                       </TableCell>

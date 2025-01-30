@@ -12,10 +12,11 @@ import {
   CircularProgress,
   TablePagination
 } from '@mui/material'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaEdit } from 'react-icons/fa'
 import ProjectDisAllowTravellerApis from '../../../Apis/ProjectDisAllowTravellerApis'
 import axiosClient from '../../../axiosClient'
 import { Helmet } from 'react-helmet-async'
+import { LuTrash2 } from 'react-icons/lu'
 const PackageDisAllowTraveller = () => {
   const {
     register,
@@ -192,17 +193,17 @@ const PackageDisAllowTraveller = () => {
                           <TableCell>
                             <button
                               type='button'
-                              className='text-blue-500 hover:underline'
+                              className='text-blue-500 text-lg'
                               onClick={() => handleEdit(disallowTraveller)}
                             >
                               <FaEdit />
                             </button>
                             <button
                               type='button'
-                              className='text-red-500 hover:underline ml-4'
+                              className='text-red-600 hover:text-red-700 transform duration-300 ml-4'
                               onClick={() => handleDelete(disallowTraveller.id)}
                             >
-                              <FaTrash />
+                              <LuTrash2  className='text-lg'/>
                             </button>
                           </TableCell>
                         </TableRow>

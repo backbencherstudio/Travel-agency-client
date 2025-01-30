@@ -249,15 +249,15 @@ const FaqAdded = () => {
                 <div className='flex gap-2'>
                   <button
                     onClick={() => handleEditFaq(faq)}
-                    className='text-blue-500 hover:text-blue-700 font-semibold flex items-center'
+                    className='text-blue-500 hover:text-blue-700 flex items-center'
                   >
-                    <FaEdit className='mr-2' />
+                    <FaEdit className='mr-2 text-lg' />
                   </button>
                   <button
                     onClick={() => handleDeleteFaq(faq.id)}
-                    className='text-red-500 hover:text-red-700 font-semibold'
+                  className='text-red-600 hover:text-red-700 transform duration-300'
                   >
-                    <LuTrash2 />
+                    <LuTrash2  className='text-lg'/>
                   </button>
                 </div>
               </li>

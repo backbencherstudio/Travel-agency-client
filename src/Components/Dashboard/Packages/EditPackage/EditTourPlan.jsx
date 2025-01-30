@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaPlus } from 'react-icons/fa';
 import uploadIcon from '../../../../assets/dashboard/upload-icon.svg';
 import axiosClient from '../../../../axiosClient';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { LuTrash2 } from 'react-icons/lu';
 
 const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -137,10 +138,10 @@ const EditTourPlan = ({ package_id, tourPlan, setTourPlan, packageType }) => {
                             <div className='flex gap-4'>
                                 <button
                                     onClick={() => editDay(dayPlan.id)}
-                                    className=" bg-blue-500 text-white p-2 rounded-full"
+                                    className=" bg-blue-500 text-lg"
                                     title="Edit Day"
                                 >
-                                    <FaEdit />
+                                    <FaEdit className='text-lg'/>
                                 </button>
                                 {loading ? (
                                     <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-orange-600 border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
@@ -154,10 +155,10 @@ const EditTourPlan = ({ package_id, tourPlan, setTourPlan, packageType }) => {
                                     {tourPlan && (
                                         <button
                                         onClick={() => deleteDay(index, dayPlan.id)}
-                                        className=" bg-red-500 text-white p-2 rounded-full"
+                                        className=" text-red-600 hover:text-red-700 transform duration-300"
                                         title="Delete Day"
                                         >
-                                        <FaTrash />
+                                        <LuTrash2  className='text-lg'/>
                                         </button>
                                     )}
                                 </div>

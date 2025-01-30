@@ -298,8 +298,8 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                       <TableCell>
                         <div className='flex items-center justify-center gap-4'>
                           {/* Delete Button */}
-                          <button className='text-[#475467] hover:text-red-600 transform duration-300'>
-                            <LuTrash2 className='text-xl' />
+                          <button className='text-red-600 hover:text-red-700 transform duration-300'>
+                            <LuTrash2 className='text-lg' />
                           </button>
                           {/* View Button */}
                           <button
@@ -310,7 +310,7 @@ const BookingTable = ({ tableType = '', title, data, columns }) => {
                             // }
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
                           >
-                            <FaEye className='text-xl' />
+                            <FaEye className='text-lg' />
                           </button>
                         </div>
                       </TableCell>

@@ -310,18 +310,19 @@ const BookingTable = ({ title }) => {
                       </TableCell>
                       <TableCell>
                         <div className='flex items-center justify-center gap-4'>
-                          <button
-                            onClick={() => handleDelete(item.id)}
-                            className='text-[#475467] hover:text-red-600 transform duration-300'
-                          >
-                            <LuTrash2 className='text-xl' />
-                          </button>
-                          <button
+                        <button
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
                             onClick={() => handleOpen(item)}
                           >
-                            <FaEye className='text-xl' />
+                            <FaEye className='text-lg' />
                           </button>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className='text-red-600 hover:text-red-700 transform duration-300'
+                          >
+                            <LuTrash2 className='text-lg' />
+                          </button>
+                         
                         </div>
                       </TableCell>
                     </TableRow>
