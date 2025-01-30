@@ -12,13 +12,14 @@ import {
   CircularProgress,
   TablePagination
 } from '@mui/material'
-import { FaEdit, FaTrash } from 'react-icons/fa'
 import axiosClient from '../../../axiosClient'
 import toast from 'react-hot-toast'
 import Swal from 'sweetalert2'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Helmet } from 'react-helmet-async'
+import { LuTrash2 } from 'react-icons/lu'
+import { FaEdit } from 'react-icons/fa'
 
 const Language = () => {
   // Initialize form handling and states
@@ -265,23 +266,14 @@ const Language = () => {
                               {/* Edit button */}
                               <button
                                 onClick={event => handleEdit(language)}
-                                className='flex items-center justify-center text-blue-600 hover:text-blue-800'
-                                style={{
-                                  width: '40px',
-                                  height: '40px',
-                                  padding: '0',
-                                  margin: '0'
-                                }}
+                                className=' text-blue-600 hover:text-blue-800'
                               >
-                                <FontAwesomeIcon
-                                  icon={faEdit}
-                                  style={{ width: '20px', height: '20px' }}
-                                />
+                                <FaEdit className='text-lg' />
                               </button>
                               {/* Delete button */}
                               <button
                                 onClick={() => handleDelete(language.id)}
-                                className='flex items-center justify-center text-red-600 hover:text-red-800'
+                                className='flex items-center justify-center text-red-600 hover:text-red-700 transform duration-300'
                                 style={{
                                   width: '40px',
                                   height: '40px',
@@ -289,10 +281,7 @@ const Language = () => {
                                   margin: '0'
                                 }}
                               >
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                  style={{ width: '20px', height: '20px' }}
-                                />
+                                <LuTrash2 className='text-lg' />
                               </button>
                             </div>
                           </TableCell>

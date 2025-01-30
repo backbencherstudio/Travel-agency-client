@@ -26,7 +26,9 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
   const navigate = useNavigate()
   const dropdownRef = useRef(null)
   const [searchParams, setSearchParams] = useSearchParams()
-  const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || 'All Vendor')
+  const [selectedStatus, setSelectedStatus] = useState(
+    searchParams.get('status') || 'All Vendor'
+  )
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenAction, setIsOpenAction] = useState(null)
   const statuses = ['All Vendor', 'Approved', 'Rejected']
@@ -52,14 +54,14 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
       }
 
       setFilteredData(filtered)
-      
+
       // Update URL with search query and status
       const params = new URLSearchParams(window.location.search)
       if (query) params.set('search', query)
       else params.delete('search')
       if (status !== 'All Vendor') params.set('status', status)
       else params.delete('status')
-      
+
       const newUrl = `${window.location.pathname}?${params.toString()}`
       window.history.pushState({}, '', newUrl)
     }, 500),
@@ -174,7 +176,7 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
     setIsOpenAction(isOpenAction === id ? null : id)
   }
 
-  const handleStatusChange = (status) => {
+  const handleStatusChange = status => {
     setSelectedStatus(status)
     setSearchParams({ status })
     setIsOpen(false)
@@ -402,7 +404,6 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
                               onClick={e => handleThreeDotsClick(e, item.id)}
                               className='text-blue-600 transition-all duration-500 ease-in-out'
                             >
-                              {/* Conditionally render icons with fade-in/out */}
                               {isOpenAction === item.id ? (
                                 <RxCross2 className='text-xl' />
                               ) : (
@@ -411,7 +412,10 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
                             </button>
 
                             {isOpenAction === item.id && (
-                              <DropdownPortal isOpen={isOpenAction === item.id} position={dropdownPosition}>
+                              <DropdownPortal
+                                isOpen={isOpenAction === item.id}
+                                position={dropdownPosition}
+                              >
                                 <div
                                   ref={ref =>
                                     actionRefs.current.set(item.id, ref)
@@ -450,12 +454,12 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
                             }
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
                           >
-                            <FaEye className='text-xl' />
+                            <FaEye className='text-lg' />
                           </button>
                           {/* Delete Button */}
                           <button
                             onClick={() => handleDeleteUser(item.id)}
-                            className='text-[#475467] hover:text-red-600 transform duration-300'
+                           className='text-red-600 hover:text-red-700 transform duration-300'
                           >
                             <LuTrash2 className='text-lg' />
                           </button>

@@ -9,8 +9,8 @@ import {
   Paper,
   TablePagination
 } from '@mui/material'
-import { FaRegTrashAlt, FaSearch } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
+import { FaSearch } from 'react-icons/fa'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { IoIosCheckmark } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
 import { BsThreeDots } from 'react-icons/bs'
@@ -20,6 +20,8 @@ import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
 import Swal from 'sweetalert2'
 import PackageApis from '../../../Apis/PackageApis'
 import debounce from 'lodash.debounce'
+import DropdownPortal from '../../../Shared/DropdownPortal'
+import { LuTrash2 } from 'react-icons/lu'
 
 const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
   const { user } = useContext(AuthContext)
@@ -28,6 +30,11 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
   const [showTab, setShowTab] = useState('all')
   const navigate = useNavigate()
   const actionRefs = useRef(new Map())
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [selectedStatus, setSelectedStatus] = useState(
+    searchParams.get('status') || 'All Packages'
+  )
 
   // Pagination states
   const [page, setPage] = useState(0)
@@ -45,6 +52,11 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
 
   const toggleActionOpen = (e, id) => {
     e.stopPropagation()
+    const rect = e.currentTarget.getBoundingClientRect()
+    setDropdownPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX
+    })
     setIsOpenAction(isOpenAction === id ? null : id)
   }
 
@@ -374,57 +386,70 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
                     </TableCell>
                     {columns?.action && (
                       <TableCell>
-                        <div className='flex items-center gap-1'>
-                          <div className='relative'>
+                        <div className='flex items-center gap-3'>
+                          <div className='relative flex justify-center'>
                             <button
                               onClick={e => toggleActionOpen(e, item.id)}
-                              className='text-lg p-text p-1 rounded-full'
+                              className='text-blue-600 transition-all duration-500 ease-in-out'
                             >
-                              <BsThreeDots />
+                              {isOpenAction === item.id ? (
+                                <RxCross2 className='text-xl' />
+                              ) : (
+                                <BsThreeDots className='text-xl' />
+                              )}
                             </button>
+
                             {isOpenAction === item.id && (
-                              <div
-                                className={`bg-white p-4 absolute flex flex-col top-full -right-5 mt-2 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50`}
-                                ref={ref =>
-                                  ref && actionRefs.current.set(item.id, ref)
-                                }>
-                                  <div className="w-4 h-4 bg-white rotate-45 absolute -top-[7px] right-[45px] hidden xl:block shadow-2xl"></div>
+                              <DropdownPortal
+                                isOpen={isOpenAction === item.id}
+                                position={dropdownPosition}
+                              >
+                                <div
+                                  ref={ref =>
+                                    ref && actionRefs.current.set(item.id, ref)
+                                  }
+                                  className='absolute bg-white py-5 px-4 flex flex-col -right-20 top-5 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
+                                >
                                   {user?.type === 'admin' && (
                                     <>
-                                      <button onClick={() => handleApproveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
-                                        <FaCheck className="mt-1" />
+                                      <button
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-base ${
+                                          item.approved_at !== null
+                                            ? 'bg-green-600 text-white cursor-default text-sm'
+                                            : 'hover:bg-green-600 text-zinc-600 text-sm hover:text-white duration-300'
+                                        }`}
+                                        disabled={item.approved_at !== null}
+                                        onClick={() =>
+                                          handleApproveClick(item.id)
+                                        }
+                                      >
                                         Approve
                                       </button>
-                                      <button onClick={() => handleRejectClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
-                                        <RxCross2 className="text-xl" />
+                                      <button
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-base ${
+                                          item.approved_at === null
+                                            ? 'bg-red-600 text-white cursor-default text-sm'
+                                            : 'hover:bg-red-600 text-zinc-600 text-sm hover:text-white duration-300'
+                                        }`}
+                                        disabled={item.approved_at === null}
+                                        onClick={() =>
+                                          handleRejectClick(item.id)
+                                        }
+                                      >
                                         Reject
                                       </button>
                                     </>
                                   )}
-                                  {user?.id === item?.user?.id && (
-                                    <>
-                                      <button onClick={() => handleActiveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
-                                        <FaCheck className="mt-1" />
-                                        Active
-                                    </button>
-                                    <button
-                                      onClick={() => handleRejectClick(item.id)}
-                                      className='flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300'
-                                    >
-                                      {/* <RxCross2 className='text-xl' /> */}
-                                      Reject
-                                    </button>
-                                  </>
-                                )}
-                              </div>
+                                </div>
+                              </DropdownPortal>
                             )}
                           </div>
 
                           <button
                             onClick={e => handlePackageDelete(e, item.id)}
-                            className='flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300'
+                            className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <FaRegTrashAlt className='text-xl' />
+                              <LuTrash2 className='text-lg' />
                           </button>
                         </div>
                       </TableCell>

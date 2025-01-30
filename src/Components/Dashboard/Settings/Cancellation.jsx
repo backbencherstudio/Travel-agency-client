@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { FiEdit2 } from 'react-icons/fi'
 import TinyMCE from '../../../Shared/TinyMCE'
 import { useForm } from 'react-hook-form'
 import axiosClient from '../../../axiosClient'
 import CancellationApi from '../../../Apis/CancellationApi'
 import WebsiteInfoApis from '../../../Apis/WebsiteInfoApis'
 import { Helmet } from 'react-helmet-async';
+import { FaEdit } from 'react-icons/fa'
 
 const Cancellation = () => {
   const {
@@ -105,7 +105,7 @@ const Cancellation = () => {
               className='bg-[#FDEFEA] p-2 sm:p-3 rounded-md text-[#475467]'
               onClick={handleEdit}
             >
-              <FiEdit2 className='text-lg sm:text-xl' />
+              <FaEdit   className='text-lg sm:text-xl' />
             </button>
           )} */}
         </div>

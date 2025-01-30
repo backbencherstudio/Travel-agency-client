@@ -346,7 +346,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                               )
                             }
                           >
-                            <FaEye className='text-xl' />
+                            <FaEye className='text-lg' />
                           </button>
                         </TableCell>
                       {/* )} */}

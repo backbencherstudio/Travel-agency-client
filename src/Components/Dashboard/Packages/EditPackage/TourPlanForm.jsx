@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import uploadIcon from '../../../../assets/dashboard/upload-icon.svg';
 import axiosClient from '../../../../axiosClient';
 import { Link, useNavigate, useParams } from 'react-router-dom';

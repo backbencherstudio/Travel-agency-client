@@ -1,4 +1,4 @@
-import { FaSearch, FaCheckCircle } from 'react-icons/fa'
+import { FaSearch, FaCheckCircle, FaEdit } from 'react-icons/fa'
 import { useState, useEffect, useRef } from 'react'
 import {
   Table,
@@ -13,13 +13,13 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
-import { FiEdit2 } from 'react-icons/fi'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import BlogApis from '../../../Apis/BlogApi'
 import Swal from 'sweetalert2'
 import useDebounce from '../../../Shared/debounce'
 import { BsThreeDots } from 'react-icons/bs'
 import { RxCross2 } from 'react-icons/rx'
+import DropdownPortal from '../../../Shared/DropdownPortal'
 
 const BlogsTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -35,10 +35,16 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [isOpenAction, setIsOpenAction] = useState(null)
   const actionRefs = useRef(new Map())
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
 
   // drop down
   const handleThreeDotsClick = (e, id) => {
     e.stopPropagation()
+    const rect = e.currentTarget.getBoundingClientRect()
+    setDropdownPosition({
+      top: rect.bottom + window.scrollY,
+      left: rect.left + window.scrollX
+    })
     setIsOpenAction(isOpenAction === id ? null : id)
   }
 
@@ -71,27 +77,27 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
 
   // Debounced function
   const fetchSearchResults = async (query = '', status = 'All Status') => {
-    setIsLoading(true);
-  
+    setIsLoading(true)
+
     try {
-      let apiStatus = '';
-      if (status === 'Active') apiStatus = '1';
-      if (status === 'Deactivated') apiStatus = '0';
-  
-      const response = await BlogApis.searchBlogs(query, apiStatus);
+      let apiStatus = ''
+      if (status === 'Active') apiStatus = '1'
+      if (status === 'Deactivated') apiStatus = '0'
+
+      const response = await BlogApis.searchBlogs(query, apiStatus)
       if (!response.errors && Array.isArray(response.data)) {
-        setFilteredData(response.data);
+        setFilteredData(response.data)
       } else {
-        setFilteredData([]); // Set to empty array to prevent undefined error
+        setFilteredData([]) // Set to empty array to prevent undefined error
       }
     } catch (error) {
-      console.error('Search error:', error);
-      setFilteredData([]); // Prevents crashes due to undefined data
+      console.error('Search error:', error)
+      setFilteredData([]) // Prevents crashes due to undefined data
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
-  
+  }
+
   // Apply the debounce hook
   // Increase debounce delay to 1 second
   const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300) // 1000ms delay
@@ -136,17 +142,16 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
 
   // Update filtered data when the status changes
   useEffect(() => {
-    if (!data) return; // Ensure `data` is not undefined
-  
-    let filtered = data;
+    if (!data) return // Ensure `data` is not undefined
+
+    let filtered = data
     if (selectedStatus !== 'All Status') {
       filtered = filtered.filter(item =>
         selectedStatus === 'Active' ? item.status === 1 : item.status === 0
-      );
+      )
     }
-    setFilteredData(filtered);
-  }, [selectedStatus, data]);
-  
+    setFilteredData(filtered)
+  }, [selectedStatus, data])
 
   const handleAddBlogClick = () => {
     navigate('/dashboard/add-blog')
@@ -454,7 +459,8 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
 
                       {columns?.approved_at && (
                         <TableCell style={{ minWidth: '200px' }}>
-                          {item?.user?.type === 'admin' || item?.user?.type === 'vendor' ? (
+                          {item?.user?.type === 'admin' ||
+                          item?.user?.type === 'vendor' ? (
                             <>
                               <p className='truncate text-[#475467]'>
                                 {item.approved_at === null ? (
@@ -564,32 +570,12 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                         </TableCell>
                       )}
                       <TableCell>
-                        <div className='relative  flex items-center justify-center gap-4'>
-                          <button
-                            onClick={e => {
-                              e.stopPropagation()
-                              handleDeleteClick(item.id)
-                            }}
-                            className=' text-red-600 hover:text-red-700 transform duration-300'
-                          >
-                            <LuTrash2 className='text-xl' />
-                          </button>
-                          <button
-                            onClick={e => {
-                              e.stopPropagation()
-                              handleEditClick(item.id)
-                            }}
-                            className='text-blue-600'
-                          >
-                            <FiEdit2 className='text-xl' />
-                          </button>
-
+                        <div className='relative flex items-center justify-center gap-4'>
                           <div className='relative flex justify-center'>
                             <button
                               onClick={e => handleThreeDotsClick(e, item.id)}
                               className='text-blue-600 transition-all duration-500 ease-in-out'
                             >
-                              {/* Conditionally render icons with fade-in/out */}
                               {isOpenAction === item.id ? (
                                 <RxCross2 className='text-xl opacity-100 scale-100 transition-transform duration-300 ease-in-out' />
                               ) : (
@@ -598,76 +584,105 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                             </button>
 
                             {isOpenAction === item.id && (
-                              <div
-                                ref={ref =>
-                                  actionRefs.current.set(item.id, ref)
-                                }
-                                className='absolute bg-white p-4  flex flex-col top-full right-0 mt-2 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
+                              <DropdownPortal
+                                isOpen={isOpenAction === item.id}
+                                position={dropdownPosition}
                               >
-                                {item?.user?.type === 'admin' || item?.user?.type === 'vendor' ? (
-                                  <>
-                                    <button
-                                      className={`flex item-center gap-3 p-3 rounded-md text-base ${
-                                        item.status === 1
-                                          ? 'bg-green-600 text-white cursor-default'
-                                          : 'flex item-center gap-3 p-3 hover:bg-green-600 rounded-md text-base text-zinc-600 hover:text-white duration-300'
-                                      }`}
-                                      disabled={item.status === 1}
-                                      onClick={() =>
-                                        handleStatusUpdate(item.id, 'Active')
-                                      }
-                                    >
-                                      Active
-                                    </button>
-                                    <button
-                                      className={`flex item-center gap-3 p-3 rounded-md text-base ${
-                                        item.status === 0
-                                          ? 'bg-red-600 text-white cursor-default'
-                                          : 'flex item-center gap-3 p-3 hover:bg-red-600 rounded-md text-base text-zinc-600 hover:text-white duration-300'
-                                      }`}
-                                      disabled={item.status === 0}
-                                      onClick={() =>
-                                        handleStatusUpdate(item.id, 'Deactive')
-                                      }
-                                    >
-                                      Deactive
-                                    </button>
-                                  </>
-                                ) : item?.user?.type === 'admin' ? (
-                                  <>
-                                    <button
-                                      className={`flex item-center gap-3 p-3 rounded-md text-base ${
-                                        item.approved_at !== null
-                                          ? 'bg-green-600 text-white cursor-default'
-                                          : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
-                                      }`}
-                                      disabled={item.approved_at !== null}
-                                      onClick={() =>
-                                        handleApproveClick(item.id)
-                                      }
-                                    >
-                                      Approve
-                                    </button>
-                                    <button
-                                      className={`flex item-center gap-3 p-3 rounded-md text-base ${
-                                        item.approved_at === null
-                                          ? 'bg-red-600 text-white cursor-default'
-                                          : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
-                                      }`}
-                                      disabled={item.approved_at === null}
-                                      onClick={() => handleRejectClick(item.id)}
-                                    >
-                                      Reject
-                                    </button>
-                                  </>
-                                ) : (
-                                  <p className='text-sm text-gray-500'>
-                                    No actions available
-                                  </p>
-                                )}
-                              </div>
+                                <div
+                                  ref={ref =>
+                                    actionRefs.current.set(item.id, ref)
+                                  }
+                                  className='absolute bg-white py-5 px-4 flex flex-col -right-20 top-5 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
+                                >
+                                  {item?.user?.type === 'admin' ||
+                                  item?.user?.type === 'vendor' ? (
+                                    <>
+                                      <button
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${
+                                          item.status === 1
+                                            ? 'bg-green-600 text-white cursor-default'
+                                            : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
+                                        }`}
+                                        disabled={item.status === 1}
+                                        onClick={() =>
+                                          handleStatusUpdate(item.id, 'Active')
+                                        }
+                                      >
+                                        Active
+                                      </button>
+                                      <button
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${
+                                          item.status === 0
+                                            ? 'bg-red-600 text-white cursor-default'
+                                            : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
+                                        }`}
+                                        disabled={item.status === 0}
+                                        onClick={() =>
+                                          handleStatusUpdate(
+                                            item.id,
+                                            'Deactive'
+                                          )
+                                        }
+                                      >
+                                        Deactive
+                                      </button>
+                                    </>
+                                  ) : item?.user?.type === 'admin' ? (
+                                    <>
+                                      <button
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${
+                                          item.approved_at !== null
+                                            ? 'bg-green-600 text-white cursor-default'
+                                            : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
+                                        }`}
+                                        disabled={item.approved_at !== null}
+                                        onClick={() =>
+                                          handleApproveClick(item.id)
+                                        }
+                                      >
+                                        Approve
+                                      </button>
+                                      <button
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${
+                                          item.approved_at === null
+                                            ? 'bg-red-600 text-white cursor-default'
+                                            : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
+                                        }`}
+                                        disabled={item.approved_at === null}
+                                        onClick={() =>
+                                          handleRejectClick(item.id)
+                                        }
+                                      >
+                                        Reject
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <p className='text-sm text-gray-500'>
+                                      No actions available
+                                    </p>
+                                  )}
+                                </div>
+                              </DropdownPortal>
                             )}
                           </div>
+                          <button
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleEditClick(item.id)
+                            }}
+                            className='text-blue-500 hover:text-blue-600 transform duration-300'
+                          >
+                            <FaEdit className='text-lg' />
+                          </button>
+                          <button
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleDeleteClick(item.id)
+                            }}
+                            className='text-red-600 hover:text-red-700 transform duration-300'
+                          >
+                            <LuTrash2 className='text-lg' />
+                          </button>
                         </div>
                       </TableCell>
                     </TableRow>

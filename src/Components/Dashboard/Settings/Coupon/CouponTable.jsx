@@ -1,4 +1,4 @@
-import { FaSearch } from 'react-icons/fa'
+import { FaEdit, FaSearch } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
 import {
   Table,
@@ -14,7 +14,7 @@ import {
   DialogContent
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
-import { FiEdit2, FiPlus, FiTrash2 } from 'react-icons/fi'
+import {  FiPlus, FiTrash2 } from 'react-icons/fi'
 import { useForm } from 'react-hook-form'
 import { IoMdClose } from 'react-icons/io'
 import { CiImageOn } from 'react-icons/ci'
@@ -22,6 +22,7 @@ import { FaRegSquarePlus } from 'react-icons/fa6'
 import AddEditModal from './AddEditModal'
 import CouponApis from '../../../../Apis/CouponApis'
 import moment from 'moment/moment'
+import { LuTrash2 } from 'react-icons/lu'
 
 const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
   const {
@@ -347,18 +348,18 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
                               e.stopPropagation()
                               handleOpenModal(item)
                             }}
-                            className='text-[#475467] hover:text-blue-700 transform duration-300'
+                            className='text-blue-500 hover:text-blue-600 transform duration-300'
                           >
-                            <FiEdit2 className='text-xl' />
+                              <FaEdit  className='text-lg' />
                           </button>
                           <button
                             onClick={e => {
                               e.stopPropagation()
                               handleCouponDelete(e, item.id)
                             }}
-                            className='text-[#475467] hover:text-blue-700 transform duration-300'
+                            className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <FiTrash2 className='text-xl' />
+                            <LuTrash2 className='text-lg' />
                           </button>
                         </div>
                       </TableCell>

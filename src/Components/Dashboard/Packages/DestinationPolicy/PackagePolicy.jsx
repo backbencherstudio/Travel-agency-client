@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, TablePagination } from '@mui/material';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import axiosClient from '../../../../axiosClient';
 import ProjectPolicyApis from '../../../../Apis/ProjectPolicyApis';
+import { LuTrash2 } from 'react-icons/lu';
 
 const PackagePolicy = () => {
     const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm();
@@ -173,17 +174,18 @@ const PackagePolicy = () => {
                                             <TableCell>
                                                 <button
                                                     type='button'
-                                                    className="text-blue-500 hover:underline"
+                                                    className="text-blue-500 text-lg"
                                                     onClick={() => handleEdit(category)}
                                                 >
                                                     <FaEdit />
                                                 </button>
                                                 <button
                                                     type='button'
-                                                    className="text-red-500 hover:underline ml-4"
+                                                    className="text-red-600 hover:text-red-700 transform duration-300 ml-4"
                                                     onClick={() => handleDelete(category.id)}
                                                 >
-                                                    <FaTrash />
+                                                     <LuTrash2  className='text-lg'/>
+
                                                 </button>
                                             </TableCell>
                                         </TableRow>
