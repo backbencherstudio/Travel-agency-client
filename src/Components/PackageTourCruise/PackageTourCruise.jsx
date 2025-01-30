@@ -6,7 +6,6 @@ import { debounce } from 'lodash';
 
 import { CiSearch } from 'react-icons/ci';
 import { FaRegCalendarAlt, FaStar } from 'react-icons/fa';
-import TourCard from '../../Pages/Tours/tourCard';
 // import package1 from "../../assets/img/travel-packages/package-1.png";
 // import package2 from "../../assets/img/travel-packages/package-2.png";
 // import package3 from "../../assets/img/travel-packages/package-3.png";
@@ -16,6 +15,7 @@ import { useLocation } from 'react-router-dom';
 // import CruiseCard from '../../Pages/Cruises/CruiseCard';
 import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext';
 import ClientLanguageApis from '../../Apis/clientApi/ClientLanguageApis';
+import TourCard from '../../Pages/Tours/TourCard';
 
 function PackageTourCruise() {
     const { destinations, cancellationPolicies } = useTravelData();
