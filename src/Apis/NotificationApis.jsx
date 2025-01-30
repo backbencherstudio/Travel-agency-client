@@ -5,41 +5,67 @@ const NotificationApis = {};
 // Fetch all notifications
 NotificationApis.getNotification = async () => {
   const url = "/api/admin/notification";
-  const res = await axiosClient
-    .get(url)
-    .then((response) => response.data)
-    .catch((error) => {
-      if (error.response) {
-        return {
-          errors: error.response.data.errors || null,
-          message:
-            error.response.data.message || "An error occurred on the server.",
-        };
-      } else {
-        return { message: "An error occurred while fetching notifications." };
-      }
-    });
-  return res;
+  console.log("url", url);
+  
+  try {
+    const response = await axiosClient.get(url);
+    console.log("get response", response);
+    
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Error fetching notifications"
+    };
+  }
 };
 
 // Delete a specific notification
 NotificationApis.deleteNotification = async (id) => {
-    const url = `/api/admin/notification/${id}`; // Adjust the endpoint as per your backend API
-    return axiosClient
-      .delete(url)
-      .then((response) => response.data)
-      .catch((error) => {
-        if (error.response) {
-          return {
-            errors: error.response.data.errors || null,
-            message:
-              error.response.data.message || "An error occurred on the server.",
-          };
-        } else {
-          return { message: "An error occurred while deleting the notification." };
-        }
-      });
-  };
+  console.log("id", id);
   
+  const url = `/api/admin/notification/${id}`;
+  // console.log("delete url", url);
+  
+  try {
+    const response = await axiosClient.delete(url);
+    console.log("response", response);
+    
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Delete notification error:", error.response);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Error deleting notification"
+    };
+  }
+};
+
+// Delete all notifications
+NotificationApis.deleteAllNotifications = async () => {
+  const url = "/api/admin/notification";
+  
+  try {
+    const response = await axiosClient.delete(url);
+    console.log("delete all response", response);
+    
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error("Delete all notifications error:", error.response);
+    return {
+      success: false,
+      message: error.response?.data?.message || "Error deleting all notifications"
+    };
+  }
+};
 
 export default NotificationApis;
