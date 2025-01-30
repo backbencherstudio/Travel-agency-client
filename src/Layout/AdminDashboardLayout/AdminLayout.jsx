@@ -5,6 +5,7 @@ import AdminSidebar from './AdminSidebar';
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider';
 import Loading from '../../Shared/Loading';
 import { Alert } from '@mui/material';
+import { Helmet } from 'react-helmet-async';
 
 const AdminLayout = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -43,6 +44,9 @@ const AdminLayout = () => {
 
   return (
     <div className="w-full h-full min-h-screen bg-[#e9f0f9]">
+       <Helmet>
+        <title>Around 360 - Admin Dashboard</title>
+      </Helmet>
       {loading ? (
         <Loading />
       ) : (

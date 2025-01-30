@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import BlogsTable from '../../../Components/Dashboard/Blogs/BlogsTable'
+import { Helmet } from 'react-helmet-async'
 
 const BlogsPost = () => {
   const [columns] = useState({
@@ -14,11 +15,16 @@ const BlogsPost = () => {
   })
 
   return (
-    <BlogsTable
-      title={'Blog Posts'}
-      // data={data}
-      columns={columns}
-    />
+    <>
+      <Helmet>
+        <title>Around 360 - Blog Posts</title>
+      </Helmet>
+      <BlogsTable
+        title={'Blog Posts'}
+        // data={data}
+        columns={columns}
+      />
+    </>
   )
 }
 

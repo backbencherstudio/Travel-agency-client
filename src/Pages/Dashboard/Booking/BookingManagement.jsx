@@ -3,7 +3,7 @@ import { booking } from '../../../data/booking'
 import BookingManagementTable from '../../../Components/Dashboard/Booking/BookingManagementTable'
 import BookManageApis from '../../../Apis/BookManageApis'
 import { useQuery } from '@tanstack/react-query'
-
+import { Helmet } from 'react-helmet-async'
 const BookingManagement = () => {
   const [columns] = useState({
     bookingId: true,
@@ -22,6 +22,9 @@ const BookingManagement = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>Around 360 - Booking Management</title>
+      </Helmet>
       <BookingManagementTable
         title={'Booking Management'}
         data={data?.data}

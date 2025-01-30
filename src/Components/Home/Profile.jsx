@@ -13,6 +13,7 @@ import Loading from '../../Shared/Loading';
 import Swal from 'sweetalert2';
 import AccountConvertApis from '../../Apis/clientApi/AccountConvertApis';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 const UserProfile = () => {
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm();
@@ -102,6 +103,9 @@ const UserProfile = () => {
 
   return (
     <div className="max-w-[1216px] mx-auto my-24 p-8 bg-[#fffdfd] rounded-3xl border-2 border-[#eaedf1]">
+       <Helmet>
+        <title>Around 360 - Profile</title>
+      </Helmet>
       {loading ? (
         <Loading />
       ) : (

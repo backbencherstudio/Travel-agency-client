@@ -12,6 +12,7 @@ import CustomTable from "../../../Shared/CustomTable";
 import TravelChart from "./TravelChart";
 import { statusData } from "../../../data/data";
 import DashboardApis from "../../../Apis/DashboardApis";
+import { Helmet } from "react-helmet-async";
 
 const DashboardAnalysis = () => {
   const [chartType, setChartType] = useState("Booking");
@@ -111,6 +112,9 @@ const DashboardAnalysis = () => {
 
   return (
     <div>
+       <Helmet>
+        <title>Around 360 - Admin Dashboard</title>
+      </Helmet>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mt-4">
         {dashboardData.map((data, index) => (
           <DashboardCard

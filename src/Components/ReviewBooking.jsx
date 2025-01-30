@@ -15,6 +15,7 @@ import Swal from 'sweetalert2'
 import { IoLocationSharp, IoTime } from 'react-icons/io5'
 import { FiEdit, FiTrash2 } from 'react-icons/fi'
 import { Pagination } from '@mui/material'
+import { Helmet } from 'react-helmet-async'
 const ReviewBooking = () => {
   const { id } = useParams()
   const [bookingData, setBookingData] = useState(null)
@@ -218,6 +219,9 @@ const ReviewBooking = () => {
 
   return (
     <div className='mx-auto max-w-[1216px] px-4 xl:px-0 py-10'>
+       <Helmet>
+        <title>Around 360 - Review Booking</title>
+      </Helmet>
       {bookingData ? (
         <div className='mb-8 flex flex-col md:flex-row justify-between  gap-10 w-full'>
           <div className='w-full lg:w-8/12'>

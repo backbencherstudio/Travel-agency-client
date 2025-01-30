@@ -12,6 +12,7 @@ import c3 from "../../assets/img/contact/cimg3.svg";
 import "./contacts.css";
 // SweetAlert2 for modal notifications
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet-async";
 
 
 const Contacts = () => {
@@ -80,6 +81,9 @@ const Contacts = () => {
   return (
     <>
       {/* Hero Section with background image, page name, and navigation links */}
+      <Helmet>
+        <title>Around 360 - Contact Us</title>
+      </Helmet>
       <div className="bg-white">
         <HeroSection
           bgImg={image}

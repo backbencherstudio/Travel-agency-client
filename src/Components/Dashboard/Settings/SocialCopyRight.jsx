@@ -4,6 +4,7 @@ import { getSocialMediaData } from '../../../Apis/SocialMediaCreateAPi';
 import { useForm } from 'react-hook-form';
 import WebsiteInfoApis from '../../../Apis/WebsiteInfoApis';
 import Loading from '../../../Shared/Loading';
+import { Helmet } from 'react-helmet-async';
 
 const SocialCopyRight = () => {
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm()
@@ -55,12 +56,16 @@ const SocialCopyRight = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div>
-      <SocialMdiaTable
-        data={socialMediaData}
-        columns={columns}
-        onAddSocialMedia={handleAddSocialMedia}
-        fetchData={fetchData}
+    <>
+      <Helmet>
+        <title>Around 360 - Social & Copyright</title>
+      </Helmet>
+      <div>
+        <SocialMdiaTable
+          data={socialMediaData}
+          columns={columns}
+          onAddSocialMedia={handleAddSocialMedia}
+          fetchData={fetchData}
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className='m-6 flex flex-col gap-4'>
@@ -72,8 +77,9 @@ const SocialCopyRight = () => {
           </span>
         )}
         <button type='submit' className='px-5 py-3 bg-[#EB5B2A] w-fit text-xs text-white rounded'>Submit</button>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 };
 

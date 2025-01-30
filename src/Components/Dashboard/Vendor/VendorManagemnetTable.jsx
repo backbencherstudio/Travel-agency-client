@@ -1,5 +1,5 @@
 import { FaEye, FaSearch } from 'react-icons/fa'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   Table,
   TableBody,
@@ -10,27 +10,66 @@ import {
   Paper,
   TablePagination
 } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { LuMailOpen, LuTrash2 } from 'react-icons/lu'
 import { MdKeyboardArrowDown } from 'react-icons/md'
+import debounce from 'lodash/debounce'
+import { BsThreeDots } from 'react-icons/bs'
+import Swal from 'sweetalert2'
+import { deleteUser, approveUser, rejectUser } from '../../../Apis/GetUserApis'
+import { RxCross2 } from 'react-icons/rx'
 
 const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
   const navigate = useNavigate()
-  const dropdownRef = useRef(null) // Reference for dropdown
-  const [selectedStatus, setSelectedStatus] = useState('All Vendor')
+  const dropdownRef = useRef(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || 'All Vendor')
   const [isOpen, setIsOpen] = useState(false)
-  const statuses = [
-    'All Vendor',
-    'Requests',
-    'Pending',
-    'Confirmed',
-    'Canceled'
-  ]
-  // Pagination states
+  const [isOpenAction, setIsOpenAction] = useState(null)
+  const statuses = ['All Vendor', 'Approved', 'Rejected']
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
+  const actionRefs = useRef(new Map())
+
+  // Debounced filter function
+  const debouncedFilter = useCallback(
+    debounce((query, status, data) => {
+      let filtered = data.filter(item =>
+        item.name.toLowerCase().includes(query.toLowerCase())
+      )
+
+      // Filter by status
+      if (status !== 'All Vendor') {
+        filtered = filtered.filter(item => {
+          if (status === 'Approved') return item.approved_at !== null
+          if (status === 'Rejected') return item.approved_at === null
+          return true
+        })
+      }
+
+      setFilteredData(filtered)
+      
+      // Update URL with search query and status
+      const params = new URLSearchParams(window.location.search)
+      if (query) params.set('search', query)
+      else params.delete('search')
+      if (status !== 'All Vendor') params.set('status', status)
+      else params.delete('status')
+      
+      const newUrl = `${window.location.pathname}?${params.toString()}`
+      window.history.pushState({}, '', newUrl)
+    }, 500),
+    []
+  )
+
+  useEffect(() => {
+    debouncedFilter(searchQuery, selectedStatus, data)
+    return () => {
+      debouncedFilter.cancel()
+    }
+  }, [searchQuery, selectedStatus, data, debouncedFilter])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -46,18 +85,94 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
       navigate(`${id}`)
     }
   }
-  // Close dropdown when clicking outside
+
   useEffect(() => {
     const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false)
       }
+
+      if (isOpenAction !== null) {
+        const actionRef = actionRefs.current.get(isOpenAction)
+        if (actionRef && !actionRef.contains(event.target)) {
+          setIsOpenAction(null)
+        }
+      }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [])
+  }, [isOpenAction])
+
+  // Delete User Function
+  const handleDeleteUser = async id => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this user!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    })
+
+    if (result.isConfirmed) {
+      try {
+        await deleteUser(id)
+        Swal.fire('Deleted!', 'The user has been deleted.', 'success')
+        setFilteredData(prevData => prevData.filter(item => item.id !== id))
+      } catch (error) {
+        Swal.fire('Error!', 'Failed to delete the user.', 'error')
+      }
+    }
+  }
+
+  // Approve User Function
+  const handleApproveUser = async id => {
+    try {
+      await approveUser(id)
+      Swal.fire('Success!', 'User has been approved.', 'success')
+      setFilteredData(prevData =>
+        prevData.map(item =>
+          item.id === id
+            ? { ...item, approved_at: new Date().toISOString() }
+            : item
+        )
+      )
+    } catch (error) {
+      Swal.fire('Error!', 'Failed to approve user.', 'error')
+    }
+  }
+
+  // Reject User Function
+  const handleRejectUser = async id => {
+    try {
+      await rejectUser(id)
+      Swal.fire('Success!', 'User has been rejected.', 'success')
+      setFilteredData(prevData =>
+        prevData.map(item =>
+          item.id === id ? { ...item, approved_at: null } : item
+        )
+      )
+    } catch (error) {
+      Swal.fire('Error!', 'Failed to reject user.', 'error')
+    }
+  }
+
+  // drop down
+  const handleThreeDotsClick = (e, id) => {
+    e.stopPropagation()
+    setIsOpenAction(isOpenAction === id ? null : id)
+  }
+
+  const handleStatusChange = (status) => {
+    setSelectedStatus(status)
+    setSearchParams({ status })
+    setIsOpen(false)
+  }
+
   return (
     <div>
       <div className='flex flex-col md:flex-row justify-between items-center mb-7'>
@@ -69,16 +184,7 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
               placeholder='Search...'
               className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
-              onChange={e => {
-                setSearchQuery(e.target.value)
-                setFilteredData(
-                  data.filter(item =>
-                    item.travelerName
-                      .toLowerCase()
-                      .includes(e.target.value.toLowerCase())
-                  )
-                )
-              }}
+              onChange={e => setSearchQuery(e.target.value)}
             />
             <FaSearch className='absolute top-3 left-3 text-zinc-400' />
           </div>
@@ -104,7 +210,7 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
                     {statuses.map(status => (
                       <button
                         key={status}
-                        // onClick={() => handleStatusChange(status)}
+                        onClick={() => handleStatusChange(status)}
                         className={`w-full px-5 py-5 text-left text-sm hover:bg-gray-200 ${
                           selectedStatus === status
                             ? 'bg-gray-100 font-semibold'
@@ -129,34 +235,72 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
               <TableRow>
                 {columns?.name && (
                   <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                    sx={{
+                      color: '#475467',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      width: '25%'
+                    }}
                   >
                     Vendor Name
                   </TableCell>
                 )}
                 {columns?.phone && (
                   <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                    sx={{
+                      color: '#475467',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      width: '25%'
+                    }}
                   >
                     Phone Number
                   </TableCell>
                 )}
                 {columns?.address && (
                   <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                    sx={{
+                      color: '#475467',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      width: '25%'
+                    }}
                   >
                     Address
                   </TableCell>
                 )}
-                {columns?.expert && (
+                {columns?.status && (
                   <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                    sx={{
+                      color: '#475467',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      width: '25%'
+                    }}
                   >
-                    Expert
+                    Status
                   </TableCell>
                 )}
+                {columns?.type && (
+                  <TableCell
+                    sx={{
+                      color: '#475467',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      width: '25%'
+                    }}
+                  >
+                    Type
+                  </TableCell>
+                )}
+
                 <TableCell
-                  sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
+                  sx={{
+                    color: '#475467',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    width: '120px'
+                  }}
                 >
                   Action
                 </TableCell>
@@ -164,7 +308,7 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
             </TableHead>
 
             <TableBody className='text-nowrap'>
-              {filteredData.length > 0 ? (
+              {filteredData?.length > 0 ? (
                 filteredData
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
@@ -177,17 +321,30 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
                       onClick={() => handleRowClick(item.id)}
                     >
                       {columns?.name && (
-                        <TableCell style={{ minWidth: '200px' }}>
-                          <div className='flex items-center gap-3'>
-                            <img
-                              className='rounded-lg'
-                              src={item.travelerImg}
-                              alt={item.travelerName}
-                              style={{ width: '44px', height: '44px' }}
-                            />
+                        <TableCell style={{ width: '25%' }}>
+                          <div
+                            onClick={() =>
+                              navigate(`/dashboard/vendor-details/${item.id}`)
+                            }
+                            className='flex items-center gap-3 cursor-pointer '
+                          >
+                            {item.name.startsWith('http') ? (
+                              <img
+                                className='rounded-lg'
+                                src={item.name}
+                                alt={item.name}
+                                style={{ width: '44px', height: '44px' }}
+                              />
+                            ) : (
+                              <div className='w-[44px] h-[44px] rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-md'>
+                                <span className='text-white text-xl font-semibold '>
+                                  {item.name?.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            )}
                             <div>
-                              <p className='truncate text-[#1D1F2C] text-[15px] font-medium'>
-                                {item.travelerName}
+                              <p className='truncate text-[#1D1F2C] text-[15px] font-medium hover:text-blue-600 transform duration-300'>
+                                {item.name}
                               </p>
                               <p className='truncate text-[#757D83] text-[14px] font-medium flex  items-center gap-2 mt-1'>
                                 <LuMailOpen />
@@ -198,44 +355,100 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
                         </TableCell>
                       )}
                       {columns?.phone && (
-                        <TableCell>
+                        <TableCell style={{ width: '25%' }}>
                           <p className='truncate text-[#475467]'>
-                            {item.phone}
+                            {item.phone_number
+                              ? item.phone_number
+                              : 'Not Available'}
                           </p>
                         </TableCell>
                       )}
                       {columns?.address && (
-                        <TableCell>
+                        <TableCell style={{ width: '25%' }}>
                           <p className='truncate text-[#475467]'>
-                            {item.address}
+                            {item.address ? item.address : 'Not Available'}
                           </p>
                         </TableCell>
                       )}
-                      {columns?.expert && (
-                        <TableCell>
-                          <p>
-                            <span className='bg-[#FDEFEA] truncate text-[#475467] px-4 py-2 rounded-lg'>
-                              {item.expert}
-                            </span>
+                      {columns?.status && (
+                        <TableCell style={{ width: '25%' }}>
+                          <p
+                            className={`truncate px-2 py-1 rounded-full text-center w-24 ${
+                              item.approved_at === null
+                                ? 'border bg-[#FEF3F2] border-[#bb233ab5] text-red-600'
+                                : 'bg-[#ECFDF3] border-green-500 text-green-600 border'
+                            }`}
+                          >
+                            {item.approved_at === null
+                              ? 'Rejected'
+                              : 'Approved'}
                           </p>
                         </TableCell>
                       )}
-                      <TableCell>
+
+                      <TableCell style={{ width: '120px' }}>
                         <div className='flex gap-4'>
-                          {/* Delete Button */}
-                          <button className='text-[#475467] hover:text-red-600 transform duration-300'>
-                            <LuTrash2 className='text-xl' />
-                          </button>
+                          {' '}
                           {/* View Button */}
+                          <div className='relative flex justify-center'>
+                            <button
+                              onClick={e => handleThreeDotsClick(e, item.id)}
+                              className='text-blue-600 transition-all duration-500 ease-in-out'
+                            >
+                              {/* Conditionally render icons with fade-in/out */}
+                              {isOpenAction === item.id ? (
+                                <RxCross2 className='text-xl opacity-100 scale-100 transition-transform duration-300 ease-in-out' />
+                              ) : (
+                                <BsThreeDots className='text-xl opacity-100 scale-100 transition-transform duration-300 ease-in-out' />
+                              )}
+                            </button>
+
+                            {isOpenAction === item.id && (
+                              <div
+                                ref={ref =>
+                                  actionRefs.current.set(item.id, ref)
+                                }
+                                className='absolute bg-white p-4  flex flex-col top-full right-0 mt-2 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
+                              >
+                                <button
+                                  className={`flex item-center gap-3 p-3 rounded-md text-base ${
+                                    item.approved_at !== null
+                                      ? 'bg-green-600 text-white cursor-default'
+                                      : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
+                                  }`}
+                                  disabled={item.approved_at !== null}
+                                  onClick={() => handleApproveUser(item.id)}
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  className={`flex item-center gap-3 p-3 rounded-md text-base ${
+                                    item.approved_at === null
+                                      ? 'bg-red-600 text-white cursor-default'
+                                      : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
+                                  }`}
+                                  disabled={item.approved_at === null}
+                                  onClick={() => handleRejectUser(item.id)}
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            )}
+                          </div>
                           <button
                             onClick={() =>
-                              navigate(
-                                `/dashboard/vendor-details/${item.id}`
-                              )
+                              navigate(`/dashboard/vendor-details/${item.id}`)
                             }
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
                           >
                             <FaEye className='text-xl' />
+                          </button>
+                          {/* Delete Button */}
+                          <button
+                            onClick={() => handleDeleteUser(item.id)}
+                            className='text-[#475467] hover:text-red-600 transform duration-300'
+                          >
+                            <LuTrash2 className='text-lg' />
                           </button>
                         </div>
                       </TableCell>
@@ -260,11 +473,14 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
-          count={filteredData?.length}
+          count={filteredData?.length || 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from}–${to} of ${count}`
+          }
         />
       </Paper>
     </div>

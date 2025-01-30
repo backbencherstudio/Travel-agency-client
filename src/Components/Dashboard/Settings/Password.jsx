@@ -2,6 +2,7 @@ import  { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaEye, FaEyeSlash } from 'react-icons/fa' 
 import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
+import { Helmet } from 'react-helmet-async';
 
 const Password = () => {
   const {
@@ -30,10 +31,14 @@ const Password = () => {
   }
 
   return (
-    <div className='p-4 sm:p-6'>
-      <div className='mb-6'>
-        <h2 className='text-xl font-semibold mb-2 text-[#080613]'>
-          Update Password
+    <>
+      <Helmet>
+        <title>Around 360 - Password</title>
+      </Helmet>
+      <div className='p-4 sm:p-6'>
+        <div className='mb-6'>
+          <h2 className='text-xl font-semibold mb-2 text-[#080613]'>
+            Update Password
         </h2>
         <p className='text-[#687588] text-sm'>
           Change your password below to secure your account
@@ -160,6 +165,7 @@ const Password = () => {
         </button>
       </form>
     </div>
+    </>
   )
 }
 

@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 import { CircularProgress } from '@mui/material'
 import TinyMCE from '../../../Shared/TinyMCE'
 import BlogApis from '../../../Apis/BlogApi'
+import { Helmet } from 'react-helmet-async'
 
 const AddBlog = () => {
   const { id } = useParams()
@@ -211,10 +212,14 @@ const AddBlog = () => {
     }
   }, [images])
 
-  return (
-    <div className='mx-auto'>
-      <h1 className='text-[#0D0E0D] text-[20px] py-5'>
-        {id ? 'Update Blog' : 'Create New Blog'}
+  return (  
+    <>
+      <Helmet>
+        <title>Around 360 - Add Blog</title>
+      </Helmet>
+      <div className='mx-auto'>
+        <h1 className='text-[#0D0E0D] text-[20px] py-5'>
+          {id ? 'Update Blog' : 'Create New Blog'}
       </h1>
 
       {loading && (
@@ -379,6 +384,7 @@ const AddBlog = () => {
         </div>
       </form>
     </div>
+    </>
   )
 }
 

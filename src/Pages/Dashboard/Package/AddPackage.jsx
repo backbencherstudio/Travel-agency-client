@@ -13,6 +13,8 @@ import axiosClient from "../../../axiosClient";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { Helmet } from "react-helmet-async";
+
 const AddPackage = () => {
   const { register, handleSubmit, setValue, formState: { errors }, } = useForm({
     defaultValues: {
@@ -395,6 +397,9 @@ const AddPackage = () => {
 
   return (
     <div className="flex flex-col gap-4">
+       <Helmet>
+        <title>Around 360 - Add Package</title>
+      </Helmet>
       <h3 className="text-2xl font-semibold text-[#080613]">
         Add New Travel Package
       </h3>

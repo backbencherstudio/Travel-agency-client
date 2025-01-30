@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import axiosClient from '../../../axiosClient'
 import CancellationApi from '../../../Apis/CancellationApi'
 import WebsiteInfoApis from '../../../Apis/WebsiteInfoApis'
+import { Helmet } from 'react-helmet-async';
 
 const Cancellation = () => {
   const {
@@ -67,6 +68,9 @@ const Cancellation = () => {
   // console.log('body', body)
   return (
     <div className='p-4 sm:p-6'>
+       <Helmet>
+        <title>Around 360 - Cancellation</title>
+      </Helmet>
       {/* Header Section */}
       <div className='mb-6 grid grid-cols-1 sm:grid-cols-2 justify-between items-start sm:items-center gap-4'>
         <div>

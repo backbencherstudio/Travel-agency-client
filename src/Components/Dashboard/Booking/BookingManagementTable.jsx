@@ -1,6 +1,6 @@
 import { FaCheckCircle, FaTimesCircle, FaSearch, FaEye } from 'react-icons/fa'
 import { GoDotFill } from 'react-icons/go'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   Table,
   TableBody,
@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
+import debounce from 'lodash/debounce'
 
 const statusStyles = {
   Confirmed: {
@@ -62,9 +63,56 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(5)
 
+  // Debounced search function
+  const debouncedSearch = useCallback(
+    debounce((query, status, data) => {
+      if (!data) return;
+      
+      let filtered = data;
+      
+      // Filter by search query
+      if (query) {
+        filtered = data.filter(item => {
+          const userName = item.user?.name?.toLowerCase() || '';
+          const packageName = item.booking_items?.[0]?.package?.name?.toLowerCase() || '';
+          const invoiceNumber = item.invoice_number?.toLowerCase() || '';
+          const searchTerm = query.toLowerCase();
+          
+          return userName.includes(searchTerm) || 
+                 packageName.includes(searchTerm) || 
+                 invoiceNumber.includes(searchTerm);
+        });
+      }
+
+      // Filter by status
+      if (status !== 'All Status') {
+        filtered = filtered.filter(item => 
+          item.status?.toLowerCase() === status.toLowerCase()
+        );
+      }
+
+      setFilteredData(filtered);
+
+      // Update URL with search query and status
+      const params = new URLSearchParams(window.location.search);
+      if (query) params.set('search', query);
+      else params.delete('search');
+      if (status !== 'All Status') params.set('status', status);
+      else params.delete('status');
+      
+      const newUrl = `${window.location.pathname}?${params.toString()}`;
+      window.history.pushState({}, '', newUrl);
+    }, 500),
+    []
+  );
+
   useEffect(() => {
     setFilteredData(data)
   }, [data])
+
+  useEffect(() => {
+    debouncedSearch(searchQuery, selectedStatus, data);
+  }, [searchQuery, selectedStatus, data, debouncedSearch]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -83,13 +131,6 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
 
   const handleStatusChange = status => {
     setSelectedStatus(status)
-    setFilteredData(
-      status === 'All Status'
-        ? data
-        : data?.filter(
-            item => item.status.toLowerCase() === status.toLowerCase()
-          )
-    )
     setIsOpen(false)
   }
 
@@ -105,8 +146,6 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
-
-  console.log('filteredData', filteredData);
 
   return (
     <div>
@@ -229,13 +268,8 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
             </TableHead>
 
             <TableBody className='text-nowrap'>
-              {filteredData?.filter(item =>
-                item?.user?.name?.toLowerCase()?.includes(searchQuery.toLowerCase())
-              ).length > 0 ? (
+              {filteredData?.length > 0 ? (
                 filteredData
-                  ?.filter(item =>
-                    item?.user?.name?.toLowerCase()?.includes(searchQuery.toLowerCase())
-                  )
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
                     <TableRow key={item?.id} onClick={() => handleRowClick(item.id)}>
