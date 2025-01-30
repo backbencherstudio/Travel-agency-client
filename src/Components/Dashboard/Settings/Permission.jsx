@@ -30,6 +30,10 @@ const Permission = () => {
     }
   }
 
+  const handleDataUpdate = () => {
+    fetchUsers()
+  }
+
   useEffect(() => {
     fetchUsers()
   }, [])
@@ -51,6 +55,7 @@ const Permission = () => {
             title={user.type}
             data={data}
             columns={columns}
+            onDataUpdate={handleDataUpdate}
           />
         )}
       </div>
