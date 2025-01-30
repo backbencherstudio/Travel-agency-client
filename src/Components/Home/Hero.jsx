@@ -12,10 +12,18 @@ import image5 from '../../assets/img/hero-img/image-5.png';
 import { useNavigate } from 'react-router-dom';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { Skeleton } from '@mui/material';
 
 const Hero = () => {
     const [input, setInput] = useState();
     const [selectedDate, setSelectedDate] = useState(null);
+    const [imageLoaded, setImageLoaded] = useState({
+        image1: false,
+        image2: false,
+        image3: false,
+        image4: false,
+        image5: false
+    });
     const navigate = useNavigate();
 
     const sliderSettings = {
@@ -50,7 +58,6 @@ const Hero = () => {
       const handleSubmit = async() => {
         const data = { q: input, selectedDate: selectedDate }
         navigate(`/search-results?${new URLSearchParams(data).toString()}`, { replace: true });
-        // console.log('data', data)
       }
 
   return (
@@ -85,82 +92,108 @@ const Hero = () => {
             {/* for small devices */}
             <div className="md:hidden container mx-auto mt-8">
                 <Slider {...sliderSettings} className="mx-4 md:mx-auto">
-                    <div>
-                        <LazyLoadImage
-                            src={image1}
-                            alt="Travel destination scenic view 1"
-                            effect="blur"
-                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
-                        />
-                    </div>
-                    <div>
-                        <LazyLoadImage
-                            src={image2}
-                            alt="Travel destination scenic view 2"
-                            effect="blur"
-                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
-                        />
-                    </div>
-                    <div>
-                        <LazyLoadImage
-                            src={image3}
-                            alt="Scenic travel destination"
-                            effect="blur"
-                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
-                        />
-                    </div>
-                    <div>
-                        <LazyLoadImage
-                            src={image4}
-                            alt="Travel landscape view"
-                            effect="blur"
-                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]"
-                        />
-                    </div>
-                    <div>
-                        <LazyLoadImage
-                            src={image5}
-                            alt="Travel destination view"
-                            effect="blur"
-                            className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]"
-                        />
-                    </div>
+                    {[image1, image2, image3, image4, image5].map((image, index) => (
+                        <div key={index} className="relative">
+                            {!imageLoaded[`image${index + 1}`] && (
+                                <div className="absolute inset-0">
+                                    <Skeleton variant="rectangular" width="100%" height={301} />
+                                </div>
+                            )}
+                            <LazyLoadImage
+                                src={image}
+                                alt={`Travel destination view ${index + 1}`}
+                                effect="blur"
+                                className="w-[268px] h-[301px] flex-shrink-0 rounded-2xl object-cover"
+                                onLoad={() => setImageLoaded(prev => ({...prev, [`image${index + 1}`]: true}))}
+                                style={{ opacity: imageLoaded[`image${index + 1}`] ? 1 : 0 }}
+                            />
+                        </div>
+                    ))}
                 </Slider>
             </div>
         </div>
         {/* image section */}
         <div className='hidden md:block'>
             <div className='container mx-auto grid md:flex gap-4 md:gap-1 justify-center items-center md:w-[1216px] md:h-[301px] md:mx-auto mt-8'>
-                <LazyLoadImage
-                    src={image1}
-                    alt="Travel destination scenic view 1"
-                    effect="blur"
-                    className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover'
-                />
-                <LazyLoadImage
-                    src={image2}
-                    alt="Travel destination scenic view 2"
-                    effect="blur"
-                    className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover'
-                />
-                <LazyLoadImage
-                    src={image3}
-                    alt="Scenic travel destination"
-                    effect="blur"
-                    className='w-[190px] h-[180px] xl:w-[268px] xl:h-[301px] flex-shrink-0 rounded-2xl object-cover'
-                />
-                <LazyLoadImage
-                    src={image4}
-                    alt="Travel landscape view"
-                    effect="blur"
-                    className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]'
-                />
-                <LazyLoadImage
-                    src={image5}
-                    alt="Travel destination view"
-                    effect="blur"
-                    className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]'
-                />
+                <div className="relative">
+                    {!imageLoaded.image1 && (
+                        <div className="absolute inset-0">
+                            <Skeleton variant="rectangular" width="100%" height={205} className="mt-[30px] -rotate-[10.11deg]" />
+                        </div>
+                    )}
+                    <LazyLoadImage
+                        src={image1}
+                        alt="Travel destination scenic view 1"
+                        effect="blur"
+                        className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] mt-[30px] -rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover'
+                        onLoad={() => setImageLoaded(prev => ({...prev, image1: true}))}
+                        style={{ opacity: imageLoaded.image1 ? 1 : 0 }}
+                    />
+                </div>
+
+                <div className="relative">
+                    {!imageLoaded.image2 && (
+                        <div className="absolute inset-0">
+                            <Skeleton variant="rectangular" width="100%" height={255} className="-rotate-[5.997deg]" />
+                        </div>
+                    )}
+                    <LazyLoadImage
+                        src={image2}
+                        alt="Travel destination scenic view 2"
+                        effect="blur"
+                        className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] -rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover'
+                        onLoad={() => setImageLoaded(prev => ({...prev, image2: true}))}
+                        style={{ opacity: imageLoaded.image2 ? 1 : 0 }}
+                    />
+                </div>
+
+                <div className="relative">
+                    {!imageLoaded.image3 && (
+                        <div className="absolute inset-0">
+                            <Skeleton variant="rectangular" width="100%" height={301} />
+                        </div>
+                    )}
+                    <LazyLoadImage
+                        src={image3}
+                        alt="Scenic travel destination"
+                        effect="blur"
+                        className='w-[190px] h-[180px] xl:w-[268px] xl:h-[301px] flex-shrink-0 rounded-2xl object-cover'
+                        onLoad={() => setImageLoaded(prev => ({...prev, image3: true}))}
+                        style={{ opacity: imageLoaded.image3 ? 1 : 0 }}
+                    />
+                </div>
+
+                <div className="relative">
+                    {!imageLoaded.image4 && (
+                        <div className="absolute inset-0">
+                            <Skeleton variant="rectangular" width="100%" height={255} className="rotate-[5.997deg]" />
+                        </div>
+                    )}
+                    <LazyLoadImage
+                        src={image4}
+                        alt="Travel landscape view"
+                        effect="blur"
+                        className='w-[140.739px] h-[130.481px] xl:w-[255.739px] xl:h-[255.481px] rotate-[5.997deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]'
+                        onLoad={() => setImageLoaded(prev => ({...prev, image4: true}))}
+                        style={{ opacity: imageLoaded.image4 ? 1 : 0 }}
+                    />
+                </div>
+
+                <div className="relative">
+                    {!imageLoaded.image5 && (
+                        <div className="absolute inset-0">
+                            <Skeleton variant="rectangular" width="100%" height={205} className="mt-[30px] rotate-[10.11deg]" />
+                        </div>
+                    )}
+                    <LazyLoadImage
+                        src={image5}
+                        alt="Travel destination view"
+                        effect="blur"
+                        className='w-[128.187px] h-[115.828px] xl:w-[262.187px] xl:h-[205.828px] md:mt-[30px] rotate-[10.11deg] flex-shrink-0 rounded-2xl object-cover scale-x-[-1]'
+                        onLoad={() => setImageLoaded(prev => ({...prev, image5: true}))}
+                        style={{ opacity: imageLoaded.image5 ? 1 : 0 }}
+                    />
+                </div>
             </div>
         </div>
     </div>
