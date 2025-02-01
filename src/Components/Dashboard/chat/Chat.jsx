@@ -299,7 +299,9 @@ const Chat = () => {
       fetchConversations();
 
       socket.on("conversation", (data) => {
-        const newConversation = data.conversation;
+        console.log("conversation data", data);
+
+        const newConversation = data.data;
         setUsersData(prevUsers => {
           const exists = prevUsers.some(conv => conv.id === newConversation.id);
           if (exists) {
@@ -384,7 +386,7 @@ const Chat = () => {
                 {usersData.length === 0 ? (
                   <p className="text-gray-500 p-4 text-2xl text-center">No conversations found</p>
                 ) : (
-                  usersData.map((data, index) => {
+                  usersData && usersData.map((data, index) => {
                     const chatUser =
                       user.id === data.participant_id
                         ? data.creator
