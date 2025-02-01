@@ -317,7 +317,7 @@ const AddPackage = () => {
     // } else {
         toast.info("Creating package...");
         // Uncomment to send the form data to your API
-        const url = "http://192.168.10.159:4000/api/admin/package";
+        const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package`;
         const res = await axiosClient.post(url, form, {
             headers: { "Content-Type": "multipart/form-data" },
         });
