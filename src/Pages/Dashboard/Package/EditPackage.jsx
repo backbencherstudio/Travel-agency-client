@@ -374,7 +374,9 @@ const EditPackage = () => {
     if (editId) {
         toast.info("Updating package...");
         // Uncomment to send the form data to your API
-        const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
+        const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package/${editId}`;
+
+        // const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
         const res = await axiosClient.patch(url, form, {
         headers: { "Content-Type": "multipart/form-data" },
         });
