@@ -9,8 +9,8 @@ import {
   Paper,
   TablePagination
 } from '@mui/material'
-import { FaSearch } from 'react-icons/fa'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { FaEdit, FaSearch } from 'react-icons/fa'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { IoIosCheckmark } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
 import { BsThreeDots } from 'react-icons/bs'
@@ -22,6 +22,7 @@ import PackageApis from '../../../Apis/PackageApis'
 import debounce from 'lodash.debounce'
 import DropdownPortal from '../../../Shared/DropdownPortal'
 import { LuTrash2 } from 'react-icons/lu'
+import { MdEdit } from 'react-icons/md'
 
 const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
   const { user } = useContext(AuthContext)
@@ -275,9 +276,9 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
             <TableBody className='text-nowrap'>
               {filteredData?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <div className="flex flex-col items-center justify-center py-8">
-                      <p className="text-gray-500 text-lg">No data found</p>
+                  <TableCell colSpan={7} align='center'>
+                    <div className='flex flex-col items-center justify-center py-8'>
+                      <p className='text-gray-500 text-lg'>No data found</p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -420,7 +421,8 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
                                 >
                                   <div
                                     ref={ref =>
-                                      ref && actionRefs.current.set(item.id, ref)
+                                      ref &&
+                                      actionRefs.current.set(item.id, ref)
                                     }
                                     className='absolute bg-white py-5 px-4 flex flex-col -right-20 top-5 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
                                   >
@@ -456,29 +458,42 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
                                     )}
                                     {user?.id === item?.user?.id && (
                                       <>
-                                        <button onClick={() => handleActiveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                        <button
+                                          onClick={() =>
+                                            handleActiveClick(item.id)
+                                          }
+                                          className='flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300'
+                                        >
                                           {/* <FaCheck className="mt-1" /> */}
                                           Active
-                                      </button>
-                                      <button
-                                        onClick={() => handleRejectClick(item.id)}
-                                        className='flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300'
-                                      >
-                                        {/* <RxCross2 className='text-xl' /> */}
-                                        Inactive
-                                      </button>
-                                    </>
-                                  )}
+                                        </button>
+                                        <button
+                                          onClick={() =>
+                                            handleRejectClick(item.id)
+                                          }
+                                          className='flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300'
+                                        >
+                                          {/* <RxCross2 className='text-xl' /> */}
+                                          Inactive
+                                        </button>
+                                      </>
+                                    )}
                                   </div>
                                 </DropdownPortal>
                               )}
                             </div>
-
+                            <Link
+                              to={`/dashboard/edit-package/${item?.id}`}
+                              className='text-blue-600 hover:text-blue-700 transform duration-300'
+                            >
+                              <FaEdit className='text-lg' />
+                            
+                            </Link>
                             <button
                               onClick={e => handlePackageDelete(e, item.id)}
                               className='text-red-600 hover:text-red-700 transform duration-300'
                             >
-                                <LuTrash2 className='text-lg' />
+                              <LuTrash2 className='text-lg' />
                             </button>
                           </div>
                         </TableCell>
