@@ -42,13 +42,13 @@ const VendorPackgaesTable = ({ tableType = "", title, data, columns }) => {
       navigate(`${id}`);
     };
 
-    console.log('data', data)
+    // console.log('data', data)
 
     const toggleActionOpen = (e, id) => {
       e.stopPropagation();
       setIsOpenAction(isOpenAction === id ? null : id);
     }
-    console.log('isOpenAction', isOpenAction)
+    // console.log('isOpenAction', isOpenAction)
 
     const handleActiveTab = (tab) => {
       setShowTab(tab)

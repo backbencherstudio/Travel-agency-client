@@ -52,7 +52,7 @@ const VendorDetails = () => {
       return response.data
     }
   })
-  console.log(userData?.data?.name)
+  // console.log(userData?.data?.name)
   return (
     <>
       <Helmet>
@@ -61,7 +61,7 @@ const VendorDetails = () => {
       <div className='content min-h-[calc(100vh-80px)] w-full bg-white p-6'>
         <div className='userData'>
           <div className='top grid grid-cols-12 gap-4'>
-            <div className='first col-span-12 md:col-span-2 flex flex-col items-center'>
+            <div className='first col-span-12 md:col-span-4 2xl:col-span-2 flex flex-col items-center'>
               {userData?.data?.avatar ? (
                 <img
                   src={userData.data.avatar}
@@ -96,7 +96,7 @@ const VendorDetails = () => {
                 {userData?.data?.reviews_count || 0} Reviews
               </p>
             </div>
-            <div className='second md:col-span-10 col-span-12'>
+            <div className='second md:col-span-8 2xl:col-span-10 col-span-12'>
               <h1 className='font-semibold text-lg mb-6'>Vendor Profile</h1>
               <div className='boxes grid md:grid-cols-10 w-full md:gap-4 '>
                 <div className='h-16 px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 w-full flex-col justify-start items-start inline-flex'>

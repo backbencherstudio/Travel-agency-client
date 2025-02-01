@@ -10,12 +10,12 @@ const EmailVerifyOtp = ({ email, setIsModalOpen }) => {
     const [loading, setLoading] = useState(false);
     const [isPopupVisible, setPopupVisible] = useState(false);
 
-    console.log('email', email)
+    // console.log('email', email)
     const onSubmit = async (data) => {
         const otp = Object.values(data).join('');
-        console.log("Entered OTP:", otp);
+        // console.log("Entered OTP:", otp);
         const res = await axiosClient.post(`/api/auth/change-email`, {email: email, token: otp})
-        console.log('res', res)
+        // console.log('res', res)
         if (res?.data?.success) {
             toast.success(res?.data?.message);
             setIsModalOpen(false);

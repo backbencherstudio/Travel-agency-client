@@ -75,9 +75,9 @@ const CompanyInfo = () => {
       form.append(key, data[key]);
     });
 
-    console.log('FormData Entries:');
+    // console.log('FormData Entries:');
     for (let pair of form.entries()) {
-      console.log(pair[0] + ':', pair[1]);
+      // console.log(pair[0] + ':', pair[1]);
     }
     if (user?.type === 'admin') {
       const res = await WebsiteInfoApis.save(form);

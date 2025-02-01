@@ -11,38 +11,6 @@ const TravelPackages = () => {
     const { homeData } = useTravelData();
     // console.log("homeData", homeData);
 
-    const tours = [
-        {
-          id: 1,
-          name: "The Allure Italy's Rich Culture. History. And Cuisine.",
-          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-          rating: 4.8,
-          days: 7,
-          location: "Beijing, China",
-          starting_price: 2999,
-          image: package1,
-        },
-        {
-          id: 2,
-          name: "Explore Europe’s charm, history, and landscapes.",
-          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-          rating: 3.9,
-          days: 5,
-          location: "Beijing, China",
-          starting_price: 3999,
-          image: package2,
-        },
-        {
-          id: 3,
-          name: "Experience Africa’s wildlife, landscapes, and rich culture.",
-          description: "Tour and travel refer to the activities related to planning, organizing, and experiencing trips to various destinations for",
-          rating: 4.7,
-          days: 10,
-          location: "Beijing, China",
-          starting_price: 4999,
-          image: package3,
-        },
-    ];
     
     const renderStars = (rating) => {
         const stars = [];
@@ -61,7 +29,7 @@ const TravelPackages = () => {
         return stars;
     };
 
-
+// console.log(homeData.)
   return (
     <div className='max-w-[1216px] mx-auto px-5 2xl:px-0'>
         <div className='text-2xl md:text-5xl font-bold text-center'>Exclusive Travel Packages</div>
@@ -85,12 +53,12 @@ const TravelPackages = () => {
                                 {tour?.name}
                             </Link>
                             <p className="text-[#4A4C56] text-sm leading-normal font-normal">
-                                {tour?.description}...
-                                <a href={`/packages/${tour?.id}`} className=' text-blue-500'>Read more</a>
+                                {tour?.description?.split(' ').slice(0, 10).join(' ')}...
+                                <Link to={`/packages/${tour?.id}`} className='text-blue-500'>Read more</Link>
                             </p>
                             <div className='flex justify-between items-center gap-2 mt-3'>
                                 <div className='flex items-center gap-2'>
-                                    <p className='mt-[2px] text-xs'>{tour?.average_rating ? tour?.average_rating : 0}</p>
+                                    <p className='mt-[2px] text-xs'>{tour?.average_rating ? Number(tour?.average_rating).toFixed(1) : 0}</p>
                                     <div className="flex gap-1 items-center">
                                         {renderStars(tour?.average_rating ? tour?.average_rating : 0)}
                                     </div>

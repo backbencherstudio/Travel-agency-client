@@ -71,14 +71,14 @@ const TourPlanForm = () => {
     const { packageId } = useParams();
     const { planId } = useParams();
 
-    console.log('packageId', packageId)
-    console.log('planId', planId)
+    // console.log('packageId', packageId)
+    // console.log('planId', planId)
 
     useEffect(() => {
         const fetchTourPlan = async () => {
             const res = await axiosClient.get(`/api/admin/package/${packageId}/package-trip-plan/${planId}`);
             const tourData = res.data;
-            console.log('tourData', tourData)
+            // console.log('tourData', tourData)
             if (tourData.data) {
                 setValue('title', tourData.data?.title);
                 setValue('description', tourData.data?.description);
@@ -115,10 +115,10 @@ const TourPlanForm = () => {
     //     ]);
     // };
 
-    console.log('images', images)
+    // console.log('images', images)
 
     const handleTourPlanSubmit = async (data) => {
-        console.log('data', data)
+        // console.log('data', data)
         const formDataObject = {
             ...data,
             images: images,
@@ -141,7 +141,7 @@ const TourPlanForm = () => {
                 }
             });
             form.append(`images`, JSON.stringify(planImages));
-            console.log('trip_plans_images',planImages)
+            // console.log('trip_plans_images',planImages)
             // Append trip_plans as JSON
             // form.append("trip_plans", JSON.stringify(formDataObject[key]));
         } else {
@@ -150,7 +150,7 @@ const TourPlanForm = () => {
         }
 
         for (let pair of form.entries()) {
-        console.log(pair[0], pair[1]);
+        // console.log(pair[0], pair[1]);
         }
         setLoading(true);
         if (packageId && planId) {   
@@ -160,7 +160,7 @@ const TourPlanForm = () => {
             const res = await axiosClient.patch(url, form, {
             headers: { "Content-Type": "multipart/form-data" },
             });
-            console.log("Response:", res.data);
+            // console.log("Response:", res.data);
             if (res.data.success) {
                 toast.info(res.data?.message);
             }
@@ -172,7 +172,7 @@ const TourPlanForm = () => {
             const res = await axiosClient.post(url, form, {
             headers: { "Content-Type": "multipart/form-data" },
             });
-            console.log("Response:", res.data);
+            // console.log("Response:", res.data);
             if (res.data.success) {
                 toast.info(res.data?.message);
             }

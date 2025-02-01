@@ -17,7 +17,7 @@ const PackageDetails = () => {
   const [singlePackage, setSinglePackage] = useState()
   const [packages, setPackages] = useState([])
   const { id } = useParams()
-  console.log('id', id)
+  // console.log('id', id)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -25,8 +25,8 @@ const PackageDetails = () => {
       try {
         const resDetails = await axiosClient.get(`/api/admin/package/${id}`)
         const resPackages = await axiosClient.get(`/api/admin/package`)
-        console.log('resDetails', resDetails)
-        console.log('packages', resPackages)
+        // console.log('resDetails', resDetails)
+        // console.log('packages', resPackages)
         setSinglePackage(resDetails.data.data)
         setPackages(resPackages.data.data)
       } catch (error) {

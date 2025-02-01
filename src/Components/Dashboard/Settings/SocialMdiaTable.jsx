@@ -140,7 +140,7 @@ const SocialMdiaTable = ({
           currentEditId,
           formattedData[0]
         )
-        console.log('Updated social media data:', response)
+        // console.log('Updated social media data:', response)
         // onUpdateSocialMedia(currentEditId, response); // Call parent update function
         // fetchData();
       } else {

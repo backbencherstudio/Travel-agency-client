@@ -1,7 +1,7 @@
 import React from 'react'
 
 const BlogContent = ({ details }) => {
-  console.log('details', details)
+//   console.log('details', details)
   return (
     <div className="grid lg:grid-cols-3 gap-6 bg-[#F0F4F9]">
             <div className="col-span-2 flex flex-col gap-5">
