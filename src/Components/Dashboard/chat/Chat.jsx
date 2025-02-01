@@ -144,7 +144,7 @@ const Chat = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !activeConversation) return;
+    if (!newMessage.trim() || !activeConversation || !socket || !isConnected) return;
 
     try {
       const messagePayload = {
