@@ -126,7 +126,7 @@ const EditTourPlan = ({ package_id, tourPlan, setTourPlan, packageType }) => {
         }
     };
 
-    console.log('tourPlan', tourPlan)
+    // console.log('tourPlan', tourPlan)
 
     return (
         <div>

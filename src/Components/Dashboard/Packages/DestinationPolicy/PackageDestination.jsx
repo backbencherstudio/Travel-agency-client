@@ -40,7 +40,7 @@ const PackageDestination = () => {
         },
     });
 
-    console.log('data', data)
+    // console.log('data', data)
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -72,7 +72,7 @@ const PackageDestination = () => {
         setImages((prev) => prev.filter((_, i) => i !== index));
     };
 
-    console.log('images', images)
+    // console.log('images', images)
 
     // Mutation for saving a new category
     const saveMutation = useMutation({
@@ -121,7 +121,7 @@ const PackageDestination = () => {
         }
 
         for (let pair of form.entries()) {
-            console.log(pair[0], pair[1]);
+            // console.log(pair[0], pair[1]);
         }
 
         if (editDestinationId) {

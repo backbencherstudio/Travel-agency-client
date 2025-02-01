@@ -147,7 +147,7 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
       // console.log('data', data)
       // Make API call to update the member
       const res = await CouponApis.update(selectedMember.id, data)
-      console.log('res', res)
+      // console.log('res', res)
       if (res.success) {
         // Reset form and close modal
         reset()
@@ -156,11 +156,11 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
         getCoupons()
       }
     } else {
-      console.log('data', data)
-      console.log('Adding new member')
+      // console.log('data', data)
+      // console.log('Adding new member')
       // Make API call to add the new member
       const res = await CouponApis.save(data)
-      console.log('res', res)
+      // console.log('res', res)
       if (res.success) {
         // Reset form and close modal
         reset()
@@ -179,7 +179,7 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
         const res = await CouponApis.delete(id)
         getCoupons()
         // Optional: Handle success, e.g., refresh list or show a success message
-        console.log('Package deleted successfully:', res)
+        // console.log('Package deleted successfully:', res)
       } catch (error) {
         // Handle errors, e.g., show an error message
         console.error('Failed to delete package:', error)

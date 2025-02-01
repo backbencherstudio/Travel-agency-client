@@ -45,9 +45,9 @@ const SocialCopyRight = () => {
   };
   
   const onSubmit = async (data) => {
-    console.log('data', data)
+    // console.log('data', data)
     const res = await WebsiteInfoApis.save(data);
-    console.log('res', res)
+    // console.log('res', res)
     fetchData()
     reset();
   }
