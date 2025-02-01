@@ -7,7 +7,6 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from 'react-icons/md';
 
 import { CiSearch } from 'react-icons/ci';
 import { FaRegCalendarAlt, FaStar } from 'react-icons/fa';
-// import TourCard from '../../Pages/Tours/tourCard';
 // import package1 from "../../assets/img/travel-packages/package-1.png";
 // import package2 from "../../assets/img/travel-packages/package-2.png";
 // import package3 from "../../assets/img/travel-packages/package-3.png";
@@ -17,7 +16,7 @@ import { useLocation } from 'react-router-dom';
 // import CruiseCard from '../../Pages/Cruises/CruiseCard';
 import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext';
 import ClientLanguageApis from '../../Apis/clientApi/ClientLanguageApis';
-import TourCard from '../../Pages/Tours/tourCard';
+import TourCard from '../../Pages/Tours/TourCard';
 
 function PackageTourCruise() {
     const { destinations, cancellationPolicies } = useTravelData();
@@ -337,7 +336,7 @@ function PackageTourCruise() {
         <div className='max-w-[1200px] mx-auto'>
             <div className='px-4 xl:px-0 py-10 xl:py-20 flex items-start justify-start lg:gap-6 flex-col lg:flex-row'>
                 {/* Filter Section */}
-                <div className='p-6 sticky top-24 lg:max-w-[300px] mb-6 lg:mb-0 bg-white  rounded-xl shadow-md  flex flex-col  w-full gap-3'>
+                <div className='p-6 sticky top-10 lg:max-w-[300px] mb-6 lg:mb-0 bg-white  rounded-xl shadow-md  flex flex-col  w-full gap-3'>
                     {/* Search Input */}
                     <div className='flex gap-2 border items-center py-2 px-5 rounded-md'>
                         <CiSearch className='text-3xl' />
