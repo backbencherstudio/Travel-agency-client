@@ -5,12 +5,10 @@ const NotificationApis = {};
 // Fetch all notifications
 NotificationApis.getNotification = async () => {
   const url = "/api/admin/notification";
-  console.log("url", url);
-  
+
   try {
     const response = await axiosClient.get(url);
-    console.log("get response", response);
-    
+
     return {
       success: true,
       data: response.data
@@ -26,14 +24,14 @@ NotificationApis.getNotification = async () => {
 // Delete a specific notification
 NotificationApis.deleteNotification = async (id) => {
   console.log("id", id);
-  
+
   const url = `/api/admin/notification/${id}`;
   // console.log("delete url", url);
-  
+
   try {
     const response = await axiosClient.delete(url);
     console.log("response", response);
-    
+
     return {
       success: true,
       data: response.data
@@ -50,11 +48,11 @@ NotificationApis.deleteNotification = async (id) => {
 // Delete all notifications
 NotificationApis.deleteAllNotifications = async () => {
   const url = "/api/admin/notification";
-  
+
   try {
     const response = await axiosClient.delete(url);
     console.log("delete all response", response);
-    
+
     return {
       success: true,
       data: response.data

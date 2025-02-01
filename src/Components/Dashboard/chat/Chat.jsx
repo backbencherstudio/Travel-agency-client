@@ -13,70 +13,23 @@ import NotificationManager from "../../../Shared/NotificationManager";
 import { Helmet } from 'react-helmet-async'
 const defaultAvatar = "https://via.placeholder.com/150";
 
-const token = localStorage.getItem("token");
-
-const socket = io(import.meta.env.VITE_API_BASE_URL, {
-  auth: {
-    token: token
-  }
-});
-
-socket.on("connect", () => {
-  // console.log("Connected to server!");
-});
-
-socket.on("disconnect", (reason) => {
-  console.log("Disconnected:", reason);
-});
 
 const Chat = () => {
+  const [socket, setSocket] = useState(null);
   const [usersData, setUsersData] = useState([]);
   const [messageData, setMessageData] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
   const [newMessage, setNewMessage] = useState("");
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isInDashboard, setIsInDashboard] = useState(true);
-
-  console.log('user', usersData);
-  
+  const [isConnected, setIsConnected] = useState(false);
 
   const { conversationID } = useParams();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
-
-  // Check if user is in dashboard
-  useEffect(() => {
-    const checkLocation = () => {
-      const path = window.location.pathname;
-      setIsInDashboard(path.includes('/dashboard/chat'));
-    };
-
-    // Initial check
-    checkLocation();
-
-    // Check on visibility change
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        setIsInDashboard(false);
-      } else {
-        checkLocation();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('popstate', checkLocation);
-    window.addEventListener('focus', checkLocation);
-    window.addEventListener('blur', () => setIsInDashboard(false));
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('popstate', checkLocation);
-      window.removeEventListener('focus', checkLocation);
-      window.removeEventListener('blur', () => setIsInDashboard(false));
-    };
-  }, []);
+  const reconnectTimeoutRef = useRef(null);
 
   const fetchConversations = async () => {
     try {
@@ -114,104 +67,68 @@ const Chat = () => {
     }
   };
 
-  // Fetch Conversations
-  useEffect(() => {
-    fetchConversations();
 
-    socket.on("conversation", (data) => {
-      const newConversation = data.conversation;
-      setUsersData(prevUsers => {
-        const exists = prevUsers.some(conv => conv.id === newConversation.id);
-        if (exists) {
-          return prevUsers.map(conv => 
-            conv.id === newConversation.id ? {...newConversation, unread: conv.unread} : conv
-          );
+  const handleNewMessage = async (data) => {
+    if (!data?.data) return;
+
+    if (
+      data.data.sender.id !== user.id &&
+      (!isInDashboard || document.hidden) &&
+      data.data.sender.role !== 'admin'
+    ) {
+      try {
+        const hasPermission = await NotificationManager.requestPermission();
+        if (hasPermission) {
+          NotificationManager.showNotification({
+            title: `New message from ${data.data.sender.name}`,
+            body: data.data.message,
+            icon: data.data.sender.avatar_url || defaultAvatar,
+            requireInteraction: false,
+            silent: false,
+            timeout: 5000,
+            onClick: () => {
+              window.focus();
+              navigate('/dashboard/chat');
+              if (data.data.conversation_id) {
+                navigate(`/dashboard/chat/${data.data.conversation_id}`);
+              }
+            }
+          });
         }
-        return [{...newConversation, unread: true}, ...prevUsers];
+      } catch (error) {
+        console.error("Error showing notification:", error);
+      }
+    }
+
+    // Update messages if they belong to active conversation
+    if (data.data.conversation_id === activeConversation?.id) {
+      setMessageData(prevMessages => {
+        const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+        const messageExists = prevMessagesArray.some(msg =>
+          msg.created_at === data.data.created_at &&
+          msg.message === data.data.message &&
+          msg.sender.id === data.data.sender.id
+        );
+        if (messageExists) return prevMessagesArray;
+        return [...prevMessagesArray, data.data];
+      });
+    }
+
+    // Update conversation list and mark as unread
+    setUsersData(prevUsers => {
+      return prevUsers.map(conv => {
+        if (conv.id === data.data.conversation_id) {
+          const shouldMarkUnread = conv.id !== activeConversation?.id;
+          return {
+            ...conv,
+            messages: [{ message: data.data.message }, ...(conv.messages || [])],
+            unread: shouldMarkUnread || conv.unread
+          };
+        }
+        return conv;
       });
     });
-
-    return () => {
-      socket.off("conversation");
-    };
-  }, [conversationID]);
-
-  // Fetch Messages and Handle New Messages
-  useEffect(() => {
-    fetchMessages();
-    
-    const handleNewMessage = async (data) => {
-      if (
-        data.data.sender.id !== user.id && 
-        (!isInDashboard || document.hidden) &&
-        data.data.sender.role !== 'admin'
-      ) {
-        try {
-          const hasPermission = await NotificationManager.requestPermission();
-          
-          if (hasPermission) {
-            NotificationManager.showNotification({
-              title: `New message from ${data.data.sender.name}`,
-              body: data.data.message,
-              icon: data.data.sender.avatar_url || defaultAvatar,
-              requireInteraction: false,
-              silent: false,
-              timeout: 5000,
-              onClick: () => {
-                window.focus();
-                navigate('/dashboard/chat');
-                if (data.data.conversation_id) {
-                  navigate(`/dashboard/chat/${data.data.conversation_id}`);
-                }
-              }
-            });
-          }
-        } catch (error) {
-          console.error("Error showing notification:", error);
-        }
-      }
-
-      // Update messages if they belong to active conversation
-      if (data.data.conversation_id === activeConversation?.id) {
-        setMessageData(prevMessages => {
-          const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
-          const messageExists = prevMessagesArray.some(msg => 
-            msg.created_at === data.data.created_at && 
-            msg.message === data.data.message &&
-            msg.sender.id === data.data.sender.id
-          );
-          if (messageExists) return prevMessagesArray;
-          return [...prevMessagesArray, data.data];
-        });
-      }
-
-      // Update conversation list and mark as unread
-      setUsersData(prevUsers => {
-        return prevUsers.map(conv => {
-          if (conv.id === data.data.conversation_id) {
-            const shouldMarkUnread = conv.id !== activeConversation?.id;
-            return {
-              ...conv,
-              messages: [{ message: data.data.message }, ...(conv.messages || [])],
-              unread: shouldMarkUnread || conv.unread
-            };
-          }
-          return conv;
-        });
-      });
-    };
-    
-    socket.on("message", handleNewMessage);
-
-    return () => {
-      socket.off("message", handleNewMessage);
-    };
-  }, [activeConversation, user.id, navigate, isInDashboard]);
-
-  // Request notification permission
-  useEffect(() => {
-    NotificationManager.requestPermission();
-  }, []);
+  };
 
   const handleConversationClick = (conversation) => {
     setActiveConversation(conversation);
@@ -294,15 +211,150 @@ const Chat = () => {
     }
   };
 
+  // Initialize socket connection
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!socket && user?.id) {
+      const newSocket = io(import.meta.env.VITE_API_BASE_URL, {
+        auth: { token },
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 10000,
+        transports: ['websocket']
+      });
+
+      newSocket.on("connect", () => {
+        console.log("Socket connected with user id:", user.id);
+        setIsConnected(true);
+        newSocket.emit("joinRoom", { room_id: user.id });
+      });
+
+      newSocket.on("disconnect", (reason) => {
+        console.log("Socket disconnected:", reason);
+        setIsConnected(false);
+
+        // Clear any existing reconnection timeout
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+        }
+
+        // Attempt to reconnect after 5 seconds
+        reconnectTimeoutRef.current = setTimeout(() => {
+          console.log("Attempting to reconnect...");
+          newSocket.connect();
+        }, 5000);
+      });
+
+      newSocket.on("connect_error", (error) => {
+        console.error("Connection error:", error);
+        setIsConnected(false);
+      });
+
+      setSocket(newSocket);
+
+      // Cleanup function
+      return () => {
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+        }
+        newSocket.off("connect");
+        newSocket.off("disconnect");
+        newSocket.off("connect_error");
+        newSocket.close();
+      };
+    }
+  }, [user?.id]);
+
+  // Set up message listener when socket or active conversation changes
+  useEffect(() => {
+    if (socket) {
+      // fetchMessages();
+      socket.on("message", handleNewMessage);
+
+      return () => {
+        socket.off("message", handleNewMessage);
+      };
+    }
+  }, [socket, activeConversation, user.id, navigate, isInDashboard]);
+
+  // Fetch messages when active conversation changes
+  useEffect(() => {
+    if (activeConversation) {
+      fetchMessages();
+    }
+  }, [activeConversation]);
+
+
   useEffect(() => {
     if (activeConversation) {
       scrollToBottom();
     }
   }, [activeConversation, messageData]);
 
+  // Fetch Conversations
+  useEffect(() => {
+    if (socket) {
+      fetchConversations();
+
+      socket.on("conversation", (data) => {
+        const newConversation = data.conversation;
+        setUsersData(prevUsers => {
+          const exists = prevUsers.some(conv => conv.id === newConversation.id);
+          if (exists) {
+            return prevUsers.map(conv =>
+              conv.id === newConversation.id ? { ...newConversation, unread: conv.unread } : conv
+            );
+          }
+          return [{ ...newConversation, unread: true }, ...prevUsers];
+        });
+      });
+
+      return () => {
+        socket.off("conversation");
+      };
+    }
+  }, [socket, conversationID]);
+
+  // Check if user is in dashboard
+  useEffect(() => {
+    // Request notification permission
+    NotificationManager.requestPermission();
+
+    const checkLocation = () => {
+      const path = window.location.pathname;
+      setIsInDashboard(path.includes('/dashboard/chat'));
+    };
+
+    // Initial check
+    checkLocation();
+
+    // Check on visibility change
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsInDashboard(false);
+      } else {
+        checkLocation();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('popstate', checkLocation);
+    window.addEventListener('focus', checkLocation);
+    window.addEventListener('blur', () => setIsInDashboard(false));
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('popstate', checkLocation);
+      window.removeEventListener('focus', checkLocation);
+      window.removeEventListener('blur', () => setIsInDashboard(false));
+    };
+  }, []);
+
   return (
     <div className="grid grid-cols-12 gap-5">
-       <Helmet>
+      <Helmet>
         <title>Around 360 - Chat</title>
       </Helmet>
       {/* Chat Left Sidebar */}

@@ -31,7 +31,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   const notificationRef = useRef(null);
 
   // console.log('user', user);
-  
+
   // Request browser notification permission on component mount
   useEffect(() => {
     if ("Notification" in window) {
@@ -45,8 +45,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   const fetchNotifications = async () => {
     try {
       const response = await NotificationApis.getNotification();
-      console.log("fetch response", response.data.data);
-      
+
       if (response.success) {
         // Filter out review notifications that have been handled
         const filteredNotifications = response.data.data.filter(notification => {
@@ -62,8 +61,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
       console.error("Error:", error);
     }
   };
-  console.log('notifications', notifications);
-  
+
 
   // Use useEffect to fetch notifications when component mounts
   useEffect(() => {
@@ -74,7 +72,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   useEffect(() => {
     socket.on("notification", (notification) => {
       console.log('notification', notification);
-      
+
       // Check receiver_id and user type conditions
       if (notification.receiver_id === null) {
         // Show notification only to admin users
@@ -148,7 +146,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
     try {
       const res = await NotificationApis.deleteNotification(id);
       console.log('delete response', res);
-      
+
       if (res.success) {
         // Remove the notification from state
         setNotifications((prev) =>
@@ -166,8 +164,8 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
     try {
       const res = await NotificationApis.deleteAllNotifications();
       console.log("delete all response", res);
-      
-      
+
+
       if (res.success) {
         // Clear all notifications from state
         setNotifications([]);

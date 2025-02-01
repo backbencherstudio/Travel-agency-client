@@ -13,105 +13,29 @@ import NotificationManager from "./NotificationManager";
 const defaultAvatar = "https://via.placeholder.com/150";
 import { MdKeyboardArrowLeft } from "react-icons/md";
 
-// Get token from local storage
-const token = localStorage.getItem("token");
-
-// Initialize socket connection
-const socket = io(import.meta.env.VITE_API_BASE_URL, {
-  auth: {
-    token: token,
-  },
-});
-
-// Socket connection established
-socket.on("connect", () => {
-  // console.log("Connected to server!");
-});
-
-// Socket disconnected
-socket.on("disconnect", (reason) => {
-  // console.log("Disconnected:", reason);
-});
 
 const ChatToggle = () => {
 
-  // Define state variables
-  const [isOpen, setIsOpen] = useState(false); // Toggle chatbox
-  const [adminUsers, setAdminUsers] = useState([]); // List of admin users
-  const [activeConversation, setActiveConversation] = useState(null); // Active conversation
-  const [messages, setMessages] = useState([]); // Messages in conversation
-  const [newMessage, setNewMessage] = useState(""); // New message input
-  const [conversations, setConversations] = useState([]); // List of conversations
-  const messagesEndRef = useRef(null); // Ref for scrolling to the bottom
-  const messagesContainerRef = useRef(null); // Ref for messages container
-  const { user } = useContext(AuthContext); // User context
+  const [socket, setSocket] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [activeConversation, setActiveConversation] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [conversations, setConversations] = useState([]);
 
-  console.log("user", user);
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const { user } = useContext(AuthContext);
 
-  // Request notification permission on component mount
-  useEffect(() => {
-    NotificationManager.requestPermission();
-  }, []);
 
-  // Listen for new messages through socket
-  useEffect(() => {
-    socket.on("message", (data) => {
-      console.log("New message received:", data.data);
-
-      // Show notification if the browser is not focused
-      if (data.data.sender.id !== user.id && document.hidden) {
-        NotificationManager.showNotification({
-          title: "New Message from Admin",
-          body: `Admin: ${data.data.message}`,
-          icon: data.data.sender.avatar || defaultAvatar,
-          requireInteraction: false,
-          onClick: () => {
-            window.focus();
-            setIsOpen(true);
-            if (data.data.conversation_id) {
-              const conversation = conversations.find(
-                (conv) => conv.id === data.data.conversation_id
-              );
-              if (conversation) {
-                setActiveConversation(conversation);
-              }
-            }
-          },
-        });
-      }
-
-      // Update messages only for the current conversation
-      if (
-        activeConversation &&
-        data.data.conversation_id === activeConversation.id
-      ) {
-        setMessages((prevMessages) => {
-          const prevMessagesArray = Array.isArray(prevMessages)
-            ? prevMessages
-            : [];
-          const messageExists = prevMessagesArray.some(
-            (msg) =>
-              msg.created_at === data.data.created_at &&
-              msg.message === data.data.message &&
-              msg.sender.id === data.data.sender.id
-          );
-          if (messageExists) return prevMessagesArray;
-          return [...prevMessagesArray, data.data];
-        });
-      }
-    });
-    console.log("messages", messages);
-
-    return () => {
-      socket.off("message");
-    };
-  }, [activeConversation, conversations, isOpen]);
 
   // Fetch list of conversations
   const fetchConversations = async () => {
     try {
       const response = await ChatApis.fetchConversations();
-      console.log("conversations response", response);
 
       setConversations(response);
     } catch (error) {
@@ -124,7 +48,6 @@ const ChatToggle = () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
       const admins = response.data.data.filter((user) => user.type === "admin");
-      console.log("admins", admins);
       setAdminUsers(admins);
     } catch (error) {
       console.error("Error fetching admin users:", error);
@@ -145,60 +68,11 @@ const ChatToggle = () => {
     }
   };
 
-  // Fetch conversations and admin users on component mount
-  useEffect(() => {
-    fetchConversations();
-    fetchAdminUsers();
-  }, []);
-  console.log("fetching messages", messages);
-
-  // Handle click on admin to initiate or continue conversation
-  const handleAdminClick = async (admin) => {
-    // Check if conversation exists
-    const existingConversation = conversations.find(
-      (conv) =>
-        (conv.creator_id === user.id && conv.participant_id === admin.id) ||
-        (conv.creator_id === admin.id && conv.participant_id === user.id)
-    );
-
-    if (existingConversation) {
-      setActiveConversation(existingConversation);
-      return;
-    }
-
-    // Create new conversation
-    try {
-      const response = await axiosClient.post("/api/chat/conversation", {
-        creator_id: user.id,
-        participant_id: admin.id,
-      });
-
-      const newConversation = {
-        ...response.data.data,
-        participant: {
-          id: admin.id,
-          name: admin.name,
-          avatar_url: admin.avatar,
-        },
-      };
-
-      setActiveConversation(newConversation);
-      setConversations([...conversations, newConversation]);
-    } catch (error) {
-      console.error("Error creating conversation:", error);
-    }
-  };
-
-  // Fetch messages when the active conversation changes
-  useEffect(() => {
-    fetchMessages();
-    console.log("fetching messages", messages);
-  }, [activeConversation]);
 
   // Handle sending a new message
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !activeConversation) return;
+    if (!newMessage.trim() || !activeConversation || !socket || !isConnected) return;
 
     try {
       const receiverId =
@@ -238,7 +112,6 @@ const ChatToggle = () => {
 
       // Send to API
       await ChatApis.sendMessage(messagePayload);
-
       // Emit socket event with conversation details
       socket.emit("sendMessage", {
         to: messagePayload.receiver_id,
@@ -251,13 +124,43 @@ const ChatToggle = () => {
     }
   };
 
-  // Scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight;
+
+  // Handle click on admin to initiate or continue conversation
+  const handleAdminClick = async (admin) => {
+    // Check if conversation exists
+    const existingConversation = conversations && conversations.find(
+      (conv) =>
+        (conv.creator_id === user.id && conv.participant_id === admin.id) ||
+        (conv.creator_id === admin.id && conv.participant_id === user.id)
+    );
+
+    if (existingConversation) {
+      setActiveConversation(existingConversation);
+      return;
     }
-  }, [messages]);
+
+    // Create new conversation
+    try {
+      const response = await axiosClient.post("/api/chat/conversation", {
+        creator_id: user.id,
+        participant_id: admin.id,
+      });
+
+      const newConversation = {
+        ...response.data.data,
+        participant: {
+          id: admin.id,
+          name: admin.name,
+          avatar_url: admin.avatar,
+        },
+      };
+
+      setActiveConversation(newConversation);
+      setConversations([...conversations, newConversation]);
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    }
+  };
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -266,26 +169,156 @@ const ChatToggle = () => {
     }
   };
 
+  // Initialize socket connection
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const token = localStorage.getItem("token");
+    const newSocket = io(import.meta.env.VITE_API_BASE_URL, {
+      auth: { token },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 10000,
+      transports: ['websocket']
+    });
+
+    newSocket.on("connect", () => {
+      console.log("client socket connected with user id", user.id);
+      setIsConnected(true);
+      newSocket.emit("joinRoom", { room_id: user.id });
+    });
+
+    newSocket.on("disconnect", (reason) => {
+      console.log("Socket disconnected:", reason);
+      setIsConnected(false);
+
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+
+      reconnectTimeoutRef.current = setTimeout(() => {
+        console.log("Attempting to reconnect...");
+        newSocket.connect();
+      }, 5000);
+    });
+
+    newSocket.on("connect_error", (error) => {
+      console.error("Connection error:", error);
+      setIsConnected(false);
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      newSocket.off("connect");
+      newSocket.off("disconnect");
+      newSocket.off("connect_error");
+      newSocket.close();
+    };
+  }, [user?.id]);
+
+
+  // Message listener
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = (data) => {
+      if (!data?.data) return;
+
+      if (data.data.sender.id !== user.id && document.hidden) {
+        NotificationManager.showNotification({
+          title: "New Message from Admin",
+          body: `Admin: ${data.data.message}`,
+          icon: data.data.sender.avatar || defaultAvatar,
+          requireInteraction: false,
+          onClick: () => {
+            window.focus();
+            setIsOpen(true);
+            if (data.data.conversation_id) {
+              const conversation = conversations.find(
+                (conv) => conv.id === data.data.conversation_id
+              );
+              if (conversation) {
+                setActiveConversation(conversation);
+              }
+            }
+          },
+        });
+      }
+
+      if (activeConversation && data.data.conversation_id === activeConversation.id) {
+        setMessages(prevMessages => {
+          const prevMessagesArray = Array.isArray(prevMessages) ? prevMessages : [];
+          const messageExists = prevMessagesArray.some(
+            msg =>
+              msg.created_at === data.data.created_at &&
+              msg.message === data.data.message &&
+              msg.sender.id === data.data.sender.id
+          );
+          if (messageExists) return prevMessagesArray;
+          return [...prevMessagesArray, data.data];
+        });
+      }
+    };
+
+    socket.on("message", handleNewMessage);
+
+    return () => socket.off("message", handleNewMessage);
+  }, [socket, activeConversation, conversations, isOpen, user?.id]);
+
+
+
+  // Initial data fetch
+  useEffect(() => {
+    if (user?.id) {
+      NotificationManager.requestPermission();
+      fetchConversations();
+      fetchAdminUsers();
+    }
+  }, [user?.id]);
+
+  // Fetch messages when conversation changes
+  useEffect(() => {
+    fetchMessages();
+  }, [activeConversation]);
+
+
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   useEffect(() => {
     if (activeConversation) {
       scrollToBottom();
     }
   }, [activeConversation, messages]);
 
-  console.log("activeConversation", activeConversation);
-
   return (
-
     // Container for the Chat Toggle
     <div className="fixed bottom-[5%] md:bottom-[8%] lg:bottom-[11%] right-[3%] z-50">
       {
         user && user.type === 'user' &&
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-3 bg-[#f974164b] text-[#f97316] rounded-full shadow-lg transition hover:bg-[#f97316] hover:text-[#f2f2f2]"
-      >
-        <IoChatbubbleEllipsesSharp className="h-8 w-8" />
-      </button>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-3 bg-[#f974164b] text-[#f97316] rounded-full shadow-lg transition hover:bg-[#f97316] hover:text-[#f2f2f2]"
+        >
+          <IoChatbubbleEllipsesSharp className="h-8 w-8" />
+        </button>
       }
 
       {isOpen && (
@@ -295,26 +328,22 @@ const ChatToggle = () => {
 
               {/* conversation list start */}
 
-<div className="flex justify-between items-center">
-    <h5 className="text-xl font-bold mb-4">Conversations</h5>
+              <div className="flex justify-between items-center">
+                <h5 className="text-xl font-bold mb-4">Conversations</h5>
 
 
-    {/* Close Button Added Here */}
-        <div className="col-span-4 sm:col-span-8 flex justify-end transi">
-          <button
-            onClick={() => setIsOpen(false)} // Chatbox will close onClick
-            className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
-            aria-label="Close Chat"
-          >
-            <IoClose className="h-8 w-8" />
-          </button>
-        </div>
-</div>
+                {/* Close Button Added Here */}
+                <div className="col-span-4 sm:col-span-8 flex justify-end transi">
+                  <button
+                    onClick={() => setIsOpen(false)} // Chatbox will close onClick
+                    className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
+                    aria-label="Close Chat"
+                  >
+                    <IoClose className="h-8 w-8" />
+                  </button>
+                </div>
+              </div>
 
-
-
-
-                        
               <div className="overflow-y-auto h-[calc(100%-50px)]">
                 {adminUsers.map((admin) => (
                   <div
@@ -334,16 +363,15 @@ const ChatToggle = () => {
                       />
                     ) : null}
                     <div
-                      className={`rounded-full h-10 w-10 bg-gray-200 text-gray-600 flex items-center justify-center ${
-                        admin.avatar ? "hidden" : ""
-                      }`}
+                      className={`rounded-full h-10 w-10 bg-gray-200 text-gray-600 flex items-center justify-center ${admin.avatar ? "hidden" : ""
+                        }`}
                     >
                       {admin.name.charAt(0).toUpperCase()}
                     </div>
                     <div className="ml-3">
                       <h6 className="font-medium">{admin.name}</h6>
                       <p className="text-sm text-gray-500">
-                        {conversations.some(
+                        {conversations && conversations.length > 0 && conversations.some(
                           (conv) => conv.admin?.id === admin.id
                         )
                           ? "Continue chat"
@@ -354,7 +382,7 @@ const ChatToggle = () => {
                 ))}
               </div>
 
-                            {/* conversation list end */}
+              {/* conversation list end */}
 
             </div>
           ) : (
@@ -365,12 +393,12 @@ const ChatToggle = () => {
                 <div className="flex items-center justify-center">
 
 
-                <button
-                  onClick={() => setActiveConversation(null)}
-                  className="mr-4 px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                >
-                  <MdKeyboardArrowLeft className="h-5 w-5" />
-                </button>
+                  <button
+                    onClick={() => setActiveConversation(null)}
+                    className="mr-4 px-2 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
+                  >
+                    <MdKeyboardArrowLeft className="h-5 w-5" />
+                  </button>
 
 
                   <div className="relative">
@@ -396,16 +424,16 @@ const ChatToggle = () => {
                 </div>
 
 
-                        {/* Close Button Added Here */}
-                        <div className="  ">
-                          <button
-                            onClick={() => setIsOpen(false)} // Chatbox will close onClick
-                            className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
-                            aria-label="Close Chat"
-                          >
-                            <IoClose className="h-6 w-6" />
-                          </button>
-                        </div>
+                {/* Close Button Added Here */}
+                <div className="  ">
+                  <button
+                    onClick={() => setIsOpen(false)} // Chatbox will close onClick
+                    className="p-2 text-gray-600 hover:text-gray-800 focus:outline-none transi"
+                    aria-label="Close Chat"
+                  >
+                    <IoClose className="h-6 w-6" />
+                  </button>
+                </div>
 
 
               </div>
@@ -421,9 +449,9 @@ const ChatToggle = () => {
 
                   const time = message.created_at
                     ? new Date(message.created_at).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
                     : "N/A";
 
                   const isUserSender = message.sender.id === user?.id;

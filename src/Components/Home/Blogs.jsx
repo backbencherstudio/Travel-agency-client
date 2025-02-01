@@ -8,7 +8,6 @@ import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext
 
 const Blogs = () => {
     const { homeData } = useTravelData();
-    console.log('homeData', homeData);
 
     // const blogs = [
     //     {
@@ -47,30 +46,30 @@ const Blogs = () => {
 
     // console.log('blogs', blogs)
 
-  return (
-    <div className='max-w-[1216px] mx-auto px-5 xl:px-0'>
-        <div className='text-2xl md:text-5xl font-bold text-center'>Travel Inspiration & Tips</div>
-        <div className=' grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8 py-12'>
-            {
-                homeData?.blogs?.map(item => (
-                    <CardComponent blog={item} key={item.id} />
-                ))
-            }
-        </div>
+    return (
+        <div className='max-w-[1216px] mx-auto px-5 xl:px-0'>
+            <div className='text-2xl md:text-5xl font-bold text-center'>Travel Inspiration & Tips</div>
+            <div className=' grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8 py-12'>
+                {
+                    homeData?.blogs?.map(item => (
+                        <CardComponent blog={item} key={item.id} />
+                    ))
+                }
+            </div>
 
-        <div className='grid justify-center'>
-            <Link to='/blogs'>
-            <button className='flex gap-2 items-center justify-center px-5 py-3 bg-[#D65326] group hover:text-orange-500 hover:bg-transparent hover:shadow-lg  rounded-full hover:bg-[#EB5B2A] transition-all duration-300 text-white text-base'>
-                See All Blogs 
-                <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
-                <path d="M4.6665 10H16.3332" stroke="white" className='stroke-white group-hover:stroke-orange-500' strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M10.5 4.16699L16.3333 10.0003L10.5 15.8337" stroke="white" className='stroke-white group-hover:stroke-orange-500' strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-            </button>
-            </Link>
+            <div className='grid justify-center'>
+                <Link to='/blogs'>
+                    <button className='flex gap-2 items-center justify-center px-5 py-3 bg-[#D65326] group hover:text-orange-500 hover:bg-transparent hover:shadow-lg  rounded-full hover:bg-[#EB5B2A] transition-all duration-300 text-white text-base'>
+                        See All Blogs
+                        <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+                            <path d="M4.6665 10H16.3332" stroke="white" className='stroke-white group-hover:stroke-orange-500' strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M10.5 4.16699L16.3333 10.0003L10.5 15.8337" stroke="white" className='stroke-white group-hover:stroke-orange-500' strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </button>
+                </Link>
+            </div>
         </div>
-    </div>
-  )
+    )
 }
 
 export default Blogs

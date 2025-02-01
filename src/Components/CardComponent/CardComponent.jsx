@@ -11,10 +11,10 @@ const CardComponent = ({ blog }) => {
       year: 'numeric'
     })
   }
-  console.log('blog', blog) 
+
   const truncateHTML = (html, maxLength) => {
     const tempDiv = document.createElement('div')
-    tempDiv.innerHTML = html 
+    tempDiv.innerHTML = html
     const plainText = tempDiv.textContent || tempDiv.innerText || ''
     return plainText.length > maxLength
       ? `${plainText.substring(0, maxLength)}...`
