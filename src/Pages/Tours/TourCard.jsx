@@ -6,7 +6,7 @@ import 'react-lazy-load-image-component/src/effects/blur.css'
 
 function TourCard ({ tour, isPackageRoute }) {
   const navigate = useNavigate()
-  console.log("isPackageRoute", isPackageRoute)
+  // console.log("isPackageRoute", isPackageRoute)
   // Function to render stars based on rating
   const renderStars = rating => {
     const stars = []

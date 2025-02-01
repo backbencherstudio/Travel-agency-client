@@ -3,7 +3,7 @@ import axiosClient from "../axiosClient";
 const EmailChangeApis = {};
 
 EmailChangeApis.send = async (data) => {
-    console.log('data', data)
+    // console.log('data', data)
     let url = "/api/auth/request-email-change";
     const res = await axiosClient.post(url, data)
         .then(response => {

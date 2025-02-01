@@ -98,8 +98,8 @@ const UserProfile = () => {
     })
   }
 
-  console.log('imageFile', imageFile)
-  console.log('NewEmail', newEmail)
+  // console.log('imageFile', imageFile)
+  // console.log('NewEmail', newEmail)
 
   return (
     <div className="max-w-[1216px] mx-auto my-24 p-8 bg-[#fffdfd] rounded-3xl border-2 border-[#eaedf1]">

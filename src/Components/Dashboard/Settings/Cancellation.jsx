@@ -32,7 +32,7 @@ const Cancellation = () => {
 
   const getCancellationData = async () => {
     const res = await CancellationApi.getAllCancellation();
-    console.log('res', res)
+    // console.log('res', res)
     if (res.success) {
       setBody(res.data?.cancellation_policy)
     }
@@ -43,7 +43,7 @@ const Cancellation = () => {
   }
 
   const handleSave = async (data) => {
-    console.log('Saved Policy:', data)
+    // console.log('Saved Policy:', data)
     const cancellation_policy = { cancellation_policy: data?.body };
     // console.log('Saved Policy:', policy)
     const res = await WebsiteInfoApis.save(cancellation_policy);

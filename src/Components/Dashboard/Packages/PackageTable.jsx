@@ -273,209 +273,219 @@ const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
             </TableHead>
 
             <TableBody className='text-nowrap'>
-              {filteredData
-                ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                ?.map((item, index) => (
-                  <TableRow className={`hover:bg-[#fdf0ea]`} key={index}>
-                    <TableCell style={{ minWidth: '280px' }}>
-                      <div className='flex items-center gap-2 '>
-                        {item.package_files &&
-                        item.package_files.length !== 0 ? (
-                          <img
-                            src={item.package_files[0]?.file_url}
-                            alt={item.package_files[0]?.file_url}
-                            className=' w-28 h-20 rounded-md'
-                          />
-                        ) : (
-                          <img
-                            src={noPreview}
-                            alt=''
-                            className=' w-28 h-20 rounded-md'
-                          />
-                        )}
-                        <div className='flex flex-col gap-[5px]'>
-                          <p className='text-xs font-normal text-[#475467]'>
-                            #{item.id}
+              {filteredData?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    <div className="flex flex-col items-center justify-center py-8">
+                      <p className="text-gray-500 text-lg">No data found</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredData
+                  ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  ?.map((item, index) => (
+                    <TableRow className={`hover:bg-[#fdf0ea]`} key={index}>
+                      <TableCell style={{ minWidth: '280px' }}>
+                        <div className='flex items-center gap-2 '>
+                          {item.package_files &&
+                          item.package_files.length !== 0 ? (
+                            <img
+                              src={item.package_files[0]?.file_url}
+                              alt={item.package_files[0]?.file_url}
+                              className=' w-28 h-20 rounded-md'
+                            />
+                          ) : (
+                            <img
+                              src={noPreview}
+                              alt=''
+                              className=' w-28 h-20 rounded-md'
+                            />
+                          )}
+                          <div className='flex flex-col gap-[5px]'>
+                            <p className='text-xs font-normal text-[#475467]'>
+                              #{item.id}
+                            </p>
+                            <p className='text-xs font-medium text-black'>
+                              {item.name}
+                              {user?.id === item?.user?.id && (
+                                <span className='text-xs font-normal text-[#475467]'>
+                                  me
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          minWidth: '200px',
+                          color: '#475467',
+                          fontSize: '12px'
+                        }}
+                      >
+                        {item.type || 'Not Available'}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          minWidth: '200px',
+                          maxWidth: '200px',
+                          color: '#475467',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          fontSize: '12px'
+                        }}
+                      >
+                        {item.description}
+                      </TableCell>
+                      <TableCell
+                        style={{
+                          minWidth: '200px',
+                          color: '#475467',
+                          fontSize: '12px'
+                        }}
+                      >
+                        {item.price}
+                      </TableCell>
+                      {columns?.status && (
+                        <TableCell>
+                          <p>
+                            {item.status === 1 ? (
+                              <p className='flex items-center gap-1 text-[#067647] font-medium px-3 py-[2px] border border-[#ABEFC6] bg-[#ECFDF3] rounded-2xl'>
+                                <IoIosCheckmark className='text-xl text-[#17B26A]' />
+                                Active
+                              </p>
+                            ) : (
+                              <p className='flex items-center gap-1 text-[#B42318] font-medium px-3 py-[2px] border border-[#FECDCA] bg-[#FEF3F2] rounded-2xl'>
+                                <RxCross2 className='text-sm text-[#B42318]' />
+                                Inactive
+                              </p>
+                            )}
                           </p>
-                          <p className='text-xs font-medium text-black'>
-                            {item.name}
-                            {user?.id === item?.user?.id && (
-                              <span className='text-xs font-normal text-[#475467]'>
-                                me
+                        </TableCell>
+                      )}
+                      <TableCell style={{ minWidth: '200px' }}>
+                        <>
+                          <p className='truncate text-[#475467]'>
+                            {item.approved_at === null ? (
+                              <span
+                                className='bg-[#FEF3F2] border text-[#B42318] text-[13px] border-[#FECDCA] px-2 py-1 rounded-full'
+                                style={{
+                                  height: '30px',
+                                  width: '100px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                              >
+                                Reject
+                              </span>
+                            ) : (
+                              <span
+                                className='bg-[#ECFDF3] border-[#ABEFC6] border text-[13px] text-[#067647] px-2 py-1 rounded-full'
+                                style={{
+                                  height: '30px',
+                                  width: '100px',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center'
+                                }}
+                              >
+                                Approved
                               </span>
                             )}
                           </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        minWidth: '200px',
-                        color: '#475467',
-                        fontSize: '12px'
-                      }}
-                    >
-                      {item.type || 'Not Available'}
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        minWidth: '200px',
-                        maxWidth: '200px',
-                        color: '#475467',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        fontSize: '12px'
-                      }}
-                    >
-                      {item.description}
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        minWidth: '200px',
-                        color: '#475467',
-                        fontSize: '12px'
-                      }}
-                    >
-                      {item.price}
-                    </TableCell>
-                    {columns?.status && (
-                      <TableCell>
-                        <p>
-                          {item.status === 1 ? (
-                            <p className='flex items-center gap-1 text-[#067647] font-medium px-3 py-[2px] border border-[#ABEFC6] bg-[#ECFDF3] rounded-2xl'>
-                              <IoIosCheckmark className='text-xl text-[#17B26A]' />
-                              Active
-                            </p>
-                          ) : (
-                            <p className='flex items-center gap-1 text-[#B42318] font-medium px-3 py-[2px] border border-[#FECDCA] bg-[#FEF3F2] rounded-2xl'>
-                              <RxCross2 className='text-sm text-[#B42318]' />
-                              Inactive
-                            </p>
-                          )}
-                        </p>
+                        </>
                       </TableCell>
-                    )}
-                    <TableCell style={{ minWidth: '200px' }}>
-                      <>
-                        <p className='truncate text-[#475467]'>
-                          {item.approved_at === null ? (
-                            <span
-                              className='bg-[#FEF3F2] border text-[#B42318] text-[13px] border-[#FECDCA] px-2 py-1 rounded-full'
-                              style={{
-                                height: '30px',
-                                width: '100px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              Reject
-                            </span>
-                          ) : (
-                            <span
-                              className='bg-[#ECFDF3] border-[#ABEFC6] border text-[13px] text-[#067647] px-2 py-1 rounded-full'
-                              style={{
-                                height: '30px',
-                                width: '100px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              Approved
-                            </span>
-                          )}
-                        </p>
-                      </>
-                    </TableCell>
-                    {columns?.action && (
-                      <TableCell>
-                        <div className='flex items-center gap-3'>
-                          <div className='relative flex justify-center'>
-                            <button
-                              onClick={e => toggleActionOpen(e, item.id)}
-                              className='text-blue-600 transition-all duration-500 ease-in-out'
-                            >
-                              {isOpenAction === item.id ? (
-                                <RxCross2 className='text-xl' />
-                              ) : (
-                                <BsThreeDots className='text-xl' />
-                              )}
-                            </button>
-
-                            {isOpenAction === item.id && (
-                              <DropdownPortal
-                                isOpen={isOpenAction === item.id}
-                                position={dropdownPosition}
+                      {columns?.action && (
+                        <TableCell>
+                          <div className='flex items-center gap-3'>
+                            <div className='relative flex justify-center'>
+                              <button
+                                onClick={e => toggleActionOpen(e, item.id)}
+                                className='text-blue-600 transition-all duration-500 ease-in-out'
                               >
-                                <div
-                                  ref={ref =>
-                                    ref && actionRefs.current.set(item.id, ref)
-                                  }
-                                  className='absolute bg-white py-5 px-4 flex flex-col -right-20 top-5 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
+                                {isOpenAction === item.id ? (
+                                  <RxCross2 className='text-xl' />
+                                ) : (
+                                  <BsThreeDots className='text-xl' />
+                                )}
+                              </button>
+
+                              {isOpenAction === item.id && (
+                                <DropdownPortal
+                                  isOpen={isOpenAction === item.id}
+                                  position={dropdownPosition}
                                 >
-                                  {user?.type === 'admin' && (
-                                    <>
-                                      <button
-                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-base ${
-                                          item.approved_at !== null
-                                            ? 'bg-green-600 text-white cursor-default text-sm'
-                                            : 'hover:bg-green-600 text-zinc-600 text-sm hover:text-white duration-300'
-                                        }`}
-                                        disabled={item.approved_at !== null}
-                                        onClick={() =>
-                                          handleApproveClick(item.id)
-                                        }
-                                      >
-                                        Approve
+                                  <div
+                                    ref={ref =>
+                                      ref && actionRefs.current.set(item.id, ref)
+                                    }
+                                    className='absolute bg-white py-5 px-4 flex flex-col -right-20 top-5 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
+                                  >
+                                    {user?.type === 'admin' && (
+                                      <>
+                                        <button
+                                          className={`flex item-center gap-3 py-2 px-4 rounded-md text-base ${
+                                            item.approved_at !== null
+                                              ? 'bg-green-600 text-white cursor-default text-sm'
+                                              : 'hover:bg-green-600 text-zinc-600 text-sm hover:text-white duration-300'
+                                          }`}
+                                          disabled={item.approved_at !== null}
+                                          onClick={() =>
+                                            handleApproveClick(item.id)
+                                          }
+                                        >
+                                          Approve
+                                        </button>
+                                        <button
+                                          className={`flex item-center gap-3 py-2 px-4 rounded-md text-base ${
+                                            item.approved_at === null
+                                              ? 'bg-red-600 text-white cursor-default text-sm'
+                                              : 'hover:bg-red-600 text-zinc-600 text-sm hover:text-white duration-300'
+                                          }`}
+                                          disabled={item.approved_at === null}
+                                          onClick={() =>
+                                            handleRejectClick(item.id)
+                                          }
+                                        >
+                                          Reject
+                                        </button>
+                                      </>
+                                    )}
+                                    {user?.id === item?.user?.id && (
+                                      <>
+                                        <button onClick={() => handleActiveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
+                                          {/* <FaCheck className="mt-1" /> */}
+                                          Active
                                       </button>
                                       <button
-                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-base ${
-                                          item.approved_at === null
-                                            ? 'bg-red-600 text-white cursor-default text-sm'
-                                            : 'hover:bg-red-600 text-zinc-600 text-sm hover:text-white duration-300'
-                                        }`}
-                                        disabled={item.approved_at === null}
-                                        onClick={() =>
-                                          handleRejectClick(item.id)
-                                        }
+                                        onClick={() => handleRejectClick(item.id)}
+                                        className='flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300'
                                       >
-                                        Reject
+                                        {/* <RxCross2 className='text-xl' /> */}
+                                        Inactive
                                       </button>
                                     </>
                                   )}
-                                  {user?.id === item?.user?.id && (
-                                    <>
-                                      <button onClick={() => handleActiveClick(item.id)} className="flex item-center gap-3 p-3 hover:bg-green-500 rounded-md text-base text-zinc-600 hover:text-white duration-300">
-                                        {/* <FaCheck className="mt-1" /> */}
-                                        Active
-                                    </button>
-                                    <button
-                                      onClick={() => handleRejectClick(item.id)}
-                                      className='flex item-center gap-3 p-3 hover:bg-red-500 rounded-md text-base text-zinc-600 hover:text-white duration-300'
-                                    >
-                                      {/* <RxCross2 className='text-xl' /> */}
-                                      Inactive
-                                    </button>
-                                  </>
-                                )}
-                                </div>
-                              </DropdownPortal>
-                            )}
-                          </div>
+                                  </div>
+                                </DropdownPortal>
+                              )}
+                            </div>
 
-                          <button
-                            onClick={e => handlePackageDelete(e, item.id)}
-                            className='text-red-600 hover:text-red-700 transform duration-300'
-                          >
-                              <LuTrash2 className='text-lg' />
-                          </button>
-                        </div>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
+                            <button
+                              onClick={e => handlePackageDelete(e, item.id)}
+                              className='text-red-600 hover:text-red-700 transform duration-300'
+                            >
+                                <LuTrash2 className='text-lg' />
+                            </button>
+                          </div>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))
+              )}
             </TableBody>
           </Table>
         </TableContainer>

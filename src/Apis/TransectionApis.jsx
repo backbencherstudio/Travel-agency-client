@@ -5,7 +5,7 @@ const TransactionApis = {};
 // Get all transactions
 TransactionApis.getAllTransactions = async () => {
   const url = "/api/admin/payment-transaction";
-  console.log(url);
+  // console.log(url);
 
   
   const res = await axiosClient

@@ -54,7 +54,7 @@ const DashboardAnalysis = () => {
       setLoading(true);
       setError(null);
       const response = await DashboardApis.getDashboardData();
-      console.log("Dashboard API Response:", response.data);
+      // console.log("Dashboard API Response:", response.data);
       if (response.success) {
         const data = response.data;
         setStats({

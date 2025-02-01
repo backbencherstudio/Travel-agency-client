@@ -30,7 +30,7 @@ const CompanyInfo = () => {
 
   const fetchData = async () => {
     const res = await WebsiteInfoApis.get();
-    console.log('res', res)
+    // console.log('res', res)
     if (res?.success) {
       setValue('name', res?.data?.name);
       setValue('email', res?.data?.email);
@@ -75,9 +75,9 @@ const CompanyInfo = () => {
       form.append(key, data[key]);
     });
 
-    console.log('FormData Entries:');
+    // console.log('FormData Entries:');
     for (let pair of form.entries()) {
-      console.log(pair[0] + ':', pair[1]);
+      // console.log(pair[0] + ':', pair[1]);
     }
     if (user?.type === 'admin') {
       const res = await WebsiteInfoApis.save(form);

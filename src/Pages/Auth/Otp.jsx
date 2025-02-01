@@ -26,8 +26,8 @@ const Otp = () => {
   }
 
   const queryParams = getQueryParams()
-  console.log('queryParams', queryParams.changePassword)
-  console.log('email', email)
+  // console.log('queryParams', queryParams.changePassword)
+  // console.log('email', email)
   const onSubmit = async data => {
     const otp = Object.values(data).join('')
     setVerifyData({ otp: otp, email: email })

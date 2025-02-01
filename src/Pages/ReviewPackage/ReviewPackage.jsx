@@ -122,7 +122,7 @@ function ReviewPackage () {
     }
   }, [id])
 
-  console.log('checkoutData', checkoutData)
+  // console.log('checkoutData', checkoutData)
 
   useEffect(() => {
     const basePrice =

@@ -13,7 +13,6 @@ import {
   Dialog,
   DialogContent
 } from '@mui/material'
-import {  FiTrash2 } from 'react-icons/fi'
 import { useForm } from 'react-hook-form'
 import { FaRegSquarePlus } from 'react-icons/fa6'
 import {
@@ -29,7 +28,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { LuTrash2 } from 'react-icons/lu'
 
 
-const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
+const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
@@ -133,30 +132,23 @@ const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
     setLoading(true)
 
     try {
-      // Remove email from the payload in edit mode
       if (mode === 'edit') {
         delete formData.email
       }
 
       if (mode === 'add') {
-        // Add new member
         const response = await addUser(formData)
         if (response.success) {
           toast.success('Member added successfully!')
-          setFilteredData(prevData => [...prevData, response.data])
+          onDataUpdate()
         } else {
           toast.error(response.message || 'Failed to add member.')
         }
       } else if (mode === 'edit') {
-        // Update existing member
         const response = await updateUser(selectedMember.id, formData)
         if (response.success) {
           toast.success('Member updated successfully!')
-          setFilteredData(prevData =>
-            prevData.map(member =>
-              member.id === selectedMember.id ? response.data : member
-            )
-          )
+          onDataUpdate()
         } else {
           toast.error(response.message || 'Failed to update member.')
         }
@@ -168,8 +160,8 @@ const AdminMembersAddTable = ({ title, data = [], columns = {} }) => {
       console.error('Error submitting form:', error)
       toast.error(
         error.response?.data?.message ||
-          error.message ||
-          'An error occurred while submitting.'
+        error.message ||
+        'An error occurred while submitting.'
       )
     } finally {
       setLoading(false)
