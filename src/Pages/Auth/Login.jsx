@@ -35,10 +35,10 @@ const Login = () => {
         email: data.email,
         password: data.password
       })
-      console.log('res', res)
+      // console.log('res', res)
       // toast.success('Loging Successful.');
       const role = localStorage.getItem('role');
-      console.log('token', role)
+      // console.log('token', role)
       setTimeout(() => {
         if (role === 'user') {
           navigate('/')
@@ -47,7 +47,7 @@ const Login = () => {
         }
       }, 500);
     } catch (error) {
-      console.error('Login error:', error.response?.data?.message || error.message);
+      // console.error('Login error:', error.response?.data?.message || error.message);
       toast.error('Login failed. Please try again.');
     } 
   };

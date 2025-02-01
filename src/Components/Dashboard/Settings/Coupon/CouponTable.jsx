@@ -56,7 +56,7 @@ const CouponTable = ({ title, data = [], columns = {}, getCoupons }) => {
     // }
   }, [searchQuery, data])
 
-  console.log('filteredData', filteredData)
+  // console.log('filteredData', filteredData)
 
   const handleChangePage = (event, newPage) => setPage(newPage)
 

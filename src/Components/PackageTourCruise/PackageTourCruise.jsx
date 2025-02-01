@@ -78,7 +78,7 @@ function PackageTourCruise() {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     const searchParams = new URLSearchParams(location.search);
-    console.log('searchParams', searchParams)
+    // console.log('searchParams', searchParams)
     // console.log('isCruiseRoute', isCruiseRoute)
     const [priceRange, setPriceRange] = useState({
         min: 0,
@@ -91,8 +91,8 @@ function PackageTourCruise() {
     const itemsPerPage = 6;
     const [pageLoading, setPageLoading] = useState(false);
 
-    console.log('destinations', destinations)
-    console.log('cancellationPolicies', cancellationPolicies)
+    // console.log('destinations', destinations)
+    // console.log('cancellationPolicies', cancellationPolicies)
     // console.log('priceRange', priceRange)
 
     const minPrice = 0;
@@ -150,7 +150,7 @@ function PackageTourCruise() {
     }, []);
 
     const applyFilters = async () => {
-        console.log('queryParam', queryParam)
+        // console.log('queryParam', queryParam)
         setLoading(true);
         try {
             const formattedStartDate = startDate ? startDate.toISOString().split('T')[0] : '';
@@ -210,7 +210,7 @@ function PackageTourCruise() {
                 `${isCruiseRoute ? 'cruise' : isPackageRoute ? 'package' : isSearchResultsRoute ? '' : 'tour'}`,
                 filterParams
             );
-            console.log('filterParams', filterParams)
+            // console.log('filterParams', filterParams)
 
             if (res.success) {
                 setPackages(res?.data);

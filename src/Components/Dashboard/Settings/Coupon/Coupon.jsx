@@ -23,7 +23,7 @@ const Coupon = () => {
   const getCoupons = async () => {
     const res = await CouponApis.get();
     if (res.success) {
-      console.log('res', res.data)
+      // console.log('res', res.data)
       setCouponData(res.data);
     }
 

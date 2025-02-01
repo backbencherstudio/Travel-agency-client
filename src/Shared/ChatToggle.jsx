@@ -46,7 +46,7 @@ const ChatToggle = () => {
   const messagesContainerRef = useRef(null); // Ref for messages container
   const { user } = useContext(AuthContext); // User context
 
-  console.log("user", user);
+  // console.log("user", user);
 
   // Request notification permission on component mount
   useEffect(() => {
@@ -100,7 +100,7 @@ const ChatToggle = () => {
         });
       }
     });
-    console.log("messages", messages);
+    // console.log("messages", messages);
 
     return () => {
       socket.off("message");
@@ -111,7 +111,7 @@ const ChatToggle = () => {
   const fetchConversations = async () => {
     try {
       const response = await ChatApis.fetchConversations();
-      console.log("conversations response", response);
+      // console.log("conversations response", response);
 
       setConversations(response);
     } catch (error) {
@@ -124,7 +124,7 @@ const ChatToggle = () => {
     try {
       const response = await axiosClient.get("/api/chat/user");
       const admins = response.data.data.filter((user) => user.type === "admin");
-      console.log("admins", admins);
+      // console.log("admins", admins);
       setAdminUsers(admins);
     } catch (error) {
       console.error("Error fetching admin users:", error);
@@ -150,7 +150,7 @@ const ChatToggle = () => {
     fetchConversations();
     fetchAdminUsers();
   }, []);
-  console.log("fetching messages", messages);
+  // console.log("fetching messages", messages);
 
   // Handle click on admin to initiate or continue conversation
   const handleAdminClick = async (admin) => {
@@ -192,7 +192,7 @@ const ChatToggle = () => {
   // Fetch messages when the active conversation changes
   useEffect(() => {
     fetchMessages();
-    console.log("fetching messages", messages);
+    // console.log("fetching messages", messages);
   }, [activeConversation]);
 
   // Handle sending a new message
@@ -272,7 +272,7 @@ const ChatToggle = () => {
     }
   }, [activeConversation, messages]);
 
-  console.log("activeConversation", activeConversation);
+  // console.log("activeConversation", activeConversation);
 
   return (
 

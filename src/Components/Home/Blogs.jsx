@@ -8,7 +8,7 @@ import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext
 
 const Blogs = () => {
     const { homeData } = useTravelData();
-    console.log('homeData', homeData);
+    // console.log('homeData', homeData);
 
     // const blogs = [
     //     {

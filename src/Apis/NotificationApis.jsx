@@ -5,11 +5,11 @@ const NotificationApis = {};
 // Fetch all notifications
 NotificationApis.getNotification = async () => {
   const url = "/api/admin/notification";
-  console.log("url", url);
+  // console.log("url", url);
   
   try {
     const response = await axiosClient.get(url);
-    console.log("get response", response);
+    // console.log("get response", response);
     
     return {
       success: true,

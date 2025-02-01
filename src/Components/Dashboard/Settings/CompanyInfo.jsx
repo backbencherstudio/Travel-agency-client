@@ -30,7 +30,7 @@ const CompanyInfo = () => {
 
   const fetchData = async () => {
     const res = await WebsiteInfoApis.get();
-    console.log('res', res)
+    // console.log('res', res)
     if (res?.success) {
       setValue('name', res?.data?.name);
       setValue('email', res?.data?.email);

@@ -17,7 +17,7 @@ const socket = io(import.meta.env.VITE_API_BASE_URL, {
 });
 
 socket.on("connect", () => {
-  console.log("Admin Dashboard Connected to server!");
+  // console.log("Admin Dashboard Connected to server!");
 });
 
 socket.on("disconnect", (reason) => {
@@ -36,7 +36,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   useEffect(() => {
     if ("Notification" in window) {
       Notification.requestPermission().then((permission) => {
-        console.log("Notification permission:", permission);
+        // console.log("Notification permission:", permission);
       });
     }
   }, []);
@@ -45,7 +45,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   const fetchNotifications = async () => {
     try {
       const response = await NotificationApis.getNotification();
-      console.log("fetch response", response.data.data);
+      // console.log("fetch response", response.data.data);
       
       if (response.success) {
         // Filter out review notifications that have been handled
@@ -62,7 +62,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
       console.error("Error:", error);
     }
   };
-  console.log('notifications', notifications);
+  // console.log('notifications', notifications);
   
 
   // Use useEffect to fetch notifications when component mounts

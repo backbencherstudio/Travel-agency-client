@@ -11,7 +11,7 @@ const CardComponent = ({ blog }) => {
       year: 'numeric'
     })
   }
-  console.log('blog', blog) 
+  // console.log('blog', blog) 
   const truncateHTML = (html, maxLength) => {
     const tempDiv = document.createElement('div')
     tempDiv.innerHTML = html 

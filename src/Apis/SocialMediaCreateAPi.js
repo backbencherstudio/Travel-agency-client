@@ -22,7 +22,7 @@ export const postSocialMediaData = async socialMediaData => {
 export const getSocialMediaData = async () => {
   try {
     const response = await axiosClient.get('/api/admin/social-media')
-    console.log('Fetched Social Media Data:', response.data)
+    // console.log('Fetched Social Media Data:', response.data)
     return response.data
   } catch (error) {
     console.error(

@@ -6,7 +6,7 @@ const ReviewApis = {};
 
 ReviewApis.getAllReviews = async () => {
   const url = "/api/admin/reviews";
-  console.log(url);
+  // console.log(url);
   
   const res = await axiosClient.get(url)
   .then(response => {
