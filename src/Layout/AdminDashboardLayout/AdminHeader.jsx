@@ -7,6 +7,7 @@ import { useContext, useState, useEffect, useRef } from "react";
 import moment from "moment";
 import NotificationApis from "../../Apis/NotificationApis";
 import { io } from "socket.io-client";
+import { useNavigate } from "react-router-dom";
 
 const token = localStorage.getItem("token");
 
@@ -25,6 +26,7 @@ socket.on("disconnect", (reason) => {
 });
 
 const AdminHeader = ({ showSidebar, setShowSidebar }) => {
+  const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -61,6 +63,32 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
     }
   };
 
+  // Handle notification navigation
+  const handleNotificationNavigation = (notification) => {
+    const notificationType = notification?.notification_event?.type?.toLowerCase();
+    
+    switch (notificationType) {
+      case 'booking':
+        navigate('/dashboard/bookings');
+        break;
+      case 'package':
+        navigate('/dashboard/packages');
+        break;
+      case 'payment':
+        navigate('/dashboard/payment');
+        break;
+      case 'review':
+        navigate('/dashboard/review');
+        break;
+      // Add more cases as needed
+      default:
+        // Default fallback route if type doesn't match
+        navigate('/dashboard');
+    }
+    setShowNotifications(false);
+  };
+
+
   // Use useEffect to fetch notifications when component mounts
   useEffect(() => {
     fetchNotifications();
@@ -70,7 +98,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   useEffect(() => {
     socket.on("notification", (notification) => {
       console.log('notification', notification);
-
+ 
       // Check receiver_id and user type conditions
       if (notification.receiver_id === null) {
         // Show notification only to admin users
@@ -110,12 +138,11 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
           }
         );
 
-        browserNotification.onclick = () => {
-          window.focus();
-          if (newNotification.id) {
-            window.location.href = `/admin/notifications/${newNotification.id}`;
-          }
-        };
+        // Update browser notification click handler
+      browserNotification.onclick = () => {
+        window.focus();
+        handleNotificationNavigation(newNotification);
+      };
       }
     };
 
@@ -263,7 +290,10 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
                           </div>
                           <button
                             className="text-gray-400 hover:text-red-500 transition-colors duration-200 p-1"
-                            onClick={() => clearNotification(notification.id)}
+                            onClick={(e) => {
+                          e.stopPropagation(); // Prevent navigation when clicking delete
+                          clearNotification(notification.id);
+                        }}
                           >
                             <FaTimes />
                           </button>

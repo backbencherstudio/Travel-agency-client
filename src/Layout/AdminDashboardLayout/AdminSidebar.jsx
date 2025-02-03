@@ -25,6 +25,41 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
   const [isSubmenuOpen, setSubmenuOpen] = useState(false)
   const { user, logout } = useContext(AuthContext);
 
+  // Update selected tab based on current path
+  useEffect(() => {
+    const path = location.pathname.split('/').pop() // Get the last part of the path
+    
+    // Map paths to tab names
+    const pathToTab = {
+      '': 'Dashboard',
+      'packages': 'Packages',
+      'bookings': 'Bookings',
+      'vendor': 'Vendor',
+      'payment': 'Payment',
+      'review': 'Review',
+      'blog': 'Blog',
+      'chat': 'Chat',
+      'settings': 'Settings',
+      'add-package': 'addPackage',
+      'package-category-&-tag': 'packageCategory&Tag',
+      'package-destination-&-policy': 'packageDestination&Policy',
+      'package-extra-service': 'packageExtraService',
+      'language': 'language',
+      'package-disallow-traveller': 'packageDisallowTraveller'
+    }
+
+    // Set the selected tab based on the current path
+    if (pathToTab[path]) {
+      setSelectedTab(pathToTab[path])
+      
+      // If the path is related to package submenu, open the submenu
+      if (['add-package', 'package-category-&-tag', 'package-destination-&-policy', 
+           'package-extra-service', 'language', 'package-disallow-traveller'].includes(path)) {
+        setSubmenuOpen(true)
+      }
+    }
+  }, [location.pathname])
+
   useEffect(() => {
     localStorage.setItem('tab', selectedTab)
   }, [selectedTab])
