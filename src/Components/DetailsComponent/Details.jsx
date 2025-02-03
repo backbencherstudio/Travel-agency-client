@@ -72,8 +72,8 @@ const Details = ({ details }) => {
                     {/* Show selected image */}
                     <div className="flex flex-col gap-2">
                         <img
-                            src={testImg}
-                            // src={selectedImage}
+                            // src={testImg}
+                            src={selectedImage}
                             alt={selectedImage}
                             className="h-96 w-full object-cover rounded-xl"
                         />
