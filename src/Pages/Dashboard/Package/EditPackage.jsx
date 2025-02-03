@@ -22,7 +22,7 @@ const EditPackage = () => {
     formState: { errors },
   } = useForm();
   const [isDragging, setIsDragging] = useState(false);
-  const [packageName, setPackageName] = useState('');
+  const [packageName, setPackageName] = useState("");
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
   const [packageType, setPackageType] = useState("tour");
@@ -38,16 +38,16 @@ const EditPackage = () => {
   const [travellerTypes, setTravellerTypes] = useState([]);
   const [selectedTravellerTypes, setSelectedTravellerTypes] = useState([]);
   const [tourPlan, setTourPlan] = useState([
-      { id: null, day: 1, title: "", description: "", images: [] },
-    ]);
+    { id: null, day: 1, title: "", description: "", images: [] },
+  ]);
   const [loading, setLoading] = useState(false);
   const [selectedDestinations, setSelectedDestinations] = useState([]);
 
-  console.log('selectedTravellerTypes', selectedTravellerTypes)
+  console.log("selectedTravellerTypes", selectedTravellerTypes);
 
   const { id } = useParams();
   const editId = id;
-//   console.log("editId", editId);
+  //   console.log("editId", editId);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -91,7 +91,9 @@ const EditPackage = () => {
         const resLanguages = await axiosClient.get("api/admin/language");
         setLanguages(resLanguages.data?.data);
 
-        const resTravellerTypes = await axiosClient.get("api/admin/traveller-type");
+        const resTravellerTypes = await axiosClient.get(
+          "api/admin/traveller-type"
+        );
         setTravellerTypes(resTravellerTypes.data?.data);
 
         if (editId) {
@@ -112,29 +114,48 @@ const EditPackage = () => {
           setPackageType(packageData.type);
           if (packageData.package_destinations) {
             setSelectedDestinations(
-              packageData.package_destinations.map(dest => ({ id: dest.destination.id }))
+              packageData.package_destinations.map((dest) => ({
+                id: dest.destination.id,
+              }))
             );
-            setValue('destinations', 
-              packageData.package_destinations.map(dest => ({ id: dest.destination.id }))
+            setValue(
+              "destinations",
+              packageData.package_destinations.map((dest) => ({
+                id: dest.destination.id,
+              }))
             );
           } else if (packageData.package_destinations) {
-            setSelectedDestinations([{ id: packageData.package_destinations.destination.id }]);
-            setValue('destinations', [{ id: packageData.package_destinations.destination.id }]);
+            setSelectedDestinations([
+              { id: packageData.package_destinations.destination.id },
+            ]);
+            setValue("destinations", [
+              { id: packageData.package_destinations.destination.id },
+            ]);
           }
           if (packageData.package_languages) {
             setSelectedLanguages(
-              packageData.package_languages.map(dest => ({ id: dest.language.id }))
+              packageData.package_languages.map((dest) => ({
+                id: dest.language.id,
+              }))
             );
-            setValue('languages', 
-              packageData.package_languages.map(dest => ({ id: dest.language.id }))
+            setValue(
+              "languages",
+              packageData.package_languages.map((dest) => ({
+                id: dest.language.id,
+              }))
             );
           }
           if (packageData.package_traveller_types) {
             setSelectedTravellerTypes(
-              packageData.package_traveller_types.map(dest => ({ id: dest.traveller_type.id }))
+              packageData.package_traveller_types.map((dest) => ({
+                id: dest.traveller_type.id,
+              }))
             );
-            setValue('travellerTypes', 
-              packageData.package_traveller_types.map(dest => ({ id: dest.traveller_type.id }))
+            setValue(
+              "travellerTypes",
+              packageData.package_traveller_types.map((dest) => ({
+                id: dest.traveller_type.id,
+              }))
             );
           }
           setValue("price", packageData.price);
@@ -143,7 +164,10 @@ const EditPackage = () => {
           setValue("min_capacity", packageData.min_capacity);
           setValue("max_capacity", packageData.max_capacity);
           // setSelectedPolicy(packageData.cancellation_policy?.id || "");
-          setValue("cancellation_policy_id", packageData.cancellation_policy?.id)
+          setValue(
+            "cancellation_policy_id",
+            packageData.cancellation_policy?.id
+          );
           setValue("type", packageData.type);
           setValue("language", packageData.language);
           setImages(packageData.package_files);
@@ -161,8 +185,11 @@ const EditPackage = () => {
             packageData.package_extra_services?.map((service) => ({
               id: service.extra_service?.id, // Extract `id` and wrap it in an object
             }))
-          )
-          if (packageData.package_trip_plans && packageData.package_trip_plans.length > 0) {
+          );
+          if (
+            packageData.package_trip_plans &&
+            packageData.package_trip_plans.length > 0
+          ) {
             setTourPlan(
               packageData.package_trip_plans?.map((plan, index) => ({
                 id: plan?.id,
@@ -182,15 +209,6 @@ const EditPackage = () => {
     fetchData();
   }, [editId]);
 
-  console.log('service ids', serviceIds)
-  // console.log('tags', tags)
-  // console.log('categories', categories)
-
-  console.log("selectedDestinations", selectedDestinations);
-  // console.log('includedPackages', includedPackages)
-  console.log("policies", policies);
-  console.log("images", images);
-
   const imageGalleries = [
     { image: image1 },
     { image: image2 },
@@ -209,16 +227,20 @@ const EditPackage = () => {
 
   const onImageDrop = (acceptedFiles) => {
     // Count existing images and videos
-    const existingVideos = images.filter(file => file.type === 'video' || file?.video_url).length;
-    const existingImages = images.filter(file => file.type !== 'video' && !file?.video_url).length;
+    const existingVideos = images.filter(
+      (file) => file.type === "video" || file?.video_url
+    ).length;
+    const existingImages = images.filter(
+      (file) => file.type !== "video" && !file?.video_url
+    ).length;
 
     // First, separate videos and images
     const videoFiles = [];
     const imageFiles = [];
-    
+
     // Categorize new files
-    acceptedFiles.forEach(file => {
-      if (file.type.startsWith('video/')) {
+    acceptedFiles.forEach((file) => {
+      if (file.type.startsWith("video/")) {
         videoFiles.push(file);
       } else {
         imageFiles.push(file);
@@ -227,34 +249,37 @@ const EditPackage = () => {
 
     // Check limits
     if (existingVideos + videoFiles.length > 2) {
-      toast.error('Maximum 2 videos allowed');
+      toast.error("Maximum 2 videos allowed");
       return;
     }
 
     if (existingImages + imageFiles.length > 10) {
-      toast.error('Maximum 10 images allowed');
+      toast.error("Maximum 10 images allowed");
       return;
     }
 
     // Process accepted files
-    const newFiles = [...videoFiles, ...imageFiles].map(file => {
-      const isVideo = file.type.startsWith('video/');
+    const newFiles = [...videoFiles, ...imageFiles].map((file) => {
+      const isVideo = file.type.startsWith("video/");
       return {
         file,
         preview: isVideo ? null : URL.createObjectURL(file),
-        type: isVideo ? 'video' : 'image',
+        type: isVideo ? "video" : "image",
       };
     });
 
     if (newFiles.length > 0) {
-      setImages(prev => [...prev, ...newFiles]);
+      setImages((prev) => [...prev, ...newFiles]);
     }
     setIsDragging(false);
   };
 
   const imageDropzone = useDropzone({
     onDrop: onImageDrop,
-    accept: { "image/*": [".jpeg", ".jpg", ".png"], "video/*": [".mp4", ".avi", ".mov"] },
+    accept: {
+      "image/*": [".jpeg", ".jpg", ".png"],
+      "video/*": [".mp4", ".avi", ".mov"],
+    },
     multiple: true,
     onDragEnter: () => setIsDragging(true),
     onDragLeave: () => setIsDragging(false),
@@ -266,8 +291,11 @@ const EditPackage = () => {
 
   const onSubmit = async (data) => {
     // Count images and videos
-    const videoCount = images.filter(file => file.type === 'video' || file?.video_url).length;
-    const imageCount = images.filter(file => file.type !== 'video' && !file?.video_url).length;
+    const videoCount = images.filter(
+      (file) => file.type === "video" || file?.video_url
+    ).length;
+    const imageCount = images.filter((file) => file.type !== "video" && !file?.video_url
+    ).length;
 
     // Validate minimum requirements
     // if (videoCount < 1) {
@@ -283,7 +311,7 @@ const EditPackage = () => {
       includedPackages,
       excludedPackages,
       serviceIds,
-      package_images: images.map((image) => (image.file ? image.file : image)),
+      package_images: images.map((image) => (image.id ? image.id : image.file)),
       destinations: selectedDestinations,
     };
 
@@ -295,9 +323,9 @@ const EditPackage = () => {
     //         imagesArray.push(tripImage);
     //     ))
     // }
-    for (const image in images) {
-      package_images.push(image);
-    }
+    // for (const image in images) {
+    //   package_images.push(image);
+    // }
 
     const form = new FormData();
     for (let key in formDataObject) {
@@ -318,7 +346,7 @@ const EditPackage = () => {
           });
         });
         form.append(`trip_plans_images`, JSON.stringify(trip_plans_images));
-        console.log('trip_plans_images', trip_plans_images)
+        console.log("trip_plans_images", trip_plans_images);
         // Append trip_plans as JSON
         form.append("trip_plans", JSON.stringify(formDataObject[key]));
       } else if (key === "package_images") {
@@ -326,6 +354,8 @@ const EditPackage = () => {
         formDataObject[key].forEach((image) => {
           if (image instanceof File) {
             // Append the file directly if it's a File object
+            console.log("image file", image);
+
             form.append("package_files", image);
           } else {
             // const package_images = [];
@@ -336,13 +366,14 @@ const EditPackage = () => {
             //     ))
             // }
             // for (const img in image) {
-            package_files.push(image);
+            console.log("package image", image);
+            package_files.push({id: image});
             // }
           }
         });
-        console.log("result", package_images);
+        console.log("result", package_files);
 
-        form.append("package_images", JSON.stringify(package_images));
+        form.append("package_files", JSON.stringify(package_files));
       } else if (key === "includedPackages" || key === "excludedPackages") {
         const packages = formDataObject[key].map((item) => ({
           id: item.value,
@@ -371,18 +402,20 @@ const EditPackage = () => {
     }
     setLoading(true);
     if (editId) {
-        toast.info("Updating package...");
-        // Uncomment to send the form data to your API
-        const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package/${editId}`;
-        // const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
-        const res = await axiosClient.patch(url, form, {
+      toast.info("Updating package...");
+      // Uncomment to send the form data to your API
+      const url = `${
+        import.meta.env.VITE_API_BASE_URL
+      }/api/admin/package/${editId}`;
+      // const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
+      const res = await axiosClient.patch(url, form, {
         headers: { "Content-Type": "multipart/form-data" },
-        });
-        console.log("Response:", res.data);
-        if (res.data.success) {
-            toast.info("Package updated successfully!");
-        }
-        setLoading(false);
+      });
+      console.log("Response:", res.data);
+      if (res.data.success) {
+        toast.info("Package updated successfully!");
+      }
+      setLoading(false);
     }
   };
 
@@ -397,58 +430,69 @@ const EditPackage = () => {
   console.log("includedPackages", includedPackages);
 
   const handleExtraServices = (serviceId, isChecked) => {
-    console.log('serviceId', serviceId)
-    console.log('isChecked', isChecked)
+    console.log("serviceId", serviceId);
+    console.log("isChecked", isChecked);
     if (isChecked) {
       // Add the service ID as an object if checked
       setServicesIds((prev) => [...prev, { id: serviceId }]);
     } else {
       // Remove the service ID object if unchecked
-      setServicesIds((prev) => prev.filter((service) => service.id !== serviceId));
+      setServicesIds((prev) =>
+        prev.filter((service) => service.id !== serviceId)
+      );
     }
   };
 
   const handleDestinationChange = (selected) => {
     if (Array.isArray(selected)) {
       // For multiple selections (package type)
-      setSelectedDestinations(selected.map(item => ({ id: item.value })));
-      setValue('destinations', selected.map(item => ({ id: item.value })));
+      setSelectedDestinations(selected.map((item) => ({ id: item.value })));
+      setValue(
+        "destinations",
+        selected.map((item) => ({ id: item.value }))
+      );
     } else if (selected) {
       // For single selection (tour/cruise type)
       setSelectedDestinations([{ id: selected.value }]);
-      setValue('destinations', [{ id: selected.value }]);
+      setValue("destinations", [{ id: selected.value }]);
     } else {
       // Handle clearing the selection
       setSelectedDestinations([]);
-      setValue('destinations', []);
+      setValue("destinations", []);
     }
   };
 
   const handleLanguageChange = (selected) => {
     if (Array.isArray(selected)) {
-      setSelectedLanguages(selected.map(item => ({ id: item.value })));
-      setValue('languages', selected.map(item => ({ id: item.value })));
+      setSelectedLanguages(selected.map((item) => ({ id: item.value })));
+      setValue(
+        "languages",
+        selected.map((item) => ({ id: item.value }))
+      );
     } else if (selected) {
       setSelectedLanguages([{ id: selected.value }]);
-      setValue('languages', [{ id: selected.value }]);
+      setValue("languages", [{ id: selected.value }]);
     } else {
       setSelectedLanguages([]);
-      setValue('languages', []);
+      setValue("languages", []);
     }
   };
 
   const handleTravellerTypesChange = (selected) => {
     if (Array.isArray(selected)) {
-      setSelectedTravellerTypes(selected.map(item => ({ id: item.value })));
-      setValue('travellerTypes', selected.map(item => ({ id: item.value })));
+      setSelectedTravellerTypes(selected.map((item) => ({ id: item.value })));
+      setValue(
+        "travellerTypes",
+        selected.map((item) => ({ id: item.value }))
+      );
     } else if (selected) {
       setSelectedTravellerTypes([{ id: selected.value }]);
-      setValue('travellerTypes', [{ id: selected.value }]);
+      setValue("travellerTypes", [{ id: selected.value }]);
     } else {
       setSelectedTravellerTypes([]);
-      setValue('travellerTypes', []);
+      setValue("travellerTypes", []);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -532,13 +576,27 @@ const EditPackage = () => {
                 <div className="mt-4 flex flex-wrap gap-4 justify-start items-start">
                   {images.map((file, index) => (
                     <div key={index} className="relative">
-                      {file.type === 'video' || file?.video_url ? (
-                        <div 
+                      {file.type === "video" || file?.video_url ? (
+                        <div
                           className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer"
-                          onClick={() => window.open(file.video_url || URL.createObjectURL(file.file), '_blank')}
+                          onClick={() =>
+                            window.open(
+                              file.video_url || URL.createObjectURL(file.file),
+                              "_blank"
+                            )
+                          }
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-8 w-8 text-gray-500"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                         </div>
                       ) : (
@@ -546,7 +604,12 @@ const EditPackage = () => {
                           src={file.preview || file?.file_url}
                           alt={file.preview || file?.fileurl}
                           className="w-16 h-16 object-cover rounded-lg cursor-pointer"
-                          onClick={() => window.open(file.preview || file?.file_url, '_blank')}
+                          onClick={() =>
+                            window.open(
+                              file.preview || file?.file_url,
+                              "_blank"
+                            )
+                          }
                         />
                       )}
                       <button
@@ -592,27 +655,30 @@ const EditPackage = () => {
                   classNamePrefix="react-select"
                 />
               </div>
-            
-            {/* <div className="flex flex-col md:flex-row justify-between items-end gap-4"> */}
-                <div className="flex flex-col md:flex-row justify-center  md:items-end gap-4 h-full">
-                    <Link
-                    to="/dashboard/packages"
-                    className="border border-[#061D35] px-8 xl:px-20 py-3 rounded-full text-base font-normal text-center text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
-                    >
-                    Cancel
-                    </Link>
-                    <button
-                    type="submit"
-                    className="border border-[#061D35] px-8 xl:px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
-                    >
-                        {loading && editId ? 'Updating...' : loading ? 'Creating...' : `${editId ? "Update" : "Add New"} Package` }
-                    
-                    </button>
-                </div>
-                {/* <Link to={`/dashboard/edit-package/${packageName}/tour-plan/${editId}`} className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]">
+
+              {/* <div className="flex flex-col md:flex-row justify-between items-end gap-4"> */}
+              <div className="flex flex-col md:flex-row justify-center  md:items-end gap-4 h-full">
+                <Link
+                  to="/dashboard/packages"
+                  className="border border-[#061D35] px-8 xl:px-20 py-3 rounded-full text-base font-normal text-center text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
+                >
+                  Cancel
+                </Link>
+                <button
+                  type="submit"
+                  className="border border-[#061D35] px-8 xl:px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
+                >
+                  {loading && editId
+                    ? "Updating..."
+                    : loading
+                    ? "Creating..."
+                    : `${editId ? "Update" : "Add New"} Package`}
+                </button>
+              </div>
+              {/* <Link to={`/dashboard/edit-package/${packageName}/tour-plan/${editId}`} className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]">
                     Edit Trip Plans
                 </Link> */}
-            {/* </div> */}
+              {/* </div> */}
             </div>
             <div className="p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0">
               <div className="flex flex-col gap-4 col-span-2">
@@ -669,14 +735,16 @@ const EditPackage = () => {
                 </div>
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
-                    Destination{packageType === 'package' ? 's' : ''}
+                    Destination{packageType === "package" ? "s" : ""}
                   </label>
-                  {packageType === 'package' ? (
+                  {packageType === "package" ? (
                     <Select
                       isMulti
                       options={destinations}
-                      value={destinations.filter(option => 
-                        selectedDestinations.some(dest => dest.id === option.value)
+                      value={destinations.filter((option) =>
+                        selectedDestinations.some(
+                          (dest) => dest.id === option.value
+                        )
                       )}
                       onChange={handleDestinationChange}
                       placeholder="Select destinations"
@@ -686,8 +754,8 @@ const EditPackage = () => {
                   ) : (
                     <Select
                       options={destinations}
-                      value={destinations.find(option => 
-                        selectedDestinations[0]?.id === option.value
+                      value={destinations.find(
+                        (option) => selectedDestinations[0]?.id === option.value
                       )}
                       onChange={handleDestinationChange}
                       placeholder="Select a destination"
@@ -707,15 +775,19 @@ const EditPackage = () => {
                   </label>
                   <Select
                     isMulti
-                    options={travellerTypes?.map(type => ({
+                    options={travellerTypes?.map((type) => ({
                       value: type.id,
-                      label: type.type
+                      label: type.type,
                     }))}
                     value={travellerTypes
-                      ?.filter(type => selectedTravellerTypes?.some(sel => sel.id === type.id))
-                      .map(type => ({
+                      ?.filter((type) =>
+                        selectedTravellerTypes?.some(
+                          (sel) => sel.id === type.id
+                        )
+                      )
+                      .map((type) => ({
                         value: type.id,
-                        label: type.type
+                        label: type.type,
                       }))}
                     onChange={handleTravellerTypesChange}
                     placeholder="Select traveller types"
@@ -742,7 +814,8 @@ const EditPackage = () => {
                 <div className="flex flex-col 2xl:flex-row gap-4">
                   <div>
                     <label className="block text-gray-500 text-base font-medium mb-4">
-                      Package Duration <span className="text-xs">(Days/Hours)</span>
+                      Package Duration{" "}
+                      <span className="text-xs">(Days/Hours)</span>
                     </label>
                     <input
                       type="number"
@@ -764,7 +837,9 @@ const EditPackage = () => {
                     </label>
                     <select
                       placeholder="Select Package Type"
-                      {...register("duration_type", { required: "Duration Type is required" })}
+                      {...register("duration_type", {
+                        required: "Duration Type is required",
+                      })}
                       className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     >
                       <option value="" className="text-base text-[#C9C9C9]">
@@ -867,54 +942,71 @@ const EditPackage = () => {
                 <div>
                   <ul class="flex flex-col gap-2 max-w-full mx-auto text-base text-[#C9C9C9] w-full p-4 rounded-md border border-gray-200 bg-white">
                     <li>
-                        <details class="group">
-                            <summary
-                                class="flex items-center justify-between gap-2 font-medium marker:content-none hover:cursor-pointer">
-                                <span class="flex gap-2 text-gray-500 text-base font-medium">
-                                    Extra Service
-                                </span>
-                                <svg class="w-4 h-4 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg"
-                                    width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z">
-                                    </path>
-                                </svg>
-                            </summary>
-                            <article class="">
-                                <ul class="flex flex-col gap-4 mt-4">
-                                  {extraServices?.map(service => 
-                                    <li class="flex gap-2" key={service.id}>
-                                      <input
-                                        type="checkbox"
-                                        value={service.id}
-                                        checked={serviceIds.some((s) => s.id === service?.id)}
-                                        onClick={(e) => handleExtraServices(service.id, e.target.checked)}
-                                        className="w-4 text-[#49556D]"
-                                      />
-                                      <p className="text-base text-[#49556D]">{service.name}</p>
-                                    </li>
+                      <details class="group">
+                        <summary class="flex items-center justify-between gap-2 font-medium marker:content-none hover:cursor-pointer">
+                          <span class="flex gap-2 text-gray-500 text-base font-medium">
+                            Extra Service
+                          </span>
+                          <svg
+                            class="w-4 h-4 text-gray-500 transition group-open:rotate-90"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+                            ></path>
+                          </svg>
+                        </summary>
+                        <article class="">
+                          <ul class="flex flex-col gap-4 mt-4">
+                            {extraServices?.map((service) => (
+                              <li class="flex gap-2" key={service.id}>
+                                <input
+                                  type="checkbox"
+                                  value={service.id}
+                                  checked={serviceIds.some(
+                                    (s) => s.id === service?.id
                                   )}
-                                </ul>
-                            </article>
-                        </details>
+                                  onClick={(e) =>
+                                    handleExtraServices(
+                                      service.id,
+                                      e.target.checked
+                                    )
+                                  }
+                                  className="w-4 text-[#49556D]"
+                                />
+                                <p className="text-base text-[#49556D]">
+                                  {service.name}
+                                </p>
+                              </li>
+                            ))}
+                          </ul>
+                        </article>
+                      </details>
                     </li>
                   </ul>
                 </div>
                 <div>
-                <label className="block text-gray-500 text-base font-medium mb-4">
+                  <label className="block text-gray-500 text-base font-medium mb-4">
                     Language
                   </label>
                   <Select
                     isMulti
-                    options={languages.map(lang => ({
+                    options={languages.map((lang) => ({
                       value: lang.id,
-                      label: lang.name
+                      label: lang.name,
                     }))}
                     value={languages
-                      .filter(lang => selectedLanguages.some(sel => sel.id === lang.id))
-                      .map(lang => ({
+                      .filter((lang) =>
+                        selectedLanguages.some((sel) => sel.id === lang.id)
+                      )
+                      .map((lang) => ({
                         value: lang.id,
-                        label: lang.name
+                        label: lang.name,
                       }))}
                     onChange={handleLanguageChange}
                     placeholder="Select language"
@@ -946,10 +1038,13 @@ const EditPackage = () => {
           </div>
           {/* Tour Plan Section */}
           <div className="flex flex-col gap-4 mt-4">
-            <h3 className="text-2xl font-semibold text-[#080613]">
-                Tour Plan
-            </h3>
-            <EditTourPlan package_id={editId} tourPlan={tourPlan} setTourPlan={setTourPlan} packageType={packageType} />
+            <h3 className="text-2xl font-semibold text-[#080613]">Tour Plan</h3>
+            <EditTourPlan
+              package_id={editId}
+              tourPlan={tourPlan}
+              setTourPlan={setTourPlan}
+              packageType={packageType}
+            />
           </div>
         </div>
       </form>

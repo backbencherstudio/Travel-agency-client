@@ -200,14 +200,14 @@ const AddPackage = () => {
     const imageCount = images.filter(file => file.type !== 'video' && !file?.video_url).length;
 
     // Validate minimum requirements
-    // if (videoCount < 1) {
-    //   toast.error('Please upload at least 1 video');
-    //   return;
-    // }
-    // if (imageCount < 3) {
-    //   toast.error('Please upload at least 3 images');
-    //   return;
-    // }
+    if (videoCount < 1) {
+      toast.error('Please upload at least 1 video');
+      return;
+    }
+    if (imageCount < 3) {
+      toast.error('Please upload at least 3 images');
+      return;
+    }
     const formDataObject = {
       ...data,
       includedPackages,
