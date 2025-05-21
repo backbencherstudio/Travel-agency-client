@@ -3,7 +3,7 @@ import React from 'react'
 const TravelWithUs = () => {
   return (
     <div className='px-5'>
-      <h1 className='text-2xl md:text-5xl font-bold text-center mb-12'>
+      <h1 className='text-2xl md:text-5xl font-bold text-center mb-12 text-[#1D1F2C]'>
         Why Travel with Us
       </h1>
 

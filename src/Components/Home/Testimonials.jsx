@@ -74,7 +74,7 @@ const Testimonials = () => {
         <div className="w-full">
             <div className="max-w-[1216px] mx-auto px-5 xl:px-0">
                 <div className="text-center max-w-xl mx-auto">
-                    <div className='text-2xl md:text-5xl font-bold text-center'>What Our Travelers Say</div>
+                    <div className='text-2xl md:text-5xl font-bold text-center text-[#1D1F2C]'>What Our Travelers Say</div>
                     {/* <div className="text-center mb-10">
                         <span className="inline-block w-1 h-1 rounded-full bg-indigo-500 ml-1"></span>
                         <span className="inline-block w-3 h-1 rounded-full bg-indigo-500 ml-1"></span>
