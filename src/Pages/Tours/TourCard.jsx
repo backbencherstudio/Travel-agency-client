@@ -60,6 +60,35 @@ function TourCard ({ tour, isPackageRoute }) {
           effect="blur"
           className='w-full h-full object-cover'
         />
+        {/* Special Offer Badge */}
+        {/* {tour?.is_special_offer && ( */}
+          <div className='absolute top-4 left-4 bg-orange-500 text-white px-3 py-[6px] rounded text-sm font-medium'>
+            Special Offer
+          </div>
+        {/* // )} */}
+        {/* Favourite Button */}
+        <button 
+          className='absolute top-4 right-4 transition-colors duration-300'
+          onClick={(e) => {
+            e.preventDefault();
+            // Add your favourite logic here
+          }}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="20" 
+            height="20" 
+            viewBox="0 0 24 24" 
+            fill={`${tour?.is_favourite ? 'currentColor' : 'none'}`}
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            className="text-red-500 transition-colors duration-300"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
       </div>
       <div className='p-4'>
         <div className='flex items-center gap-1'>
