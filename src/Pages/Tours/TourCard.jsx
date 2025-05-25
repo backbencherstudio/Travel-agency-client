@@ -1,11 +1,12 @@
-import React from 'react'
+import { React, useState } from 'react'
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { LazyLoadImage } from 'react-lazy-load-image-component'
 import 'react-lazy-load-image-component/src/effects/blur.css'
 
-function TourCard ({ tour, isPackageRoute }) {
+function TourCard({ tour, isPackageRoute }) {
   const navigate = useNavigate()
+  const [isFavourite, setIsFavourite] = useState(false)
   // console.log("isPackageRoute", isPackageRoute)
   // Function to render stars based on rating
   const renderStars = rating => {
@@ -51,7 +52,7 @@ function TourCard ({ tour, isPackageRoute }) {
   return (
     <div
       key={tour?.id}
-      className='relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]'
+      className='relative flex flex-col justify-between bg-white shadow-md border border-slate-200 rounded-[10px]'
     >
       <div className='relative h-56 overflow-hidden text-white rounded-t-[10px]'>
         <LazyLoadImage
@@ -62,27 +63,28 @@ function TourCard ({ tour, isPackageRoute }) {
         />
         {/* Special Offer Badge */}
         {/* {tour?.is_special_offer && ( */}
-          <div className='absolute top-4 left-4 bg-orange-500 text-white px-3 py-[6px] rounded text-sm font-medium'>
-            Special Offer
-          </div>
+        <div className='absolute top-4 left-4 bg-orange-500 text-white px-3 py-[6px] rounded text-sm font-medium'>
+          Special Offer
+        </div>
         {/* // )} */}
         {/* Favourite Button */}
-        <button 
+        <button
           className='absolute top-4 right-4 transition-colors duration-300'
           onClick={(e) => {
             e.preventDefault();
             // Add your favourite logic here
+            setIsFavourite(!isFavourite)
           }}
         >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="20" 
-            height="20" 
-            viewBox="0 0 24 24" 
-            fill={`${tour?.is_favourite ? 'currentColor' : 'none'}`}
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill={`${isFavourite ? 'currentColor' : 'none'}`}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
             strokeLinejoin="round"
             className="text-red-500 transition-colors duration-300"
           >
@@ -92,7 +94,7 @@ function TourCard ({ tour, isPackageRoute }) {
       </div>
       <div className='p-4'>
         <div className='flex items-center gap-1'>
-          <div className='flex gap-1 items-center mb-5 bg-[#0E457D] text-white text-xs font-medium me-2 px-3 py-[6px] rounded-full border border-[#90A9C3] dark:bg-gray-700 dark:text-gray-300'>
+          <div className='flex gap-1 items-center mb-5 bg-[#0E457D] text-white text-xs font-medium me-2 px-3 py-[6px] rounded-full border border-[#90A9C3]'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='12'
@@ -110,7 +112,7 @@ function TourCard ({ tour, isPackageRoute }) {
               `, ${tour?.package_destinations[1]?.destination?.name}`}
             , {tour?.package_destinations[0]?.destination?.country?.name}
           </div>
-          <div className='mb-5 bg-[#0E457D] text-white text-xs font-medium me-2 px-2.5 py-[5px] rounded-full border border-[#90A9C3] dark:bg-gray-700 dark:text-gray-300'>
+          <div className='mb-5 bg-[#0E457D] text-white text-xs font-medium me-2 px-2.5 py-[5px] rounded-full border border-[#90A9C3] '>
             Hotel + All inclusive
           </div>
         </div>
@@ -168,7 +170,10 @@ function TourCard ({ tour, isPackageRoute }) {
       <div className='flex items-center justify-between p-4'>
         <div className=''>
           <div className='text-xs'>Starting From</div>
-          <div className='text-xl text-[#0E457D] font-bold'>${tour?.price}</div>
+          <div className='flex items-center gap-2'>
+            <div className='text-xl text-[#0E457D] font-bold'>${tour?.price}</div>
+            {tour?.price && <p className='text-xs text-[#0E457D] mt-1'>/ <span className='text-xs line-through '>{tour?.price * 1.5}</span></p>}
+          </div>
         </div>
         <button
           onClick={handleBookNow}
