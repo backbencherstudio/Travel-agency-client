@@ -17,46 +17,46 @@ import Loading from "../../../Shared/Loading";
 import { Helmet } from "react-helmet-async";
 
 const TourDetails = () => {
-    const links = [{name: "Home", path: "/"}, {name: "Tours", path: "/tours"}, {name: "Tour Details", path: ""},]
-    const [loading, setLoading] = useState(true);
-    const [tour, setTour] = useState(null);
-    const { id } = useParams();
-    
-    useEffect(() => {
-      tourDetails();
-    }, [])
+  const links = [{ name: "Home", path: "/" }, { name: "Tours", path: "/tours" }, { name: "Tour Details", path: "" },]
+  const [loading, setLoading] = useState(true);
+  const [tour, setTour] = useState(null);
+  const { id } = useParams();
 
-    const tourDetails = async () => {
-      const res = await ClientPackageApis.getOne(id);
-      if (res?.success) {
-        setTour(res?.data)
-        setLoading(false);
-      }
-      // console.log('res', res)
+  useEffect(() => {
+    tourDetails();
+  }, [])
+
+  const tourDetails = async () => {
+    const res = await ClientPackageApis.getOne(id);
+    if (res?.success) {
+      setTour(res?.data)
+      setLoading(false);
     }
-        
-    // const tour =  {
-    //     id: 1,
-    //     title: "Sacred Temples of Bali",
-    //     description: "Explore our diverse range of guided tours. each designed to immerse you in captivating destinations and unforgettable experiences.",
-    //     overview: "Bali is a paradise that promises breathtaking scenery, rich cultural heritage, and unforgettable experiences. From serene beaches and ancient temples to majestic waterfalls hidden in lush landscapes, Bali has something for every traveler. This guide takes you through the must-see spots in Bali for an adventure you'll treasure forever.",
-    //     rating: 4.8,
-    //     days: 7,
-    //     location: "Beijing, China",
-    //     price: 2999,
-    //     locationImage: image1,
-    //     include: ["Hotel + All inclusive", "Breakfast, Lunch & Dinner", "Hotel Accommodation", "How to use premade UI kits", "Transfer Between Destinations"],
-    //     exclude: ["Sight-seen", "City Tour", "Custom Duty"],
-    //     tourPlan: [
-    //         {"locationImage": image1, "day": 1, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}, 
-    //         {"locationImage": image2, "day": 2, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}, 
-    //         {"locationImage": image3, "day": 3, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}, 
-    //         {"locationImage": image4, "day": 4, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}
-    //     ],
-    // }
+    // console.log('res', res)
+  }
 
-    // console.log('id', id)
-    
+  // const tour =  {
+  //     id: 1,
+  //     title: "Sacred Temples of Bali",
+  //     description: "Explore our diverse range of guided tours. each designed to immerse you in captivating destinations and unforgettable experiences.",
+  //     overview: "Bali is a paradise that promises breathtaking scenery, rich cultural heritage, and unforgettable experiences. From serene beaches and ancient temples to majestic waterfalls hidden in lush landscapes, Bali has something for every traveler. This guide takes you through the must-see spots in Bali for an adventure you'll treasure forever.",
+  //     rating: 4.8,
+  //     days: 7,
+  //     location: "Beijing, China",
+  //     price: 2999,
+  //     locationImage: image1,
+  //     include: ["Hotel + All inclusive", "Breakfast, Lunch & Dinner", "Hotel Accommodation", "How to use premade UI kits", "Transfer Between Destinations"],
+  //     exclude: ["Sight-seen", "City Tour", "Custom Duty"],
+  //     tourPlan: [
+  //         {"locationImage": image1, "day": 1, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}, 
+  //         {"locationImage": image2, "day": 2, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}, 
+  //         {"locationImage": image3, "day": 3, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}, 
+  //         {"locationImage": image4, "day": 4, "tourDescription": "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy."}
+  //     ],
+  // }
+
+  // console.log('id', id)
+
   return (
     <div>
       <Helmet>
@@ -67,10 +67,10 @@ const TourDetails = () => {
       ) : (
         <div>
           <div className="bg-[#F0F4F9]" >
-              <HeroSection bgImg={bgImg} pageName="Our Tour" links={links} description={tour?.description} />
+            <HeroSection bgImg={bgImg} pageName="Our Tour" links={links} description={tour?.description} />
             <ParentComponent>
-                <Details details={tour} />
-              </ParentComponent>
+              <Details details={tour} />
+            </ParentComponent>
           </div>
           <ParentComponent>
             <div
@@ -90,7 +90,7 @@ const TourDetails = () => {
             </div>
           </ParentComponent>
         </div>
-        )}
+      )}
     </div>
   );
 };
