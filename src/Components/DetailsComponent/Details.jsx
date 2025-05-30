@@ -9,6 +9,7 @@ import BookCard from './BookCard';
 import { LuMessageSquareMore } from 'react-icons/lu';
 import { Tooltip } from '@mui/material';
 import { toast } from 'react-toastify';
+import { CrossIcon } from 'lucide-react';
 
 const Details = ({ details }) => {
     const [selectedImage, setSelectedImage] = useState();
@@ -19,7 +20,12 @@ const Details = ({ details }) => {
     const [isIncludedExcludedOpen, setIsIncludedExcludedOpen] = useState(false);
     const [showAllIncluded, setShowAllIncluded] = useState(false);
     const [showAllExcluded, setShowAllExcluded] = useState(false);
-    
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [activeTab, setActiveTab] = useState('provider'); // 'provider' or 'traveler'
+    const [modalImageIndex, setModalImageIndex] = useState(0);
+
+    const images = activeTab === 'provider' ? details?.package_files || [] : []; // Add traveler photos if available
+
     useEffect(() => {
         setSelectedImage(details?.package_files[0]?.file_url)
     }, [details])
@@ -27,7 +33,7 @@ const Details = ({ details }) => {
     const toggleFAQ = (index) => {
         setActiveIndex(index === activeIndex ? null : index);
     };
-    // console.log('tour', tour);q
+    console.log('tour', details);
 
     const renderStars = (rating) => {
         const stars = [];
@@ -203,11 +209,11 @@ const Details = ({ details }) => {
                     </div>
                     {/* Grid images */}
                     <div className="grid grid-cols-4 gap-4">
-                        {details?.package_files?.map((planimg) => (
+                        {details?.package_files?.slice(0, 3).map((planimg, index) => (
                             <button
                                 key={planimg?.id}
                                 className={``}
-                                onClick={() => handleShowImage(planimg?.file_url)}
+                                onClick={() => { setShowImageModal(true); setModalImageIndex(index); }}
                             >
                                 <img
                                     src={planimg?.file_url}
@@ -216,7 +222,86 @@ const Details = ({ details }) => {
                                 />
                             </button>
                         ))}
+                        {details?.package_files?.length > 3 && (
+                            <button
+                                className="relative h-20 md:h-40 w-full"
+                                onClick={() => setShowImageModal(true)}
+                            >
+                                <img
+                                    src={details?.package_files[3]?.file_url}
+                                    alt="More images"
+                                    className="h-20 md:h-40 w-full object-cover rounded-xl opacity-75"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-xl">
+                                    <span className="text-white font-medium">+{details?.package_files?.length - 3} more</span>
+                                </div>
+                            </button>
+                        )}
                     </div>
+                    {showImageModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#232a2f]">
+
+                            <div className='py-4'>
+                                {/* Close Button */}
+                                <button onClick={() => setShowImageModal(false)} className="absolute top-4 right-4 text-gray-400 text-2xl">
+                                    <span className='flex items-center px-2 bg-gray-100 rounded-full'>&times;</span>
+                                </button>
+                            </div>
+                            <div className="relative w-full max-w-7xl flex flex-col items-center">
+                                {/* Tabs */}
+                                <div className="flex justify-center mb-4">
+                                    <button
+                                        className={`px-4 py-2 ${activeTab === 'provider' ? 'border-b-2 border-white text-white' : 'text-gray-400'}`}
+                                        onClick={() => setActiveTab('provider')}
+                                    >
+                                        Provider photos ({details?.package_files?.length})
+                                    </button>
+                                    <button
+                                        className={`px-4 py-2 ${activeTab === 'traveler' ? 'border-b-2 border-white text-white' : 'text-gray-400'}`}
+                                        onClick={() => setActiveTab('traveler')}
+                                    >
+                                        Traveler photos (0)
+                                    </button>
+                                </div>
+                                {/* Main Image */}
+                                <div className="relative flex items-center justify-center w-full">
+                                    {/* Left Arrow */}
+                                    <button
+                                        className="absolute left-0 z-10 p-2 text-white bg-black bg-opacity-50 rounded-full"
+                                        onClick={() => setModalImageIndex((modalImageIndex - 1 + images.length) % images.length)}
+                                    >
+                                        &#8592;
+                                    </button>
+                                    <img
+                                        src={images[modalImageIndex]?.file_url}
+                                        alt=""
+                                        className="max-h-[400px] rounded-xl mx-auto"
+                                    />
+                                    {/* Right Arrow */}
+                                    <button
+                                        className="absolute right-0 z-10 p-2 text-white bg-black bg-opacity-50 rounded-full"
+                                        onClick={() => setModalImageIndex((modalImageIndex + 1) % images.length)}
+                                    >
+                                        &#8594;
+                                    </button>
+                                </div>
+                                {/* Thumbnails */}
+                                <div className="flex gap-2 mt-4 overflow-x-auto">
+                                    {images.map((img, idx) => (
+                                        <img
+                                            key={img.file_url}
+                                            src={img.file_url}
+                                            alt=""
+                                            className={`h-16 w-24 object-cover rounded cursor-pointer ${idx === modalImageIndex ? 'ring-2 ring-orange-500' : ''}`}
+                                            onClick={() => setModalImageIndex(idx)}
+                                        />
+                                    ))}
+                                </div>
+                                {/* Photo count */}
+                                <div className="text-white mt-2">{modalImageIndex + 1}/{images.length}</div>
+                            </div>
+                        </div>
+                    )}
                 </div>
                 <div className='flex flex-col gap-[30px]'>
                     <div className='flex flex-col gap-5 border-b pb-5'>
@@ -258,16 +343,16 @@ const Details = ({ details }) => {
                             </div>
                         </div>
                         {details?.package_tags?.filter(tag => tag?.type === 'included').length > 3 && (
-                            <button 
-                                className='text-[#EB5B2A] text-sm text-center' 
+                            <button
+                                className='text-[#EB5B2A] text-sm text-center'
                                 onClick={() => setShowAllIncluded(!showAllIncluded)}
                             >
                                 {showAllIncluded ? 'Show less' : `See more (+${details?.package_tags?.filter(tag => tag?.type === 'included').length - 3})`}
                             </button>
                         )}
                         {details?.package_tags?.filter(tag => tag?.type === 'excluded').length > 3 && (
-                            <button 
-                                className='text-[#EB5B2A] text-sm text-center' 
+                            <button
+                                className='text-[#EB5B2A] text-sm text-center'
                                 onClick={() => setShowAllExcluded(!showAllExcluded)}
                             >
                                 {showAllExcluded ? 'Show less' : `See more (+${details?.package_tags?.filter(tag => tag?.type === 'excluded').length - 3})`}
