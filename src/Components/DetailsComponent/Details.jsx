@@ -247,7 +247,7 @@ const Details = ({ details }) => {
                                     <span className='flex items-center px-2 bg-gray-100 rounded-full'>&times;</span>
                                 </button>
                             </div>
-                            <div className="relative w-full max-w-7xl flex flex-col items-center">
+                            <div className="relative w-full h-full max-w-7xl flex flex-col justify-between items-center">
                                 {/* Tabs */}
                                 <div className="flex justify-center mb-4">
                                     <button
@@ -285,20 +285,22 @@ const Details = ({ details }) => {
                                         &#8594;
                                     </button>
                                 </div>
-                                {/* Thumbnails */}
-                                <div className="flex gap-2 mt-4 overflow-x-auto">
-                                    {images.map((img, idx) => (
-                                        <img
-                                            key={img.file_url}
-                                            src={img.file_url}
-                                            alt=""
-                                            className={`h-16 w-24 object-cover rounded cursor-pointer ${idx === modalImageIndex ? 'ring-2 ring-orange-500' : ''}`}
-                                            onClick={() => setModalImageIndex(idx)}
-                                        />
-                                    ))}
+                                <div>
+                                    {/* Photo count */}
+                                    <div className="text-white mt-2 text-right">{modalImageIndex + 1}/{images.length}</div>
+                                    {/* Thumbnails */}
+                                    <div className="flex gap-2 mt-4">
+                                        {images.map((img, idx) => (
+                                            <img
+                                                key={img.file_url}
+                                                src={img.file_url}
+                                                alt=""
+                                                className={`h-24 w-24 object-cover rounded cursor-pointer ${idx === modalImageIndex ? 'ring-2 ring-white' : ''}`}
+                                                onClick={() => setModalImageIndex(idx)}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
-                                {/* Photo count */}
-                                <div className="text-white mt-2">{modalImageIndex + 1}/{images.length}</div>
                             </div>
                         </div>
                     )}
