@@ -13,7 +13,7 @@ const ImageModal = ({ showImageModal, setShowImageModal, images, modalImageIndex
                     <span className='flex items-center px-2 bg-gray-100 rounded-full'>&times;</span>
                 </button>
             </div>
-            <div className="relative w-full h-full max-w-7xl py-8">
+            <div className="relative w-full h-full py-8">
                 {/* Tabs */}
                 <div className="flex justify-center mb-4">
                     <button
@@ -30,7 +30,7 @@ const ImageModal = ({ showImageModal, setShowImageModal, images, modalImageIndex
                     </button>
                 </div>
                 {/* Main Image */}
-                <div className="relative flex items-center justify-center w-full">
+                <div className="relative flex items-center justify-center w-full max-w-7xl mx-auto">
                     {/* Left Arrow */}
                     <button
                         className="absolute left-0 z-10 p-2 text-white bg-black bg-opacity-50 rounded-full"
@@ -51,11 +51,11 @@ const ImageModal = ({ showImageModal, setShowImageModal, images, modalImageIndex
                         &#8594;
                     </button>
                 </div>
-                <div>
+                <div className=''>
                     {/* Photo count */}
                     <div className="text-white mt-2 text-right">{modalImageIndex + 1}/{images.length}</div>
                     {/* Thumbnails */}
-                    <div className="flex gap-2 mt-4">
+                    <div className="flex gap-2 mt-4 h-full">
                         {images.map((img, idx) => (
                             <img
                                 key={img.file_url}
