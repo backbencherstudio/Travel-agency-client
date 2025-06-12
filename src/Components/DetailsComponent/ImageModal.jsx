@@ -56,7 +56,7 @@ const ImageModal = ({ showImageModal, setShowImageModal, images, modalImageIndex
                         />
                         {/* Right Arrow */}
                         <button
-                            className="absolute right-0 z-10 p-2 text-[#0E457D] bg-white bg-opacity-50 rounded-full"
+                            className="absolute right-0 z-10 p-2 text-[#0E457D] bg-white rounded-full"
                             onClick={() => setModalImageIndex((modalImageIndex + 1) % images.length)}
                         >
                             <ChevronRight className='text-[#0E457D] text-2xl'/>
@@ -65,12 +65,12 @@ const ImageModal = ({ showImageModal, setShowImageModal, images, modalImageIndex
                 </div>
                 <div className='w-full'>
                     {/* Photo count */}
-                    <div className="text-white mt-2 text-right">{modalImageIndex + 1}/{images.length}</div>
+                    <div className="text-[#475467] mx-4 text-right">{modalImageIndex + 1}/{images.length}</div>
                     {/* Thumbnails Container */}
                     <div 
                         ref={thumbnailsRef}
                         onWheel={handleWheel}
-                        className="flex gap-2 mt-4 h-full overflow-x-auto scrollbar-hide"
+                        className="flex gap-2 mt-4 mx-1 h-full overflow-x-auto scrollbar-hide"
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                     >
                         {images.map((img, idx) => (
