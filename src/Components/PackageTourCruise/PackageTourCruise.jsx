@@ -25,7 +25,7 @@ function PackageTourCruise() {
     const [isDurationOpen, setIsDurationOpen] = useState(false);
     const [isBudgetOpen, setIsBudgetOpen] = useState(false);
     const [isRatingOpen, setIsRatingOpen] = useState(false);
-    const [isCancellationOpen, setIsCancellationOpen] = useState(false);
+    const [isCancellationOpen, setIsCancellationOpen] = useState(true);
     const [isResidenceOpen, setResidenceOpen] = useState(false);
     const [isDestinationOpen, setDestinationOpen] = useState(false);
     const [isMealPlanOpen, setMealPlanOpen] = useState(false);
@@ -91,12 +91,14 @@ function PackageTourCruise() {
     const itemsPerPage = 6;
     const [pageLoading, setPageLoading] = useState(false);
 
+    
+
     // console.log('destinations', destinations)
     // console.log('cancellationPolicies', cancellationPolicies)
     // console.log('priceRange', priceRange)
 
     const minPrice = 0;
-    const maxPrice = 10000;
+    const maxPrice = 5000;
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -312,6 +314,7 @@ function PackageTourCruise() {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = packages.slice(indexOfFirstItem, indexOfLastItem);
+    console.log("Current Items : ",currentItems)
     const totalPages = Math.ceil(packages.length / itemsPerPage);
 
     // Handle page changes with smooth transition
@@ -331,6 +334,7 @@ function PackageTourCruise() {
         }
         return pageNumbers;
     };
+
 
     return (
         <div className='max-w-[1200px] mx-auto'>
@@ -380,25 +384,35 @@ function PackageTourCruise() {
                                     <div>
                                         {/* Start Date Picker */}
                                         <div className='flex border items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
+                                            
+                                            {/* Calendar Icon for Start Date */}
+                                            <FaRegCalendarAlt
+                                                onClick={() => startDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
+                                                className='text-2xl cursor-pointer mr-2'
+                                            />
+                                            
                                             <DatePicker
                                                 selected={startDate}
                                                 onChange={(date) => handleDateChange(date, true)}
                                                 selectsStart
                                                 startDate={startDate}
                                                 endDate={endDate}
-                                                placeholderText="Start Date"
+                                                placeholderText="Check-In"
                                                 className='outline-none w-full'
                                                 ref={startDatePickerRef} // Assign ref to the startDate DatePicker
                                             />
-                                            {/* Calendar Icon for Start Date */}
-                                            <FaRegCalendarAlt
-                                                onClick={() => startDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
-                                                className='text-2xl cursor-pointer ml-2'
-                                            />
+                                            
                                         </div>
 
                                         {/* End Date Picker */}
                                         <div className='flex border mt-4 items-center justify-between p-2 rounded-md border-[#C1D0E5] shadow-sm'>
+                                            
+                                            {/* Calendar Icon for End Date */}
+                                            <FaRegCalendarAlt
+                                                onClick={() => endDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
+                                                className='text-2xl cursor-pointer mr-2'
+                                            />
+                                            
                                             <DatePicker
                                                 selected={endDate}
                                                 onChange={(date) => handleDateChange(date, false)}
@@ -406,14 +420,9 @@ function PackageTourCruise() {
                                                 startDate={startDate}
                                                 endDate={endDate}
                                                 minDate={startDate}
-                                                placeholderText="End Date"
+                                                placeholderText="Check-Out"
                                                 className='outline-none w-full'
                                                 ref={endDatePickerRef} // Assign ref to the endDate DatePicker
-                                            />
-                                            {/* Calendar Icon for End Date */}
-                                            <FaRegCalendarAlt
-                                                onClick={() => endDatePickerRef.current.setOpen(true)} // Open the date picker when clicked
-                                                className='text-2xl cursor-pointer ml-2'
                                             />
                                         </div>
                                     </div>
@@ -503,7 +512,7 @@ function PackageTourCruise() {
                             className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleRating}
                         >
-                            Rating
+                            Ratings
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="24"
@@ -641,7 +650,7 @@ function PackageTourCruise() {
                         )}
                     </div>
                     {/* residence Section */}
-                    {/* <div>
+                    <div>
                         <h5
                             className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleResidence}
@@ -760,9 +769,9 @@ function PackageTourCruise() {
                                 </div>
                             </div>
                         )}
-                    </div> */}
+                    </div>
                     {/* Meal Plan Section */}
-                    {/* <div>
+                    <div>
                         <h5
                             className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={toggleMealPlan}
@@ -842,9 +851,9 @@ function PackageTourCruise() {
 
                             </div>
                         )}
-                    </div> */}
+                    </div>
                     {/* Popular Area Section */}
-                    {/* <div>
+                    <div>
                         <h5
                             className='flex text-lg font-bold my-3 border-b pb-2 justify-between items-center cursor-pointer'
                             onClick={togglePopularArea}
@@ -989,7 +998,7 @@ function PackageTourCruise() {
                                 </div>
                             </div>
                         )}
-                    </div> */}
+                    </div>
                     {/* Language Section */}
                     <div>
                         <h5
@@ -1059,7 +1068,7 @@ function PackageTourCruise() {
                                             </div>
                                         ) : (
                                             currentItems.map((tour) => (
-                                                <TourCard key={tour.id} tour={tour} isPackageRoute={isPackageRoute} />
+                                                <TourCard key={tour.id} tour={tour} isPackageRoute={isPackageRoute}/>
                                             ))
                                         )}
                                     </div>
