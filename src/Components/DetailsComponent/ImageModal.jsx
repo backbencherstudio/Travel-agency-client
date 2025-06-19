@@ -1,8 +1,15 @@
 import React, { useRef } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import traveler1 from '../../assets/img/destinations/image-1.png'
+import traveler2 from '../../assets/img/destinations/image-2.png'
+import traveler3 from '../../assets/img/destinations/image-3.png'
+import traveler4 from '../../assets/img/destinations/image-4.png'
+import traveler5 from '../../assets/img/destinations/image-5.png'
+import traveler6 from '../../assets/img/destinations/image-6.png'
 
 const ImageModal = ({ showImageModal, setShowImageModal, images, modalImageIndex, setModalImageIndex, activeTab, setActiveTab, details }) => {
     const thumbnailsRef = useRef(null);
+    const travelerImages = [traveler1, traveler2, traveler3, traveler4, traveler5, traveler6]
 
     const handleWheel = (e) => {
         if (thumbnailsRef.current) {
@@ -37,46 +44,84 @@ const ImageModal = ({ showImageModal, setShowImageModal, images, modalImageIndex
                             className={`px-4 py-2 ${activeTab === 'traveler' ? 'border-b-2 border-white text-white' : 'text-gray-400'}`}
                             onClick={() => setActiveTab('traveler')}
                         >
-                            Traveler photos (0)
+                            Traveler photos ({travelerImages.length})
                         </button>
                     </div>
                     {/* Main Image */}
-                    <div className="relative flex items-center justify-center w-full max-w-7xl mx-auto">
-                        {/* Left Arrow */}
-                        <button
-                            className="absolute left-0 z-10 p-2 text-[#0E457D] bg-white rounded-full"
-                            onClick={() => setModalImageIndex((modalImageIndex - 1 + images.length) % images.length)}
-                        >
-                           <ChevronLeft className='text-[#0E457D] text-2xl'/>
-                        </button>
-                        <img
-                            src={images[modalImageIndex]?.file_url}
-                            alt=""
-                            className="max-h-[400px] rounded-xl mx-auto"
-                        />
-                        {/* Right Arrow */}
-                        <button
-                            className="absolute right-0 z-10 p-2 text-[#0E457D] bg-white rounded-full"
-                            onClick={() => setModalImageIndex((modalImageIndex + 1) % images.length)}
-                        >
-                            <ChevronRight className='text-[#0E457D] text-2xl'/>
-                        </button>
-                    </div>
+                    {activeTab === 'provider' && (
+                        <div className="relative flex items-center justify-center w-full max-w-7xl mx-auto">
+                            {/* Left Arrow */}
+                            <button
+                                className="absolute left-0 z-10 p-2 text-[#0E457D] bg-white rounded-full"
+                                onClick={() => setModalImageIndex((modalImageIndex - 1 + images.length) % images.length)}
+                            >
+                                <ChevronLeft className='text-[#0E457D] text-2xl' />
+                            </button>
+                            <img
+                                src={images[modalImageIndex]?.file_url}
+                                alt=""
+                                className="max-h-[400px] rounded-xl mx-auto"
+                            />
+                            {/* Right Arrow */}
+                            <button
+                                className="absolute right-0 z-10 p-2 text-[#0E457D] bg-white rounded-full"
+                                onClick={() => setModalImageIndex((modalImageIndex + 1) % images.length)}
+                            >
+                                <ChevronRight className='text-[#0E457D] text-2xl' />
+                            </button>
+                        </div>
+                    )}
+                    {activeTab === 'traveler' && (
+                        <div className="relative flex items-center justify-center w-full max-w-7xl mx-auto">
+                            {/* Left Arrow */}
+                            <button
+                                className="absolute left-0 z-10 p-2 text-[#0E457D] bg-white rounded-full"
+                                onClick={() => setModalImageIndex((modalImageIndex - 1 + travelerImages.length) % travelerImages.length)}
+                            >
+                                <ChevronLeft className='text-[#0E457D] text-2xl' />
+                            </button>
+                            <img
+                                src={travelerImages[modalImageIndex]}
+                                alt=""
+                                className="max-h-[400px] rounded-xl mx-auto"
+                            />
+                            {/* Right Arrow */}
+                            <button
+                                className="absolute right-0 z-10 p-2 text-[#0E457D] bg-white rounded-full"
+                                onClick={() => setModalImageIndex((modalImageIndex + 1) % travelerImages.length)}
+                            >
+                                <ChevronRight className='text-[#0E457D] text-2xl' />
+                            </button>
+                        </div>
+                    )}
                 </div>
                 <div className='w-full'>
-                    {/* Photo count */}
-                    <div className="text-[#475467] mx-4 text-right">{modalImageIndex + 1}/{images.length}</div>
+                    {activeTab === 'provider' && (
+                        <div className="text-[#475467] mx-4 text-right">{modalImageIndex + 1}/{images.length}</div>
+                    )}
+                    {activeTab === 'traveler' && (
+                        <div className="text-[#475467] mx-4 text-right">{modalImageIndex + 1}/{travelerImages.length}</div>
+                    )}
                     {/* Thumbnails Container */}
-                    <div 
+                    <div
                         ref={thumbnailsRef}
                         onWheel={handleWheel}
                         className="flex gap-2 mt-4 mx-1 h-full overflow-x-auto scrollbar-hide"
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                     >
-                        {images.map((img, idx) => (
+                        {activeTab === 'provider' && images.map((img, idx) => (
                             <img
                                 key={img.file_url}
                                 src={img.file_url}
+                                alt=""
+                                className={`h-24 w-24 object-cover rounded cursor-pointer flex-shrink-0 ${idx === modalImageIndex ? 'border border-white rounded-xl' : ''}`}
+                                onClick={() => setModalImageIndex(idx)}
+                            />
+                        ))}
+                        {activeTab === 'traveler' && travelerImages.map((img, idx) => (
+                            <img
+                                key={img}
+                                src={img}
                                 alt=""
                                 className={`h-24 w-24 object-cover rounded cursor-pointer flex-shrink-0 ${idx === modalImageIndex ? 'border border-white rounded-xl' : ''}`}
                                 onClick={() => setModalImageIndex(idx)}
