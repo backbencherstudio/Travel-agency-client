@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useContext } from "react";
-import logo from "../assets/img/Logo.svg";
+import logo from "../assets/img/Logo_new.png";
 import { Link } from "react-router-dom";
 import FooterApis from "../Apis/FooterApis";
 import becomeVendor from "../assets/img/footer/vendor.png";
