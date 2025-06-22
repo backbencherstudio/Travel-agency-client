@@ -105,7 +105,7 @@ const TravelWithUs = () => {
           </p>
         </div>
 
-        <div className='border h-[300px] flex flex-col items-center justify-center text-center p-6 gap-4 shadow-md rounded-md relative group overflow-hidden hover:border-orange-600 transition-all duration-300'>
+        <div className='border h-[300px] flex flex-col items-center justify-center text-center p-6 gap-4 shadow-md rounded-md relative group overflow-hidden hover:border-orange-600 transition-all duration-300 '>
           <div className='absolute inset-0 before:absolute before:w-0 before:h-[2px] before:bg-orange-600 before:transition-all before:duration-700 before:top-0 before:left-0 group-hover:before:w-full after:absolute after:w-[2px] after:h-0 after:bg-orange-600 after:transition-all after:duration-700 after:top-0 after:right-0 group-hover:after:h-full'></div>
           <div className='absolute inset-0 before:absolute before:w-0 before:h-[2px] before:bg-orange-600 before:transition-all before:duration-700 before:bottom-0 before:right-0 group-hover:before:w-full after:absolute after:w-[2px] after:h-0 after:bg-orange-600 after:transition-all after:duration-700 after:bottom-0 after:left-0 group-hover:after:h-full'></div>
 

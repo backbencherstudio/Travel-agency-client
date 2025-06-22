@@ -63,6 +63,13 @@ if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
 import Review from "../Components/Dashboard/Review/Review";
 import { SocketNotificationProvider } from "../Shared/SocketNotificationProvider";
 import SearchResults from "../Pages/GlobalSearch/SearchResults";
+import UserDashboardLayout from "../Layout/UserDashboardLayout/UserDashboardLayout";
+import Dashboard from "../Pages/User-dashboard/UserDashboard";
+import TourManagement from "../Pages/User-dashboard/TourManagement";
+import Message from "../Pages/User-dashboard/Message";
+import Wishlist from "../Pages/User-dashboard/Wishlist";
+import Offer from "../Pages/User-dashboard/Offer";
+import MyProfile from "../Pages/User-dashboard/MyProfile";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 export const router = createBrowserRouter([
@@ -185,6 +192,41 @@ export const router = createBrowserRouter([
         path: "/booking-history-review/:id",
         element: <ReviewBooking />,
       },
+       //========================================================================================================================================
+        {
+    path:'/user-dashboard',
+    element:<UserDashboardLayout/>,
+    children:[
+      {
+        path:'/user-dashboard',
+        element:<Dashboard/>
+      },
+      {
+        path:'/user-dashboard/tour-management',
+        element:<TourManagement/>
+      },
+      {
+        path:'/user-dashboard/message',
+        element:< Message/>
+      },
+      {
+        path:'/user-dashboard/wishlist',
+        element:< Wishlist/>
+      },
+      {
+        path:'/user-dashboard/offer',
+        element:<Offer/>
+      },
+      {
+        path:'/user-dashboard/profile',
+        element:<MyProfile/>
+      },
+    ]
+
+  }
+  // ===================================================================================================
+
+    
     ],
   },
   {
@@ -398,4 +440,5 @@ export const router = createBrowserRouter([
     path: "change-password/:email/:otp",
     element: <ChangePassword />,
   },
+  
 ]);
