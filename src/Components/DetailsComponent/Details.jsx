@@ -21,7 +21,7 @@ const Details = ({ details }) => {
     const [selectedImage, setSelectedImage] = useState();
     const [activeIndex, setActiveIndex] = useState(null);
     const contentRefs = useRef([]);
-    const [imgTranslate, setImgTranslate] = useState(0)
+    const [imgTranslate, setImgTranslate] = useState(178)
     const [isIncludedOpen, setIsIncludedOpen] = useState(false)
     const [includeExclude, setIncludeExclude] = useState({ "hotel+all_inclusive": true, "breakfast,_lunch_&_dinner": true, "hotel_accommodation": true, "sight-seen": false, "city_tour": false, "custom_duty": false })
     const [isMeetingOpen, setIsMeetingOpen] = useState(false)
@@ -102,7 +102,7 @@ const Details = ({ details }) => {
                 if (prev >= (details.package_files.length - 4) * 178) {
                     return 0
                 } else {
-                    return prev * 2
+                    return prev + 178
                 }
             })
         }
@@ -189,8 +189,10 @@ const Details = ({ details }) => {
                             </div>
                         </div>
                         {/* Grid images */}
-                        <div className="relative w-full overflow-hidden">
-                            <div className={`min-w-max flex gap-4 -translate-x-[${imgTranslate}px]`}>
+                        <div className="relative w-full">
+                            <div
+                                className={`w-max flex gap-4 transform transition-all duration-300 ease-in-out -translate-x-[${imgTranslate}px]`}
+                            >
                                 {details?.package_files?.map((planimg) => (
                                     <button
                                         key={planimg?.id}
@@ -200,7 +202,7 @@ const Details = ({ details }) => {
                                         <img
                                             src={planimg?.file_url}
                                             alt={planimg?.file_url}
-                                            className={`w-full h-full object-cover rounded-xl ${planimg?.file_url === selectedImage ? ' ring-blue-500 ring-2' : ''}`}
+                                            className={`w-full h-full object-cover rounded-xl ${planimg?.file_url === selectedImage ? 'ring-blue-500 ring-2' : ''}`}
                                         />
                                     </button>
                                 ))}
