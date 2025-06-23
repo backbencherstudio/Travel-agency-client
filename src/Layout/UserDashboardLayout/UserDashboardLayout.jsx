@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import UserDashboardSidebar from './UserDashboardSidebar';
 import Footer from '../../Shared/Footer';
 import Navbar from '../../Shared/Navbar';
+import bgImg from '../../assets/user-dashboard/images/dashboardbg.png'
 
 const UserDashboardLayout = () => {
    const [sidebarOpen,setSidebarOpen]=useState(false);
@@ -12,7 +13,7 @@ const UserDashboardLayout = () => {
     <div >
       
       <div className="bg-[#F0F4F9]  ">
-        <div className=' bg-red-200 h-[400px]'>
+        <div className= " bg-cover bg-no-repeat h-[400px]" style={{ backgroundImage: `url(${bgImg})` }}>
 
         </div>
         <div className="max-w-[1200px] mx-auto flex     gap-6  py-20 ">
