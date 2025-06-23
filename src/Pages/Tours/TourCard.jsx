@@ -11,12 +11,12 @@ function TourCard({
   lovedPackages,
   handleLovedPackages,
   specialOffer,
-  specialPrice = 300
+  specialPrice = 300,
 }) {
-  console.log("Rating : ",tour?.reviews[0]?.rating_value)
+  console.log("Rating : ", tour?.reviews[0]?.rating_value);
   const navigate = useNavigate();
-  console.log("Tour Data : ", tour);
-  console.log("Tour id : ", tour.id);
+  // console.log("Tour Data : ", tour);
+  // console.log("Tour id : ", tour.id);
   // console.log("isPackageRoute", isPackageRoute)
   // Function to render stars based on rating
   const renderStars = (rating) => {
@@ -64,7 +64,7 @@ function TourCard({
       key={tour?.id}
       className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]"
     >
-      <div className="relative h-56 overflow-hidden text-white rounded-t-[10px]">
+      <div className="relative h-[350px] flex items-center justify-center lg:h-56 overflow-hidden text-white rounded-t-[10px]">
         <LazyLoadImage
           src={tour?.package_files?.[0]?.file_url || ""}
           alt={tour?.package_files?.[0]?.file_url || "Tour image"}
@@ -113,7 +113,9 @@ function TourCard({
           </p>
           <div className="flex items-center gap-2 mt-3">
             <p className=" text-sm text-[#1D1F2C]">
-              {tour?.reviews[0]?.rating_value ? `${tour.reviews[0].rating_value}` : "0.0"}
+              {tour?.reviews[0]?.rating_value
+                ? `${tour.reviews[0].rating_value}`
+                : "0.0"}
             </p>
             <div className="flex gap-1 items-center">
               {renderStars(tour?.reviews[0]?.rating_value)}
@@ -154,19 +156,29 @@ function TourCard({
           <div className="flex items-center justify-between p-4">
             <div className="">
               <div className="text-xs leading-4">Starting From</div>
-              {!specialOffer[tour.id] && <div className="text-xl text-[#0E457D] font-bold">
-                ${tour?.price}
-              </div>}
-              {specialOffer[tour.id] &&<div>
-                <span className="text-[20px] font-bold text-orange-500 pr-1">${specialPrice}</span>
-                <span className="text-xs text-[#0E457D]">/<del>{tour?.price}</del></span>
-              </div>}
+              {!specialOffer[tour.id] && (
+                <div className="text-xl text-[#0E457D] font-bold">
+                  ${tour?.price}
+                </div>
+              )}
+              {specialOffer[tour.id] && (
+                <div>
+                  <span className="text-[20px] font-bold text-orange-500 pr-1">
+                    ${specialPrice}
+                  </span>
+                  <span className="text-xs text-[#0E457D]">
+                    /<del>{tour?.price}</del>
+                  </span>
+                </div>
+              )}
             </div>
             <button
               onClick={handleBookNow}
               className="flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white"
             >
-              <div className="text-sm ">Book Now</div>
+              <Link to={`/tour/${tour.id}`}>
+                <div className="text-sm ">Book Now</div>
+              </Link>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="17"
