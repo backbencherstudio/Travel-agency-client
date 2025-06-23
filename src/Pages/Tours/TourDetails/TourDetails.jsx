@@ -62,19 +62,19 @@ const TourDetails = () => {
   // console.log('id', id)
 
   return (
-    <div className="pt-[54px] pb-[80px] px-[192px]">
+    <div className="pt-[54px] pb-[80px] px-4 xl:px-[192px] w-full">
       <Helmet>
         <title>Around 360 - Tour Details</title>
       </Helmet>
       {loading ? (
         <Loading />
       ) : (
-        <div>
+        <div className="w-full">
           <div className="bg-[#fff] flex flex-col gap-5">
             {/* <HeroSection bgImg={bgImg} pageName="Our Tour" links={links} description={tour?.description} /> */}
-            <div className="max-w-[1216px] mx-auto w-full">
+            <div className="max-w-[1216px] mx-auto w-full pb-4">
               <div className="flex justify-between w-full">
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-[10px] sm:text-sm">
                   <span>Home</span>{" "}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +107,7 @@ const TourDetails = () => {
                   </svg>{" "}
                   <span>Tour Details</span>
                 </div>
-                <div className="flex gap-1 p-2 text-[16px] items-center bg-[#F6F8FA] w-fit rounded cursor-pointer">
+                <div className="flex gap-1 p-2 text-xs sm:text-[16px] items-center bg-[#F6F8FA] w-fit rounded cursor-pointer">
                   <div>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -141,7 +141,7 @@ const TourDetails = () => {
           </div>
           <ParentComponent>
             <div
-              className="relative px-8 py-16 rounded-2xl bg-cover bg-bottom bg-no-repeat"
+              className="relative w-full px-4 sm:px-8 py-16 rounded-2xl bg-cover bg-bottom bg-no-repeat"
               style={{ backgroundImage: `url(${cancellationBg})` }}
             >
               <div className="absolute inset-0 bg-blue-900/80 rounded-2xl"></div>

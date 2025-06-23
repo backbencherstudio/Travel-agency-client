@@ -200,11 +200,11 @@ function Tours() {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`flex items-center gap-1 px-2 sm:px-3 ${
+                className={`flex items-center gap-1 pr-2 sm:px-3 ${
                   currentPage === 1
                     ? "text-gray-400"
                     : "text-gray-700 hover:text-blue-600"
-                } border-r border-[#D0D5DD] text-sm sm:text-base`}
+                } border-r border-[#D0D5DD] text-xs sm:text-base`}
               >
                 <MdKeyboardArrowLeft className="text-xl" />
                 Previous
@@ -218,7 +218,7 @@ function Tours() {
                       currentPage === number
                         ? "bg-orange-600 text-white"
                         : "text-[#182230] hover:bg-gray-100"
-                    }  text-sm sm:text-base w-[40px] h-[40px] m-1`}
+                    }  text-xs sm:text-base w-[25px] h-[25px] sm:w-[40px] sm:h-[40px] m-1`}
                   >
                     {number}
                   </button>
@@ -226,25 +226,21 @@ function Tours() {
               ))}
 
               {pageRight.length != 0 ? (
-                <div className="border-r border-[#D0D5DD] flex items-center justify-center w-[40px] h-[40px] m-1">
-                  <div
-                    className={`text-center text-sm sm:text-base text-gray-700 hover:bg-gray-100`}
-                  >
-                    ...
-                  </div>
+                <div className="border-r h-full w-[25px]">
+                  <div className="m-1">...</div>
                 </div>
               ) : (
                 <div></div>
               )}
               {pageRight.map((number) => (
-                <div key={number} className="border-r border-[#D0D5DD] m-auto">
+                <div key={number} className="border-l border-[#D0D5DD]">
                   <button
                     onClick={() => handlePageChange(number)}
-                    className={`w-[40px] h-[40px] m-1 ${
+                    className={`w-[25px] h-[25px] sm:w-[40px] sm:h-[40px] m-1 ${
                       currentPage === number
                         ? "bg-orange-600 text-white"
                         : "text-gray-700 hover:bg-gray-100"
-                    } text-sm sm:text-base`}
+                    } text-xs sm:text-base`}
                   >
                     {number}
                   </button>
@@ -254,11 +250,11 @@ function Tours() {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`flex text-sm sm:text-base items-center gap-1 px-2 sm:px-3 py-1 ${
+                className={`flex text-xs sm:text-base items-center gap-1 pl-2 sm:px-3 ${
                   currentPage === totalPages
                     ? "text-gray-400"
                     : "text-gray-700 hover:text-blue-600"
-                }`}
+                } border-l border-[#D0D5DD]`}
               >
                 Next
                 <MdKeyboardArrowRight className="text-xl" />

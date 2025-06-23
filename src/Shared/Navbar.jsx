@@ -133,7 +133,7 @@ const Navbar = () => {
           <div className='md:flex md:items-center md:gap-12'>
             <Link className='block text-teal-600' to='/'>
               <span className='sr-only'>Home</span>
-              <img src={logo} alt='' className=' w-44' />
+              <img src={logo} alt='' className='w-24 sm:w-44' />
             </Link>
           </div>
 

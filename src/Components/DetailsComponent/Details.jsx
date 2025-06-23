@@ -6,6 +6,7 @@ import up from "../../assets/img/tour-details/direction-up.svg";
 import down from "../../assets/img/tour-details/direction-down.svg";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import BookCard from "./BookCard";
+import CheckAvailability from "./CheckAvaiability";
 import testImg from "../../assets/img/packages/banner.png";
 import { LuMessageSquareMore } from "react-icons/lu";
 import { Tooltip } from "@mui/material";
@@ -27,6 +28,8 @@ const Details = ({ details }) => {
   const contentRefs = useRef([]);
   const [imgTranslate, setImgTranslate] = useState(0);
   const [isIncludedOpen, setIsIncludedOpen] = useState(false);
+  const [checkAvailabilityPopup,setCheckAvailabilityPopup] = useState(false);
+  const [booking, setBooking] = useState(false);
   const [includeExclude, setIncludeExclude] = useState({
     "hotel+all_inclusive": true,
     "breakfast,_lunch_&_dinner": true,
@@ -140,13 +143,51 @@ const Details = ({ details }) => {
     setIsMeetingOpen((prev) => !prev);
   };
 
+  const [slidersWidth, setSlidersWidth] = useState(0)
+  const [reviewSlideNumber, setReviewSlideNumber] = useState(1)
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth
+      if (width >= 321 && width < 374) {
+        setReviewSlideNumber(1)
+        setSlidersWidth(63)
+      } else if (width <= 375) {
+        setReviewSlideNumber(1)
+        setSlidersWidth(75)
+      } else if (width <= 425) {
+        setReviewSlideNumber(1)
+        setSlidersWidth(87)
+      }else if(width >= 1000 && width <=1280 ){
+        setSlidersWidth(151)
+      } else {
+        setSlidersWidth(163)
+        setReviewSlideNumber(2)
+      }
+    };
+
+    // Run once on mount
+    handleResize();
+
+    // Add listener
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup on unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+
+
   const NextArrow = ({ onClick }) => {
     return (
       <div
-        className="absolute select-none text-white flex flex-col items-center justify-center gap-1 w-[163px] h-[163px] top-0 right-[10px] z-[1] bg-[#00000061] rounded-2xl cursor-pointer"
+        className={`absolute select-none text-white flex flex-col items-center justify-center gap-1 sm:w-[163px]  h-[60px] sm:h-[163px] top-0 right-[10px] z-[1] bg-[#00000061] rounded-2xl cursor-pointer`}
+        style={{ width: `${slidersWidth}px`, height: `${slidersWidth}` }}
         onClick={onClick}
       >
-        <div className="px-[10px] py-[12px] border-2 rounded-full">
+        <div className="sm:px-[10px] px-[5px] sm:py-[12px] py-[7px] border-2 rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="14"
@@ -170,7 +211,7 @@ const Details = ({ details }) => {
             />
           </svg>
         </div>
-        <span className="text-sm font-medium">Show more</span>
+        <span className="text-[10px] sm:text-sm font-medium">Show more</span>
       </div>
     );
   };
@@ -209,28 +250,32 @@ const Details = ({ details }) => {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 2,
+    slidesToShow: reviewSlideNumber,
     slidesToScroll: 1,
     nextArrow: <NextReview />,
     prevArrow: <PrevReview />,
   };
 
+  const handleCheckAvailability=()=>{
+    setCheckAvailabilityPopup(prev => !prev)
+    setBooking(true);
+  }
+
   return (
     <div className="pb-[80px]">
-      <div className="flex w-full gap-6 bg-[#fff]">
-        <div className="w-full max-w-[700px] flex flex-col gap-5">
+      <div className="flex flex-col lg:flex-row w-full sm:gap-6 bg-[#fff] items-center lg:items-start">
+        <div className="w-full lg:max-w-[640px] max-w-[700px] xl:max-w-[700px] flex flex-col gap-5">
           <div className="w-full flex justify-between">
-            <h1 className="text-3xl md:text-[40px] text-[#0F1416] font-semibold">
+            <h1 className="text-xl sm:text-3xl md:text-[40px] text-[#0F1416] font-semibold">
               {details?.name}
             </h1>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
               <div className="cursor-pointer">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
                   viewBox="0 0 22 21"
                   fill="none"
+                  className="w-[18px] h-[18px] sm:w-[24px] sm:h-[24px]"
                 >
                   <path
                     d="M19.6427 6.03168L17.8957 4.51461C16.6371 3.42153 16.1437 2.83352 15.4621 3.04139C14.6122 3.30059 14.892 4.93609 14.892 5.48824C13.5706 5.48824 12.1968 5.38661 10.8943 5.59836C6.59453 6.29742 5.25 9.35663 5.25 12.6525C6.46697 11.9065 7.68274 11.0746 9.1454 10.7289C10.9712 10.2973 13.0103 10.5032 14.892 10.5032C14.892 11.0554 14.6122 12.6909 15.4621 12.9501C16.2344 13.1856 16.6371 12.5699 17.8957 11.4769L19.6427 9.95981C20.7142 9.02926 21.25 8.56398 21.25 7.99574C21.25 7.4275 20.7142 6.96223 19.6427 6.03168Z"
@@ -251,10 +296,9 @@ const Details = ({ details }) => {
               <div className="cursor-pointer">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
                   viewBox="0 0 24 22"
                   fill="none"
+                  className="w-[18px] h-[18px] sm:w-[24px] sm:h-[24px]"
                 >
                   <path
                     d="M4.3949 2.35515C7.37587 0.526624 10.0501 1.25537 11.6656 2.46861C11.9314 2.6682 12.1138 2.8048 12.2496 2.89704C12.3854 2.8048 12.5678 2.6682 12.8336 2.46861C14.4491 1.25537 17.1234 0.526624 20.1043 2.35515C22.1656 3.61952 23.3254 6.2606 22.9184 9.29511C22.5095 12.3443 20.5359 15.7929 16.3563 18.8865C14.9049 19.9614 13.8397 20.7503 12.2496 20.7503C10.6595 20.7503 9.59433 19.9614 8.14294 18.8865C3.96334 15.7929 1.98976 12.3443 1.58081 9.29511C1.17382 6.2606 2.33365 3.61952 4.3949 2.35515Z"
@@ -267,26 +311,26 @@ const Details = ({ details }) => {
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4 items-center justify-between">
-            <div className="border-r-2 border-[#a6aaac33]">
-              <p className="text-sm text-[#8993A0]">Review</p>
+            <div className="">
+              <p className="text-xs sm:text-sm text-[#8993A0]">Review</p>
               <div className="flex flex-col md:flex-row gap-1 md:items-center">
                 <div className="flex gap-1 items-center">
                   {renderStars(details?.reviews[0]?.rating_value || 0.0)}{" "}
                 </div>
-                <span className="text-xs md:text-base text-[#8993A0]">
+                <span className="text-[10px] sm:text-xs md:text-base text-[#8993A0]">
                   ({details?.reviews?.length} reviews)
                 </span>
               </div>
             </div>
-            <div className="grid justify-center border-r-2 border-[#a6aaac33]">
-              <p className="text-sm text-[#8993A0]">Days</p>
-              <p className="text-base font-medium text-[#0F1416]">
+            <div className="grid justify-center border-r-2 border-l-2 border-[#a6aaac33]">
+              <p className="text-xs sm:text-sm text-[#8993A0]">Days</p>
+              <p className="text-sm sm:text-base font-medium text-[#0F1416]">
                 {details?.duration} days
               </p>
             </div>
             <div className="grid justify-end">
-              <p className="text-base text-[#8993A0]">Location</p>
-              <p className="text-base font-medium text-[#0F1416]">
+              <p className="text-sm sm:text-base text-[#8993A0]">Location</p>
+              <p className="text-sm sm:text-base font-medium text-[#0F1416]">
                 <span className="">
                   {details?.package_destinations[0]?.destination?.name}
                 </span>
@@ -308,7 +352,7 @@ const Details = ({ details }) => {
                 // src={testImg}
                 src={selectedImage}
                 alt={selectedImage}
-                className="h-[390px] w-[700px] object-cover rounded-xl"
+                className="w-full h-[300px] sm:h-[390px] sm:w-[700px] object-cover rounded-xl"
               />
               <div className="flex justify-end items-center gap-2">
                 {/* <LuMessageSquareMore /> */}
@@ -358,7 +402,7 @@ const Details = ({ details }) => {
                 {details?.package_files?.map((planimg) => (
                   <div
                     key={planimg.id}
-                    className="w-[163px] h-[163px] rounded-2xl overflow-hidden"
+                    className="sm:w-[163px] w-[63px] sm:h-[163px] h-[60px] rounded-2xl overflow-hidden"
                     onClick={() => handleShowImage(planimg?.file_url)}
                   >
                     <img
@@ -416,13 +460,12 @@ const Details = ({ details }) => {
                 className="flex justify-between items-center cursor-pointer"
                 onClick={toggleIncluded}
               >
-                <h3 className="text-2xl font-bold text-[#0F1416]">
+                <h3 className="text-lg sm:text-2xl font-bold text-[#0F1416]">
                   Included/Excluded
                 </h3>
                 <div
-                  className={`${
-                    isIncludedOpen ? "rotate-180" : ""
-                  } duration-300`}
+                  className={`${isIncludedOpen ? "rotate-180" : ""
+                    } duration-300`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -460,7 +503,7 @@ const Details = ({ details }) => {
                 //     </div>
                 // </div>
                 <div className="border border-[#A6AAAC33] p-4 rounded-xl flex flex-col gap-6">
-                  <div className="flex justify-between text-base text-[#0F1416]">
+                  <div className="flex justify-between text-[#0F1416]">
                     <div className="flex-1 flex flex-col gap-4">
                       {Object.entries(includeExclude)
                         .filter(([_, value]) => value) // Only show included items
@@ -472,10 +515,9 @@ const Details = ({ details }) => {
                             <div>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
                                 viewBox="0 0 20 20"
                                 fill="none"
+                                className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px]"
                               >
                                 <g clip-path="url(#clip0_5033_45319)">
                                   <path
@@ -493,7 +535,7 @@ const Details = ({ details }) => {
                                 </defs>
                               </svg>
                             </div>
-                            <div>
+                            <div className="text-sm sm:text-base">
                               {key
                                 .split("_")
                                 .map(
@@ -522,10 +564,9 @@ const Details = ({ details }) => {
                             <div>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                width="21"
-                                height="20"
                                 viewBox="0 0 21 20"
                                 fill="none"
+                                className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px]"
                               >
                                 <path
                                   d="M13.1384 12.3564L8.42431 7.64233M8.42431 12.3564L13.1384 7.64233M10.7813 18.3327C15.3837 18.3327 19.1147 14.6017 19.1147 9.99935C19.1147 5.39698 15.3837 1.66602 10.7813 1.66602C6.17896 1.66602 2.448 5.39698 2.448 9.99935C2.448 14.6017 6.17896 18.3327 10.7813 18.3327Z"
@@ -536,7 +577,7 @@ const Details = ({ details }) => {
                                 />
                               </svg>
                             </div>
-                            <div>
+                            <div className="text-sm sm:text-base">
                               {key
                                 .split("_")
                                 .map(
@@ -564,13 +605,12 @@ const Details = ({ details }) => {
                 className="flex justify-between items-center cursor-pointer"
                 onClick={toggleMeeting}
               >
-                <h3 className="text-2xl font-bold text-[#0F1416]">
+                <h3 className="text-lg sm:text-2xl font-bold text-[#0F1416]">
                   Meeting and Pickup
                 </h3>
                 <div
-                  className={`${
-                    isMeetingOpen ? "rotate-180" : ""
-                  } duration-300`}
+                  className={`${isMeetingOpen ? "rotate-180" : ""
+                    } duration-300`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -595,7 +635,7 @@ const Details = ({ details }) => {
                     pickup
                   </div>
                   <div className="p-4 border border-[#a6aaac33] rounded-xl">
-                    <div className="flex justify-between gap-6">
+                    <div className="flex flex-col sm:flex-row justify-between gap-6">
                       <div className="flex flex-col gap-5">
                         <div className="flex flex-col gap-2">
                           <div className="flex gap-1">
@@ -626,7 +666,7 @@ const Details = ({ details }) => {
                             >
                               Select a pickup point
                             </label>
-                            <div className="flex justify-between items-center border border-[#D2D2D5] rounded-xl p-4">
+                            <div className="flex justify-between items-center border border-[#D2D2D5] rounded-xl p-2 sm:p-4">
                               <input
                                 type="text"
                                 placeholder="Type of search"
@@ -634,10 +674,9 @@ const Details = ({ details }) => {
                               />
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                width="20"
-                                height="20"
                                 viewBox="0 0 20 20"
                                 fill="none"
+                                className="w-[18px] h-[18px] sm:w-[20px] sm:h-[20px]"
                               >
                                 <path
                                   fillRule="evenodd"
@@ -679,7 +718,7 @@ const Details = ({ details }) => {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col h-full relative jusitfy-center items-center">
+                      <div className="hidden sm:flex flex-col h-full relative jusitfy-center items-center">
                         <div className="w-[2px] h-[320px] bg-[#DFE1E7]"></div>
                         <p className="absolute top-1/2 -translate-y-1/2 text-base text-center text-[#475467] bg-white py-3">
                           or
@@ -845,7 +884,7 @@ const Details = ({ details }) => {
                     Additional Information
                   </div>
                   <div className="flex flex-col gap-6">
-                    <div className="flex gap-8">
+                    <div className="flex flex-col sm:flex-row gap-8">
                       <ul className="flex-1 flex flex-col gap-3 list-disc pl-4">
                         <li className="text-[16px] leading-[160%] text-[#1D1F2C]">
                           Not wheelchair accessible
@@ -872,7 +911,7 @@ const Details = ({ details }) => {
                         </li>
                       </ul>
                     </div>
-                    <div className="flex justify-between text-orange-500 text-sm font-medium p-2">
+                    <div className="flex justify-between text-orange-500 text-xs sm:text-sm font-medium p-2">
                       <button>Show 3 more</button>
                       <button>Supplied by Around 360</button>
                     </div>
@@ -880,14 +919,14 @@ const Details = ({ details }) => {
                 </div>
               </div>
               <div className="flex flex-col items-center gap-[30px]">
-                <div className="w-full h-[270px] rounded-2xl">
+                <div className="w-full h-[180px] sm:h-[270px] rounded-2xl">
                   <img
                     src={mapImg}
                     alt="Google map img"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <button className="px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]">
+                <button className="px-[70px] sm:px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]">
                   Show on map
                 </button>
               </div>
@@ -944,15 +983,15 @@ const Details = ({ details }) => {
                 {tripPlan.map((plan) => (
                   <div
                     key={plan.id}
-                    className="relative flex flex-col gap-1 border-l border-[#FDEFEA] pl-8"
+                    className="relative flex flex-col gap-1 border-l border-[#FDEFEA] pl-5 ml-4"
                   >
                     <div className="text-[18px] font-medium">{plan.title}</div>
-                    <p className="text-base">{plan.body}</p>
-                    <div className="text-sm text-[#475467]">
+                    <p className="text-sm sm:text-base">{plan.body}</p>
+                    <div className="text-xs sm:text-sm text-[#475467]">
                       <span>{plan.time} minutes </span>.
                       <span> Admission Ticket {plan.fee}</span>
                     </div>
-                    <div className="absolute -left-[17px] -top-[17px] bg-[#FDEFEA] w-[35px] h-[35px] flex items-center justify-center rounded-full text-[#EB5B2A] text-[20px] font-medium">
+                    <div className="absolute -left-[17px] -top-[17px] bg-[#FDEFEA] w-[30px] h-[30px] sm:w-[35px] sm:h-[35px] flex items-center justify-center rounded-full text-[#EB5B2A] text-[20px] font-medium">
                       {plan.id}
                     </div>
                   </div>
@@ -963,7 +1002,7 @@ const Details = ({ details }) => {
               </div>
               <div className="pb-[80px]">
                 <h3>Traveler Photos:</h3>
-                <div className="flex gap-2 relative">
+                <div className="flex flex-col sm:flex-row gap-2 relative">
                   <div className="flex-1 relative">
                     <img
                       src={travelVideo}
@@ -987,8 +1026,8 @@ const Details = ({ details }) => {
                       </svg>
                     </div>
                   </div>
-                  <div className="flex-1 flex gap-2">
-                    <div className="flex-1 flex flex-col gap-2">
+                  <div className="flex-1 flex gap-2 overflow-hidden">
+                    <div className="w-1/2 flex h-full flex-col gap-2">
                       <div>
                         <img
                           src={travelPhoto1}
@@ -1004,7 +1043,7 @@ const Details = ({ details }) => {
                         />
                       </div>
                     </div>
-                    <div className="flex-1 flex flex-col gap-2">
+                    <div className="w-1/2 flex h-full flex-col gap-2">
                       <div>
                         <img
                           src={travelPhoto3}
@@ -1012,44 +1051,44 @@ const Details = ({ details }) => {
                           className="w-full h-full object-cover rounded-xl"
                         />
                       </div>
-                      <div className="w-[166.75px] h-[151.48px]">
+                      <div className={`w-full ${window.innerWidth <= 325 ? "h-[127px]" : window.innerWidth <= 380 ? "h-[151px]" : window.innerWidth <= 450 ? "h-[174.48px]" : "h-[151.48px]"} max-w-full relative`}>
                         <img
                           src={travelPhoto4}
                           alt="Travel Photo"
                           className="w-full h-full object-cover rounded-xl"
                         />
+                        <div
+                          className={`absolute top-0 select-none text-white flex flex-col items-center justify-center gap-1 ${window.innerWidth <= 325 ? "h-[127px]" : window.innerWidth <= 450 ? "h-[174.48px]" : "h-[151.48px]"} w-full bottom-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer overflow-hidden`}
+                          onClick={handleShowImageLeft}
+                        >
+                          <div className="px-[10px] py-[12px] border-2 rounded-full">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="14"
+                              height="10"
+                              viewBox="0 0 14 10"
+                              fill="none"
+                            >
+                              <path
+                                d="M12.7503 5L0.750244 5"
+                                stroke="white"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M9.00027 8.75C9.00027 8.75 12.7502 5.98817 12.7502 4.99997C12.7503 4.01177 9.00024 1.25 9.00024 1.25"
+                                stroke="white"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-sm font-medium">Show more</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    className="absolute select-none text-white flex flex-col items-center justify-center gap-1 w-[170.75px] h-[151.48px] bottom-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer"
-                    onClick={handleShowImageLeft}
-                  >
-                    <div className="px-[10px] py-[12px] border-2 rounded-full">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="14"
-                        height="10"
-                        viewBox="0 0 14 10"
-                        fill="none"
-                      >
-                        <path
-                          d="M12.7503 5L0.750244 5"
-                          stroke="white"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M9.00027 8.75C9.00027 8.75 12.7502 5.98817 12.7502 4.99997C12.7503 4.01177 9.00024 1.25 9.00024 1.25"
-                          stroke="white"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    <span className="text-sm font-medium">Show more</span>
                   </div>
                 </div>
               </div>
@@ -1057,23 +1096,22 @@ const Details = ({ details }) => {
           </div>
         </div>
         <div className="bg-white rounded-2xl max-h-fit max-w-full w-full">
-          <BookCard details={details} renderStars={renderStars} />
+          <BookCard details={details} renderStars={renderStars} handleCheckAvailability={handleCheckAvailability} booking={booking}/>
         </div>
       </div>
       {/* Top rated reviews */}
 
-      <div className="flex flex-col gap-12">
-        <div className="flex justify-between items-center">
-          <h3 className="text-[48px] text-[#1D1F2C] font-bold">
+      <div className="flex flex-col gap-12 pt-10">
+        <div className="flex flex-col sm:flex-row justify-between items-center">
+          <h3 className="text-xl sm:text-[48px] text-[#1D1F2C] font-bold">
             Top-Rated Reviews
           </h3>
-          <div className="flex gap-2 text-[#0F1416] text-[24px] font-medium">
+          <div className="flex gap-2 text-[#0F1416] text-lg sm:text-[24px] font-medium items-center">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
               viewBox="0 0 24 24"
               fill="none"
+              className="sm:w-[24px] sm:h-[24px] w-[18px] h-[18px]"
             >
               <path
                 d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z"
@@ -1091,16 +1129,15 @@ const Details = ({ details }) => {
             {topReviews.map((review) => (
               <div
                 key={review.id}
-                className="min-h-[240px] p-6 flex flex-col gap-4 rounded-2xl border border-[#a6aaac33]"
+                className="h-[180px] sm:min-h-[240px] p-6 flex flex-col gap-4 rounded-2xl border border-[#a6aaac33]"
               >
-                <div className="flex gap-3">
+                <div className="flex gap-3 items-center">
                   <div className="flex gap-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
+                      className="sm:w-[24px] sm:h-[24px] w-[18px] h-[18px]"
                     >
                       <path
                         d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z"
@@ -1109,10 +1146,9 @@ const Details = ({ details }) => {
                     </svg>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
+                      className="sm:w-[24px] sm:h-[24px] w-[18px] h-[18px]"
                     >
                       <path
                         d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z"
@@ -1121,10 +1157,9 @@ const Details = ({ details }) => {
                     </svg>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
+                      className="sm:w-[24px] sm:h-[24px] w-[18px] h-[18px]"
                     >
                       <path
                         d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z"
@@ -1133,10 +1168,9 @@ const Details = ({ details }) => {
                     </svg>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
+                      className="sm:w-[24px] sm:h-[24px] w-[18px] h-[18px]"
                     >
                       <path
                         d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z"
@@ -1145,10 +1179,9 @@ const Details = ({ details }) => {
                     </svg>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
+                      className="sm:w-[24px] sm:h-[24px] w-[18px] h-[18px]"
                     >
                       <path
                         d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z"
@@ -1156,11 +1189,11 @@ const Details = ({ details }) => {
                       />
                     </svg>
                   </div>
-                  <div className="text-[16px] text-[#475467]">
+                  <div className="text-sm sm:text-[16px] text-center sm:text-start text-[#475467]">
                     <span>{review.userName}</span> . <span>{review.date}</span>
                   </div>
                 </div>
-                <div className="text-[#404C5C] text-[20px] tracking[0.1px]">
+                <div className="text-[#404C5C] text-xs sm:text-[20px] tracking[0.1px]">
                   {review.body}
                 </div>
               </div>
@@ -1174,6 +1207,9 @@ const Details = ({ details }) => {
           </button>
         </div>
       </div>
+      {checkAvailabilityPopup && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center">
+        <CheckAvailability handleCheckAvailability={handleCheckAvailability}/>
+      </div>}
     </div>
   );
 };

@@ -11,7 +11,7 @@ import { Helmet } from 'react-helmet-async'
 
 const Home = () => {
   return (
-    <div className='animate-from-middle'>
+    <div className='animate-from-middle overflow-hidden'>
       <Helmet>
         <title>Around 360 - Home</title>
       </Helmet>

@@ -23,7 +23,7 @@ import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 import { Helmet } from 'react-helmet-async'
 
-function ReviewPackage () {
+function ReviewPackage() {
   const {
     formState: { errors }
   } = useForm()
@@ -655,7 +655,7 @@ function ReviewPackage () {
           </>
         )}
 
-        <div className='w-full lg:w-4/12 h-fit px-5 shadow-lg border rounded-lg py-5 sticky top-10'>
+        <div className='w-full lg:w-4/12 h-fit px-6 shadow-gray-200 shadow-xl border rounded-lg py-5 sticky top-10'>
           <h1 className='border-b text-[#0F1416] text-4xl font-bold pb-5'>
             ${totalPrice.toFixed(2)}{' '}
             <span className='font-normal text-[16px]'>
@@ -674,7 +674,7 @@ function ReviewPackage () {
                     ?.price || '0'}
                 </span>
                 <span>x</span>
-                <span>{travelers.length}</span> Travelers
+                <span>{travelers.length}</span> Travellers
               </p>
             </div>
             <h4 className='text-[20px] text-[#0F1416] font-bold'>
@@ -686,7 +686,7 @@ function ReviewPackage () {
               ).toFixed(2)}
             </h4>
           </div>
-          <div className='flex items-start mt-5 border-b pb-5 justify-between'>
+          {/* <div className='flex items-start mt-5 border-b pb-5 justify-between'>
             <div>
               <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
                 Extra Services (Per Person)
@@ -714,9 +714,9 @@ function ReviewPackage () {
                 ) || 0) * travelers.length
               ).toFixed(2)}
             </h4>
-          </div>
+          </div> */}
 
-          <div className='flex flex-col mt-5 border-b pb-5'>
+          {/*<div className='flex flex-col mt-5 border-b pb-5'>
             <div className='flex justify-between items-start'>
               <div>
                 <h4 className='text-[#0F1416] text-[16px] font-bold'>
@@ -731,7 +731,7 @@ function ReviewPackage () {
                         className='flex items-center bg-green-600 text-white px-2 py-1 rounded-2xl w-fit text-[11px]'
                       >
                         {coupon.code}
-                        {/* ({coupon.amount_type === 'percentage' ? `${coupon.amount}%` : `$${coupon.amount}`}) */}
+                        ({coupon.amount_type === 'percentage' ? `${coupon.amount}%` : `$${coupon.amount}`}) 
                         <button
                           onClick={() =>
                             deleteCoupon(coupon.id, coupon.temp_redeem_id)
@@ -778,7 +778,7 @@ function ReviewPackage () {
             </div>
           </div>
 
-          {/* <div className='flex items-start mt-5 border-b pb-5 justify-between'>
+           <div className='flex items-start mt-5 border-b pb-5 justify-between'>
             <div>
               <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
                 Fee & Taxes
@@ -800,9 +800,86 @@ function ReviewPackage () {
 
           <div className='flex items-start mt-5 border-b pb-5 justify-between'>
             <div>
+              <div>
+                <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
+                  Coupon Discount
+                </h4>
+                <p className='text-base font-normal flex items-center gap-3'>
+                  {appliedCoupons.map((coupon, index) => (
+                    <span key={index} className='text-[16px]'>
+                      {coupon.amount_type === 'percentage'
+                        ? `${coupon.amount}% off`
+                        : `$${coupon.amount} off`}
+                      {index < appliedCoupons.length - 1 ? ', ' : ''}
+                    </span>
+                  ))}
+                </p>
+              </div>
+              <div className='w-fit py-[6px] px-[10px] text-white bg-orange-500 rounded-full text-[12px] text-center tracking-[0.06px] leading-[132%]'>BESTOFFER50</div>
+            </div>
+            <h4 className='text-[20px] text-[#0F1416] font-bold'>
+              -$
+              {(
+                (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                  ?.price || 0) *
+                travelers.length -
+                totalPrice +
+                (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
+                  (total, service) =>
+                    total + Number(service.extra_service.price),
+                  0
+                ) || 0) *
+                travelers.length
+              ).toFixed(2)}
+            </h4>
+          </div>
+
+
+
+          <div className='flex items-start mt-5 border-b pb-5 justify-between'>
+            <div>
               <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
-                Coupon Discount
+                Fee & Taxes
               </h4>
+              <p className='text-base text-[#0F1416] font-normal flex items-center gap-3'>
+                <span>
+                  $
+                  {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                    ?.price || '0'}
+                </span>
+                <span>x</span>
+                <span>{travelers.length}</span> Travellers
+              </p>
+            </div>
+            <h4 className='text-[20px] text-[#0F1416] font-bold'>
+              $
+              {(
+                travelers.length *
+                (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                  ?.price || 0)
+              ).toFixed(2)}
+            </h4>
+          </div>
+
+
+
+
+          <div className='flex items-start mt-5 border-b pb-5 justify-between'>
+            <div>
+              <div>
+                <h4 className='text-[#0F1416] text-[16px] font-bold pb-2'>
+                  Coupon Discount
+                </h4>
+                <p className='text-base text-[#0F1416] font-normal flex items-center gap-3'>
+                  <span>
+                    $
+                    {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                      ?.price || '0'}
+                  </span>
+                  <span>x</span>
+                  <span>{travelers.length}</span> Travellers
+                </p>
+              </div>
               <p className='text-base font-normal flex items-center gap-3'>
                 {appliedCoupons.map((coupon, index) => (
                   <span key={index} className='text-[16px]'>
@@ -819,14 +896,14 @@ function ReviewPackage () {
               {(
                 (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
                   ?.price || 0) *
-                  travelers.length -
+                travelers.length -
                 totalPrice +
                 (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
                   (total, service) =>
                     total + Number(service.extra_service.price),
                   0
                 ) || 0) *
-                  travelers.length
+                travelers.length
               ).toFixed(2)}
             </h4>
           </div>
@@ -852,7 +929,7 @@ function ReviewPackage () {
                 }
               }}
               disabled={isProcessing}
-              className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2'
+              className='flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-[30px]'
             >
               {isProcessing ? 'Processing...' : 'Proceed to Payment'}
             </button>
