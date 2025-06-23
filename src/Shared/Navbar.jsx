@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react'
-import logo from '../assets/img/Logo.svg'
+import logo from '../assets/img/Logo_new.png'
 import languageLogo from '../assets/img/Language.svg'
 import './nav.css'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
@@ -133,7 +133,7 @@ const Navbar = () => {
           <div className='md:flex md:items-center md:gap-12'>
             <Link className='block text-teal-600' to='/'>
               <span className='sr-only'>Home</span>
-              <img src={logo} alt='' className=' w-44' />
+              <img src={logo} alt='' className='w-24 sm:w-44' />
             </Link>
           </div>
 
@@ -354,7 +354,7 @@ const Navbar = () => {
                 ) : (
                   <div className='flex xl:gap-4'>
                     <Link
-                      className='p-5 xl:px-5 xl:py-2.5 text-sm font-medium text-gray-500'
+                      className='p-5 xl:px-4 xl:py-[10px] text-base font-medium text-gray-500'
                       to='/login'
                     >
                       Login
@@ -362,7 +362,7 @@ const Navbar = () => {
 
                     <div className='hidden lg:flex items-center justify-center'>
                       <Link
-                        className='rounded-3xl bg-orange-500 px-2 pt-2 pb-3 xl:px-4 xl:pt-2.5 xl:pb-3 text-xs xl:text-sm font-medium text-white'
+                        className='rounded-3xl bg-orange-500 px-2 pt-2 pb-3 xl:px-4 xl:pt-2.5 xl:pb-3 text-xs xl:text-base font-medium text-white'
                         to='/signup'
                       >
                         Sign Up

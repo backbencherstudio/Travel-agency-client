@@ -4,7 +4,7 @@ import { IoSettingsOutline } from 'react-icons/io5'
 import { LuBookmarkCheck, LuLayoutDashboard } from 'react-icons/lu'
 import { MdOutlineBusinessCenter, MdOutlinePayment } from 'react-icons/md'
 import { useLocation, useNavigate } from 'react-router-dom'
-import logo from '../../assets/img/Logo.svg'
+import logo from '../../assets/img/Logo_new.png'
 import { CiLogout } from 'react-icons/ci'
 const VendorSidebar = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate()

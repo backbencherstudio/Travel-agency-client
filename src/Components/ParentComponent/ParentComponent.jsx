@@ -2,7 +2,7 @@
 
 const ParentComponent = ({children}) => {
     return (
-        <div className="max-w-[1216px] mx-auto py-20  px-5 xl:px-0  " >
+        <div className="max-w-[1216px] w-full mx-auto pb-20" >
             {children}            
         </div>
     );
