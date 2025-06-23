@@ -141,7 +141,7 @@ const TourDetails = () => {
           </div>
           <ParentComponent>
             <div
-              className="relative px-8 py-16 rounded-2xl bg-cover bg-center bg-no-repeat"
+              className="relative px-8 py-16 rounded-2xl bg-cover bg-bottom bg-no-repeat"
               style={{ backgroundImage: `url(${cancellationBg})` }}
             >
               <div className="absolute inset-0 bg-blue-900/80 rounded-2xl"></div>

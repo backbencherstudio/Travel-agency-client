@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+// import MyDatePicker from "../../Components/DetailsComponent/MyDatePicker";
 function Tours() {
   const [packages, setPackages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);

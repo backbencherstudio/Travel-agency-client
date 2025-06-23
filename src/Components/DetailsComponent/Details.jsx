@@ -178,7 +178,7 @@ const Details = ({ details }) => {
   const NextReview = ({ onClick }) => {
     return (
       <div
-        className="absolute bg-orange-500 top-1/2 -right-[15px] p-3 transform -translate-y-1/2 z-10 cursor-pointer rounded-full"
+        className="absolute bg-[#0E457D] text-white top-1/2 -right-[15px] p-3 transform -translate-y-1/2 z-10 cursor-pointer rounded-full"
         onClick={onClick}
       >
         <FaChevronRight />
@@ -189,7 +189,7 @@ const Details = ({ details }) => {
   const PrevReview = ({ onClick }) => {
     return (
       <div
-        className="absolute bg-orange-500 top-1/2 -left-[15px] p-3 transform -translate-y-1/2 z-10 cursor-pointer rounded-full"
+        className="absolute bg-[#F5F5F5] text-[#0E457D] top-1/2 -left-[15px] p-3 transform -translate-y-1/2 z-10 cursor-pointer rounded-full"
         onClick={onClick}
       >
         <FaChevronLeft />

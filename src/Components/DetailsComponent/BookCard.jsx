@@ -1,5 +1,5 @@
 import React, { useRef, useState, useContext, useEffect } from "react";
-import DatePicker from "react-datepicker";
+
 import "react-datepicker/dist/react-datepicker.css";
 import calender from "../../assets/img/tour-details/calender.svg";
 // import { useBookingContext } from '../../Context/BookingContext/BookingContext'
@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { AuthContext } from "../../Context/AuthProvider/AuthProvider";
 import { createCheckout } from "../../Apis/clientApi/ClientBookApi";
 import Loading from "../../Shared/Loading";
+import MyStyledDatePicker from './MyDatePicker'
 
 const BookCard = ({ details, renderStars }) => {
   const [startDate, setStartDate] = useState(null);
@@ -20,7 +21,13 @@ const BookCard = ({ details, renderStars }) => {
   const navigate = useNavigate();
   const [freeCancellation, setFreeCancellation] = useState(false);
   const [payLater, setPayLater] = useState(false);
-
+  const [adultTravelers, setAdultTravelers] = useState(1)
+  const [childTravelers, setChildTravelers] = useState(0)
+  const [infantTravelers, setInfantTravelers] = useState(0)
+  const [totalTravelers, setTotalTravelers] = useState(1)
+  const [showTravelerMenu, setShowTravelerMenu] = useState(true)
+  const [openDatePicker,setOpenDatePicker] = useState(true);
+  const [numberOfPeople,setNumberOfPeople] = useState("Number of people")
   // Access user from AuthContext
   const { user } = useContext(AuthContext);
 
@@ -58,6 +65,10 @@ const BookCard = ({ details, renderStars }) => {
       );
     }
   };
+
+  const handleOpenDatePicker=()=>{
+    setOpenDatePicker(prev => !prev);
+  }
 
   const handleFreeChancellation = () => {
     setFreeCancellation((prev) => !prev);
@@ -136,6 +147,66 @@ const BookCard = ({ details, renderStars }) => {
     setEndDate(date);
   };
 
+
+  const toggleTravelerMenu = () => {
+    setNumberOfPeople(`${totalTravelers} Travelers`)
+    setShowTravelerMenu(prev => !prev)
+  }
+
+  const handleAdultTravelersAdding = () => {
+    setTotalTravelers((prevTotal) => {
+      if (prevTotal < 10) {
+        const newTotal = prevTotal + 1;
+        setAdultTravelers((prevAdult) => {
+          if (prevAdult < 10) {
+            return prevAdult + 1;
+          }
+          return prevAdult;
+        });
+        return newTotal;
+      }
+      return prevTotal;
+    });
+  };
+  const handleAdultTravelersRemove = () => {
+    if (adultTravelers > 1) {
+      setAdultTravelers(prev => prev - 1);
+      setTotalTravelers(prev => prev - 1);
+    }
+  };
+
+
+  const handleChildTravelersAdding = () => {
+    if (totalTravelers < 10) {
+      setTotalTravelers(prev => prev + 1);
+      setChildTravelers(prev => prev + 1);
+    }
+  }
+  const handleChildTravelersRemove = () => {
+    if (childTravelers > 0) {
+      setChildTravelers(prev => prev - 1);
+      setTotalTravelers(prev => prev - 1);
+    }
+  };
+
+
+
+
+  const handleInfantTravelersAdding = () => {
+    if (totalTravelers < 10 && infantTravelers < 2) {
+      setTotalTravelers(prev => prev + 1);
+      setInfantTravelers(prev => prev + 1);
+    }
+  }
+  const handleInfantTravelersRemove = () => {
+    if (infantTravelers > 0) {
+      setInfantTravelers(prev => prev - 1);
+      setTotalTravelers(prev => prev - 1);
+    }
+  }
+
+
+
   return (
     <>
       {loading && (
@@ -153,9 +224,9 @@ const BookCard = ({ details, renderStars }) => {
         </div>
         <div>
           {/* Start Date Picker */}
-          <div className="flex border items-center gap-4 p-4 rounded-md border-[#e5e6e6] shadow-sm">
+          <div className="flex border items-center gap-4 p-4 rounded-md border-[#e5e6e6] shadow-sm relative" onClick={handleOpenDatePicker}>
             <div
-              onClick={() => startDatePickerRef.current.setOpen(true)}
+              
               className="text-2xl cursor-pointer ml-2 w-fit"
             >
               <svg
@@ -195,24 +266,18 @@ const BookCard = ({ details, renderStars }) => {
                 <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
               </svg>
             </div>
+            <div>
+              <div className="text-[16px] text-[#a6aaaccc]">Select Date</div>
+              <div></div>
+            </div>
 
-            <DatePicker
-              selected={startDate}
-              onChange={handleStartDateChange}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              minDate={today}
-              placeholderText="Start Date"
-              className="outline-none w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal"
-              ref={startDatePickerRef}
-            />
+            {openDatePicker && <MyStyledDatePicker />}
           </div>
 
           {/* End Date Picker */}
-          <div className="flex border mt-4 items-center gap-4 p-4 rounded-md border-[#e5e6e6] shadow-sm">
+          <div className="flex border mt-4 items-center gap-4 p-4 rounded-md border-[#e5e6e6] shadow-sm relative">
             <div
-              onClick={() => endDatePickerRef.current.setOpen(true)}
+              onClick={toggleTravelerMenu}
               className="text-2xl cursor-pointer ml-2 w-fit"
             >
               <svg
@@ -237,19 +302,59 @@ const BookCard = ({ details, renderStars }) => {
               </svg>
             </div>
 
-            <DatePicker
-              selected={endDate}
-              onChange={handleEndDateChange}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              maxDate={calculateMaxEndDate(startDate)}
-              placeholderText="End Date"
-              className="outline-none text-base w-full placeholder:text-[#b6b9bb] placeholder:text-base placeholder:font-normal"
-              ref={endDatePickerRef}
-              disabled={!startDate}
-            />
+            <div className="flex justify-between items-center w-full cursor-pointer" onClick={toggleTravelerMenu}>
+              {showTravelerMenu ? (<div className="text-[16px] cursor-pointer">{totalTravelers} Travelers</div>) :
+                (<div className="text-[#a6aaaccc] text-[16px]">{numberOfPeople}</div>)}
+              <div className={`${showTravelerMenu ? "rotate-180" : ""}`} >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 12 6" fill="none">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M11.8356 5.46849C11.5769 5.79194 11.1049 5.84438 10.7815 5.58562L6.24997 1.96044L1.71849 5.58562C1.39505 5.84438 0.923077 5.79194 0.66432 5.46849C0.405562 5.14505 0.458004 4.67308 0.78145 4.41432L5.78145 0.414321C6.05536 0.19519 6.44458 0.19519 6.71849 0.414321L11.7185 4.41432C12.0419 4.67308 12.0944 5.14505 11.8356 5.46849Z" fill="#0F1416" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Travelers dropdown section */}
+
+            {showTravelerMenu && <div className="absolute z-[1] top-[58px] left-0 flex flex-col gap-6 bg-white w-full rounded-xl shadow-md px-4 py-5">
+              <div className="flex flex-col gap-6">
+                <div className="text-[16px] leading-[160%] text-[#58677D]">You can select up to 10 travelers total.</div>
+                <div className="flex justify-between w-full">
+                  <div className="flex flex-col gap-[2px]">
+                    <div className="text-[#000] text-[18px] font-medium">Adults (Age 12-80)</div>
+                    <div className="text-[14px] text-[#4A4C56]">Minimum: 1, Maximum: 10</div>
+                  </div>
+                  <div className="flex gap-[10px] items-center">
+                    <div className="text-[16px] text-[#A6AAAC] border leading-none w-[24px] h-[24px] rounded-full flex items-center justify-center cursor-pointer" onClick={handleAdultTravelersRemove}>-</div>
+                    <div className="text-[20px] text-[#0F1416] w-[25px] text-center">{adultTravelers}</div>
+                    <div className="text-[16px] text-[0D3F72] border leading-none w-[24px] h-[24px] rounded-full flex items-center justify-center cursor-pointer" onClick={handleAdultTravelersAdding}>+</div>
+                  </div>
+                </div>
+                <div className="flex justify-between w-full">
+                  <div className="flex flex-col gap-[2px]">
+                    <div className="text-[#000] text-[18px] font-medium">Child (Age 4-11)</div>
+                    <div className="text-[14px] text-[#4A4C56]">Minimum: 0, Maximum: 9</div>
+                  </div>
+                  <div className="flex gap-[10px] items-center">
+                    <div className="text-[16px] text-[#A6AAAC] border leading-none w-[24px] h-[24px] rounded-full flex items-center justify-center cursor-pointer" onClick={handleChildTravelersRemove}>-</div>
+                    <div className="text-[20px] text-[#0F1416] w-[25px] text-center">{childTravelers}</div>
+                    <div className="text-[16px] text-[0D3F72] border leading-none w-[24px] h-[24px] rounded-full flex items-center justify-center cursor-pointer" onClick={handleChildTravelersAdding}>+</div>
+                  </div>
+                </div>
+                <div className="flex justify-between w-full">
+                  <div className="flex flex-col gap-[2px]">
+                    <div className="text-[#000] text-[18px] font-medium">Infant (Age 0-3)</div>
+                    <div className="text-[14px] text-[#4A4C56]">Minimum: 0, Maximum: 2</div>
+                  </div>
+                  <div className="flex gap-[10px] items-center">
+                    <div className="text-[16px] text-[#A6AAAC] border leading-none w-[24px] h-[24px] rounded-full flex items-center justify-center cursor-pointer" onClick={handleInfantTravelersRemove}>-</div>
+                    <div className="text-[20px] text-[#0F1416] w-[25px] text-center">{infantTravelers}</div>
+                    <div className="text-[16px] text-[0D3F72] border leading-none w-[24px] h-[24px] rounded-full flex items-center justify-center cursor-pointer" onClick={handleInfantTravelersAdding}>+</div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <div className="text-[#0E457D] underline cursor-pointer" onClick={toggleTravelerMenu}>Close</div>
+              </div>
+            </div>}
           </div>
 
           {/* Extra Services */}
@@ -310,7 +415,7 @@ const BookCard = ({ details, renderStars }) => {
             </div>
             <div>
               <p className="text-[#49556D] text-sm ">
-                <span className="text-[#49556D] underline cursor-pointer text-nowrap font-bold text-sm leading-5">
+                <span className="text-[#0F1416] underline cursor-pointer text-nowrap font-bold text-sm leading-5">
                   Free Cancellation
                 </span>{" "}
                 up to 24 hours before the experience starts (local time)
@@ -343,7 +448,7 @@ const BookCard = ({ details, renderStars }) => {
               </div>
             </div>
             <div>
-              <span className="underline cursor-pointer text-[#49556D] text-nowrap text-sm font-bold">
+              <span className="underline cursor-pointer text-[#0F1416] text-nowrap text-sm font-bold">
                 Book Now and Pay Leter
               </span>
             </div>
