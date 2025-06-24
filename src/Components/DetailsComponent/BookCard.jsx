@@ -9,12 +9,15 @@ import { AuthContext } from "../../Context/AuthProvider/AuthProvider";
 import { createCheckout } from "../../Apis/clientApi/ClientBookApi";
 import Loading from "../../Shared/Loading";
 import TourDatePicker from "./TourDatePicker";
-
+import ReservetionConfirmation from "./ReservetaionConfirmation";
+import FreeCancellation from "./FreeCancellation";
 const BookCard = ({
   details,
   renderStars,
   handleCheckAvailability,
   booking,
+  cancelDesc,
+  bookNowPayLaterDesc
 }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -35,6 +38,9 @@ const BookCard = ({
   const [numberOfPeople, setNumberOfPeople] = useState("Number of people");
   const [selectedDate, setSelectedDate] = useState("");
   const [checkInCheckOutDate, setCheckInCheckOutDate] = useState(null);
+  const [reservetionConfirmation, setReservetionConfirmation] = useState(false);
+  const [reserved, setReseved] = useState(false);
+  const [freeCancel,setFreeCancel] = useState(false);
   // Access user from AuthContext
   const { user } = useContext(AuthContext);
 
@@ -223,6 +229,17 @@ const BookCard = ({
     }
   };
 
+
+  const handleReservetionConfirmation = () => {
+    setReservetionConfirmation(prev => !prev);
+    setReseved(true)
+  }
+
+
+  const handleFreeCancellation=()=>{
+    setFreeCancel(false);
+  }
+
   return (
     <>
       {loading && (
@@ -254,9 +271,8 @@ const BookCard = ({
         <div>
           {/* Date Picker */}
           <div
-            className={`flex border ${
-              booking ? "justify-between" : ""
-            } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
+            className={`flex border ${booking ? "justify-between" : ""
+              } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
           >
             {!booking && (
               <div
@@ -402,17 +418,15 @@ const BookCard = ({
                 </div>
               ) : (
                 <div
-                  className={`${
-                    booking ? "text-[#0F1416]" : "text-[#a6aaaccc]"
-                  } text-[16px]`}
+                  className={`${booking ? "text-[#0F1416]" : "text-[#a6aaaccc]"
+                    } text-[16px]`}
                 >
                   {numberOfPeople}
                 </div>
               )}
               <div
-                className={`${
-                  showTravelerMenu ? "rotate-180" : ""
-                } w-[24px] flex items-center justify-center`}
+                className={`${showTravelerMenu ? "rotate-180" : ""
+                  } w-[24px] flex items-center justify-center`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -566,20 +580,26 @@ const BookCard = ({
           </button>
         ) : (
           <div className="flex flex-col gap-5">
-            <Link to={`/booking/${details?.id}`}>
-              <button
-                onClick={handleBookNow}
-                className="flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2"
-              >
-                Book Now
-              </button>
-            </Link>
-            <button
-              onClick={handleBookNow}
-              className="flex gap-2 items-center justify-center p-3 rounded-full text-[#0F1416] text-[16px] font-semibold w-full mt-2 border border-[A5A5AB]"
+            {reserved ? <div
+              className="flex gap-2 items-center justify-center p-3 rounded-full text-[#4A4C56] text-[16px] font-medium w-full mt-2 border bg-[#E9E9EA]"
             >
-              Reserve Now & Pay Later
-            </button>
+              Reserved
+            </div> : <div className="flex flex-col gap-5">
+              <Link to={`/booking/${details?.id}`}>
+                <button
+                  onClick={handleBookNow}
+                  className="flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2"
+                >
+                  Book Now
+                </button>
+              </Link>
+              <button
+                onClick={handleReservetionConfirmation}
+                className="flex gap-2 items-center justify-center p-3 rounded-full text-[#0F1416] text-[16px] font-semibold w-full mt-2 border border-[#A5A5AB]"
+              >
+                Reserve Now & Pay Later
+              </button>
+            </div>}
             <div className="flex flex-col gap-4">
               <h2 className="text-[#000] text-[20px] font-semibold">
                 FullTour+Leaning Tower Tickets
@@ -623,10 +643,10 @@ const BookCard = ({
             </div>
             <div>
               <p className="text-[#49556D] text-sm ">
-                <span className="text-[#0F1416] underline cursor-pointer text-nowrap font-bold text-sm leading-5">
+                <span className="text-[#0F1416] underline cursor-pointer text-nowrap font-bold text-sm leading-5" onClick={()=>setFreeCancel(true)}>
                   Free Cancellation
                 </span>{" "}
-                up to 24 hours before the experience starts (local time)
+                {cancelDesc}
               </p>
             </div>
           </div>
@@ -658,10 +678,17 @@ const BookCard = ({
             <div>
               <span className="underline cursor-pointer text-[#0F1416] text-nowrap text-sm font-bold">
                 Book Now and Pay Leter
-              </span>
+              </span>{" "}
+              {bookNowPayLaterDesc}
             </div>
           </div>
         </div>
+        {reservetionConfirmation && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#00000099] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
+          <ReservetionConfirmation handleReservetionConfirmation={handleReservetionConfirmation} />
+        </div>}
+        {freeCancel && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#00000099] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
+          <FreeCancellation handleFreeCancellation={handleFreeCancellation} />
+        </div>}
       </div>
     </>
   );

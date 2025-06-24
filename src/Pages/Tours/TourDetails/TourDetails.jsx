@@ -15,6 +15,7 @@ import ClientPackageApis from "../../../Apis/clientApi/ClientPackageApis";
 import { useEffect, useState } from "react";
 import Loading from "../../../Shared/Loading";
 import { Helmet } from "react-helmet-async";
+import Chatcard from "./ChatCard";
 
 const TourDetails = () => {
   // const links = [
@@ -25,6 +26,7 @@ const TourDetails = () => {
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState(null);
   const { id } = useParams();
+  const [openChat,setOpenChat] = useState(false)
 
   useEffect(() => {
     tourDetails();
@@ -154,6 +156,10 @@ const TourDetails = () => {
 
   // console.log('id', id)
 
+  const handleChatOpen=()=>{
+    setOpenChat(prev => !prev);
+  }
+
   return (
     <div className="pt-[54px] pb-[80px] px-4 xl:px-[192px] w-full">
       <Helmet>
@@ -224,7 +230,7 @@ const TourDetails = () => {
                       />
                     </svg>
                   </div>
-                  <div className="text-orange-500">Chat now</div>
+                  <div className="text-orange-500" onClick={handleChatOpen}>Chat now</div>
                 </div>
               </div>
             </div>
@@ -263,6 +269,9 @@ const TourDetails = () => {
           </ParentComponent>
         </div>
       )}
+      {openChat && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
+        <Chatcard handleChatOpen={handleChatOpen}/>
+      </div>}
     </div>
   );
 };

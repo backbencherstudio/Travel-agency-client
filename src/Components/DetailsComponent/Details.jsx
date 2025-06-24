@@ -16,6 +16,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import ImageModal from "./ImageModal";
+import StaticMap from '../../Shared/StaticMap'
 
 const Details = ({
   details,
@@ -38,60 +39,8 @@ const Details = ({
   const [showImageModal, setShowImageModal] = useState(false);
   const [activeTab, setActiveTab] = useState('provider'); // 'provider' or 'traveler'
   const [modalImageIndex, setModalImageIndex] = useState(0);
-  const [tripPlan, setTripPlan] = useState([
-    {
-      id: 1,
-      title: "Paraces",
-      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
-      time: 45,
-      fee: "Free",
-    },
-    {
-      id: 2,
-      title: "Oasis Huacachina",
-      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. ",
-      time: 45,
-      fee: "Free",
-    },
-    {
-      id: 3,
-      title: "Miraflores",
-      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
-      time: 45,
-      fee: "Free",
-    },
-  ]);
-
-  const [topReviews, setTopReviews] = useState([
-    {
-      id: 1,
-      starts: 5,
-      userName: "Marpreet_s",
-      date: "Mar 2025",
-      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
-    },
-    {
-      id: 2,
-      starts: 5,
-      userName: "Marpreet_s",
-      date: "Mar 2025",
-      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
-    },
-    {
-      id: 1,
-      starts: 5,
-      userName: "Marpreet_s",
-      date: "Mar 2025",
-      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
-    },
-    {
-      id: 2,
-      starts: 5,
-      userName: "Marpreet_s",
-      date: "Mar 2025",
-      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
-    },
-  ]);
+  const [cancelDesc, setCancelDesc] = useState("up to 24 hours before the experience starts (local time)");
+  const [bookNowPayLaterDesc, setBookNowPayLaterDesc] = useState("")
   useEffect(() => {
     setSelectedImage(details?.package_files[0]?.file_url);
   }, [details]);
@@ -251,7 +200,7 @@ const Details = ({
     nextArrow: <NextReview />,
     prevArrow: <PrevReview />,
   };
-  
+
   const displayTripPlan = (plan) => (
     <div
       key={plan.id}
@@ -272,6 +221,8 @@ const Details = ({
   const handleCheckAvailability = () => {
     setCheckAvailabilityPopup((prev) => !prev);
     setBooking(true);
+    setCancelDesc("before 8:00 AM on Apr 28 (local time)")
+    setBookNowPayLaterDesc("until Apr 27");
   };
 
   return (
@@ -496,9 +447,8 @@ const Details = ({
                   Included/Excluded
                 </h3>
                 <div
-                  className={`${
-                    isIncludedOpen ? "rotate-180" : ""
-                  } duration-300`}
+                  className={`${isIncludedOpen ? "rotate-180" : ""
+                    } duration-300`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -657,9 +607,8 @@ const Details = ({
                   Meeting and Pickup
                 </h3>
                 <div
-                  className={`${
-                    isMeetingOpen ? "rotate-180" : ""
-                  } duration-300`}
+                  className={`${isMeetingOpen ? "rotate-180" : ""
+                    } duration-300`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -985,11 +934,7 @@ const Details = ({
                 </div>
                 <div className="flex flex-col items-center gap-[30px]">
                   <div className="w-full h-[180px] sm:h-[270px] rounded-2xl">
-                    <img
-                      src={mapImgPackage}
-                      alt="Google map img"
-                      className="w-full h-full object-cover"
-                    />
+                    <StaticMap location="Dhaka, Bangladesh" />
                   </div>
                   <button className="px-[70px] sm:px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]">
                     Show on map
@@ -1116,15 +1061,14 @@ const Details = ({
                       )}
                       {TravellerPhotos.length >= 5 && (
                         <div
-                          className={`w-full ${
-                            window.innerWidth <= 325
+                          className={`w-full ${window.innerWidth <= 325
                               ? "h-[127px]"
                               : window.innerWidth <= 380
-                              ? "h-[151px]"
-                              : window.innerWidth <= 450
-                              ? "h-[174.48px]"
-                              : "h-[151.48px]"
-                          } max-w-full relative`}
+                                ? "h-[151px]"
+                                : window.innerWidth <= 450
+                                  ? "h-[174.48px]"
+                                  : "h-[151.48px]"
+                            } max-w-full relative`}
                         >
                           <img
                             src={TravellerPhotos[4]}
@@ -1132,13 +1076,12 @@ const Details = ({
                             className="w-full h-full object-cover rounded-xl"
                           />
                           <div
-                            className={`absolute top-0 select-none text-white flex flex-col items-center justify-center gap-1 ${
-                              window.innerWidth <= 325
+                            className={`absolute top-0 select-none text-white flex flex-col items-center justify-center gap-1 ${window.innerWidth <= 325
                                 ? "h-[127px]"
                                 : window.innerWidth <= 450
-                                ? "h-[174.48px]"
-                                : "h-[151.48px]"
-                            } w-full bottom-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer overflow-hidden`}
+                                  ? "h-[174.48px]"
+                                  : "h-[151.48px]"
+                              } w-full bottom-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer overflow-hidden`}
                             onClick={handleShowImageLeft}
                           >
                             <div className="px-[10px] py-[12px] border-2 rounded-full">
@@ -1184,6 +1127,8 @@ const Details = ({
             renderStars={renderStars}
             handleCheckAvailability={handleCheckAvailability}
             booking={booking}
+            cancelDesc={cancelDesc}
+            bookNowPayLaterDesc={bookNowPayLaterDesc}
           />
         </div>
       </div>
@@ -1217,7 +1162,7 @@ const Details = ({
             {topReviews.map((review) => (
               <div
                 key={review.id}
-                className="h-[180px] sm:min-h-[240px] p-6 flex flex-col gap-4 rounded-2xl border border-[#a6aaac33]"
+                className="h-[180px] sm:min-h-[240px] p-6 flex flex-col rounded-2xl border border-[#a6aaac33]"
               >
                 <div className="flex gap-3 items-center">
                   <div className="flex gap-1">
@@ -1281,7 +1226,7 @@ const Details = ({
                     <span>{review.userName}</span> . <span>{review.date}</span>
                   </div>
                 </div>
-                <div className="text-[#404C5C] text-xs sm:text-[20px] tracking[0.1px]">
+                <div className="text-[#404C5C] text-xs sm:text-[20px] pt-4 tracking[0.1px]">
                   {review.body}
                 </div>
               </div>
@@ -1296,7 +1241,7 @@ const Details = ({
         </div>
       </div>
       {checkAvailabilityPopup && (
-        <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2]">
+        <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
           <CheckAvailability
             handleCheckAvailability={handleCheckAvailability}
           />
