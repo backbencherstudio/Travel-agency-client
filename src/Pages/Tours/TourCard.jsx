@@ -236,52 +236,6 @@ function TourCard({
           </div>
         </div>
       </div>
-      <div className='px-4'>
-        <hr />
-      </div>
-      <div className='flex items-center justify-between p-4'>
-        <div className=''>
-          <div className='text-xs'>Starting From</div>
-          <div className='flex items-center gap-2'>
-            <div className='text-xl text-[#0E457D] font-bold'>${tour?.price}</div>
-            {tour?.price && <p className='text-xs text-[#0E457D] mt-1'>/ <span className='text-xs line-through '>{tour?.price * 1.5}</span></p>}
-          </div>
-        </div>
-        <div
-          className="cursor-pointer"
-          onClick={() => handleLovedPackages(tour.id, !lovedPackages[tour.id])}
-        >
-          {lovedPackages[tour.id] ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="22"
-              height="20"
-              viewBox="0 0 22 20"
-              fill="none"
-            >
-              <path
-                d="M3.1449 1.35515C6.12587 -0.473376 8.8001 0.255371 10.4156 1.46861C10.6814 1.6682 10.8638 1.8048 10.9996 1.89704C11.1354 1.8048 11.3178 1.6682 11.5836 1.46861C13.1991 0.255371 15.8734 -0.473376 18.8543 1.35515C20.9156 2.61952 22.0754 5.2606 21.6684 8.29511C21.2595 11.3443 19.2859 14.7929 15.1063 17.8865C13.6549 18.9614 12.5897 19.7503 10.9996 19.7503C9.40955 19.7503 8.34433 18.9614 6.89294 17.8865C2.71334 14.7929 0.739756 11.3443 0.330808 8.29511C-0.0761763 5.2606 1.08365 2.61952 3.1449 1.35515Z"
-                fill="#EB5B2A"
-              />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="22"
-              viewBox="0 0 24 22"
-              fill="none"
-            >
-              <path
-                d="M4.1449 2.35515C7.12587 0.526624 9.8001 1.25537 11.4156 2.46861C11.6814 2.6682 11.8638 2.8048 11.9996 2.89704C12.1354 2.8048 12.3178 2.6682 12.5836 2.46861C14.1991 1.25537 16.8734 0.526624 19.8543 2.35515C21.9156 3.61952 23.0754 6.2606 22.6684 9.29511C22.2595 12.3443 20.2859 15.7929 16.1063 18.8865C14.6549 19.9614 13.5897 20.7503 11.9996 20.7503C10.4095 20.7503 9.34433 19.9614 7.89294 18.8865C3.71334 15.7929 1.73976 12.3443 1.33081 9.29511C0.923824 6.2606 2.08365 3.61952 4.1449 2.35515Z"
-                stroke="#EB5B2A"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-            </svg>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

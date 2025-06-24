@@ -952,9 +952,9 @@ function ReviewPackage() {
           )}
         </div>
       </div>
-      <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
+      {confirmationBookingPopup && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
         <ConfirmBooking />
-      </div>
+      </div>}
     </div>
   )
 }
