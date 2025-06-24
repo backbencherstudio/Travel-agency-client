@@ -1,12 +1,12 @@
 import Details from "../../../Components/DetailsComponent/Details";
 import HeroSection from "../../../Components/HeroSection/HeroSection";
 import ParentComponent from "../../../Components/ParentComponent/ParentComponent";
-import bgImg from "../../../assets/img/banner/tour.png";
-import image1 from "../../../assets/img/tour-details/image-1.png";
-import image2 from "../../../assets/img/tour-details/image-2.png";
-import image3 from "../../../assets/img/tour-details/image-3.png";
-import image4 from "../../../assets/img/tour-details/image-4.png";
-import image5 from "../../../assets/img/tour-details/image-5.png";
+import mapImg from "../../../assets/img/tour-details/map.png";
+import travelVideo from "../../../assets/img/tour-details/travel-video.png";
+import travelPhoto1 from "../../../assets/img/tour-details/travel-img1.png";
+import travelPhoto2 from "../../../assets/img/tour-details/travel-img2.png";
+import travelPhoto3 from "../../../assets/img/tour-details/travel-img3.png";
+import travelPhoto4 from "../../../assets/img/tour-details/travel-img4.jpg";
 import cancellationBg from "../../../assets/img/tour-details/cancellation-bg.png";
 import "./tourDetails.css";
 import TravelPackages from "../../../Components/Home/TravelPackages";
@@ -17,11 +17,11 @@ import Loading from "../../../Shared/Loading";
 import { Helmet } from "react-helmet-async";
 
 const TourDetails = () => {
-  const links = [
-    { name: "Home", path: "/" },
-    { name: "Tours", path: "/tours" },
-    { name: "Tour Details", path: "" },
-  ];
+  // const links = [
+  //   { name: "Home", path: "/" },
+  //   { name: "Tours", path: "/tours" },
+  //   { name: "Tour Details", path: "" },
+  // ];
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState(null);
   const { id } = useParams();
@@ -38,6 +38,99 @@ const TourDetails = () => {
     }
     // console.log('res', res)
   };
+
+  const [includeExclude, setIncludeExclude] = useState({
+    "hotel+all_inclusive": true,
+    "breakfast,_lunch_&_dinner": true,
+    hotel_accommodation: true,
+    "sight-seen": false,
+    city_tour: false,
+    custom_duty: false,
+  });
+  const [tripPlan, setTripPlan] = useState([
+    {
+      id: 1,
+      title: "Paraces",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
+      time: 45,
+      fee: "Free",
+    },
+    {
+      id: 2,
+      title: "Oasis Huacachina",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. ",
+      time: 45,
+      fee: "Free",
+    },
+    {
+      id: 3,
+      title: "Miraflores",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
+      time: 45,
+      fee: "Free",
+    },
+  ]);
+
+  const meetingPointDetails =
+    "Volare I Vuelos en globo Carretera Libre a Tulancingo Km 27.5 San Francisco Mazapa Manzana 005, 55830 de Arista, Méx., Mexico";
+  const travelingCity = "Mexico";
+  const startDate = "11/22/2024";
+  const endDate = "05/10/2026";
+  const operatingDayAndTime = [
+    ["Monday - Thursday", "7:00 AM -10:00 PM"],
+    ["Friday", "6:00 AM - 11:30 PM"],
+    ["Saturday", "7:00 AM - 11:30 PM"],
+    ["Sunday", "7:00 AM - 10:00 PM"],
+  ];
+
+  const additionalInformation = [
+    "Not wheelchair accessible",
+    "Infants must sit on laps",
+    "Due to weather conditions or any security reasons tour operator has right to change the desert dune bashing location",
+    "Not recommended for pregnant travelers",
+    "Travelers should have a moderate physical fitness level",
+    "Confirrnatjon will be received at time of booking",
+  ];
+  const mapImgPackage = mapImg;
+
+  const TravellerPhotos = [
+    travelVideo,
+    travelPhoto1,
+    travelPhoto2,
+    travelPhoto3,
+    travelPhoto4,
+  ];
+
+  const [topReviews, setTopReviews] = useState([
+    {
+      id: 1,
+      starts: 5,
+      userName: "Marpreet_s",
+      date: "Mar 2025",
+      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
+    },
+    {
+      id: 2,
+      starts: 5,
+      userName: "Marpreet",
+      date: "Mar 2025",
+      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
+    },
+    {
+      id: 3,
+      starts: 5,
+      userName: "m",
+      date: "Mar 2025",
+      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
+    },
+    {
+      id: 4,
+      starts: 5,
+      userName: "s",
+      date: "Mar 2025",
+      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
+    },
+  ]);
 
   // const tour =  {
   //     id: 1,
@@ -136,7 +229,16 @@ const TourDetails = () => {
               </div>
             </div>
             <ParentComponent>
-              <Details details={tour} />
+              <Details
+                details={tour}
+                includeExclude={includeExclude}
+                tripPlan={tripPlan}
+                meetingPointDetails={meetingPointDetails}
+                additionalInformation={additionalInformation}
+                mapImgPackage={mapImgPackage}
+                TravellerPhotos={TravellerPhotos}
+                topReviews={topReviews}
+              />
             </ParentComponent>
           </div>
           <ParentComponent>

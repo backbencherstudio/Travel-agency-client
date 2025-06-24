@@ -22,6 +22,7 @@ import {
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider'
 import { Helmet } from 'react-helmet-async'
+import ConfirmBooking from '../../Components/Client/Booking/ConfirmBooking'
 
 function ReviewPackage() {
   const {
@@ -53,6 +54,7 @@ function ReviewPackage() {
   const [newTraveler, setNewTraveler] = useState(null)
   const { user } = useContext(AuthContext)
   const [editingFirstTraveler, setEditingFirstTraveler] = useState(false)
+  const [confirmationBookingPopup,setConfirmationBookingPopup] = useState(false)
 
   // Initialize first traveler with user data
   useEffect(() => {
@@ -90,7 +92,7 @@ function ReviewPackage() {
             ...redeem.coupon,
             temp_redeem_id: redeem.id
           }))
-          setAppliedCoupons(coupons)
+          console.log("Coupons : ", coupons)
         }
 
         // Set travelers from checkout_travellers, excluding the main traveler
@@ -143,6 +145,8 @@ function ReviewPackage() {
 
     let remainingPrice = basePrice * travelerCount
 
+    console.log("Coupone Type : ", sortedCoupons)
+
     // Apply coupon discounts sequentially
     sortedCoupons.forEach(coupon => {
       if (remainingPrice > 0) {
@@ -167,9 +171,10 @@ function ReviewPackage() {
         0
       ) || 0) * travelerCount
 
-    const calculatedTotal = remainingPrice + extraServicesTotal
+    // const calculatedTotal = remainingPrice + extraServicesTotal
+    // const calculatedTotal = remainingPrice + extraServicesTotal
 
-    setTotalPrice(calculatedTotal)
+    setTotalPrice(remainingPrice)
   }, [travelers.length, appliedCoupons, checkoutData])
 
   // Handle input changes for the new traveler
@@ -358,6 +363,7 @@ function ReviewPackage() {
 
   // Payment Method
   const handlePayment = async () => {
+    setConfirmationBookingPopup(true);
     if (!stripe || !elements) {
       toast.error('Stripe has not been initialized properly.')
       return
@@ -500,11 +506,70 @@ function ReviewPackage() {
           <>
             <div className='w-full lg:w-8/12'>
               <div className='flex flex-col gap-10'>
-                <h1 className='text-[#0F1416] text-4xl font-bold'>
+                <h1 className='text-[#0F1416] text-[40px] font-bold'>
                   Review Package
                 </h1>
 
                 <PackageDetails checkoutData={checkoutData} />
+
+                {/* Form for adding a new traveler */}
+                <div className='w-full'>
+                  <h1 className='text-xl font-semibold mt-10'>Add Traveler</h1>
+                  {newTraveler && !editingFirstTraveler ? (
+                    <div className='flex flex-col border rounded-lg p-4 mb-3'>
+                      <h2 className='text-lg font-semibold mb-3'>New Traveler</h2>
+                      <label className='text-sm font-medium'>Name</label>
+                      <input
+                        type='text'
+                        name='full_name'
+                        placeholder='Enter Full Name'
+                        value={newTraveler.full_name || ''}
+                        onChange={handleNewTravelerChange}
+                        className='border rounded px-4 py-2 mt-1'
+                      />
+                      <label className='text-sm font-medium mt-3'>
+                        Traveler Type
+                      </label>
+                      <select
+                        name='type'
+                        value={newTraveler.type || 'Adult'}
+                        onChange={handleNewTravelerChange}
+                        className='border rounded px-4 py-2 mt-1'
+                      >
+                        <option value='Adult'>Adult</option>
+                        <option value='Child'>Child</option>
+                      </select>
+                      <div className='flex gap-4 mt-4'>
+                        <button
+                          onClick={saveNewTraveler}
+                          className='bg-green-600 text-white px-3 py-1 rounded-md'
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={cancelNewTraveler}
+                          className='bg-red-600 text-white px-3 py-1 rounded-md'
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    !editingFirstTraveler && (
+                      <button
+                        onClick={() =>
+                          setNewTraveler({ full_name: '', type: 'Adult' })
+                        }
+                        className='bg-[#EB5B2A] hover:bg-[#eb5a2ae4] transform duration-300 px-7 py-3 rounded-full text-white flex items-center justify-between gap-2 mt-4 w-full'
+                      >
+                        Add Traveler
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <path d="M6 9L12 15L18 9" stroke="white" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </button>
+                    )
+                  )}
+                </div>
 
                 <ContactFrom
                   checkoutData={checkoutData}
@@ -513,16 +578,17 @@ function ReviewPackage() {
               </div>
 
               <div>
-                <h1 className='text-xl font-semibold mt-10'>Travelers</h1>
+                {/* <h1 className='text-xl font-semibold mt-10'>Travelers</h1> */}
 
                 {/* List of travelers */}
-                <div className='my-5'>
+                {/* <div className='my-5'>
                   {travelers.map((traveler, index) => (
                     <div
                       key={index}
                       className='flex items-center gap-4 border rounded-lg p-4 mb-3'
                     >
-                      {index === 0 && editingFirstTraveler ? (
+                      {
+                      index === 0 && editingFirstTraveler ? (
                         <div className='flex-1'>
                           <h2 className='text-lg font-semibold mb-3'>
                             Edit First Traveler
@@ -563,7 +629,8 @@ function ReviewPackage() {
                             </button>
                           </div>
                         </div>
-                      ) : (
+                      ) : 
+                      (
                         <>
                           <div>
                             <p className='font-semibold'>
@@ -595,61 +662,7 @@ function ReviewPackage() {
                       )}
                     </div>
                   ))}
-                </div>
-
-                {/* Form for adding a new traveler */}
-                {newTraveler && !editingFirstTraveler ? (
-                  <div className='flex flex-col border rounded-lg p-4 mb-3'>
-                    <h2 className='text-lg font-semibold mb-3'>New Traveler</h2>
-                    <label className='text-sm font-medium'>Name</label>
-                    <input
-                      type='text'
-                      name='full_name'
-                      placeholder='Enter Full Name'
-                      value={newTraveler.full_name || ''}
-                      onChange={handleNewTravelerChange}
-                      className='border rounded px-4 py-2 mt-1'
-                    />
-                    <label className='text-sm font-medium mt-3'>
-                      Traveler Type
-                    </label>
-                    <select
-                      name='type'
-                      value={newTraveler.type || 'Adult'}
-                      onChange={handleNewTravelerChange}
-                      className='border rounded px-4 py-2 mt-1'
-                    >
-                      <option value='Adult'>Adult</option>
-                      <option value='Child'>Child</option>
-                    </select>
-                    <div className='flex gap-4 mt-4'>
-                      <button
-                        onClick={saveNewTraveler}
-                        className='bg-green-600 text-white px-3 py-1 rounded-md'
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={cancelNewTraveler}
-                        className='bg-red-600 text-white px-3 py-1 rounded-md'
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  !editingFirstTraveler && (
-                    <button
-                      onClick={() =>
-                        setNewTraveler({ full_name: '', type: 'Adult' })
-                      }
-                      className='bg-[#EB5B2A] hover:bg-[#eb5a2ae4] transform duration-300 px-7 py-3 rounded-full text-white flex items-center gap-2 mt-4'
-                    >
-                      <FiPlusCircle className='text-xl' />
-                      Add Traveler
-                    </button>
-                  )
-                )}
+                </div> */}
               </div>
             </div>
           </>
@@ -805,14 +818,16 @@ function ReviewPackage() {
                   Coupon Discount
                 </h4>
                 <p className='text-base font-normal flex items-center gap-3'>
-                  {appliedCoupons.map((coupon, index) => (
-                    <span key={index} className='text-[16px]'>
-                      {coupon.amount_type === 'percentage'
-                        ? `${coupon.amount}% off`
-                        : `$${coupon.amount} off`}
-                      {index < appliedCoupons.length - 1 ? ', ' : ''}
-                    </span>
-                  ))}
+                  {appliedCoupons.map((coupon, index) => {
+                    return (
+                      <span key={index} className='text-[16px]'>
+                        {coupon.amount_type === 'percentage'
+                          ? `${coupon.amount}% off`
+                          : `$${coupon.amount} off`}
+                        {index < appliedCoupons.length - 1 ? ', ' : ''}
+                      </span>
+                    )
+                  })}
                 </p>
               </div>
               <div className='w-fit py-[6px] px-[10px] text-white bg-orange-500 rounded-full text-[12px] text-center tracking-[0.06px] leading-[132%]'>BESTOFFER50</div>
@@ -820,16 +835,17 @@ function ReviewPackage() {
             <h4 className='text-[20px] text-[#0F1416] font-bold'>
               -$
               {(
-                (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                  ?.price || 0) *
-                travelers.length -
-                totalPrice +
-                (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
-                  (total, service) =>
-                    total + Number(service.extra_service.price),
-                  0
-                ) || 0) *
+                (
+                  totalPrice - checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                    ?.price || 0) *
                 travelers.length
+                // +
+                // (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
+                //   (total, service) =>
+                //     total + Number(service.extra_service.price),
+                //   0
+                // ) || 0) *
+                // travelers.length
               ).toFixed(2)}
             </h4>
           </div>
@@ -852,7 +868,7 @@ function ReviewPackage() {
               </p>
             </div>
             <h4 className='text-[20px] text-[#0F1416] font-bold'>
-              $
+              +$
               {(
                 travelers.length *
                 (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
@@ -894,10 +910,10 @@ function ReviewPackage() {
             <h4 className='text-[20px] text-[#0F1416] font-bold'>
               -$
               {(
-                (checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                  ?.price || 0) *
-                travelers.length -
-                totalPrice +
+                (
+                  totalPrice - checkoutData?.data?.checkout?.checkout_items?.[0]?.package
+                    ?.price || 0) *
+                travelers.length +
                 (checkoutData?.data?.checkout?.checkout_extra_services?.reduce(
                   (total, service) =>
                     total + Number(service.extra_service.price),
@@ -935,6 +951,9 @@ function ReviewPackage() {
             </button>
           )}
         </div>
+      </div>
+      <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
+        <ConfirmBooking />
       </div>
     </div>
   )

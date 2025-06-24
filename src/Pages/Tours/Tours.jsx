@@ -11,7 +11,7 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 function Tours() {
   const [packages, setPackages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 10;
+  const totalPages = 1;
   const [pageLoading, setPageLoading] = useState(false);
   const [pageLeft, setPageLeft] = useState([]);
   const [pageRight, setPageRight] = useState([]);

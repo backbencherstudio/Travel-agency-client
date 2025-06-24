@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import LeftArrowIcon from '../../assets/user-dashboard/icons/LeftArrowIcon'
+import RightArrowIcon from '../../assets/user-dashboard/icons/RightArrowIcon'
 
 export default function TableWithPagination({
   columns,
@@ -52,11 +54,11 @@ export default function TableWithPagination({
         <button
           onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
           disabled={currentPage === 1}
-          className={`px-3 py-2 border border-[#D0D5DD] rounded-lg text-sm font-semibold ${
+          className={`flex items-center gap-1 px-3 py-2 border border-[#D0D5DD] rounded-lg text-sm font-semibold  ${
             currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-[#344054]'
           }`}
         >
-          Previous
+         <LeftArrowIcon/>  Previous
         </button>
 
         <div className="flex justify-center">
@@ -70,7 +72,7 @@ export default function TableWithPagination({
                   : 'bg-white text-[#475467]'
               }`}
             >
-              {index + 1}
+             {index + 1}
             </button>
           ))}
         </div>
@@ -78,11 +80,11 @@ export default function TableWithPagination({
         <button
           onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
           disabled={currentPage === totalPages}
-          className={`px-3 py-2 border border-[#D0D5DD] rounded-lg text-sm font-semibold ${
+          className={`px-3 py-2   border border-[#D0D5DD] rounded-lg text-sm font-semibold flex items-center gap-1 ${
             currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-[#344054]'
           }`}
         >
-          Next
+          Next <RightArrowIcon/>
         </button>
       </div>
     </div>
