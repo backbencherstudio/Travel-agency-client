@@ -54,7 +54,7 @@ export default function TableWithPagination({
         <button
           onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
           disabled={currentPage === 1}
-          className={`px-3 py-2 border border-[#D0D5DD] rounded-lg text-sm font-semibold flex${
+          className={`flex items-center gap-1 px-3 py-2 border border-[#D0D5DD] rounded-lg text-sm font-semibold  ${
             currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-[#344054]'
           }`}
         >
@@ -80,7 +80,7 @@ export default function TableWithPagination({
         <button
           onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
           disabled={currentPage === totalPages}
-          className={`px-3   border border-[#D0D5DD] rounded-lg text-sm font-semibold flex items-center ${
+          className={`px-3 py-2   border border-[#D0D5DD] rounded-lg text-sm font-semibold flex items-center gap-1 ${
             currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-[#344054]'
           }`}
         >

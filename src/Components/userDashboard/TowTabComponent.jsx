@@ -5,6 +5,8 @@ import UpcomingIcon from '../../assets/user-dashboard/icons/UpcomingIcon'
 import CancelCross from '../../assets/user-dashboard/icons/CancelCross'
 import DeleteIcon from '../../assets/user-dashboard/icons/DeleteIcon'
 import EditIcon from '../../assets/user-dashboard/icons/EditIcon'
+import EyeIcon from '../../assets/user-dashboard/icons/EyeIcon'
+import { Link } from 'react-router-dom'
 
 
 const bookings = [
@@ -169,9 +171,9 @@ const TwoTabComponent = () => {
           key: "action",
           label: "Action",
           render: (row) => (
-            <button>
-           eyeIcon
-            </button>
+            <Link>
+       <EyeIcon/>
+            </Link>
           ),
         },
       ]}
