@@ -56,7 +56,7 @@ const PackageDetails = ({ checkoutData }) => {
           </div>
         </div>
         <div className='flex gap-5 sm:gap-16 lg:justify-start lg:gap-16 mt-5'>
-          <div className='hidden sm:flex items-center gap-2'>
+          <div className='hidden sm:flex flex-col gap-2'>
             <p className='text-[#4A4C56] text-[14px] '>Review</p>
             <div className='flex items-center gap-1'>
               {[...Array(5)].map((_, index) => {
@@ -80,9 +80,9 @@ const PackageDetails = ({ checkoutData }) => {
               })}
             </div>
             {/* Numeric Average Rating */}
-            <p className='text-[#4A4C56] text-[14px] font-medium'>
+            {/* <p className='text-[#4A4C56] text-[14px] font-medium'>
               ({averageRating.toFixed(1)})
-            </p>
+            </p> */}
           </div>
           <div className='h-14 w-[1px] bg-gray-300 hidden sm:block'></div>
           <div className=''>
@@ -124,7 +124,7 @@ const PackageDetails = ({ checkoutData }) => {
                   {/* Start Date */}
                   <div className='text-center sm:text-left'>
                     <p className='font-medium text-[#000E19]'>
-                      {formatDate(item.start_date)}
+                      {/* {formatDate(item.start_date)} */}
                     </p>
                   </div>
 
@@ -132,14 +132,14 @@ const PackageDetails = ({ checkoutData }) => {
                   <div className='relative flex items-center w-full max-w-xs my-2 sm:my-0'>
                     <div className='border-t border-dashed border-gray-300 w-full'></div>
                     <div className='absolute left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-4 py-1 rounded-full text-sm'>
-                      {days}D/{nights}N
+                      {"days"}D
                     </div>
                   </div>
 
                   {/* End Date */}
                   <div className='text-center sm:text-right'>
                     <p className='font-medium text-[#000E19]'>
-                      {formatDate(item.end_date)}
+                      {/* {formatDate(item.end_date)} */}
                     </p>
                   </div>
                 </div>

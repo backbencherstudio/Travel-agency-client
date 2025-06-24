@@ -22,7 +22,7 @@ const Layout = () => {
           <Outlet />
         </div>
         <div className="bg-[#061D35]">
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </div>
       )}

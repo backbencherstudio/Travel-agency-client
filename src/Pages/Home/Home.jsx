@@ -12,7 +12,7 @@ import Gift from '../../Components/Home/Gift'
 
 const Home = () => {
   return (
-    <div className='animate-from-middle'>
+    <div className='animate-from-middle overflow-hidden'>
       <Helmet>
         <title>Around 360 - Home</title>
       </Helmet>
