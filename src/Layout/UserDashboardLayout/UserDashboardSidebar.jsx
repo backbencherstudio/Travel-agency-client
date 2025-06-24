@@ -10,6 +10,8 @@ import LogoutIcon from '../../assets/user-dashboard/icons/LogoutIcon';
 
 const UserDashboardSidebar = () => {
   const location = useLocation();
+  console.log(location);
+  
 
   const navItems = [
     {
@@ -36,6 +38,11 @@ const UserDashboardSidebar = () => {
       label: ' My Profile',
       path: '/user-dashboard/profile',
       icon:(active)=> <ProfileIcon isActive={active}/>,
+    },
+    {
+      label: 'Logout',
+      path: '/',
+      icon:(active)=> <LogoutIcon isActive={active}/>,
     },
     // {
     //   label: 'Logout',
