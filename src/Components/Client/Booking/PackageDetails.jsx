@@ -22,7 +22,7 @@ const PackageDetails = ({ checkoutData }) => {
     <div>
       <div className='bg-[#FDEFEA] p-5 rounded-lg'>
         <div className='flex flex-col sm:flex-row items-center justify-between'>
-          <h1 className='font-bold text-[#000E19] text-xl sm:text-4xl mb-3'>
+          <h1 className='font-bold text-[#070707] text-xl sm:text-[40px] mb-3'>
             {checkoutData?.data?.checkout?.checkout_items?.[0]?.package?.name ||
               'Not found'}
           </h1>
@@ -87,7 +87,7 @@ const PackageDetails = ({ checkoutData }) => {
           <div className='h-14 w-[1px] bg-gray-300 hidden sm:block'></div>
           <div className=''>
             <p className='text-[#4A4C56] text-[14px] mb-3'>Days</p>
-            <p className='font-semibold'>
+            <p className=' text-[16px] text-[#070707]'>
               {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
                 ?.duration || '0'}{' '}
               days
@@ -96,7 +96,7 @@ const PackageDetails = ({ checkoutData }) => {
           <div className='h-14 w-[1px] bg-gray-300'></div>
           <div>
             <p className='text-[#4A4C56] text-[14px] mb-3'>Location</p>
-            <p className='font-semibold'>
+            <p className='text-[16px] text-[#070707]'>
               {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
                 ?.package_destinations?.[0]?.destination?.name || 'Default Location'}
               ,{' '}
@@ -111,35 +111,38 @@ const PackageDetails = ({ checkoutData }) => {
               // Calculate days and nights
               const startDate = new Date(item.start_date)
               const endDate = new Date(item.end_date)
-              const days = Math.ceil(
-                (endDate - startDate) / (1000 * 60 * 60 * 24)
-              )
+              // const days = Math.ceil(
+              //   (endDate - startDate) / (1000 * 60 * 60 * 24)
+              // )
+              const days = 5
               const nights = days - 1
 
               return (
                 <div
-                  key={index}
+                  // key={index}
                   className='flex gap-10 items-center w-full max-w-3xl'
                 >
                   {/* Start Date */}
                   <div className='text-center sm:text-left'>
-                    <p className='font-medium text-[#000E19]'>
+                    <p className='text-[16px] text-[#070707]'>
                       {/* {formatDate(item.start_date)} */}
+                      Aug 11, 2024
                     </p>
                   </div>
 
                   {/* Duration Badge */}
                   <div className='relative flex items-center w-full max-w-xs my-2 sm:my-0'>
                     <div className='border-t border-dashed border-gray-300 w-full'></div>
-                    <div className='absolute left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-4 py-1 rounded-full text-sm'>
-                      {"days"}D
+                    <div className='absolute left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-4 py-[10px] rounded-full text-sm'>
+                      {days}D/{nights}N
                     </div>
                   </div>
 
                   {/* End Date */}
                   <div className='text-center sm:text-right'>
-                    <p className='font-medium text-[#000E19]'>
+                    <p className='text-[16px] text-[#070707]'>
                       {/* {formatDate(item.end_date)} */}
+                      Aug 16, 2024
                     </p>
                   </div>
                 </div>

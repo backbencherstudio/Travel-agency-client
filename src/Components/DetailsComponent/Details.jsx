@@ -11,88 +11,29 @@ import testImg from "../../assets/img/packages/banner.png";
 import { LuMessageSquareMore } from "react-icons/lu";
 import { Tooltip } from "@mui/material";
 import { Image } from "lucide-react";
-import mapImg from "../../../src/assets/img/tour-details/map.png";
-import travelVideo from "../../../src/assets/img/tour-details/travel-video.png";
-import travelPhoto1 from "../../../src/assets/img/tour-details/travel-img1.png";
-import travelPhoto2 from "../../../src/assets/img/tour-details/travel-img2.png";
-import travelPhoto3 from "../../../src/assets/img/tour-details/travel-img3.png";
-import travelPhoto4 from "../../../src/assets/img/tour-details/travel-img4.jpg";
 import { FaArrowRight } from "react-icons/fa6";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 
-const Details = ({ details }) => {
+const Details = ({
+  details,
+  includeExclude,
+  tripPlan,
+  meetingPointDetails,
+  additionalInformation,
+  mapImgPackage,
+  TravellerPhotos,
+  topReviews,
+}) => {
   const [selectedImage, setSelectedImage] = useState();
   const [activeIndex, setActiveIndex] = useState(null);
   const contentRefs = useRef([]);
   const [imgTranslate, setImgTranslate] = useState(0);
   const [isIncludedOpen, setIsIncludedOpen] = useState(false);
-  const [checkAvailabilityPopup,setCheckAvailabilityPopup] = useState(false);
+  const [checkAvailabilityPopup, setCheckAvailabilityPopup] = useState(false);
   const [booking, setBooking] = useState(false);
-  const [includeExclude, setIncludeExclude] = useState({
-    "hotel+all_inclusive": true,
-    "breakfast,_lunch_&_dinner": true,
-    hotel_accommodation: true,
-    "sight-seen": false,
-    city_tour: false,
-    custom_duty: false,
-  });
   const [isMeetingOpen, setIsMeetingOpen] = useState(false);
-  const [tripPlan, setTripPlan] = useState([
-    {
-      id: 1,
-      title: "Paraces",
-      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
-      time: 45,
-      fee: "Free",
-    },
-    {
-      id: 2,
-      title: "Oasis Huacachina",
-      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. ",
-      time: 45,
-      fee: "Free",
-    },
-    {
-      id: 3,
-      title: "Miraflores",
-      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
-      time: 45,
-      fee: "Free",
-    },
-  ]);
-
-  const [topReviews, setTopReviews] = useState([
-    {
-      id: 1,
-      starts: 5,
-      userName: "Marpreet_s",
-      date: "Mar 2025",
-      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
-    },
-    {
-      id: 2,
-      starts: 5,
-      userName: "Marpreet_s",
-      date: "Mar 2025",
-      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
-    },
-    {
-      id: 1,
-      starts: 5,
-      userName: "Marpreet_s",
-      date: "Mar 2025",
-      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
-    },
-    {
-      id: 2,
-      starts: 5,
-      userName: "Marpreet_s",
-      date: "Mar 2025",
-      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
-    },
-  ]);
 
   useEffect(() => {
     setSelectedImage(details?.package_files[0]?.file_url);
@@ -143,26 +84,26 @@ const Details = ({ details }) => {
     setIsMeetingOpen((prev) => !prev);
   };
 
-  const [slidersWidth, setSlidersWidth] = useState(0)
-  const [reviewSlideNumber, setReviewSlideNumber] = useState(1)
+  const [slidersWidth, setSlidersWidth] = useState(0);
+  const [reviewSlideNumber, setReviewSlideNumber] = useState(1);
 
   useEffect(() => {
     const handleResize = () => {
-      const width = window.innerWidth
+      const width = window.innerWidth;
       if (width >= 321 && width < 374) {
-        setReviewSlideNumber(1)
-        setSlidersWidth(63)
+        setReviewSlideNumber(1);
+        setSlidersWidth(63);
       } else if (width <= 375) {
-        setReviewSlideNumber(1)
-        setSlidersWidth(75)
+        setReviewSlideNumber(1);
+        setSlidersWidth(75);
       } else if (width <= 425) {
-        setReviewSlideNumber(1)
-        setSlidersWidth(87)
-      }else if(width >= 1000 && width <=1280 ){
-        setSlidersWidth(151)
+        setReviewSlideNumber(1);
+        setSlidersWidth(87);
+      } else if (width >= 1000 && width <= 1280) {
+        setSlidersWidth(151);
       } else {
-        setSlidersWidth(163)
-        setReviewSlideNumber(2)
+        setSlidersWidth(163);
+        setReviewSlideNumber(2);
       }
     };
 
@@ -177,8 +118,6 @@ const Details = ({ details }) => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-
 
   const NextArrow = ({ onClick }) => {
     return (
@@ -256,10 +195,27 @@ const Details = ({ details }) => {
     prevArrow: <PrevReview />,
   };
 
-  const handleCheckAvailability=()=>{
-    setCheckAvailabilityPopup(prev => !prev)
+  const displayTripPlan = (plan) => (
+    <div
+      key={plan.id}
+      className="relative flex flex-col gap-1 border-l border-[#FDEFEA] pl-5 ml-4"
+    >
+      <div className="text-[18px] font-medium">{plan.title}</div>
+      <p className="text-sm sm:text-base">{plan.body}</p>
+      <div className="text-xs sm:text-sm text-[#475467]">
+        <span>{plan.time} minutes </span>.
+        <span> Admission Ticket {plan.fee}</span>
+      </div>
+      <div className="absolute -left-[17px] -top-[17px] bg-[#FDEFEA] w-[30px] h-[30px] sm:w-[35px] sm:h-[35px] flex items-center justify-center rounded-full text-[#EB5B2A] text-[20px] font-medium">
+        {plan.id}
+      </div>
+    </div>
+  );
+
+  const handleCheckAvailability = () => {
+    setCheckAvailabilityPopup((prev) => !prev);
     setBooking(true);
-  }
+  };
 
   return (
     <div className="pb-[80px]">
@@ -464,8 +420,9 @@ const Details = ({ details }) => {
                   Included/Excluded
                 </h3>
                 <div
-                  className={`${isIncludedOpen ? "rotate-180" : ""
-                    } duration-300`}
+                  className={`${
+                    isIncludedOpen ? "rotate-180" : ""
+                  } duration-300`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -609,8 +566,9 @@ const Details = ({ details }) => {
                   Meeting and Pickup
                 </h3>
                 <div
-                  className={`${isMeetingOpen ? "rotate-180" : ""
-                    } duration-300`}
+                  className={`${
+                    isMeetingOpen ? "rotate-180" : ""
+                  } duration-300`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -747,9 +705,7 @@ const Details = ({ details }) => {
                           </div>
                           <div className="flex flex-col gap-[30px]">
                             <p className="text-[14px] leading-[160%] text-[#49556D]">
-                              Volare I Vuelos en globo Carretera Libre a
-                              Tulancingo Km 27.5 San Francisco Mazapa Manzana
-                              005, 55830 de Arista, Méx., Mexico
+                              {meetingPointDetails}
                             </p>
                             <div className="flex flex-col gap-2">
                               <div className="flex gap-2 items-center">
@@ -774,7 +730,7 @@ const Details = ({ details }) => {
                               <div className="text-[14px] leading-[160%] text-[#49556D]">
                                 Please arrive to this meeting point it you
                                 select the option without transportation from
-                                Mexico City.
+                                {travelingCity} City.
                               </div>
                             </div>
                           </div>
@@ -840,18 +796,38 @@ const Details = ({ details }) => {
                           Opening hours
                         </div>
                         <p className="text-sm font-medium text-[#0F1416]">
-                          11/22/2024 - 05/10/2026
+                          {startDate} - {endDate}
                         </p>
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 text-sm">
-                      <h1>
-                        <span className="text-[#49556D]">Monday - </span>
-                        <span className="font-medium text-[#0F1416]">
-                          Thursday : 7:00 AM -10:00 PM
-                        </span>
-                      </h1>
-                      <h1>
+                      {operatingDayAndTime?.map((day) => {
+                        const weekday = day[0]?.split("-");
+                        return (
+                          <h1 className="flex gap-1">
+                            <div className="">
+                              {weekday?.length === 1 ? (
+                                <span className="text-[#49556D]">
+                                  {weekday[0]}
+                                </span>
+                              ) : (
+                                <div>
+                                  <span className="text-[#49556D]">
+                                    {weekday[0]}
+                                  </span>
+                                  {"-"}
+                                  <span>{weekday[1]}</span>
+                                </div>
+                              )}
+                            </div>
+                            <span> : </span>
+                            <span className="font-medium text-[#0F1416]">
+                              {day[1]}
+                            </span>
+                          </h1>
+                        );
+                      })}
+                      {/* <h1>
                         <span className="text-[#49556D]">Friday : </span>
                         <span className="font-medium text-[#0F1416]">
                           6:00 AM - 11:30 PM
@@ -868,7 +844,7 @@ const Details = ({ details }) => {
                         <span className="font-medium text-[#0F1416]">
                           7:00 AM - 10:00 PM
                         </span>
-                      </h1>
+                      </h1> */}
                     </div>
                   </div>
                 </div>
@@ -877,60 +853,59 @@ const Details = ({ details }) => {
 
             {/* Addition information section */}
 
-            <div className="flex flex-col gap-[30px] border-b border-[#a6aaac33] pb-[30px]">
-              <div className="pb-[20px] border-b border-[#a6aaac33]">
-                <div className="flex flex-col gap-5 border rounded-2xl border-[#a6aaac33] p-4">
-                  <div className="text-[#1D1F2C] text-[24px] font-medium ">
-                    Additional Information
-                  </div>
-                  <div className="flex flex-col gap-6">
-                    <div className="flex flex-col sm:flex-row gap-8">
-                      <ul className="flex-1 flex flex-col gap-3 list-disc pl-4">
-                        <li className="text-[16px] leading-[160%] text-[#1D1F2C]">
-                          Not wheelchair accessible
-                        </li>
-                        <li className="text-[16px] leading-[160%] text-[#1D1F2C]">
-                          Infants must sit on laps
-                        </li>
-                        <li className="text-[16px] leading-[160%] text-[#1D1F2C]">
-                          Due to weather conditions or any security reasons tour
-                          operator has right to change the desert dune bashing
-                          location
-                        </li>
-                      </ul>
-                      <ul className="flex-1 flex flex-col gap-3 list-disc pl-4">
-                        <li className="text-[16px] leading-[160%] text-[#1D1F2C]">
-                          Not recommended for pregnant travelers
-                        </li>
-                        <li className="text-[16px] leading-[160%] text-[#1D1F2C]">
-                          Travelers should have a moderate physical fitness
-                          level
-                        </li>
-                        <li className="text-[16px] leading-[160%] text-[#1D1F2C]">
-                          Confirrnatjon will be received at time of booking
-                        </li>
-                      </ul>
+            {additionalInformation && (
+              <div className="flex flex-col gap-[30px] border-b border-[#a6aaac33] pb-[30px]">
+                <div className="pb-[20px] border-b border-[#a6aaac33]">
+                  <div className="flex flex-col gap-5 border rounded-2xl border-[#a6aaac33] p-4">
+                    <div className="text-[#1D1F2C] text-[24px] font-medium ">
+                      Additional Information
                     </div>
-                    <div className="flex justify-between text-orange-500 text-xs sm:text-sm font-medium p-2">
-                      <button>Show 3 more</button>
-                      <button>Supplied by Around 360</button>
+                    <div className="flex flex-col gap-6">
+                      <div className="flex flex-col md:flex-row gap-4">
+                        {[0, 1].map((colIndex) => (
+                          <ul
+                            key={colIndex}
+                            className="flex-1 flex flex-col gap-3 list-disc pl-4"
+                          >
+                            {additionalInformation
+                              .filter((_, i) => i % 2 === colIndex)
+                              .slice(0, 6) // Show only first 6 items in total
+                              .map((item, idx) => (
+                                <li
+                                  key={idx}
+                                  className="text-[16px] leading-[160%] text-[#1D1F2C]"
+                                >
+                                  {item}
+                                </li>
+                              ))}
+                          </ul>
+                        ))}
+                      </div>
+                      <div className="flex justify-between text-orange-500 text-xs sm:text-sm font-medium p-2">
+                        {additionalInformation.length > 6 && (
+                          <button>
+                            Show {additionalInformation.length - 6} more
+                          </button>
+                        )}
+                        <button>Supplied by Around 360</button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex flex-col items-center gap-[30px]">
-                <div className="w-full h-[180px] sm:h-[270px] rounded-2xl">
-                  <img
-                    src={mapImg}
-                    alt="Google map img"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="flex flex-col items-center gap-[30px]">
+                  <div className="w-full h-[180px] sm:h-[270px] rounded-2xl">
+                    <img
+                      src={mapImgPackage}
+                      alt="Google map img"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <button className="px-[70px] sm:px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]">
+                    Show on map
+                  </button>
                 </div>
-                <button className="px-[70px] sm:px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]">
-                  Show on map
-                </button>
               </div>
-            </div>
+            )}
 
             {/* Trip plan */}
             {/* <div className='flex flex-col gap-5'>
@@ -980,114 +955,131 @@ const Details = ({ details }) => {
             <div className="flex flex-col gap-5">
               <div className="pt-[30px] flex flex-col gap-5 text-[#0F1416]">
                 <div className="text-[24px] font-semibold">Trip Plan</div>
-                {tripPlan.map((plan) => (
-                  <div
-                    key={plan.id}
-                    className="relative flex flex-col gap-1 border-l border-[#FDEFEA] pl-5 ml-4"
-                  >
-                    <div className="text-[18px] font-medium">{plan.title}</div>
-                    <p className="text-sm sm:text-base">{plan.body}</p>
-                    <div className="text-xs sm:text-sm text-[#475467]">
-                      <span>{plan.time} minutes </span>.
-                      <span> Admission Ticket {plan.fee}</span>
-                    </div>
-                    <div className="absolute -left-[17px] -top-[17px] bg-[#FDEFEA] w-[30px] h-[30px] sm:w-[35px] sm:h-[35px] flex items-center justify-center rounded-full text-[#EB5B2A] text-[20px] font-medium">
-                      {plan.id}
-                    </div>
-                  </div>
-                ))}
+                {tripPlan.length <= 3
+                  ? tripPlan.map((plan) => displayTripPlan(plan))
+                  : tripPlan.splice(0, 3).map((plan = displayTripPlan(plan)))}
               </div>
-              <div className="text-[14px] font-medium text-orange-500">
-                Show 2 more stops
-              </div>
+              {tripPlan.length > 3 && (
+                <div className="text-[14px] font-medium text-orange-500">
+                  Show {tripPlan.length - 3} more stops
+                </div>
+              )}
               <div className="pb-[80px]">
-                <h3>Traveler Photos:</h3>
+                <h3 className="pb-5">Traveler Photos:</h3>
                 <div className="flex flex-col sm:flex-row gap-2 relative">
-                  <div className="flex-1 relative">
-                    <img
-                      src={travelVideo}
-                      alt="Travel video"
-                      className="w-full h-full object-cover rounded-xl"
-                    ></img>
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-[10px] bg-[#FFFFFFCC] rounded-full cursor-pointer">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="14"
-                        viewBox="0 0 12 14"
-                        fill="none"
-                      >
-                        <path
-                          d="M11.1679 7.63448C10.9029 8.64175 9.65 9.35352 7.14431 10.7771C4.72204 12.1532 3.5109 12.8413 2.53488 12.5647C2.13135 12.4503 1.76369 12.2332 1.46718 11.934C0.75 11.2104 0.75 9.80695 0.75 7C0.75 4.19305 0.75 2.78957 1.46718 2.06599C1.76369 1.76683 2.13135 1.54966 2.53488 1.43532C3.5109 1.15874 4.72204 1.84681 7.14431 3.22294C9.65 4.64648 10.9029 5.35825 11.1679 6.36552C11.2774 6.78129 11.2774 7.21871 11.1679 7.63448Z"
-                          stroke="#EB5B2A"
-                          strokeWidth="1.5"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                  {TravellerPhotos.length >= 1 && (
+                    <div className="flex-1 relative">
+                      <img
+                        src={TravellerPhotos[0]}
+                        alt="Travel video"
+                        className="w-full h-full object-cover rounded-xl"
+                      ></img>
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-[10px] bg-[#FFFFFFCC] rounded-full cursor-pointer">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="14"
+                          viewBox="0 0 12 14"
+                          fill="none"
+                        >
+                          <path
+                            d="M11.1679 7.63448C10.9029 8.64175 9.65 9.35352 7.14431 10.7771C4.72204 12.1532 3.5109 12.8413 2.53488 12.5647C2.13135 12.4503 1.76369 12.2332 1.46718 11.934C0.75 11.2104 0.75 9.80695 0.75 7C0.75 4.19305 0.75 2.78957 1.46718 2.06599C1.76369 1.76683 2.13135 1.54966 2.53488 1.43532C3.5109 1.15874 4.72204 1.84681 7.14431 3.22294C9.65 4.64648 10.9029 5.35825 11.1679 6.36552C11.2774 6.78129 11.2774 7.21871 11.1679 7.63448Z"
+                            stroke="#EB5B2A"
+                            strokeWidth="1.5"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
                     </div>
-                  </div>
+                  )}
                   <div className="flex-1 flex gap-2 overflow-hidden">
                     <div className="w-1/2 flex h-full flex-col gap-2">
-                      <div>
-                        <img
-                          src={travelPhoto1}
-                          alt="Travel Photo"
-                          className="w-full h-full object-cover rounded-xl"
-                        />
-                      </div>
-                      <div>
-                        <img
-                          src={travelPhoto2}
-                          alt="Travel Photo"
-                          className="w-full h-full object-cover rounded-xl"
-                        />
-                      </div>
+                      {TravellerPhotos.length >= 2 && (
+                        <div>
+                          <img
+                            src={TravellerPhotos[1]}
+                            alt="Travel Photo"
+                            className="w-full h-full object-cover rounded-xl"
+                          />
+                        </div>
+                      )}
+                      {TravellerPhotos.length >= 3 && (
+                        <div>
+                          <img
+                            src={TravellerPhotos[2]}
+                            alt="Travel Photo"
+                            className="w-full h-full object-cover rounded-xl"
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className="w-1/2 flex h-full flex-col gap-2">
-                      <div>
-                        <img
-                          src={travelPhoto3}
-                          alt="Travel Photo"
-                          className="w-full h-full object-cover rounded-xl"
-                        />
-                      </div>
-                      <div className={`w-full ${window.innerWidth <= 325 ? "h-[127px]" : window.innerWidth <= 380 ? "h-[151px]" : window.innerWidth <= 450 ? "h-[174.48px]" : "h-[151.48px]"} max-w-full relative`}>
-                        <img
-                          src={travelPhoto4}
-                          alt="Travel Photo"
-                          className="w-full h-full object-cover rounded-xl"
-                        />
-                        <div
-                          className={`absolute top-0 select-none text-white flex flex-col items-center justify-center gap-1 ${window.innerWidth <= 325 ? "h-[127px]" : window.innerWidth <= 450 ? "h-[174.48px]" : "h-[151.48px]"} w-full bottom-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer overflow-hidden`}
-                          onClick={handleShowImageLeft}
-                        >
-                          <div className="px-[10px] py-[12px] border-2 rounded-full">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="14"
-                              height="10"
-                              viewBox="0 0 14 10"
-                              fill="none"
-                            >
-                              <path
-                                d="M12.7503 5L0.750244 5"
-                                stroke="white"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <path
-                                d="M9.00027 8.75C9.00027 8.75 12.7502 5.98817 12.7502 4.99997C12.7503 4.01177 9.00024 1.25 9.00024 1.25"
-                                stroke="white"
-                                strokeWidth="1.5"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                          <span className="text-sm font-medium">Show more</span>
+                      {TravellerPhotos.length >= 4 && (
+                        <div>
+                          <img
+                            src={TravellerPhotos[3]}
+                            alt="Travel Photo"
+                            className="w-full h-full object-cover rounded-xl"
+                          />
                         </div>
-                      </div>
+                      )}
+                      {TravellerPhotos.length >= 5 && (
+                        <div
+                          className={`w-full ${
+                            window.innerWidth <= 325
+                              ? "h-[127px]"
+                              : window.innerWidth <= 380
+                              ? "h-[151px]"
+                              : window.innerWidth <= 450
+                              ? "h-[174.48px]"
+                              : "h-[151.48px]"
+                          } max-w-full relative`}
+                        >
+                          <img
+                            src={TravellerPhotos[4]}
+                            alt="Travel Photo"
+                            className="w-full h-full object-cover rounded-xl"
+                          />
+                          <div
+                            className={`absolute top-0 select-none text-white flex flex-col items-center justify-center gap-1 ${
+                              window.innerWidth <= 325
+                                ? "h-[127px]"
+                                : window.innerWidth <= 450
+                                ? "h-[174.48px]"
+                                : "h-[151.48px]"
+                            } w-full bottom-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer overflow-hidden`}
+                            onClick={handleShowImageLeft}
+                          >
+                            <div className="px-[10px] py-[12px] border-2 rounded-full">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="14"
+                                height="10"
+                                viewBox="0 0 14 10"
+                                fill="none"
+                              >
+                                <path
+                                  d="M12.7503 5L0.750244 5"
+                                  stroke="white"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <path
+                                  d="M9.00027 8.75C9.00027 8.75 12.7502 5.98817 12.7502 4.99997C12.7503 4.01177 9.00024 1.25 9.00024 1.25"
+                                  stroke="white"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </div>
+                            <span className="text-sm font-medium">
+                              Show more
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1096,7 +1088,12 @@ const Details = ({ details }) => {
           </div>
         </div>
         <div className="bg-white rounded-2xl max-h-fit max-w-full w-full">
-          <BookCard details={details} renderStars={renderStars} handleCheckAvailability={handleCheckAvailability} booking={booking}/>
+          <BookCard
+            details={details}
+            renderStars={renderStars}
+            handleCheckAvailability={handleCheckAvailability}
+            booking={booking}
+          />
         </div>
       </div>
       {/* Top rated reviews */}
@@ -1207,9 +1204,13 @@ const Details = ({ details }) => {
           </button>
         </div>
       </div>
-      {checkAvailabilityPopup && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center">
-        <CheckAvailability handleCheckAvailability={handleCheckAvailability}/>
-      </div>}
+      {checkAvailabilityPopup && (
+        <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2]">
+          <CheckAvailability
+            handleCheckAvailability={handleCheckAvailability}
+          />
+        </div>
+      )}
     </div>
   );
 };

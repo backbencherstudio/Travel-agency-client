@@ -206,7 +206,8 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
               className='text-[15px] text-[#0F1416]'
               htmlFor='mobileNumber'
             >
-              Mobile Number <span className='text-red-600'>*</span>
+              {/* Mobile Number <span className='text-red-600'>*</span> */}
+              Mobile Number
             </label>
             <input
               type='text'
@@ -232,7 +233,8 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
           {/* Address Line 1 */}
           <div className='flex flex-col'>
             <label className='text-[15px] text-[#0F1416]' htmlFor='address1'>
-              Address Line 1 <span className='text-red-600'>*</span>
+              {/* Address Line 1 <span className='text-red-600'>*</span> */}
+              Flat, House no., Building, Company, Apartment
             </label>
             <input
               type='text'
@@ -254,7 +256,8 @@ const ContactFrom = ({ checkoutData, onFormSubmit }) => {
           {/* Address Line 2 */}
           <div className='flex flex-col'>
             <label className='text-[15px] text-[#0F1416]' htmlFor='address2'>
-              Address Line 2
+              {/* Address Line 2 */}
+              Area, Colony, Street, Sector, Village
             </label>
             <input
               type='text'
