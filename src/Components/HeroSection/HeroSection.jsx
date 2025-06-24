@@ -4,19 +4,19 @@ import { FaChevronRight } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
 const HeroSection = ({ bgImg, pageName, links, description }) => {
-  const truncateDescription = (description, wordLimit) => {
-    if (!description) return { truncatedText: '', isTruncated: false }
-    const words = description.split(' ')
-    if (words.length > wordLimit) {
-      return {
-        truncatedText: words.slice(0, wordLimit).join(' ') + '...',
-        isTruncated: true
-      }
-    }
-    return { truncatedText: description, isTruncated: false }
-  }
+  // const truncateDescription = (description, wordLimit) => {
+  //   if (!description) return { truncatedText: '', isTruncated: false }
+  //   const words = description.split(' ')
+  //   if (words.length > wordLimit) {
+  //     return {
+  //       truncatedText: words.slice(0, wordLimit).join(' ') + '...',
+  //       isTruncated: true
+  //     }
+  //   }
+  //   return { truncatedText: description, isTruncated: false }
+  // }
 
-  const { truncatedText, isTruncated } = truncateDescription(description, 15)
+  // const { truncatedText, isTruncated } = truncateDescription(description, 15)
   return (
     <div>
       <div
@@ -26,13 +26,13 @@ const HeroSection = ({ bgImg, pageName, links, description }) => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
+
         }}
       >
         <div
           className='text-center flex items-center justify-center flex-col text-white'
           style={{
-            background:
-              'linear-gradient(0deg, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.60) 100%)',
+            background: `linear-gradient(0deg, rgba(0,0,0,0.6), rgba(0,0,0,0.6), url(${bgImg}) rgba(211, 211, 211, 1) center / cover no-repeat`,
             height: '100%',
             width: '100%'
           }}
@@ -45,9 +45,8 @@ const HeroSection = ({ bgImg, pageName, links, description }) => {
               >
                 <Link to={`${link.path}`}>{link.name}</Link>
                 <span
-                  className={`mx-2 ${
-                    index === links.length - 1 ? 'hidden' : ''
-                  }`}
+                  className={`mx-2 ${index === links.length - 1 ? 'hidden' : ''
+                    }`}
                 >
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -67,9 +66,9 @@ const HeroSection = ({ bgImg, pageName, links, description }) => {
               </div>
             ))}
           </h3>
-          <h4 className='pageTitle'>{pageName}</h4>
-          <p className='mt-4 text-lg px-6 sm:px-10 md:px-16 lg:max-w-5xl'>
-            {truncatedText}
+          <h4 className='pageTitle text-[60px]'>{pageName}</h4>
+          <p className='mt-4 text-lg px-6 sm:px-10 md:px-16 max-w-[768px] leading-[28.8px]'>
+            {description}
           </p>
         </div>
       </div>
