@@ -28,7 +28,7 @@ const Faqs = () => {
       <div className='w-full flex flex-col md:flex-row justify-between gap-2'>
         <div className='w-full md:w-5/12'>
           <div className='text-center md:text-left'>
-            <h2 className='text-3xl font-bold sm:text-4xl lg:text-4xl xl:text-5xl md:leading-tight text-[#252D3C]'>
+            <h2 className='text-3xl font-bold sm:text-4xl lg:text-4xl xl:text-5xl md:leading-tight text-[#1D1F2C]'>
               Frequently Asked Questions
             </h2>
             <div className='my-12'>

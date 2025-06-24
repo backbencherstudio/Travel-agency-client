@@ -56,7 +56,7 @@ const Destinations = () => {
         <div className="w-full px-5 xl:px-0">
             <div className="max-w-[1216px] mx-auto">
                 <div className="text-center max-w-xl mx-auto">
-                    <div className='text-2xl md:text-5xl font-bold text-center'>Destinations for you</div>
+                    <div className='text-2xl md:text-5xl font-bold text-center text-[#1D1F2C]'>Destinations for you</div>
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 items-start py-12 md:py-20">
                     {destinations?.map((destination, index) => (

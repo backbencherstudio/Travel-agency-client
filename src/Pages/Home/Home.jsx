@@ -8,6 +8,7 @@ import Destinations from '../../Components/Home/Destinations'
 import Blogs from '../../Components/Home/Blogs'
 import Faqs from '../../Components/Home/Faqs'
 import { Helmet } from 'react-helmet-async'
+import Gift from '../../Components/Home/Gift'
 
 const Home = () => {
   return (
@@ -34,12 +35,15 @@ const Home = () => {
         <Testimonials />
       </div>
       <div className='py-20 bg-[#F0F4F9]'>
-        <Destinations />
+        <Gift />
       </div>
       <div className='py-20'>
-        <Blogs />
+        <Destinations />
       </div>
       <div className='py-20 bg-[#F0F4F9]'>
+        <Blogs />
+      </div>
+      <div className='py-20'>
         <Faqs />
       </div>
     </div>

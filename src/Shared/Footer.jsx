@@ -32,13 +32,13 @@ const Footer = () => {
     <div className="max-w-[1216px] px-4 lg:px-6 xl:px-0 md:px-8 mx-auto text-white">
       <div className="flex flex-col lg:flex-row justify-between gap-8 xl:gap-12 py-20">
         <div className="flex flex-col gap-8">
-          <img src={logo} alt="" className="w-[264.055px] h-[56px]" />
+          <img src={logo} alt="" className=" object-contain w-52" />
           <div className="flex flex-col gap-6">
-            <p className="text-xl md:w-96">
+            <p className="text-xl font-normal md">
               Explore the world with us! Find inspiration, plan adventures, and
               make unforgettable memories every journey.
             </p>
-            <div className="flex justify-between py-2 pl-4 pr-2 border-[0.5px] border-[#8f8f8f] rounded-lg bg-[#1d3349] md:w-fit">
+            <div className="flex justify-between py-2 pl-4 pr-2 border-[0.5px] border-[#8f8f8f] rounded-lg bg-[#1d3349] w-full md:w-fit">
               <input
                 type="email"
                 placeholder="Enter your email"

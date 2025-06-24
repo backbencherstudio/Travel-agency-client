@@ -17,6 +17,7 @@ function TourCard({
   const navigate = useNavigate();
   // console.log("Tour Data : ", tour);
   // console.log("Tour id : ", tour.id);
+  const [isFavourite, setIsFavourite] = useState(false)
   // console.log("isPackageRoute", isPackageRoute)
   // Function to render stars based on rating
   const renderStars = (rating) => {
@@ -71,6 +72,36 @@ function TourCard({
           effect="blur"
           className="w-full h-full object-cover"
         />
+        {/* Special Offer Badge */}
+        {/* {tour?.is_special_offer && ( */}
+        <div className='absolute top-4 left-4 bg-orange-500 text-white px-3 py-[6px] rounded text-sm font-medium'>
+          Special Offer
+        </div>
+        {/* // )} */}
+        {/* Favourite Button */}
+        <button
+          className='absolute top-4 right-4 transition-colors duration-300'
+          onClick={(e) => {
+            e.preventDefault();
+            // Add your favourite logic here
+            setIsFavourite(!isFavourite)
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill={`${isFavourite ? 'currentColor' : 'none'}`}
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-red-500 transition-colors duration-300"
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </button>
       </div>
       <div className="flex-1 flex flex-col justify-between">
         <div className="p-4">
@@ -205,13 +236,16 @@ function TourCard({
           </div>
         </div>
       </div>
-      <div className="absolute top-3 right-0 w-full px-3 flex items-center justify-between">
-        <div>
-          {specialOffer[tour.id] && (
-            <div className="px-3 py-[6px] rounded text-xs text-white font-medium leading-[130%] bg-[#EB5B2A] cursor-pointer">
-              Special Offer
-            </div>
-          )}
+      <div className='px-4'>
+        <hr />
+      </div>
+      <div className='flex items-center justify-between p-4'>
+        <div className=''>
+          <div className='text-xs'>Starting From</div>
+          <div className='flex items-center gap-2'>
+            <div className='text-xl text-[#0E457D] font-bold'>${tour?.price}</div>
+            {tour?.price && <p className='text-xs text-[#0E457D] mt-1'>/ <span className='text-xs line-through '>{tour?.price * 1.5}</span></p>}
+          </div>
         </div>
         <div
           className="cursor-pointer"

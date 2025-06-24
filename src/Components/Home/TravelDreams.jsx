@@ -9,7 +9,7 @@ import image4 from '../../assets/img/travel/image-4.png';
 const TravelDreams = () => {
   return (
     <div className='max-w-[1216px] mx-auto px-4 xl:px-0'>
-        <div className='text-2xl md:text-5xl font-bold text-center'>Bringing Your Travel Dreams to Life</div>
+        <div className='text-2xl md:text-5xl font-bold text-center text-[#1D1F2C]'>Bringing Your Travel Dreams to Life</div>
         <div className=' flex flex-col md:flex-row items-center justify-start content-center self-center gap-12 md:gap-20 py-12 md:py-32'>
             <div className='flex flex-col gap-5 w-full md:w-6/12'>
                 <div className='text-xl md:text-[32px] leading-10 font-bold text-center md:text-left'>Why Choose <span className='text-orange-500'>Around 360?</span></div>

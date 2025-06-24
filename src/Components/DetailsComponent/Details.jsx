@@ -15,6 +15,7 @@ import { FaArrowRight } from "react-icons/fa6";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
+import ImageModal from "./ImageModal";
 
 const Details = ({
   details,
@@ -34,7 +35,63 @@ const Details = ({
   const [checkAvailabilityPopup, setCheckAvailabilityPopup] = useState(false);
   const [booking, setBooking] = useState(false);
   const [isMeetingOpen, setIsMeetingOpen] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('provider'); // 'provider' or 'traveler'
+  const [modalImageIndex, setModalImageIndex] = useState(0);
+  const [tripPlan, setTripPlan] = useState([
+    {
+      id: 1,
+      title: "Paraces",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
+      time: 45,
+      fee: "Free",
+    },
+    {
+      id: 2,
+      title: "Oasis Huacachina",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. ",
+      time: 45,
+      fee: "Free",
+    },
+    {
+      id: 3,
+      title: "Miraflores",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
+      time: 45,
+      fee: "Free",
+    },
+  ]);
 
+  const [topReviews, setTopReviews] = useState([
+    {
+      id: 1,
+      starts: 5,
+      userName: "Marpreet_s",
+      date: "Mar 2025",
+      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
+    },
+    {
+      id: 2,
+      starts: 5,
+      userName: "Marpreet_s",
+      date: "Mar 2025",
+      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
+    },
+    {
+      id: 1,
+      starts: 5,
+      userName: "Marpreet_s",
+      date: "Mar 2025",
+      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
+    },
+    {
+      id: 2,
+      starts: 5,
+      userName: "Marpreet_s",
+      date: "Mar 2025",
+      body: "Excellent experience exploring Dubai on a high speed boat — great tour guide who is also a good photographer!",
+    },
+  ]);
   useEffect(() => {
     setSelectedImage(details?.package_files[0]?.file_url);
   }, [details]);
@@ -194,7 +251,7 @@ const Details = ({
     nextArrow: <NextReview />,
     prevArrow: <PrevReview />,
   };
-
+  
   const displayTripPlan = (plan) => (
     <div
       key={plan.id}
@@ -308,7 +365,11 @@ const Details = ({
                 // src={testImg}
                 src={selectedImage}
                 alt={selectedImage}
-                className="w-full h-[300px] sm:h-[390px] sm:w-[700px] object-cover rounded-xl"
+                className="w-full h-[300px] sm:h-[390px] sm:w-[700px] object-cover rounded-xl cursor-pointer"
+                onClick={() => {
+                  setShowImageModal(true);
+                  setModalImageIndex(0);
+                }}
               />
               <div className="flex justify-end items-center gap-2">
                 {/* <LuMessageSquareMore /> */}
@@ -355,11 +416,14 @@ const Details = ({
                 ))}
               </div> */}
               <Slider {...setting}>
-                {details?.package_files?.map((planimg) => (
+                {details?.package_files?.map((planimg, index) => (
                   <div
                     key={planimg.id}
                     className="sm:w-[163px] w-[63px] sm:h-[163px] h-[60px] rounded-2xl overflow-hidden"
-                    onClick={() => handleShowImage(planimg?.file_url)}
+                    onClick={() => {
+                      setShowImageModal(true);
+                      setModalImageIndex(index);
+                    }}
                   >
                     <img
                       src={planimg?.file_url}
@@ -369,6 +433,18 @@ const Details = ({
                   </div>
                 ))}
               </Slider>
+              {showImageModal && (
+                <ImageModal
+                  showImageModal={showImageModal}
+                  setShowImageModal={setShowImageModal}
+                  images={details?.package_files}
+                  modalImageIndex={modalImageIndex}
+                  setModalImageIndex={setModalImageIndex}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
+                  details={details}
+                />
+              )}
               {/* <div
                 className="absolute select-none text-white flex flex-col items-center justify-center gap-1 w-[163px] h-[163px] top-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer"
                 onClick={handleShowImageLeft}
@@ -509,6 +585,21 @@ const Details = ({
                             </div>
                           </div> // Display only true values
                         ))}
+                      {details?.package_files?.length > 3 && (
+                        <button
+                          className="relative h-20 md:h-40 w-full"
+                          onClick={() => setShowImageModal(true)}
+                        >
+                          <img
+                            src={details?.package_files[3]?.file_url}
+                            alt="More images"
+                            className="h-20 md:h-40 w-full object-cover rounded-xl opacity-75"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-xl">
+                            <span className="text-white font-medium">+{details?.package_files?.length - 3} more</span>
+                          </div>
+                        </button>
+                      )}
                     </div>
                     <div className="flex-1 flex flex-col gap-4">
                       {Object.entries(includeExclude)

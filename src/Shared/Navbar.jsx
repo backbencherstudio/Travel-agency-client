@@ -144,7 +144,7 @@ const Navbar = () => {
                   <NavLink
                     to='/'
                     className={({ isActive }) =>
-                      isActive ? 'active !bg-transparent' : 'text-[#475467]'
+                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
                     }
                   >
                     {' '}
@@ -156,7 +156,7 @@ const Navbar = () => {
                   <NavLink
                     to='/tours'
                     className={({ isActive }) =>
-                      isActive ? 'active !bg-transparent' : 'text-[#475467]'
+                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
                     }
                   >
                     {' '}
@@ -168,7 +168,7 @@ const Navbar = () => {
                   <NavLink
                     to='/cruises'
                     className={({ isActive }) =>
-                      isActive ? 'active !bg-transparent' : 'text-[#475467]'
+                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
                     }
                   >
                     {' '}
@@ -180,7 +180,7 @@ const Navbar = () => {
                   <NavLink
                     to='/packages'
                     className={({ isActive }) =>
-                      isActive ? 'active !bg-transparent' : 'text-[#475467]'
+                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
                     }
                   >
                     {' '}
@@ -204,7 +204,7 @@ const Navbar = () => {
                   <NavLink
                     to='/blogs'
                     className={({ isActive }) =>
-                      isActive ? 'active !bg-transparent' : 'text-[#475467]'
+                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
                     }
                   >
                     {' '}
@@ -214,13 +214,15 @@ const Navbar = () => {
 
                 <li>
                   <div className='relative inline-block text-left'>
-                    <Link
+                    <NavLink
                       to='/contacts'
-                      className='inline-flex w-full justify-center gap-x-1.5 text-[#475467] transition'
+                      className= {({ isActive }) =>
+                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
+                    }
                       onClick={handleDropdownToggle('contact')}
                     >
                       Contact us
-                    </Link>
+                    </NavLink>
                   </div>
                 </li>
               </ul>
