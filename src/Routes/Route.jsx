@@ -183,7 +183,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: <MyProfile />,
       },
       {
         path: "/booking-history",
@@ -199,28 +199,28 @@ export const router = createBrowserRouter([
     element:<UserDashboardLayout/>,
     children:[
       {
-        path:'/user-dashboard',
+        path:'',
         element:<Dashboard/>
       },
       {
-        path:'/user-dashboard/tour-management',
+        path:'tour-management',
         element:<TourManagement/>,
       
       },
       {
-        path:'/user-dashboard/message',
+        path:'message',
         element:< Message/>
       },
       {
-        path:'/user-dashboard/wishlist',
+        path:'wishlist',
         element:< Wishlist/>
       },
       {
-        path:'/user-dashboard/offer',
+        path:'offer',
         element:<Offer/>
       },
       {
-        path:'/user-dashboard/profile',
+        path:' profile',
         element:<MyProfile/>
       },
         {

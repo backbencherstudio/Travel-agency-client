@@ -1,11 +1,14 @@
 import React from 'react'
+import OrangeMessageIcon from '../../assets/user-dashboard/icons/OrangeMessageIcon'
 
 const ReservationDetail = () => {
   return (
     <div className=' bg-white py-12 px-8 rounded-2xl'> 
        <div className=' flex justify-between'>
         <h2 className=' text-2xl font-semibold'>Reservation Detail</h2>
-        <button className=' text-[#EB5B2A] text-xs border border-[#EB5B2A] p-2 rounded-[4px]'>Message host </button>
+        <button className=' text-[#EB5B2A] text-xs border border-[#EB5B2A] p-2 rounded-[4px] flex gap-1'>
+          <OrangeMessageIcon/>
+          Message host </button>
        </div>
 
        <div className=' border border-[#EAECF0] rounded-lg p-4 mt-8'>
@@ -24,15 +27,16 @@ const ReservationDetail = () => {
                     </ul>
                 </div>
                 <div className=' w-[50%]'>
-                    <h3 className=' text-base font-semibold'>Collection Point Information</h3>
+                    <h3 className=' text-base font-semibold'>Reservation Information</h3>
                     <ul className=' space-y-5 mt-7'>
-                        <li ><p className=' text-[#475467] text-sm  '>Host Name <span className=' text-[#111827] font-medium'>Ralph Edwards</span></p></li>
-                        <li><p className=' text-[#475467] text-sm'>Package <span className=' text-[#111827] font-medium'>Sacred Temples of Bali</span></p></li>
-                        <li><p className=' text-[#475467] text-sm'>Office Time <span className=' text-[#111827] font-medium'>900 AM - 5:00 PM</span></p></li>
-                        <li><p className=' text-[#475467] text-sm'>Phone <span className=' text-[#111827] font-medium'>+880 1234 567890</span></p></li>
-                        <li><p className=' text-[#475467] text-sm'>Address <span className=' text-[#111827] font-medium'>123 Pickup Street, City, Country</span></p></li>
-                        <li><p className=' text-[#475467] text-sm'>Booking Date <span className=' text-[#111827] font-medium'>11  April 2025</span></p></li>
-                        <li><p className=' text-[#475467] text-sm'>Guests <span className=' text-[#111827] font-medium'>1</span></p></li>
+                        <li ><p className=' text-[#475467] text-sm  '>Package<span className=' text-[#111827] font-medium'>Sacred Temples of Bali </span></p></li>
+                        <li><p className=' text-[#475467] text-sm'>Tour Category <span className=' text-[#111827] font-medium'>N/A</span></p></li>
+                        <li><p className=' text-[#475467] text-sm'>Geofencing <span className=' text-[#111827] font-medium'>11  April 2025</span></p></li>
+                        <li><p className=' text-[#475467] text-sm'>Package Duration (Days) <span className=' text-[#111827] font-medium'>1 Day</span></p></li>
+                        <li><p className=' text-[#475467] text-sm'>Extra Service <span className=' text-[#111827] font-medium'>Travel Insurance,
+Room Upgrade</span></p></li>
+                        <li><p className=' text-[#475467] text-sm'>Total Amount <span className=' text-[#111827] font-medium'>$2500</span></p></li>
+                        <li><p className=' text-[#475467] text-sm'>Total Status <span className=' text-[#111827] font-medium'>Unpaid</span></p></li>
                          
                     </ul>
                 </div>
