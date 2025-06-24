@@ -1,0 +1,261 @@
+[33mcommit 63b1d86abe32ad80cb92813eb549229bfc469c09[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: e011290 e626dc6
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Tue Jun 24 10:03:51 2025 +0600
+
+    Merge branch 'main' of https://github.com/backbencherstudio/Travel-agency-client
+
+[33mcommit e626dc68ac8e8c4889d9aab82fbc4a4caf7cbbc7[m
+Author: backbencherstudio <bbsfullstack@gmail.com>
+Date:   Mon Jun 23 18:10:09 2025 +0600
+
+    Update .env
+
+[33mcommit a7ecd461ec1b595cfcea1b0d38dfc5213d85aad8[m
+Author: backbencherstudio <bbsfullstack@gmail.com>
+Date:   Mon Jun 23 18:06:44 2025 +0600
+
+    .env
+
+[33mcommit d73ba5b0a09c45146abb21d807f60d30cd854d73[m
+Merge: 88484c9 668b9f0
+Author: backbencherstudio <bbsfullstack@gmail.com>
+Date:   Mon Jun 23 17:50:45 2025 +0600
+
+    Merge pull request #25 from backbencherstudio/muhaimen
+    
+    Muhaimen
+
+[33mcommit 668b9f0b4495372771e0507edb6ac02ac202a68c[m
+Merge: 2c44dc7 7ee9c54
+Author: backbencherstudio <bbsfullstack@gmail.com>
+Date:   Mon Jun 23 17:49:55 2025 +0600
+
+    Merge pull request #24 from backbencherstudio/miraz
+    
+    Miraz
+
+[33mcommit 2c44dc75691e1f6a8ad61558c449fed967db5c5d[m
+Author: MD Abdul Muhaimen <amuhaimenpro829@gmail.com>
+Date:   Mon Jun 23 17:47:47 2025 +0600
+
+    dashboard and tour management page added
+
+[33mcommit 7ee9c544a540826ba33cab168772a3e1fd435135[m
+Author: Miraz Hossain <105309402+Miraz661@users.noreply.github.com>
+Date:   Mon Jun 23 17:41:19 2025 +0600
+
+    Payment page updated.
+
+[33mcommit 86ac4aeebbec6ba43bd1404f2d0de9f1f66b0566[m
+Author: Miraz Hossain <105309402+Miraz661@users.noreply.github.com>
+Date:   Mon Jun 23 08:01:40 2025 +0600
+
+    book tour page updated.
+
+[33mcommit e22d9b09bb8a61cec60d9d4b09a4b81ef28a3a10[m
+Author: MD Abdul Muhaimen <amuhaimenpro829@gmail.com>
+Date:   Sun Jun 22 17:06:58 2025 +0600
+
+    layout setup, sidebar and dashboard complete
+
+[33mcommit 29709b198c93a81c897ecf97787aea826fdf34e6[m
+Merge: 6398be1 10cda26
+Author: Miraz Hossain <105309402+Miraz661@users.noreply.github.com>
+Date:   Sun Jun 22 08:15:44 2025 +0600
+
+    Merge branch 'miraz' of https://github.com/backbencherstudio/Travel-agency-client into miraz
+
+[33mcommit 6398be1e41af28a8f293e598619a4220dcf4ead1[m
+Author: Miraz Hossain <105309402+Miraz661@users.noreply.github.com>
+Date:   Sun Jun 22 08:10:16 2025 +0600
+
+    Details changes.
+
+[33mcommit 10cda26fb457ad33cbf5efaf3ef36dac5d3ed449[m
+Author: Miraz Hossain <mirazh661@gmail.com>
+Date:   Sun Jun 22 00:23:13 2025 +0600
+
+    some issue fixed.
+
+[33mcommit 73600b3ec3d245619cd5ac17e682e0dc20474112[m
+Author: Miraz Hossain <mirazh661@gmail.com>
+Date:   Sat Jun 21 22:37:05 2025 +0600
+
+    Updated the img slider
+
+[33mcommit c12e4fb4f83a7e009a149409483dca870b0aaec8[m
+Author: Miraz Hossain <105309402+Miraz661@users.noreply.github.com>
+Date:   Sat Jun 21 17:15:56 2025 +0600
+
+    Tour details section completed.
+
+[33mcommit 30ddafdfde5a8ec0c747dd7f86d901044d25c1d6[m
+Author: Miraz Hossain <105309402+Miraz661@users.noreply.github.com>
+Date:   Sat Jun 21 08:54:54 2025 +0600
+
+    Tour page completed.
+
+[33mcommit 76050d16609764b6df87cee16c2bf9acdaa22cad[m
+Author: Miraz Hossain <105309402+Miraz661@users.noreply.github.com>
+Date:   Thu Jun 19 18:01:22 2025 +0600
+
+    Update the tourcard
+
+[33mcommit a2bc237a0ac2184ae802abdbc0a3be44e0875847[m
+Author: Miraz Hossain <105309402+Miraz661@users.noreply.github.com>
+Date:   Thu Jun 19 17:36:13 2025 +0600
+
+    Special offer and loved list added.
+
+[33mcommit e0112906f240496bcd4333cb4293292f30f5e836[m[33m ([m[1;31morigin/kowshick[m[33m, [m[1;32mkowshick[m[33m)[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Thu Jun 19 15:54:57 2025 +0600
+
+    updated
+
+[33mcommit 704a31adba6c6bb11e8be435f708ff97fc0d8721[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Thu Jun 12 15:18:24 2025 +0600
+
+    updated
+
+[33mcommit 1cd24f51333db29771e0deca8947fc7264479441[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Tue Jun 10 17:33:13 2025 +0600
+
+    working on tour details page
+
+[33mcommit 1e72cfc40d80d714d6ae4497c8fed6ff2d29f5f1[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Mon Jun 9 17:45:40 2025 +0600
+
+    working on image modal
+
+[33mcommit f37b69d9e56bc43b3c6c5d01daf9ff2d628bdca8[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Sat Jun 7 17:04:45 2025 +0600
+
+    updated image modal
+
+[33mcommit e54ac3c15608c89272d25685293333342f0d356e[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Wed Jun 4 17:10:24 2025 +0600
+
+    updated image modal
+
+[33mcommit e050e49b783d22e7d84cf736b39afcf752b2a97d[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Mon Jun 2 17:10:14 2025 +0600
+
+    updated
+
+[33mcommit e9f94104220d36cb8289ced8f03ab80904f89e8a[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Sat May 31 17:26:47 2025 +0600
+
+    updated the tour images with pop up show
+
+[33mcommit 51a66915850243f67d99ad716b6f286a55e01075[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Fri May 30 18:12:00 2025 +0600
+
+    updated
+
+[33mcommit 58193625c9807054baf70adbb9c20103e9ac19db[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Wed May 28 17:12:37 2025 +0600
+
+    updated
+
+[33mcommit 6134a8447f7c5e1dc711addc8ce9a2cf1ebf8798[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Tue May 27 17:24:25 2025 +0600
+
+    updated
+
+[33mcommit 8b1f7b173a759e6079a8da945754349f06607231[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Mon May 26 17:15:00 2025 +0600
+
+    updated
+
+[33mcommit c24f14a02f244e1b2aa9cfc780c73ac60da1cf16[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Sun May 25 17:16:28 2025 +0600
+
+    updated
+
+[33mcommit 0127bbaf09f5651e8121211c12d592f7aead4c7f[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Sat May 24 17:39:15 2025 +0600
+
+    updated footer and tour page
+
+[33mcommit 1ae2a61aa7450617f51937d191096f23f5a154d5[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Wed May 21 18:21:50 2025 +0600
+
+    added gift section
+
+[33mcommit 6a275931e5592f7df6695e38ca1d9de2ab1d324c[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Tue May 20 17:16:24 2025 +0600
+
+    updated the navbar
+
+[33mcommit 88484c95c906fe2409cb845263a818871bec23cf[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Mon Feb 3 16:36:45 2025 +0600
+
+    updated
+
+[33mcommit 539169b60f73276cec0237eca334b681c282189f[m
+Merge: 632b7ef 7288e5d
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Mon Feb 3 16:05:54 2025 +0600
+
+    Merge branch 'main' of https://github.com/backbencherstudio/Travel-agency-client
+
+[33mcommit 632b7efcd46f2c56291d1d9cadab3a4b26094f5a[m
+Author: KowshickChowdhury <kowshick1170@gmail.com>
+Date:   Mon Feb 3 16:05:50 2025 +0600
+
+    updated add and edit package
+
+[33mcommit 7288e5d17cec03e0f55149a4e4ddfc01adf4a85d[m
+Merge: 5b5d13a 6a01593
+Author: backbencherstudio <vcteambdc@gmail.com>
+Date:   Mon Feb 3 11:53:42 2025 +0600
+
+    Merge pull request #23 from backbencherstudio/tushar
+    
+    notification receive and when i click then redirect this page. otp pa…
+
+[33mcommit 6a01593dd30c97ec96f6a49d7aadd6387a7539bc[m[33m ([m[1;31morigin/tushar[m[33m)[m
+Author: tushar-h789 <tushar789imran@gmail.com>
+Date:   Mon Feb 3 11:51:19 2025 +0600
+
+    notification receive and when i click then redirect this page. otp page design fixed.
+
+[33mcommit 5b5d13a4ddccd73eadcc08dec654e093e04ed328[m
+Merge: ef34c58 e41fde5
+Author: Md. Anamul Hasan <88426699+mdanamulhasan201@users.noreply.github.com>
+Date:   Sat Feb 1 14:52:22 2025 +0600
+
+    Merge pull request #22 from backbencherstudio/anamul
+    
+    solve some bug
+
+[33mcommit e41fde552490f943bd466d8cae68ce312a0ee857[m[33m ([m[1;31morigin/anamul[m[33m)[m
+Author: mdanamulhasan201 <anamul15-3625@diu.edu.bd>
+Date:   Sat Feb 1 14:50:27 2025 +0600
+
+    solve some bug
+
+[33mcommit ef34c58c78dd62bb377ec71474e6967d67f96ac8[m
+Merge: b66b1b8 aad1d76
+Author: Md. Anamul Hasan <88426699+mdanamulhasan201@users.noreply.github.com>
+Date:   Sat Feb 1 14:33:59 2025 +0600
+
+    Merge pull 
