@@ -171,7 +171,7 @@ const TwoTabComponent = () => {
           key: "action",
           label: "Action",
           render: (row) => (
-            <Link>
+            <Link to="/user-dashboard/tour-management/reservation-details">
        <EyeIcon/>
             </Link>
           ),

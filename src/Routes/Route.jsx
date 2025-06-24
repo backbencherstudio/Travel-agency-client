@@ -70,6 +70,7 @@ import Message from "../Pages/User-dashboard/Message";
 import Wishlist from "../Pages/User-dashboard/Wishlist";
 import Offer from "../Pages/User-dashboard/Offer";
 import MyProfile from "../Pages/User-dashboard/MyProfile";
+import ReservationDetail from "../Pages/User-dashboard/ReservationDetail";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 export const router = createBrowserRouter([
@@ -182,7 +183,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: <MyProfile />,
       },
       {
         path: "/booking-history",
@@ -198,29 +199,35 @@ export const router = createBrowserRouter([
     element:<UserDashboardLayout/>,
     children:[
       {
-        path:'/user-dashboard',
+        path:'',
         element:<Dashboard/>
       },
       {
-        path:'/user-dashboard/tour-management',
-        element:<TourManagement/>
+        path:'tour-management',
+        element:<TourManagement/>,
+      
       },
       {
-        path:'/user-dashboard/message',
+        path:'message',
         element:< Message/>
       },
       {
-        path:'/user-dashboard/wishlist',
+        path:'wishlist',
         element:< Wishlist/>
       },
       {
-        path:'/user-dashboard/offer',
+        path:'offer',
         element:<Offer/>
       },
       {
-        path:'/user-dashboard/profile',
+        path:' profile',
         element:<MyProfile/>
       },
+        {
+            path:'/user-dashboard/tour-management/reservation-details',
+            element:<ReservationDetail/>
+          }
+      
     ]
 
   }
