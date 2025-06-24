@@ -21,12 +21,12 @@ import StaticMap from '../../Shared/StaticMap'
 const Details = ({
   details,
   includeExclude,
- 
+  tripPlan,
   meetingPointDetails,
   additionalInformation,
   mapImgPackage,
   TravellerPhotos,
-  
+  topReviews,
 }) => {
   const [selectedImage, setSelectedImage] = useState();
   const [activeIndex, setActiveIndex] = useState(null);
