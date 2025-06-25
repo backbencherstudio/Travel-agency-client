@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { debounce } from "lodash";
 
 import { CiSearch } from "react-icons/ci";
@@ -1206,7 +1206,7 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
               ) : (
                 <>
                   <div
-                    className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 transition-opacity duration-300 ${
+                    className={`grid grid-cols-1 ${location.pathname === "/tours"? "":"md:grid-cols-2 lg:grid-cols-2"} gap-6 transition-opacity duration-300 ${
                       pageLoading ? "opacity-50" : "opacity-100"
                     }`}
                   >

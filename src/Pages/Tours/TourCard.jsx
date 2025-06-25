@@ -63,9 +63,9 @@ function TourCard({
   return (
     <div
       key={tour?.id}
-      className="relative flex flex-col bg-white shadow-md border border-slate-200 rounded-[10px]"
+      className={`relative flex ${location.pathname === "/tours" ? "flex-row" : "flex-col"} bg-white shadow-md border border-slate-200 rounded-[10px]`}
     >
-      <div className="relative h-[350px] flex items-center justify-center lg:h-56 overflow-hidden text-white rounded-t-[10px]">
+      <div className={`relative ${location.pathname === "/tours" ? "w-[363px] h-full" : "h-[350px] lg:h-56"} flex items-center justify-center overflow-hidden text-white rounded-t-[10px] pl-4`}>
         <LazyLoadImage
           src={tour?.package_files?.[0]?.file_url || ""}
           alt={tour?.package_files?.[0]?.file_url || "Tour image"}
@@ -74,34 +74,7 @@ function TourCard({
         />
         {/* Special Offer Badge */}
         {/* {tour?.is_special_offer && ( */}
-        <div className='absolute top-4 left-4 bg-orange-500 text-white px-3 py-[6px] rounded text-sm font-medium'>
-          Special Offer
-        </div>
-        {/* // )} */}
-        {/* Favourite Button */}
-        <button
-          className='absolute top-4 right-4 transition-colors duration-300'
-          onClick={(e) => {
-            e.preventDefault();
-            // Add your favourite logic here
-            setIsFavourite(!isFavourite)
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill={`${isFavourite ? 'currentColor' : 'none'}`}
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-red-500 transition-colors duration-300"
-          >
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-        </button>
+
       </div>
       <div className="flex-1 flex flex-col justify-between">
         <div className="p-4">
@@ -151,7 +124,7 @@ function TourCard({
             <div className="flex gap-1 items-center">
               {renderStars(tour?.reviews[0]?.rating_value)}
             </div>
-            <div className="flex items-center">
+            {!location.pathname === "/tours" &&<div className="flex items-center">
               <div className="ms-1 text-sm font-medium text-gray-500">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -168,17 +141,17 @@ function TourCard({
                   />
                 </svg>
               </div>
-              <p className="ms-1 text-[14px] leading-[160%]  text-[#1D1F2C] dark:text-[#1D1F2C]">
+               <p className="ms-1 text-[14px] leading-[160%]  text-[#1D1F2C] dark:text-[#1D1F2C]">
                 {tour?.duration} days
               </p>
-            </div>
+            </div>}
           </div>
-          <div className="text-sm mt-1 text-[#EB5B2A]">
+          {!location.pathname === "/tours" && <div className="text-sm mt-1 text-[#EB5B2A]">
             Cancellation Policy{" "}
             <span className="text-xs text-[#49556D]">
               ({tour?.cancellation_policy?.policy})
             </span>
-          </div>
+          </div>}
         </div>
         <div>
           <div className="px-4">
@@ -208,7 +181,7 @@ function TourCard({
               className="flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white"
             >
               <Link to={`/tour/${tour.id}`}>
-                <div className="text-sm ">Book Now</div>
+                {!location.pathname === "/tours" ? <div className="text-sm ">Book Now</div>:<div className="text-sm ">View Details</div>}
               </Link>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -236,6 +209,34 @@ function TourCard({
           </div>
         </div>
       </div>
+      {specialOffer[tour.id] && <div className='absolute top-4 left-4 bg-orange-500 text-white px-3 py-[6px] rounded text-sm font-medium'>
+        Special Offer
+      </div>}
+      {/* // )} */}
+      {/* Favourite Button */}
+      <button
+        className='absolute top-4 right-4 transition-colors duration-300'
+        onClick={(e) => {
+          e.preventDefault();
+          // Add your favourite logic here
+          setIsFavourite(!isFavourite)
+        }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill={`${isFavourite ? 'currentColor' : 'none'}`}
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-red-500 transition-colors duration-300"
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </button>
     </div>
   );
 }

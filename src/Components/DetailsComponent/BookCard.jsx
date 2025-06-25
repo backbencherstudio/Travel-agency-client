@@ -40,7 +40,7 @@ const BookCard = ({
   const [checkInCheckOutDate, setCheckInCheckOutDate] = useState(null);
   const [reservetionConfirmation, setReservetionConfirmation] = useState(false);
   const [reserved, setReseved] = useState(false);
-  const [freeCancel,setFreeCancel] = useState(false);
+  const [freeCancel, setFreeCancel] = useState(false);
   // Access user from AuthContext
   const { user } = useContext(AuthContext);
 
@@ -212,8 +212,9 @@ const BookCard = ({
     }
   };
 
-  const handleSelectedDate = (date) => {
-    setSelectedDate(date);
+  const handleSelectedDate = (name,date) => {
+    console.log(selectedDate)
+    setSelectedDate(prev => ({...prev,[name]:date}));
   };
 
   const handleInfantTravelersAdding = () => {
@@ -236,7 +237,7 @@ const BookCard = ({
   }
 
 
-  const handleFreeCancellation=()=>{
+  const handleFreeCancellation = () => {
     setFreeCancel(false);
   }
 
@@ -270,118 +271,222 @@ const BookCard = ({
         </div>
         <div>
           {/* Date Picker */}
-          <div
-            className={`flex border ${booking ? "justify-between" : ""
-              } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
-          >
-            {!booking && (
-              <div
-                className="text-2xl cursor-pointer ml-2 w-fit"
-                onClick={handleOpenDatePicker}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="25"
-                  height="24"
-                  viewBox="0 0 25 24"
-                  fill="none"
+          <div className="flex gap-4">
+            <div
+              className={`flex-1 flex border ${booking ? "justify-between" : ""
+                } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
+            >
+              {!booking && (
+                <div
+                  className="text-2xl cursor-pointer ml-2 w-fit"
+                  onClick={handleOpenDatePicker}
                 >
-                  <path
-                    d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M3.25 9H21.25"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M8.25 2L8.25 5"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16.25 2V5"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
-                  <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
-                  <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
-                </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M3.25 9H21.25"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8.25 2L8.25 5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16.25 2V5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
+                  </svg>
+                </div>
+              )}
+              <div>
+                {!selectedDate ? (
+                  <div className="text-[16px] text-[#a6aaaccc]">Check-In</div>
+                ) : (
+                  <div>
+                    {selectedDate["start"]?.toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
+                  </div>
+                )}
               </div>
-            )}
-            <div>
-              {!selectedDate ? (
-                <div className="text-[16px] text-[#a6aaaccc]">Select Date</div>
-              ) : (
-                <div>
-                  {selectedDate.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })}
+              {booking && (
+                <div className="text-2xl ml-2 w-fit">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M3.25 9H21.25"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8.25 2L8.25 5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16.25 2V5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
+                  </svg>
                 </div>
               )}
             </div>
-            {booking && (
-              <div className="text-2xl ml-2 w-fit">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="25"
-                  height="24"
-                  viewBox="0 0 25 24"
-                  fill="none"
+            <div
+              className={`flex-1 flex border ${booking ? "justify-between" : ""
+                } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
+            >
+              {!booking && (
+                <div
+                  className="text-2xl cursor-pointer ml-2 w-fit"
+                  onClick={handleOpenDatePicker}
                 >
-                  <path
-                    d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M3.25 9H21.25"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M8.25 2L8.25 5"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16.25 2V5"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
-                  <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
-                  <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
-                </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M3.25 9H21.25"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8.25 2L8.25 5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16.25 2V5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
+                  </svg>
+                </div>
+              )}
+              <div>
+                {!selectedDate ? (
+                  <div className="text-[16px] text-[#a6aaaccc]">Check-Out</div>
+                ) : (
+                  <div>
+                    {selectedDate["end"]?.toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
+                  </div>
+                )}
               </div>
-            )}
+              {booking && (
+                <div className="text-2xl ml-2 w-fit">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M3.25 9H21.25"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8.25 2L8.25 5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16.25 2V5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
+                  </svg>
+                </div>
+              )}
 
-            {openDatePicker && (
-              <TourDatePicker
-                handleOpenDatePicker={handleOpenDatePicker}
-                handleSelectedDate={handleSelectedDate}
-                handleCheckInCheckOutDate={handleCheckInCheckOutDate}
-              />
-            )}
+              {openDatePicker && (
+                <TourDatePicker
+                  handleOpenDatePicker={handleOpenDatePicker}
+                  handleSelectedDate={handleSelectedDate}
+                  handleCheckInCheckOutDate={handleCheckInCheckOutDate}
+                />
+              )}
+            </div>
           </div>
 
-          {/* End Date Picker */}
+          {/* Number of Traveleres */}
           <div className="flex border mt-4 items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative">
             {!booking && (
               <div
@@ -615,7 +720,7 @@ const BookCard = ({
             <div></div>
           </div>
         )}
-        <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
+        {!location.pathname === "/tours" && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
           <div className="flex gap-[10px]">
             <div className="relative w-[24px] h-[24px] text-white flex gap-[10px]">
               <input
@@ -643,7 +748,7 @@ const BookCard = ({
             </div>
             <div>
               <p className="text-[#49556D] text-sm ">
-                <span className="text-[#0F1416] underline cursor-pointer text-nowrap font-bold text-sm leading-5" onClick={()=>setFreeCancel(true)}>
+                <span className="text-[#0F1416] underline cursor-pointer text-nowrap font-bold text-sm leading-5" onClick={() => setFreeCancel(true)}>
                   Free Cancellation
                 </span>{" "}
                 {cancelDesc}
@@ -682,7 +787,7 @@ const BookCard = ({
               {bookNowPayLaterDesc}
             </div>
           </div>
-        </div>
+        </div>}
         {reservetionConfirmation && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#00000099] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
           <ReservetionConfirmation handleReservetionConfirmation={handleReservetionConfirmation} />
         </div>}
