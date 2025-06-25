@@ -34,7 +34,7 @@ const UserDashboardLayout = () => {
           </div>
           <div className=' bg-[#061D35]'>
 
-            <Footer/>
+        
           </div>
         </div>
       </div>

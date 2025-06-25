@@ -321,7 +321,7 @@ const Navbar = () => {
                         className={`bg-white p-6 absolute z-50 flex flex-col top-full -right-6 mt-3 gap-5 border rounded-lg shadow popup w-60`}
                       >
                         <div className='w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block'></div>
-                        {(user?.type === 'admin' || user?.type === 'vendor') && (
+                        {(user?.type === 'admin' || user?.type === 'vendor' ) && (
                           <Link
                             to='/dashboard'
                             className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
@@ -342,6 +342,12 @@ const Navbar = () => {
                           className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
                         >
                           My Profile
+                        </Link>
+                        <Link
+                          to='/user-dashboard'
+                          className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
+                        >
+                         Dashboard
                         </Link>
 
                         <Link

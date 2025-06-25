@@ -6,7 +6,7 @@ import bgImage from "../../assets/img/gift/bg-icon.png";
 import moment from "moment";
 
 const Gift = () => {
-    const { homeData } = useTravelData();
+    // const { homeData } = useTravelData();
     // console.log('homeData', homeData);
     const giftCards = [
         {
