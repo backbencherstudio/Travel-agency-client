@@ -42,12 +42,16 @@ const TourDetails = () => {
   };
 
   const [includeExclude, setIncludeExclude] = useState({
-    "hotel+all_inclusive": true,
-    "breakfast,_lunch_&_dinner": true,
-    hotel_accommodation: true,
-    "sight-seen": false,
-    city_tour: false,
-    custom_duty: false,
+    "Hotel + All Inclusive": true,
+    "Breakfast, Lunch & Dinner": true,
+    "Hotel Accommodation": true,
+    "Sight Seen": false,
+    "City Tour": false,
+    "Custom Duty": false,
+    "Professional Tour Guide":true,
+    "Transfer Between Destinations":true,
+    "Personal Expenses":false,
+    "How to use premade UI kits":true,
   });
   const [tripPlan, setTripPlan] = useState([
     {
@@ -84,6 +88,14 @@ const TourDetails = () => {
     ["Saturday", "7:00 AM - 11:30 PM"],
     ["Sunday", "7:00 AM - 10:00 PM"],
   ];
+
+  const meetingData = {
+    meetingPointDetails:meetingPointDetails,
+    travelingCity:travelingCity,
+    startDate: startDate,
+    endDate: endDate,
+    operatingDayAndTime: operatingDayAndTime
+  }
 
   const additionalInformation = [
     "Not wheelchair accessible",
@@ -239,7 +251,7 @@ const TourDetails = () => {
                 details={tour}
                 includeExclude={includeExclude}
                 tripPlan={tripPlan}
-                meetingPointDetails={meetingPointDetails}
+                meetingData={meetingData}
                 additionalInformation={additionalInformation}
                 mapImgPackage={mapImgPackage}
                 TravellerPhotos={TravellerPhotos}

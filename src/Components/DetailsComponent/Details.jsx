@@ -22,7 +22,7 @@ const Details = ({
   details,
   includeExclude,
   tripPlan,
-  meetingPointDetails,
+  meetingData,
   additionalInformation,
   mapImgPackage,
   TravellerPhotos,
@@ -41,6 +41,8 @@ const Details = ({
   const [modalImageIndex, setModalImageIndex] = useState(0);
   const [cancelDesc, setCancelDesc] = useState("up to 24 hours before the experience starts (local time)");
   const [bookNowPayLaterDesc, setBookNowPayLaterDesc] = useState("")
+  const [showMoreInclude, setShowMoreInclude] = useState(3)
+  const [showMoreExclude, setShowMoreExclude] = useState(3)
   useEffect(() => {
     setSelectedImage(details?.package_files[0]?.file_url);
   }, [details]);
@@ -224,6 +226,24 @@ const Details = ({
     setCancelDesc("before 8:00 AM on Apr 28 (local time)")
     setBookNowPayLaterDesc("until Apr 27");
   };
+
+
+  const handleShowMoreIncludeExclude = () => {
+    setShowMoreInclude(prev => {
+      if(prev === 3){
+        return Object.entries(includeExclude).filter(([_, value]) => value).length
+      }else{
+        return 3
+      }
+    })
+    setShowMoreExclude(prev => {
+      if(prev === 3){
+        return Object.entries(includeExclude).filter(([_, value]) => !value).length
+      }else{
+        return 3
+      }
+    })
+  }
 
   return (
     <div className="pb-[80px]">
@@ -489,7 +509,7 @@ const Details = ({
                   <div className="flex justify-between text-[#0F1416]">
                     <div className="flex-1 flex flex-col gap-4">
                       {Object.entries(includeExclude)
-                        .filter(([_, value]) => value) // Only show included items
+                        .filter(([_, value]) => value).slice(0, showMoreInclude) // Only show included items
                         .map(([key], index) => (
                           <div
                             key={index}
@@ -519,23 +539,11 @@ const Details = ({
                               </svg>
                             </div>
                             <div className="text-sm sm:text-base">
-                              {key
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                )
-                                .join(" ")
-                                .split("+")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                )
-                                .join(" + ")}
+                              {key}
                             </div>
                           </div> // Display only true values
                         ))}
-                      {details?.package_files?.length > 3 && (
+                      {/* {details?.package_files?.length > 3 && (
                         <button
                           className="relative h-20 md:h-40 w-full"
                           onClick={() => setShowImageModal(true)}
@@ -549,11 +557,11 @@ const Details = ({
                             <span className="text-white font-medium">+{details?.package_files?.length - 3} more</span>
                           </div>
                         </button>
-                      )}
+                      )} */}
                     </div>
                     <div className="flex-1 flex flex-col gap-4">
                       {Object.entries(includeExclude)
-                        .filter(([_, value]) => !value) // Only show Excluded items
+                        .filter(([_, value]) => !value).slice(0,showMoreExclude) // Only show Excluded items
                         .map(([key], index) => (
                           <div
                             key={index}
@@ -576,23 +584,28 @@ const Details = ({
                               </svg>
                             </div>
                             <div className="text-sm sm:text-base">
-                              {key
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                )
-                                .join(" ")}
+                              {key}
                             </div>
                           </div> // Display only true values
                         ))}
                     </div>
                   </div>
-                  <div className="w-full text-center">
-                    <button className="w-fit cursor-pointer text-orange-500 text-sm">
-                      Show more (+5)
+                  {Object.entries(includeExclude).length > 6 && Object.entries(includeExclude).length != showMoreExclude + showMoreInclude && <div className="w-full text-center">
+                    <button
+                      className="w-fit cursor-pointer text-orange-500 text-sm"
+                      onClick={handleShowMoreIncludeExclude}
+                    >
+                      Show more ( +{Object.entries(includeExclude).length - 6} )
                     </button>
-                  </div>
+                  </div>}
+                  {Object.entries(includeExclude).length > 6 && Object.entries(includeExclude).length === showMoreExclude + showMoreInclude && <div className="w-full text-center">
+                    <button
+                      className="w-fit cursor-pointer text-orange-500 text-sm"
+                      onClick={handleShowMoreIncludeExclude}
+                    >
+                      Show Less
+                    </button>
+                  </div>}
                 </div>
               )}
             </div>
@@ -745,7 +758,7 @@ const Details = ({
                           </div>
                           <div className="flex flex-col gap-[30px]">
                             <p className="text-[14px] leading-[160%] text-[#49556D]">
-                              {meetingPointDetails}
+                              {meetingData.meetingPointDetails}
                             </p>
                             <div className="flex flex-col gap-2">
                               <div className="flex gap-2 items-center">
@@ -770,7 +783,7 @@ const Details = ({
                               <div className="text-[14px] leading-[160%] text-[#49556D]">
                                 Please arrive to this meeting point it you
                                 select the option without transportation from
-                                {travelingCity} City.
+                                {meetingData.travelingCity} City.
                               </div>
                             </div>
                           </div>
@@ -836,12 +849,12 @@ const Details = ({
                           Opening hours
                         </div>
                         <p className="text-sm font-medium text-[#0F1416]">
-                          {startDate} - {endDate}
+                          {meetingData.startDate} - {meetingData.endDate}
                         </p>
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 text-sm">
-                      {operatingDayAndTime?.map((day) => {
+                      {meetingData.operatingDayAndTime?.map((day) => {
                         const weekday = day[0]?.split("-");
                         return (
                           <h1 className="flex gap-1">
@@ -934,7 +947,13 @@ const Details = ({
                 </div>
                 <div className="flex flex-col items-center gap-[30px]">
                   <div className="w-full h-[180px] sm:h-[270px] rounded-2xl">
-                    <StaticMap location="Dhaka, Bangladesh" />
+                    {/* <StaticMap location="Dhaka, Bangladesh" /> */}
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2367.469642881246!2d90.39869322734249!3d23.778121523255784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c76925717c2d%3A0xcb33cf344a80553!2sMohakhali%20Bus%20Stop!5e0!3m2!1sen!2sbd!4v1734754290833!5m2!1sen!2sbd"
+                      style={{ border: 0, width: "100%", height: "100%" }}
+                      allowFullScreen=""
+                      loading="lazy"
+                    />
                   </div>
                   <button className="px-[70px] sm:px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]">
                     Show on map
@@ -1001,7 +1020,7 @@ const Details = ({
                 </div>
               )}
               <div className="pb-[80px]">
-                <h3 className="pb-5">Traveler Photos:</h3>
+                <h3 className="pb-5 text-[18px] font-semibold text-[#0F1416]">Traveler Photos:</h3>
                 <div className="flex flex-col sm:flex-row gap-2 relative">
                   {TravellerPhotos.length >= 1 && (
                     <div className="flex-1 relative">
@@ -1062,12 +1081,12 @@ const Details = ({
                       {TravellerPhotos.length >= 5 && (
                         <div
                           className={`w-full ${window.innerWidth <= 325
-                              ? "h-[127px]"
-                              : window.innerWidth <= 380
-                                ? "h-[151px]"
-                                : window.innerWidth <= 450
-                                  ? "h-[174.48px]"
-                                  : "h-[151.48px]"
+                            ? "h-[127px]"
+                            : window.innerWidth <= 380
+                              ? "h-[151px]"
+                              : window.innerWidth <= 450
+                                ? "h-[174.48px]"
+                                : "h-[151.48px]"
                             } max-w-full relative`}
                         >
                           <img
@@ -1077,10 +1096,10 @@ const Details = ({
                           />
                           <div
                             className={`absolute top-0 select-none text-white flex flex-col items-center justify-center gap-1 ${window.innerWidth <= 325
-                                ? "h-[127px]"
-                                : window.innerWidth <= 450
-                                  ? "h-[174.48px]"
-                                  : "h-[151.48px]"
+                              ? "h-[127px]"
+                              : window.innerWidth <= 450
+                                ? "h-[174.48px]"
+                                : "h-[151.48px]"
                               } w-full bottom-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer overflow-hidden`}
                             onClick={handleShowImageLeft}
                           >
