@@ -1148,7 +1148,7 @@ const Details = ({
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl max-h-fit max-w-full w-full sticky top-20">
+        <div className="bg-white rounded-2xl max-h-fit max-w-full w-full">
           <BookCard
             details={details}
             renderStars={renderStars}
