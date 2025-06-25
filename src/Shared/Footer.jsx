@@ -42,7 +42,7 @@ const Footer = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-[#1d3349] focus:outline-none text-base"
+                className="bg-[#1d3349] focus:outline-none text-base w-[150px] sm:w-fit"
               />
               <div className="flex gap-[6px] px-4 py-2 bg-[#0E457D] items-center rounded-md">
                 <button className="text-sm">Sign Up</button>
@@ -75,7 +75,7 @@ const Footer = () => {
         {/* Links */}
         <div className="flex flex-col gap-6">
           <div className="text-base font-bold">Quick Links</div>
-          <div className="flex flex-col gap-3">
+          <div className="flex sm:flex-col flex-wrap gap-3">
             <Link to="/" onClick={handleLinkClick} className="text-base hover:text-orange-500">
               Home
             </Link>
@@ -153,7 +153,7 @@ const Footer = () => {
         {/* social links */}
         <div className="flex flex-col gap-6 ">
           <div className="text-base font-bold">Follow Us on</div>
-          <div className="flex flex-row gap-3">
+          <div className="flex flex-row flex-wrap gap-3">
             {/* ===============================*/}
 
             {links.map((link) => (

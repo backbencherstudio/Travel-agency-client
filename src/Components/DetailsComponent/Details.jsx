@@ -947,7 +947,13 @@ const Details = ({
                 </div>
                 <div className="flex flex-col items-center gap-[30px]">
                   <div className="w-full h-[180px] sm:h-[270px] rounded-2xl">
-                    <StaticMap location="Dhaka, Bangladesh" />
+                    {/* <StaticMap location="Dhaka, Bangladesh" /> */}
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2367.469642881246!2d90.39869322734249!3d23.778121523255784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c76925717c2d%3A0xcb33cf344a80553!2sMohakhali%20Bus%20Stop!5e0!3m2!1sen!2sbd!4v1734754290833!5m2!1sen!2sbd"
+                      style={{ border: 0, width: "100%", height: "100%" }}
+                      allowFullScreen=""
+                      loading="lazy"
+                    />
                   </div>
                   <button className="px-[70px] sm:px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]">
                     Show on map

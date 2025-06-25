@@ -13,7 +13,7 @@ function TourCard({
   specialOffer,
   specialPrice = 300,
 }) {
-  console.log("Rating : ", tour?.reviews[0]?.rating_value);
+  console.log("Rating : ", tour);
   const navigate = useNavigate();
   // console.log("Tour Data : ", tour);
   // console.log("Tour id : ", tour.id);
@@ -63,9 +63,9 @@ function TourCard({
   return (
     <div
       key={tour?.id}
-      className={`relative flex ${location.pathname === "/tours" ? "flex-row" : "flex-col"} bg-white shadow-md border border-slate-200 rounded-[10px]`}
+      className={`relative flex ${location.pathname === "/cruise" ? "flex-row" : "flex-col"} bg-white shadow-md border border-slate-200 rounded-[10px]`}
     >
-      <div className={`relative ${location.pathname === "/tours" ? "w-[363px] h-full" : "h-[350px] lg:h-56"} flex items-center justify-center overflow-hidden text-white rounded-t-[10px] pl-4`}>
+      <div className={`relative ${location.pathname === "/cruise" ? "w-[363px] h-full" : "h-[350px] lg:h-56"} flex items-center justify-center overflow-hidden text-white rounded-t-[10px] pl-4`}>
         <LazyLoadImage
           src={tour?.package_files?.[0]?.file_url || ""}
           alt={tour?.package_files?.[0]?.file_url || "Tour image"}
@@ -124,7 +124,7 @@ function TourCard({
             <div className="flex gap-1 items-center">
               {renderStars(tour?.reviews[0]?.rating_value)}
             </div>
-            {!location.pathname === "/tours" &&<div className="flex items-center">
+            {!location.pathname === "/cruise" &&<div className="flex items-center">
               <div className="ms-1 text-sm font-medium text-gray-500">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -146,7 +146,7 @@ function TourCard({
               </p>
             </div>}
           </div>
-          {!location.pathname === "/tours" && <div className="text-sm mt-1 text-[#EB5B2A]">
+          {!location.pathname === "/cruise" && <div className="text-sm mt-1 text-[#EB5B2A]">
             Cancellation Policy{" "}
             <span className="text-xs text-[#49556D]">
               ({tour?.cancellation_policy?.policy})
@@ -181,7 +181,7 @@ function TourCard({
               className="flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white"
             >
               <Link to={`/tour/${tour.id}`}>
-                {!location.pathname === "/tours" ? <div className="text-sm ">Book Now</div>:<div className="text-sm ">View Details</div>}
+                {!location.pathname === "/cruise" ? <div className="text-sm ">Book Now</div>:<div className="text-sm ">View Details</div>}
               </Link>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

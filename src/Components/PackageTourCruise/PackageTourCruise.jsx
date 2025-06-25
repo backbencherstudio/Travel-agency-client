@@ -4,6 +4,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { debounce } from "lodash";
 
+// Cruise static data import 
+
+import cruiseStaticImg1 from '../../assets/img/Cruise/1e1ca89ad55d000b109e743750ace299463279cc.png'
+import cruiseStaticImg2 from '../../assets/img/Cruise/068f28853c58e59479878a07463c8614ac98ac15.png'
+import cruiseStaticImg3 from '../../assets/img/Cruise/2484b60572465720a589cb067a0723e5db769f21.png'
+import cruiseStaticImg4 from '../../assets/img/Cruise/05782a48d1257cc2084142163058caaccdb7162a.png'
+import cruiseStaticImg5 from '../../assets/img/Cruise/c6adfa06e79cf5e25bc739760271e8730d17ac89.png'
+import cruiseStaticImg6 from '../../assets/img/Cruise/d4223c0b7dd135299f3459c81dc255a2f122e7e1.png'
+import cruiseStaticImg7 from '../../assets/img/Cruise/dc0901dad75f9c9c22669c21aa047618cc608ae9.png'
+
 import { CiSearch } from "react-icons/ci";
 import { FaRegCalendarAlt, FaStar } from "react-icons/fa";
 // import package1 from "../../assets/img/travel-packages/package-1.png";
@@ -16,10 +26,108 @@ import { useLocation } from "react-router-dom";
 import { useTravelData } from "../../Context/TravelDataContext/TravelDataContext";
 import ClientLanguageApis from "../../Apis/clientApi/ClientLanguageApis";
 import TourCard from "../../Pages/Tours/TourCard";
+// import { duration } from "moment";
 
 function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
+
+  // Static data for cruise testing purpose
+
+  const cruiseData = {
+    cancellation_policy: {
+      description: "early check-in & late check-out are subject to availability and may incur additional charges.",
+      id: "cm6j5xs6u000opj7pjrjy67y4",
+      policy: "Check-in & Check-out"
+    },
+    created_at: "2025-02-01T08:37:27.072Z",
+    descriiption: "Bali is a paradise that promises breathtaking scenery, rich cultural heritage, and unforgettable experiences. From serene beaches and ancient temples to majestic waterfalls hidden in lush landscapes, Bali has something for every traveler. This guide takes you through the must-see spots in Bali for an adventure you'll treasure forever.",
+    id: "cm6lxwpfj0005pjvk0553err9",
+    duration: 1,
+    max_capacity: 1,
+    min_capacity: 1,
+    name: "Sacred Temples of Bali",
+    package_destinations: [
+      {
+        description: {
+          country: {
+            id: '20', name: "Bangladesh"
+          },
+          id: "cm5dgnqhu0001wvyowqat60gc",
+          name: "Dhaka"
+        }
+      }
+    ],
+    package_files:[
+      {
+        file:cruiseStaticImg1,
+        file_url: "https://backend.wepaser.com/public/storage/package/a59cfdf025c47e881cc13f5eab443c85image (1).png",
+        id:"cm6lxwpfq0006pjvkw1wdu3x3"
+      },
+      {
+        file:cruiseStaticImg2,
+        file_url: "https://backend.wepaser.com/public/storage/package/72cf98b76b77fe44f5fc9810e6fff492aimage (2).png",
+        id:"cm6lxwpfq0007pjvkpzesaajw"
+      },
+      {
+        file:cruiseStaticImg3,
+        file_url: "https://backend.wepaser.com/public/storage/package/6c28c8d240b89295c837ce109105eabbimage (3).png",
+        id:"cm6lxwpfq0008pjvkdokgurnq"
+      },
+      {
+        file:cruiseStaticImg4,
+        file_url: "https://backend.wepaser.com/public/storage/package/10793ea227ebf12c74ede2978e3533eccimage (4).png",
+        id:"cm6lxwpfq0009pjvkdsd3nuvh"
+      },
+      {
+        file:cruiseStaticImg5,
+        file_url: "https://backend.wepaser.com/public/storage/package/d1749499b87c86510b501233551e26fdaimage (5).png",
+        id:"cm6lxwpfq000apjvk9nw6e5k6"
+      },
+      {
+        file:cruiseStaticImg6,
+        file_url: "https://backend.wepaser.com/public/storage/package/3d7ff63b2495f4d105f22bc210423d1597tony2.jpg",
+        id:"cm6owioqe0000pjdfnuek27m7"
+      }
+    ],
+    package_languages:[
+      {
+        language:{
+          id:"cm6j5tdi8000epj7pygs823vp",
+          name:"English"
+        }
+      }
+    ],
+    package_traveller_types:[
+      {
+        traveller_type:{
+          id: "cm6j5v7oz000jpj7p51gcx1wp",
+          type: "Solo travelers (if you only accept groups or families)"
+        }
+      }
+    ],
+    package_trip_plans: [
+      {
+        descriiption: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. ",
+        id: "cm6lxwpfy000cpjvkprzhz7sp",
+        package_trip_plan_images:[
+          {
+            id: "cm6lxwpg2000dpjvkc8meeg8k",
+            image: "9af24fda1077cb1bf2808227a15560bf8Rectangle 34624278.png"
+          }
+        ]
+      }
+    ],
+    price: "100",
+    type: "tour",
+    updated_at : "2025-02-03T10:21:51.915Z",
+    user_id: "cm6d8tp4w0000wvm8vc95wgsr"
+  }
+
+
+
+
+
   const location = useLocation();
-  console.log("PackageTourCruise : ", location.pathname);
+  // console.log("PackageTourCruise : ", location.pathname);
   const { destinations, cancellationPolicies } = useTravelData();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -63,7 +171,7 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
     "guesthouse",
     "houseboat",
   ]);
-  console.log("selectedResidences : ", selectedResidences);
+  // console.log("selectedResidences : ", selectedResidences);
   const [selectedMealPlans, setSelectedMealPlans] = useState({
     breakfast: false,
     allInclusive: false,
@@ -240,20 +348,20 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
 
       // Make API call with filters
       const res = await ClientPackageApis.all(
-        `${
-          isCruiseRoute
-            ? "cruise"
-            : isPackageRoute
+        `${isCruiseRoute
+          ? "cruise"
+          : isPackageRoute
             ? "package"
             : isSearchResultsRoute
-            ? ""
-            : "tour"
+              ? ""
+              : "tour"
         }`,
         filterParams
       );
       // console.log('filterParams', filterParams)
 
       if (res.success) {
+        console.log(res?.data)
         setPackages(res?.data);
         getPackagesData(res?.data);
       }
@@ -373,7 +481,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
       ...lovedPackagesList,
     }));
   }, []);
-  console.log("Current Items : ", currentItems);
+  // console.log("Current Items : ", currentItems);
+
 
   return (
     <div className="max-w-[1200px] mx-auto">
@@ -692,11 +801,10 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
                           {[...Array(5)].map((_, index) => (
                             <FaStar
                               key={index}
-                              className={`text-xl ${
-                                index < stars
+                              className={`text-xl ${index < stars
                                   ? "text-[#ffb127]"
                                   : "text-[#a6aaac33]"
-                              }`}
+                                }`}
                             />
                           ))}
                         </div>
@@ -738,9 +846,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
 
             {isCancellationOpen && (
               <div
-                className={`${
-                  cancellationPolicies.length ? "mt-4" : ""
-                } flex flex-col gap-4`}
+                className={`${cancellationPolicies.length ? "mt-4" : ""
+                  } flex flex-col gap-4`}
               >
                 <div className="flex flex-col items-start gap-3">
                   {cancellationPolicies.map((policy) => (
@@ -821,9 +928,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
 
             {isDestinationOpen && (
               <div
-                className={`flex flex-col gap-4 ${
-                  destinations.length ? "mt-4" : ""
-                }`}
+                className={`flex flex-col gap-4 ${destinations.length ? "mt-4" : ""
+                  }`}
               >
                 {destinations?.map((destination) => (
                   <div
@@ -902,9 +1008,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
 
             {isResidenceOpen && (
               <div
-                className={`flex flex-col gap-4 ${
-                  availableResidences.length ? "mt-4" : ""
-                }`}
+                className={`flex flex-col gap-4 ${availableResidences.length ? "mt-4" : ""
+                  }`}
               >
                 {availableResidences.map((residence) => (
                   <div className="relative flex items-center gap-3">
@@ -1206,9 +1311,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
               ) : (
                 <>
                   <div
-                    className={`grid grid-cols-1 ${location.pathname === "/tours"? "":"md:grid-cols-2 lg:grid-cols-2"} gap-6 transition-opacity duration-300 ${
-                      pageLoading ? "opacity-50" : "opacity-100"
-                    }`}
+                    className={`grid grid-cols-1 ${location.pathname === "/cruise" ? "" : "md:grid-cols-2 lg:grid-cols-2"} gap-6 transition-opacity duration-300 ${pageLoading ? "opacity-50" : "opacity-100"
+                      }`}
                   >
                     {pageLoading ? (
                       // Show loading skeleton or spinner while changing pages

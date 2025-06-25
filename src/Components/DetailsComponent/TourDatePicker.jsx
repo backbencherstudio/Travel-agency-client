@@ -112,7 +112,8 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
     setCheckIn(null)
     setCheckOut(null)
     setSelectedDate(null)
-    handleSelectedDate(null)
+    handleSelectedDate("start",null)
+    handleSelectedDate("end",null)
     setCheckInCheckOut(true)
   }
 
@@ -128,17 +129,18 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
   }
 
   return (
-    <div className={`absolute top-[58px] right-1/2 md:right-0 translate-x-1/2 md:translate-x-0 bg-white z-[20] shadow-2xl lg:shadow-md rounded-3xl p-[10px] lg:p-[32px] w-[320px] ${location.pathname.split("/")[1] === "tours" ? "lg:w-[1000px] xl:w-[1125px]" : "lg:w-[700px]"} flex flex-col gap-8`}>
+    <div className={`absolute top-[58px] right-1/2 md:right-0 translate-x-1/2 md:translate-x-0 bg-white z-[20] shadow-2xl lg:shadow-md rounded-3xl p-[10px] lg:p-[32px] w-[320px] ${location.pathname.split("/")[1] === "cruise" ? "lg:w-[1000px] xl:w-[1125px]" : "lg:w-[700px]"} md:w-[450px] flex-col gap-8 flex`}>
       <div className="flex flex-col lg:flex-row items-center justify-between gap-2 lg:gap-0 w-full">
         <div className="flex flex-col lg:gap-3">
-          <div className="text-[20px] text-[#0F1416] font-semibold">{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() + 1 : 0}`} Days</div>
-          <span className="text-[16px] text-[#070707]">{checkIn ? checkIn.toLocaleDateString('en-US', {
+          {location.pathname.split("/") [1] === "tours" && <div className="text-[20px] text-[#0F1416] text-center lg:text-start font-semibold">{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() + 1 : 0}`} Days</div>}
+          {location.pathname.split("/") [1] === "cruise" && <div className="text-[20px] text-[#0F1416] text-center lg:text-start font-semibold">{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() + 1 : 0}`} Days/{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() : 0}`} Night</div>}
+          <span className="text-[16px] text-[#070707] text-center">{checkIn ? checkIn.toLocaleDateString('en-US', {
             month: 'short',
             day: '2-digit',
             year: 'numeric'
           }) : "Select Date"}</span>
         </div>
-        <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 w-full md:w-fit">
+        <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 w-full lg:w-fit">
           <div className={`flex items-center justify-between px-4 py-3 border ${checkInCheckOut ? "border-orange-500" : "border-[#D2D2D5]"} rounded-xl lg:translate-x-2 bg-white cursor-default`} onClick={handleCheckIn}>
             <div>
               <h3 className="text-[#0F1416] text-[14px] font-medium">Check-In</h3>
@@ -167,8 +169,8 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
           </div>
         </div>
       </div>
-      <div className={`flex ${location.pathname.split("/")[1] === "tours" ? "gap-20":""}`}>
-        <div className="flex-1 flex flex-col justify-between">
+      <div className={`flex ${location.pathname.split("/")[1] === "cruise" ? "gap-20":""}`}>
+        <div className="flex-1 lg:flex flex-col justify-between">
           <div className="flex items-center justify-between text-base lg:text-[22.8px]">
             <button onClick={handlePrevMonth} className="text-[#1A1A1A9C] w-[34.15px] h-[34.15px] lg:w-[54.15px] lg:h-[54.15px] flex items-center justify-center">
               <FaChevronLeft />
@@ -215,7 +217,7 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
             <div className="bg-[#0E457D] text-white px-[18px] lg:px-[24px] py-[6px] lg:py-[10px] rounded-xl cursor-pointer" onClick={() => { handleOpenDatePicker(); handleCheckInCheckOutDate([checkIn, checkOut]) }}>Close</div>
           </div>
         </div>
-        {location.pathname.split("/")[1] === "tours" && <div className="flex-1 flex flex-col justify-between">
+        {location.pathname.split("/")[1] === "cruise" && <div className="flex-1 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between text-base lg:text-[22.8px]">
               <button onClick={handlePrevMonth} className="text-[#1A1A1A9C] w-[34.15px] h-[34.15px] lg:w-[54.15px] lg:h-[54.15px] flex items-center justify-center">

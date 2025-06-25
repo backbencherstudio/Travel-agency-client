@@ -152,7 +152,9 @@ const BookCard = ({
   };
 
   const handleCheckInCheckOutDate = (data) => {
-    setCheckInCheckOutDate(data);
+    if (data[0]) {
+      setCheckInCheckOutDate(data)
+    }
   };
 
   const handleStartDateChange = (date) => {
@@ -212,9 +214,9 @@ const BookCard = ({
     }
   };
 
-  const handleSelectedDate = (name,date) => {
+  const handleSelectedDate = (name, date) => {
     console.log(selectedDate)
-    setSelectedDate(prev => ({...prev,[name]:date}));
+    setSelectedDate(prev => ({ ...prev, [name]: date }));
   };
 
   const handleInfantTravelersAdding = () => {
@@ -271,7 +273,7 @@ const BookCard = ({
         </div>
         <div>
           {/* Date Picker */}
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-col sm:flex-row relative">
             <div
               className={`flex-1 flex border ${booking ? "justify-between" : ""
                 } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
@@ -320,10 +322,10 @@ const BookCard = ({
                 </div>
               )}
               <div>
-                {!selectedDate ? (
-                  <div className="text-[16px] text-[#a6aaaccc]">Check-In</div>
+                {!selectedDate["start"] ? (
+                  <div className="text-sm sm:text-[16px] text-[#a6aaaccc]">Check-In</div>
                 ) : (
-                  <div>
+                  <div className="text-sm sm:text-base">
                     {selectedDate["start"]?.toLocaleDateString("en-US", {
                       weekday: "long",
                       month: "short",
@@ -373,8 +375,16 @@ const BookCard = ({
                   </svg>
                 </div>
               )}
+              
             </div>
-            <div
+            {openDatePicker && (
+                <TourDatePicker
+                  handleOpenDatePicker={handleOpenDatePicker}
+                  handleSelectedDate={handleSelectedDate}
+                  handleCheckInCheckOutDate={handleCheckInCheckOutDate}
+                />
+              )}
+            {location.pathname.split("/")[1] === "cruise" && <div
               className={`flex-1 flex border ${booking ? "justify-between" : ""
                 } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
             >
@@ -422,10 +432,10 @@ const BookCard = ({
                 </div>
               )}
               <div>
-                {!selectedDate ? (
-                  <div className="text-[16px] text-[#a6aaaccc]">Check-Out</div>
+                {!selectedDate["end"] ? (
+                  <div className="text-sm sm:text-[16px] text-[#a6aaaccc]">Check-Out</div>
                 ) : (
-                  <div>
+                  <div className="text-sm sm:text-base">
                     {selectedDate["end"]?.toLocaleDateString("en-US", {
                       weekday: "long",
                       month: "short",
@@ -475,15 +485,7 @@ const BookCard = ({
                   </svg>
                 </div>
               )}
-
-              {openDatePicker && (
-                <TourDatePicker
-                  handleOpenDatePicker={handleOpenDatePicker}
-                  handleSelectedDate={handleSelectedDate}
-                  handleCheckInCheckOutDate={handleCheckInCheckOutDate}
-                />
-              )}
-            </div>
+            </div>}
           </div>
 
           {/* Number of Traveleres */}
@@ -518,13 +520,13 @@ const BookCard = ({
 
             <div className="flex justify-between items-center w-full">
               {showTravelerMenu ? (
-                <div className="text-[16px] cursor-pointer">
+                <div className="text-sm sm:text-[16px] cursor-pointer">
                   {totalTravelers} Travelers
                 </div>
               ) : (
                 <div
                   className={`${booking ? "text-[#0F1416]" : "text-[#a6aaaccc]"
-                    } text-[16px]`}
+                    } text-sm sm:text-[16px]`}
                 >
                   {numberOfPeople}
                 </div>
@@ -698,14 +700,14 @@ const BookCard = ({
                   Book Now
                 </button>
               </Link>
-              <button
+              {!location.pathname.split("/")[1] === "cruise" && <button
                 onClick={handleReservetionConfirmation}
                 className="flex gap-2 items-center justify-center p-3 rounded-full text-[#0F1416] text-[16px] font-semibold w-full mt-2 border border-[#A5A5AB]"
               >
                 Reserve Now & Pay Later
-              </button>
+              </button>}
             </div>}
-            <div className="flex flex-col gap-4">
+            {!location.pathname.split("/")[1] === "cruise" && <div className="flex flex-col gap-4">
               <h2 className="text-[#000] text-[20px] font-semibold">
                 FullTour+Leaning Tower Tickets
               </h2>
@@ -716,11 +718,11 @@ const BookCard = ({
               <div className="text-[#EB5B2A] text-[16px] bg-[#FDEFEA] w-fit px-2 py-1 rounded-lg select-none">
                 8:00 AM
               </div>
-            </div>
+            </div>}
             <div></div>
           </div>
         )}
-        {!location.pathname === "/tours" && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
+        {!location.pathname === "/cruise" && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
           <div className="flex gap-[10px]">
             <div className="relative w-[24px] h-[24px] text-white flex gap-[10px]">
               <input
