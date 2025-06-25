@@ -3,7 +3,7 @@ import StaticMap from "../../Shared/StaticMap"
 
 export default function ReservetionConfirmation({ handleReservetionConfirmation }) {
     return (
-        <div className="bg-white rounded-xl p-6 flex flex-col gap-12 relative">
+        <div className="bg-white rounded-xl p-6 flex flex-col gap-12 relative max-h-2/3">
             <div className="flex flex-col gap-1 items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84" fill="none">
                     <g clip-path="url(#clip0_5033_49068)">
