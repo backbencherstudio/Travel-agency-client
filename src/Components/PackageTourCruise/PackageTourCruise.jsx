@@ -22,7 +22,7 @@ import { FaRegCalendarAlt, FaStar } from "react-icons/fa";
 import ClientPackageApis from "../../Apis/clientApi/ClientPackageApis";
 import Loading from "../../Shared/Loading";
 import { useLocation } from "react-router-dom";
-// import CruiseCard from '../../Pages/Cruises/CruiseCard';
+import CruiseCard from '../../Pages/Cruises/CruiseCard';
 import { useTravelData } from "../../Context/TravelDataContext/TravelDataContext";
 import ClientLanguageApis from "../../Apis/clientApi/ClientLanguageApis";
 import TourCard from "../../Pages/Tours/TourCard";
@@ -56,49 +56,49 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
         }
       }
     ],
-    package_files:[
+    package_files: [
       {
-        file:cruiseStaticImg1,
+        file: cruiseStaticImg1,
         file_url: "https://backend.wepaser.com/public/storage/package/a59cfdf025c47e881cc13f5eab443c85image (1).png",
-        id:"cm6lxwpfq0006pjvkw1wdu3x3"
+        id: "cm6lxwpfq0006pjvkw1wdu3x3"
       },
       {
-        file:cruiseStaticImg2,
+        file: cruiseStaticImg2,
         file_url: "https://backend.wepaser.com/public/storage/package/72cf98b76b77fe44f5fc9810e6fff492aimage (2).png",
-        id:"cm6lxwpfq0007pjvkpzesaajw"
+        id: "cm6lxwpfq0007pjvkpzesaajw"
       },
       {
-        file:cruiseStaticImg3,
+        file: cruiseStaticImg3,
         file_url: "https://backend.wepaser.com/public/storage/package/6c28c8d240b89295c837ce109105eabbimage (3).png",
-        id:"cm6lxwpfq0008pjvkdokgurnq"
+        id: "cm6lxwpfq0008pjvkdokgurnq"
       },
       {
-        file:cruiseStaticImg4,
+        file: cruiseStaticImg4,
         file_url: "https://backend.wepaser.com/public/storage/package/10793ea227ebf12c74ede2978e3533eccimage (4).png",
-        id:"cm6lxwpfq0009pjvkdsd3nuvh"
+        id: "cm6lxwpfq0009pjvkdsd3nuvh"
       },
       {
-        file:cruiseStaticImg5,
+        file: cruiseStaticImg5,
         file_url: "https://backend.wepaser.com/public/storage/package/d1749499b87c86510b501233551e26fdaimage (5).png",
-        id:"cm6lxwpfq000apjvk9nw6e5k6"
+        id: "cm6lxwpfq000apjvk9nw6e5k6"
       },
       {
-        file:cruiseStaticImg6,
+        file: cruiseStaticImg6,
         file_url: "https://backend.wepaser.com/public/storage/package/3d7ff63b2495f4d105f22bc210423d1597tony2.jpg",
-        id:"cm6owioqe0000pjdfnuek27m7"
+        id: "cm6owioqe0000pjdfnuek27m7"
       }
     ],
-    package_languages:[
+    package_languages: [
       {
-        language:{
-          id:"cm6j5tdi8000epj7pygs823vp",
-          name:"English"
+        language: {
+          id: "cm6j5tdi8000epj7pygs823vp",
+          name: "English"
         }
       }
     ],
-    package_traveller_types:[
+    package_traveller_types: [
       {
-        traveller_type:{
+        traveller_type: {
           id: "cm6j5v7oz000jpj7p51gcx1wp",
           type: "Solo travelers (if you only accept groups or families)"
         }
@@ -108,7 +108,7 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
       {
         descriiption: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. ",
         id: "cm6lxwpfy000cpjvkprzhz7sp",
-        package_trip_plan_images:[
+        package_trip_plan_images: [
           {
             id: "cm6lxwpg2000dpjvkc8meeg8k",
             image: "9af24fda1077cb1bf2808227a15560bf8Rectangle 34624278.png"
@@ -118,7 +118,7 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
     ],
     price: "100",
     type: "tour",
-    updated_at : "2025-02-03T10:21:51.915Z",
+    updated_at: "2025-02-03T10:21:51.915Z",
     user_id: "cm6d8tp4w0000wvm8vc95wgsr"
   }
 
@@ -366,7 +366,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
         getPackagesData(res?.data);
       }
     } catch (err) {
-      setError("Failed to fetch filtered packages");
+
+      // setError("Failed to fetch filtered packages");
       console.error(err);
     } finally {
       setTimeout(() => {
@@ -802,8 +803,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
                             <FaStar
                               key={index}
                               className={`text-xl ${index < stars
-                                  ? "text-[#ffb127]"
-                                  : "text-[#a6aaac33]"
+                                ? "text-[#ffb127]"
+                                : "text-[#a6aaac33]"
                                 }`}
                             />
                           ))}
@@ -1300,14 +1301,18 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
         ) : (
           <div className="animate-from-middle w-full lg:w-10/12">
             {/* Tour Display Section */}
-            <div className="">
+            <div className="pb-6">
               {error && <div className="text-red-500">{error}</div>}
               {isCruiseRoute ? (
-                <div className="flex flex-col gap-6">
-                  {/* {packages.map((cruise) => (
-                                        <CruiseCard key={cruise.id} cruise={cruise} />
-                                    ))} */}
-                </div>
+                // <div className="flex flex-col gap-6">
+                //   {packages.map((cruise) => (
+                //     <CruiseCard key={cruise.id} cruise={cruise} />
+                //   ))}
+                // </div>
+                <CruiseCard cruise={cruiseData} isPackageRoute={isPackageRoute}
+                  lovedPackages={lovedPackages}
+                  specialOffer={specialOffer}
+                  handleLovedPackages={handleLovedPackages} />
               ) : (
                 <>
                   <div

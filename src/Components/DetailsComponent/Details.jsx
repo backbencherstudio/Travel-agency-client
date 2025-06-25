@@ -44,7 +44,11 @@ const Details = ({
   const [showMoreInclude, setShowMoreInclude] = useState(3)
   const [showMoreExclude, setShowMoreExclude] = useState(3)
   useEffect(() => {
-    setSelectedImage(details?.package_files[0]?.file_url);
+    if(location.pathname.split("/")[1] === "cruises"){
+      setSelectedImage(details?.package_files[0]?.file);
+    }else{
+      setSelectedImage(details?.package_files[0]?.file_url);
+    }
   }, [details]);
 
   const toggleFAQ = (index) => {
@@ -297,14 +301,14 @@ const Details = ({
           <div className="grid grid-cols-3 gap-4 items-center justify-between">
             <div className="">
               <p className="text-xs sm:text-sm text-[#8993A0]">Review</p>
-              <div className="flex flex-col md:flex-row gap-1 md:items-center">
+              {details?.reviews && <div className="flex flex-col md:flex-row gap-1 md:items-center">
                 <div className="flex gap-1 items-center">
                   {renderStars(details?.reviews[0]?.rating_value || 0.0)}{" "}
                 </div>
                 <span className="text-[10px] sm:text-xs md:text-base text-[#8993A0]">
                   ({details?.reviews?.length} reviews)
                 </span>
-              </div>
+              </div>}
             </div>
             <div className="grid justify-center border-r-2 border-l-2 border-[#a6aaac33]">
               <p className="text-xs sm:text-sm text-[#8993A0]">Days</p>
@@ -396,11 +400,15 @@ const Details = ({
                       setModalImageIndex(index);
                     }}
                   >
-                    <img
+                    {location.pathname.split("/")[1] === "cruises"?<img
+                      src={planimg?.file}
+                      alt="Image"
+                      className="w-full h-full object-cover"
+                    /> : <img
                       src={planimg?.file_url}
                       alt="Image"
                       className="w-full h-full object-cover"
-                    />
+                    />}
                   </div>
                 ))}
               </Slider>
@@ -1140,7 +1148,7 @@ const Details = ({
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl max-h-fit max-w-full w-full">
+        <div className="bg-white rounded-2xl max-h-fit max-w-full w-full sticky top-20">
           <BookCard
             details={details}
             renderStars={renderStars}

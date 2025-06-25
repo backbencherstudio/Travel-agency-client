@@ -129,8 +129,8 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
   }
 
   return (
-    <div className={`absolute top-[58px] right-1/2 md:right-0 translate-x-1/2 md:translate-x-0 bg-white z-[20] shadow-2xl lg:shadow-md rounded-3xl p-[10px] lg:p-[32px] w-[320px] ${location.pathname.split("/")[1] === "cruise" ? "lg:w-[1000px] xl:w-[1125px]" : "lg:w-[700px]"} md:w-[450px] flex-col gap-8 flex`}>
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-2 lg:gap-0 w-full">
+    <div className={`absolute top-[58px] right-1/2 md:right-0 translate-x-1/2 md:translate-x-0 bg-white z-[120] shadow-2xl lg:shadow-md rounded-3xl p-[10px] lg:p-[32px] w-[320px] ${location.pathname.split("/")[1] === "cruise" ? "lg:w-[1000px] xl:w-[1125px]" : "lg:w-[700px]"} md:w-[450px] flex-col gap-8 flex`}>
+      <div className="flex flex-col lg:flex-row bg-white items-center justify-between gap-2 lg:gap-0 w-full">
         <div className="flex flex-col lg:gap-3">
           {location.pathname.split("/") [1] === "tours" && <div className="text-[20px] text-[#0F1416] text-center lg:text-start font-semibold">{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() + 1 : 0}`} Days</div>}
           {location.pathname.split("/") [1] === "cruise" && <div className="text-[20px] text-[#0F1416] text-center lg:text-start font-semibold">{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() + 1 : 0}`} Days/{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() : 0}`} Night</div>}
@@ -140,7 +140,7 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
             year: 'numeric'
           }) : "Select Date"}</span>
         </div>
-        <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 w-full lg:w-fit">
+        <div className="flex flex-col lg:flex-row gap-2 lg:gap-0 w-full lg:w-fit bg-white">
           <div className={`flex items-center justify-between px-4 py-3 border ${checkInCheckOut ? "border-orange-500" : "border-[#D2D2D5]"} rounded-xl lg:translate-x-2 bg-white cursor-default`} onClick={handleCheckIn}>
             <div>
               <h3 className="text-[#0F1416] text-[14px] font-medium">Check-In</h3>
@@ -169,7 +169,7 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
           </div>
         </div>
       </div>
-      <div className={`flex ${location.pathname.split("/")[1] === "cruise" ? "gap-20":""}`}>
+      <div className={`flex ${location.pathname.split("/")[1] === "cruise" ? "gap-20":""} bg-white`}>
         <div className="flex-1 lg:flex flex-col justify-between">
           <div className="flex items-center justify-between text-base lg:text-[22.8px]">
             <button onClick={handlePrevMonth} className="text-[#1A1A1A9C] w-[34.15px] h-[34.15px] lg:w-[54.15px] lg:h-[54.15px] flex items-center justify-center">

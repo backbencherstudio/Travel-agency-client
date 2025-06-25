@@ -172,6 +172,9 @@ const TourDetails = () => {
     setOpenChat(prev => !prev);
   }
 
+
+  console.log("Tore data : ",tour)
+
   return (
     <div className="pt-[54px] pb-[80px] px-4 xl:px-[192px] w-full">
       <Helmet>

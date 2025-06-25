@@ -65,7 +65,7 @@ function TourCard({
       key={tour?.id}
       className={`relative flex ${location.pathname === "/cruise" ? "flex-row" : "flex-col"} bg-white shadow-md border border-slate-200 rounded-[10px]`}
     >
-      <div className={`relative ${location.pathname === "/cruise" ? "w-[363px] h-full" : "h-[350px] lg:h-56"} flex items-center justify-center overflow-hidden text-white rounded-t-[10px] pl-4`}>
+      <div className={`relative ${location.pathname === "/cruise" ? "w-[363px] h-full pl-4" : "h-[350px] lg:h-56"} flex items-center justify-center overflow-hidden text-white rounded-t-[10px]`}>
         <LazyLoadImage
           src={tour?.package_files?.[0]?.file_url || ""}
           alt={tour?.package_files?.[0]?.file_url || "Tour image"}

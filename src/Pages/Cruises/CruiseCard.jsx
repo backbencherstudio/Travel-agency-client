@@ -53,9 +53,11 @@ const CruiseCard = ({ cruise }) => {
                         <a href='' className=' text-blue-500'>Read more</a>
                     </p>
                     <div className='flex items-center gap-2 mt-3'>
-                        <p className=' text-sm'>{cruise?.reviews[0]?.rating_value}</p>
+                        {/* <p className=' text-sm'>{cruise?.reviews[0]?.rating_value}</p> */}
+                        <p className=' text-sm'>{4.0}</p>
                         <div className="flex gap-1 items-center">
-                            {renderStars(cruise?.reviews[0]?.rating_value)}
+                            {/* {renderStars(cruise?.reviews[0]?.rating_value)} */}
+                            {renderStars(4)}
                         </div>
                         <div className='flex items-center'>
                             <div className="ms-1 text-sm font-medium text-gray-500 dark:text-gray-400">

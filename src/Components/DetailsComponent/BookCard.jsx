@@ -384,7 +384,7 @@ const BookCard = ({
                   handleCheckInCheckOutDate={handleCheckInCheckOutDate}
                 />
               )}
-            {location.pathname.split("/")[1] === "cruise" && <div
+            {location.pathname.split("/")[1] === "cruises" && <div
               className={`flex-1 flex border ${booking ? "justify-between" : ""
                 } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
             >
@@ -700,14 +700,14 @@ const BookCard = ({
                   Book Now
                 </button>
               </Link>
-              {!location.pathname.split("/")[1] === "cruise" && <button
+              {!location.pathname.split("/")[1] === "cruises" && <button
                 onClick={handleReservetionConfirmation}
                 className="flex gap-2 items-center justify-center p-3 rounded-full text-[#0F1416] text-[16px] font-semibold w-full mt-2 border border-[#A5A5AB]"
               >
                 Reserve Now & Pay Later
               </button>}
             </div>}
-            {!location.pathname.split("/")[1] === "cruise" && <div className="flex flex-col gap-4">
+            {!location.pathname.split("/")[1] === "cruises" && <div className="flex flex-col gap-4">
               <h2 className="text-[#000] text-[20px] font-semibold">
                 FullTour+Leaning Tower Tickets
               </h2>
@@ -722,7 +722,7 @@ const BookCard = ({
             <div></div>
           </div>
         )}
-        {!location.pathname === "/cruise" && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
+        {!location.pathname === "/cruises" && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
           <div className="flex gap-[10px]">
             <div className="relative w-[24px] h-[24px] text-white flex gap-[10px]">
               <input
