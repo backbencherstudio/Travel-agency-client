@@ -71,6 +71,8 @@ import Wishlist from "../Pages/User-dashboard/Wishlist";
 import Offer from "../Pages/User-dashboard/Offer";
 import MyProfile from "../Pages/User-dashboard/MyProfile";
 import ReservationDetail from "../Pages/User-dashboard/ReservationDetail";
+import GetStarted from "../Pages/getStarted/GetStarted";
+import Scanning from "../Pages/getStarted/Scanning";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 export const router = createBrowserRouter([
@@ -119,6 +121,14 @@ export const router = createBrowserRouter([
   {
     path: "otp",
     element: <Otp />,
+  },
+  {
+path:'get-started',
+element:<GetStarted/>
+  },
+  {
+path:'scanner',
+element:<Scanning/>
   },
   {
     path: "/",
