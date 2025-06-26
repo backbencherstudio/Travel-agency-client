@@ -193,7 +193,7 @@ element:<Scanning/>
       },
       {
         path: "/profile",
-        element: <MyProfile />,
+        element: <Profile />,
       },
       {
         path: "/booking-history",
@@ -230,8 +230,8 @@ element:<Scanning/>
         element:<Offer/>
       },
       {
-        path:' profile',
-        element:<MyProfile/>
+        path:'profile',
+        element:<Profile/>
       },
         {
             path:'/user-dashboard/tour-management/reservation-details',
