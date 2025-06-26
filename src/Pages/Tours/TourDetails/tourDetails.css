@@ -2,3 +2,13 @@
     /* background: linear-gradient(0deg, rgba(94, 116, 138, 0.7) 0%, rgba(36, 93, 151, 0.7) 100%), lightgray 0px -517.634px / 100% 329.539% no-repeat; */
     object-fit: cover;
 }
+
+.hide-scrollbar {
+  overflow-y: scroll; /* Enables vertical scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}

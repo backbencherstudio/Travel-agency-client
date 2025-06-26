@@ -9,12 +9,15 @@ import { AuthContext } from "../../Context/AuthProvider/AuthProvider";
 import { createCheckout } from "../../Apis/clientApi/ClientBookApi";
 import Loading from "../../Shared/Loading";
 import TourDatePicker from "./TourDatePicker";
-
+import ReservetionConfirmation from "./ReservetaionConfirmation";
+import FreeCancellation from "./FreeCancellation";
 const BookCard = ({
   details,
   renderStars,
   handleCheckAvailability,
   booking,
+  cancelDesc,
+  bookNowPayLaterDesc
 }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -35,12 +38,17 @@ const BookCard = ({
   const [numberOfPeople, setNumberOfPeople] = useState("Number of people");
   const [selectedDate, setSelectedDate] = useState("");
   const [checkInCheckOutDate, setCheckInCheckOutDate] = useState(null);
+  const [reservetionConfirmation, setReservetionConfirmation] = useState(false);
+  const [reserved, setReseved] = useState(false);
+  const [freeCancel, setFreeCancel] = useState(false);
   // Access user from AuthContext
   const { user } = useContext(AuthContext);
 
   const duration = details?.duration || 0;
 
   // console.log("deatils", details)
+
+  // console.log("Path name:",location.pathname.split("/")[1])
 
   // Get today's date
   const today = new Date();
@@ -146,7 +154,9 @@ const BookCard = ({
   };
 
   const handleCheckInCheckOutDate = (data) => {
-    setCheckInCheckOutDate(data);
+    if (data[0]) {
+      setCheckInCheckOutDate(data)
+    }
   };
 
   const handleStartDateChange = (date) => {
@@ -206,8 +216,9 @@ const BookCard = ({
     }
   };
 
-  const handleSelectedDate = (date) => {
-    setSelectedDate(date);
+  const handleSelectedDate = (name, date) => {
+    console.log(selectedDate)
+    setSelectedDate(prev => ({ ...prev, [name]: date }));
   };
 
   const handleInfantTravelersAdding = () => {
@@ -222,6 +233,17 @@ const BookCard = ({
       setTotalTravelers((prev) => prev - 1);
     }
   };
+
+
+  const handleReservetionConfirmation = () => {
+    setReservetionConfirmation(prev => !prev);
+    setReseved(true)
+  }
+
+
+  const handleFreeCancellation = () => {
+    setFreeCancel(false);
+  }
 
   return (
     <>
@@ -253,119 +275,222 @@ const BookCard = ({
         </div>
         <div>
           {/* Date Picker */}
-          <div
-            className={`flex border ${
-              booking ? "justify-between" : ""
-            } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
-          >
-            {!booking && (
-              <div
-                className="text-2xl cursor-pointer ml-2 w-fit"
-                onClick={handleOpenDatePicker}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="25"
-                  height="24"
-                  viewBox="0 0 25 24"
-                  fill="none"
+          <div className="flex gap-4 flex-col sm:flex-row relative">
+            <div
+              className={`flex-1 flex border ${booking ? "justify-between" : ""
+                } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
+            >
+              {!booking && (
+                <div
+                  className="text-2xl cursor-pointer ml-2 w-fit"
+                  onClick={handleOpenDatePicker}
                 >
-                  <path
-                    d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M3.25 9H21.25"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M8.25 2L8.25 5"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16.25 2V5"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
-                  <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
-                  <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
-                </svg>
-              </div>
-            )}
-            <div>
-              {!selectedDate ? (
-                <div className="text-[16px] text-[#a6aaaccc]">Select Date</div>
-              ) : (
-                <div>
-                  {selectedDate.toLocaleDateString("en-US", {
-                    weekday: "long",
-                    month: "short",
-                    day: "2-digit",
-                    year: "numeric",
-                  })}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M3.25 9H21.25"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8.25 2L8.25 5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16.25 2V5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
+                  </svg>
                 </div>
               )}
-            </div>
-            {booking && (
-              <div className="text-2xl ml-2 w-fit">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="25"
-                  height="24"
-                  viewBox="0 0 25 24"
-                  fill="none"
-                >
-                  <path
-                    d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                  />
-                  <path
-                    d="M3.25 9H21.25"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                  <path
-                    d="M8.25 2L8.25 5"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M16.25 2V5"
-                    stroke="#0F1416"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
-                  <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
-                  <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
-                </svg>
+              <div>
+                {!selectedDate["start"] ? (
+                  <div className="text-sm sm:text-[16px] text-[#a6aaaccc]">Check-In</div>
+                ) : (
+                  <div className="text-sm sm:text-base">
+                    {selectedDate["start"]?.toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
+                  </div>
+                )}
               </div>
-            )}
-
+              {booking && (
+                <div className="text-2xl ml-2 w-fit">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M3.25 9H21.25"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8.25 2L8.25 5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16.25 2V5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
+                  </svg>
+                </div>
+              )}
+              
+            </div>
             {openDatePicker && (
-              <TourDatePicker
-                handleOpenDatePicker={handleOpenDatePicker}
-                handleSelectedDate={handleSelectedDate}
-                handleCheckInCheckOutDate={handleCheckInCheckOutDate}
-              />
-            )}
+                <TourDatePicker
+                  handleOpenDatePicker={handleOpenDatePicker}
+                  handleSelectedDate={handleSelectedDate}
+                  handleCheckInCheckOutDate={handleCheckInCheckOutDate}
+                />
+              )}
+            {location.pathname.split("/")[1] === "cruises" && <div
+              className={`flex-1 flex border ${booking ? "justify-between" : ""
+                } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
+            >
+              {!booking && (
+                <div
+                  className="text-2xl cursor-pointer ml-2 w-fit"
+                  onClick={handleOpenDatePicker}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M3.25 9H21.25"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8.25 2L8.25 5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16.25 2V5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
+                  </svg>
+                </div>
+              )}
+              <div>
+                {!selectedDate["end"] ? (
+                  <div className="text-sm sm:text-[16px] text-[#a6aaaccc]">Check-Out</div>
+                ) : (
+                  <div className="text-sm sm:text-base">
+                    {selectedDate["end"]?.toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
+                  </div>
+                )}
+              </div>
+              {booking && (
+                <div className="text-2xl ml-2 w-fit">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="24"
+                    viewBox="0 0 25 24"
+                    fill="none"
+                  >
+                    <path
+                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M3.25 9H21.25"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M8.25 2L8.25 5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M16.25 2V5"
+                      stroke="#0F1416"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
+                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
+                  </svg>
+                </div>
+              )}
+            </div>}
           </div>
 
-          {/* End Date Picker */}
+          {/* Number of Traveleres */}
           <div className="flex border mt-4 items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative">
             {!booking && (
               <div
@@ -397,22 +522,20 @@ const BookCard = ({
 
             <div className="flex justify-between items-center w-full">
               {showTravelerMenu ? (
-                <div className="text-[16px] cursor-pointer">
+                <div className="text-sm sm:text-[16px] cursor-pointer">
                   {totalTravelers} Travelers
                 </div>
               ) : (
                 <div
-                  className={`${
-                    booking ? "text-[#0F1416]" : "text-[#a6aaaccc]"
-                  } text-[16px]`}
+                  className={`${booking ? "text-[#0F1416]" : "text-[#a6aaaccc]"
+                    } text-sm sm:text-[16px]`}
                 >
                   {numberOfPeople}
                 </div>
               )}
               <div
-                className={`${
-                  showTravelerMenu ? "rotate-180" : ""
-                } w-[24px] flex items-center justify-center`}
+                className={`${showTravelerMenu ? "rotate-180" : ""
+                  } w-[24px] flex items-center justify-center`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -566,21 +689,27 @@ const BookCard = ({
           </button>
         ) : (
           <div className="flex flex-col gap-5">
-            <Link to={`/booking/${details?.id}`}>
-              <button
-                onClick={handleBookNow}
-                className="flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2"
-              >
-                Book Now
-              </button>
-            </Link>
-            <button
-              onClick={handleBookNow}
-              className="flex gap-2 items-center justify-center p-3 rounded-full text-[#0F1416] text-[16px] font-semibold w-full mt-2 border border-[A5A5AB]"
+            {reserved ? <div
+              className="flex gap-2 items-center justify-center p-3 rounded-full text-[#4A4C56] text-[16px] font-medium w-full mt-2 border bg-[#E9E9EA]"
             >
-              Reserve Now & Pay Later
-            </button>
-            <div className="flex flex-col gap-4">
+              Reserved
+            </div> : <div className="flex flex-col gap-5">
+              <Link to={`/booking/${details?.id}`}>
+                <button
+                  onClick={handleBookNow}
+                  className="flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2"
+                >
+                  Book Now
+                </button>
+              </Link>
+              {location.pathname.split("/")[1] === "tours" && <button
+                onClick={handleReservetionConfirmation}
+                className="flex gap-2 items-center justify-center p-3 rounded-full text-[#0F1416] text-[16px] font-semibold w-full mt-2 border border-[#A5A5AB]"
+              >
+                Reserve Now & Pay Later
+              </button>}
+            </div>}
+            {location.pathname.split("/")[1] === "tours" && <div className="flex flex-col gap-4">
               <h2 className="text-[#000] text-[20px] font-semibold">
                 FullTour+Leaning Tower Tickets
               </h2>
@@ -591,11 +720,11 @@ const BookCard = ({
               <div className="text-[#EB5B2A] text-[16px] bg-[#FDEFEA] w-fit px-2 py-1 rounded-lg select-none">
                 8:00 AM
               </div>
-            </div>
+            </div>}
             <div></div>
           </div>
         )}
-        <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
+        {location.pathname.split("/")[1] === "tours" && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
           <div className="flex gap-[10px]">
             <div className="relative w-[24px] h-[24px] text-white flex gap-[10px]">
               <input
@@ -623,10 +752,10 @@ const BookCard = ({
             </div>
             <div>
               <p className="text-[#49556D] text-sm ">
-                <span className="text-[#0F1416] underline cursor-pointer text-nowrap font-bold text-sm leading-5">
+                <span className="text-[#0F1416] underline cursor-pointer text-nowrap font-bold text-sm leading-5" onClick={() => setFreeCancel(true)}>
                   Free Cancellation
                 </span>{" "}
-                up to 24 hours before the experience starts (local time)
+                {cancelDesc}
               </p>
             </div>
           </div>
@@ -658,10 +787,17 @@ const BookCard = ({
             <div>
               <span className="underline cursor-pointer text-[#0F1416] text-nowrap text-sm font-bold">
                 Book Now and Pay Leter
-              </span>
+              </span>{" "}
+              {bookNowPayLaterDesc}
             </div>
           </div>
-        </div>
+        </div>}
+        {reservetionConfirmation && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#00000099] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
+          <ReservetionConfirmation handleReservetionConfirmation={handleReservetionConfirmation} />
+        </div>}
+        {freeCancel && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#00000099] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
+          <FreeCancellation handleFreeCancellation={handleFreeCancellation} />
+        </div>}
       </div>
     </>
   );

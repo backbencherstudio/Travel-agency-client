@@ -15,6 +15,7 @@ import ClientPackageApis from "../../../Apis/clientApi/ClientPackageApis";
 import { useEffect, useState } from "react";
 import Loading from "../../../Shared/Loading";
 import { Helmet } from "react-helmet-async";
+import Chatcard from "./ChatCard";
 
 const TourDetails = () => {
   // const links = [
@@ -25,6 +26,7 @@ const TourDetails = () => {
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState(null);
   const { id } = useParams();
+  const [openChat,setOpenChat] = useState(false)
 
   useEffect(() => {
     tourDetails();
@@ -40,12 +42,16 @@ const TourDetails = () => {
   };
 
   const [includeExclude, setIncludeExclude] = useState({
-    "hotel+all_inclusive": true,
-    "breakfast,_lunch_&_dinner": true,
-    hotel_accommodation: true,
-    "sight-seen": false,
-    city_tour: false,
-    custom_duty: false,
+    "Hotel + All Inclusive": true,
+    "Breakfast, Lunch & Dinner": true,
+    "Hotel Accommodation": true,
+    "Sight Seen": false,
+    "City Tour": false,
+    "Custom Duty": false,
+    "Professional Tour Guide":true,
+    "Transfer Between Destinations":true,
+    "Personal Expenses":false,
+    "How to use premade UI kits":true,
   });
   const [tripPlan, setTripPlan] = useState([
     {
@@ -82,6 +88,14 @@ const TourDetails = () => {
     ["Saturday", "7:00 AM - 11:30 PM"],
     ["Sunday", "7:00 AM - 10:00 PM"],
   ];
+
+  const meetingData = {
+    meetingPointDetails:meetingPointDetails,
+    travelingCity:travelingCity,
+    startDate: startDate,
+    endDate: endDate,
+    operatingDayAndTime: operatingDayAndTime
+  }
 
   const additionalInformation = [
     "Not wheelchair accessible",
@@ -154,6 +168,13 @@ const TourDetails = () => {
 
   // console.log('id', id)
 
+  const handleChatOpen=()=>{
+    setOpenChat(prev => !prev);
+  }
+
+
+  console.log("Tore data : ",tour)
+
   return (
     <div className="pt-[54px] pb-[80px] px-4 xl:px-[192px] w-full">
       <Helmet>
@@ -224,7 +245,7 @@ const TourDetails = () => {
                       />
                     </svg>
                   </div>
-                  <div className="text-orange-500">Chat now</div>
+                  <div className="text-orange-500" onClick={handleChatOpen}>Chat now</div>
                 </div>
               </div>
             </div>
@@ -233,7 +254,7 @@ const TourDetails = () => {
                 details={tour}
                 includeExclude={includeExclude}
                 tripPlan={tripPlan}
-                meetingPointDetails={meetingPointDetails}
+                meetingData={meetingData}
                 additionalInformation={additionalInformation}
                 mapImgPackage={mapImgPackage}
                 TravellerPhotos={TravellerPhotos}
@@ -263,6 +284,9 @@ const TourDetails = () => {
           </ParentComponent>
         </div>
       )}
+      {openChat && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
+        <Chatcard handleChatOpen={handleChatOpen}/>
+      </div>}
     </div>
   );
 };

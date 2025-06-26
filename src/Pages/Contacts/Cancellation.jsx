@@ -37,7 +37,7 @@ const Cancellation = () => {
 
   const links = [
     { name: "Home", path: "/" },
-    { name: "Cancellation", path: "/cancellation" },
+    { name: "FAQ", path: "/cancellation" },
   ];
 
   return (
@@ -50,15 +50,11 @@ const Cancellation = () => {
       />
 
       <ParentComponent>
-        <div className="content grid lg:grid-cols-2 w-[70%] lg:w-auto">
+        <div className="content grid lg:grid-cols-2 w-[70%] lg:w-auto py-[80px]">
           <div className="left mb-12">
-            <div className="flex flex-row sm:flex-col gap-4 text-[#0155FE]">
-              <h1 className="sm:text-[62px] text-4xl flex flex-col">
-                Cancellation
-              </h1>
-              <h1 className="sm:text-[62px] text-4xl flex flex-col">
-                Policies
-              </h1>
+            <div className="flex flex-row sm:flex-col gap-4 text-[#252D3C]">
+              <h3 className="text-[48px] font-bold leading-none">Cancellation</h3>
+              <h3 className="text-[48px] font-bold leading-none">Policies</h3>
             </div>
           </div>
 
