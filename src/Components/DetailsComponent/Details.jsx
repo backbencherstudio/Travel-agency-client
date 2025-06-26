@@ -20,7 +20,7 @@ import TravelerPhotos from "./TravelerPhotos";
 import AllReviews from "./AllReviews";
 import PostNewReview from './PostNewReview'
 import SharePhotos from "./SharePhotos";
-import avatar from '../../assets/img/tour-details/AvatAr.png'
+import avatar from '/src/assets/img/tour-details/AvatAr.png'
 import "./details.css"
 const Details = ({
   details,
