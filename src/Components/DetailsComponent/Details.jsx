@@ -16,8 +16,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import ImageModal from "./ImageModal";
-import StaticMap from '../../Shared/StaticMap'
-
+import TravelerPhotos from "./TravelerPhotos";
+import AllReviews from "./AllReviews";
+import PostNewReview from './PostNewReview'
+import SharePhotos from "./SharePhotos";
+import avatar from '../../assets/img/tour-details/AvatAr.png'
+import "./details.css"
 const Details = ({
   details,
   includeExclude,
@@ -43,10 +47,15 @@ const Details = ({
   const [bookNowPayLaterDesc, setBookNowPayLaterDesc] = useState("")
   const [showMoreInclude, setShowMoreInclude] = useState(3)
   const [showMoreExclude, setShowMoreExclude] = useState(3)
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const [postNewReview, setPostNewReview] = useState(false);
+  const [travelerPhotoIsOpen, setTravelerPhotoIsOpen] = useState(0)
+  const [sharePhoto,setSharePhoto] = useState(false)
+
   useEffect(() => {
-    if(location.pathname.split("/")[1] === "cruises"){
+    if (location.pathname.split("/")[1] === "cruises") {
       setSelectedImage(details?.package_files[0]?.file);
-    }else{
+    } else {
       setSelectedImage(details?.package_files[0]?.file_url);
     }
   }, [details]);
@@ -102,7 +111,7 @@ const Details = ({
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      if (width >= 321 && width < 374) {
+      if (width >= 310 && width < 374) {
         setReviewSlideNumber(1);
         setSlidersWidth(63);
       } else if (width <= 375) {
@@ -130,6 +139,37 @@ const Details = ({
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+
+  const reviews = [
+    {
+      avatar: avatar,
+      user: {
+        name: "Samantha Lau",
+        user_name: "baleful_exorcism_76",
+      },
+      review: 4.5,
+      description: "I stayed 5 night with my family(2 adult 2 child) for total 41k in the new house which is independent of the main house and other listing where the owner stays. I liked the house for peaceful and beautiful surrounding. The big yard with variety of flowers/fruits were loved my children. I truely appreciate the hosts for friendly and responsiveness. The home food especially veg were good. We used to cookat night. The kitchen is functional though more utensil would have been helpful.The breakfast is 0k. Though around Ikm away from the main town it's walkable.On the shortcoming I find climbing (60-70) stairs upto the house most difficultespecially with 7-8 luggages. Thanks to host who helped me in carrying. Besidesthat few listing items were missing like children books/toys, dining table, washingmachine, hair dryer, iron, toaster, blender, books etc.With 8k plus/night I find the listing bit over priced vs facilities. With responsiveand friendly hosts that's 0k I think.",
+    },
+    {
+      avatar: avatar,
+      user: {
+        name: "Ajeet Bai",
+        user_name: "baleful_exorcism_76",
+      },
+      review: 3,
+      description: "The perfect mix of adventure and relaxation. Couldn’t have asked for a better experience!",
+    },
+    {
+      avatar: avatar,
+      user: {
+        name: "Aishwarya Kumar",
+        user_name: "redolent_cupcake_89",
+      },
+      review: 5,
+      description: "A dream vacation come true. The attention to detail and unique spots made it unforgettable.",
+    },
+  ]
 
   const NextArrow = ({ onClick }) => {
     return (
@@ -234,23 +274,44 @@ const Details = ({
 
   const handleShowMoreIncludeExclude = () => {
     setShowMoreInclude(prev => {
-      if(prev === 3){
+      if (prev === 3) {
         return Object.entries(includeExclude).filter(([_, value]) => value).length
-      }else{
+      } else {
         return 3
       }
     })
     setShowMoreExclude(prev => {
-      if(prev === 3){
+      if (prev === 3) {
         return Object.entries(includeExclude).filter(([_, value]) => !value).length
-      }else{
+      } else {
         return 3
       }
     })
   }
 
+  const handleTravelerPhotos = (index) => {
+    setTravelerPhotoIsOpen(index)
+  }
+
+  const handleShowAllReview = () => {
+    // console.log("All review")
+    setShowAllReviews(prev => !prev);
+  }
+
+
+  const handlePostNewReview = () => {
+    // console.log("New review")
+    setPostNewReview(prev => !prev)
+    // setShowAllReviews(prev => !prev);
+  }
+
+
+  const handleSharePhoto =()=>{
+    setSharePhoto(prev => !prev)
+  }
+
   return (
-    <div className="pb-[80px]">
+    <div className={`pb-[80px]`}>
       <div className="flex flex-col lg:flex-row w-full sm:gap-6 bg-[#fff] items-center lg:items-start">
         <div className="w-full lg:max-w-[640px] max-w-[700px] xl:max-w-[700px] flex flex-col gap-5">
           <div className="w-full flex justify-between">
@@ -258,7 +319,7 @@ const Details = ({
               {details?.name}
             </h1>
             <div className="flex items-center gap-3">
-              <div className="cursor-pointer">
+              <div className="cursor-pointer" onClick={handleSharePhoto}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 22 21"
@@ -400,7 +461,7 @@ const Details = ({
                       setModalImageIndex(index);
                     }}
                   >
-                    {location.pathname.split("/")[1] === "cruises"?<img
+                    {location.pathname.split("/")[1] === "cruises" ? <img
                       src={planimg?.file}
                       alt="Image"
                       className="w-full h-full object-cover"
@@ -569,7 +630,7 @@ const Details = ({
                     </div>
                     <div className="flex-1 flex flex-col gap-4">
                       {Object.entries(includeExclude)
-                        .filter(([_, value]) => !value).slice(0,showMoreExclude) // Only show Excluded items
+                        .filter(([_, value]) => !value).slice(0, showMoreExclude) // Only show Excluded items
                         .map(([key], index) => (
                           <div
                             key={index}
@@ -1027,124 +1088,49 @@ const Details = ({
                   Show {tripPlan.length - 3} more stops
                 </div>
               )}
-              <div className="pb-[80px]">
-                <h3 className="pb-5 text-[18px] font-semibold text-[#0F1416]">Traveler Photos:</h3>
-                <div className="flex flex-col sm:flex-row gap-2 relative">
-                  {TravellerPhotos.length >= 1 && (
-                    <div className="flex-1 relative">
-                      <img
-                        src={TravellerPhotos[0]}
-                        alt="Travel video"
-                        className="w-full h-full object-cover rounded-xl"
-                      ></img>
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-[10px] bg-[#FFFFFFCC] rounded-full cursor-pointer">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="12"
-                          height="14"
-                          viewBox="0 0 12 14"
-                          fill="none"
-                        >
-                          <path
-                            d="M11.1679 7.63448C10.9029 8.64175 9.65 9.35352 7.14431 10.7771C4.72204 12.1532 3.5109 12.8413 2.53488 12.5647C2.13135 12.4503 1.76369 12.2332 1.46718 11.934C0.75 11.2104 0.75 9.80695 0.75 7C0.75 4.19305 0.75 2.78957 1.46718 2.06599C1.76369 1.76683 2.13135 1.54966 2.53488 1.43532C3.5109 1.15874 4.72204 1.84681 7.14431 3.22294C9.65 4.64648 10.9029 5.35825 11.1679 6.36552C11.2774 6.78129 11.2774 7.21871 11.1679 7.63448Z"
-                            stroke="#EB5B2A"
-                            strokeWidth="1.5"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex-1 flex gap-2 overflow-hidden">
-                    <div className="w-1/2 flex h-full flex-col gap-2">
-                      {TravellerPhotos.length >= 2 && (
-                        <div>
-                          <img
-                            src={TravellerPhotos[1]}
-                            alt="Travel Photo"
-                            className="w-full h-full object-cover rounded-xl"
-                          />
-                        </div>
-                      )}
-                      {TravellerPhotos.length >= 3 && (
-                        <div>
-                          <img
-                            src={TravellerPhotos[2]}
-                            alt="Travel Photo"
-                            className="w-full h-full object-cover rounded-xl"
-                          />
-                        </div>
-                      )}
-                    </div>
-                    <div className="w-1/2 flex h-full flex-col gap-2">
-                      {TravellerPhotos.length >= 4 && (
-                        <div>
-                          <img
-                            src={TravellerPhotos[3]}
-                            alt="Travel Photo"
-                            className="w-full h-full object-cover rounded-xl"
-                          />
-                        </div>
-                      )}
-                      {TravellerPhotos.length >= 5 && (
-                        <div
-                          className={`w-full ${window.innerWidth <= 325
-                            ? "h-[127px]"
-                            : window.innerWidth <= 380
-                              ? "h-[151px]"
-                              : window.innerWidth <= 450
-                                ? "h-[174.48px]"
-                                : "h-[151.48px]"
-                            } max-w-full relative`}
-                        >
-                          <img
-                            src={TravellerPhotos[4]}
-                            alt="Travel Photo"
-                            className="w-full h-full object-cover rounded-xl"
-                          />
-                          <div
-                            className={`absolute top-0 select-none text-white flex flex-col items-center justify-center gap-1 ${window.innerWidth <= 325
-                              ? "h-[127px]"
-                              : window.innerWidth <= 450
-                                ? "h-[174.48px]"
-                                : "h-[151.48px]"
-                              } w-full bottom-0 right-0 z-[1] bg-[#00000061] rounded-2xl cursor-pointer overflow-hidden`}
-                            onClick={handleShowImageLeft}
-                          >
-                            <div className="px-[10px] py-[12px] border-2 rounded-full">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="14"
-                                height="10"
-                                viewBox="0 0 14 10"
-                                fill="none"
-                              >
-                                <path
-                                  d="M12.7503 5L0.750244 5"
-                                  stroke="white"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                                <path
-                                  d="M9.00027 8.75C9.00027 8.75 12.7502 5.98817 12.7502 4.99997C12.7503 4.01177 9.00024 1.25 9.00024 1.25"
-                                  stroke="white"
-                                  strokeWidth="1.5"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </div>
-                            <span className="text-sm font-medium">
-                              Show more
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+              {location.pathname.split("/")[1] === "cruises" ? <div className="pb-[80px] flex flex-col gap-4">
+                <div>
+                  <div className={`${travelerPhotoIsOpen === 0 ? "hidden" : "block"} text-[#0F1416] text-[18px] font-medium flex justify-between  py-3 items-center border-b cursor-pointer duration-300`} onClick={()=> setTravelerPhotoIsOpen(0)}>
+                    <span>Day 1</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M6.0026 1.08203V10.4154M1.33594 5.7487H10.6693" stroke="#0F1416" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
                   </div>
+                  {travelerPhotoIsOpen === 0 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
+                </div>
+                <div>
+                  <div className={`${travelerPhotoIsOpen === 1 ? "hidden" : "block"} text-[#0F1416] text-[18px] font-medium flex justify-between  py-3 items-center border-b cursor-pointer duration-300`} onClick={()=> setTravelerPhotoIsOpen(1)}>
+                    <span>Day 2</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M6.0026 1.08203V10.4154M1.33594 5.7487H10.6693" stroke="#0F1416" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                  {travelerPhotoIsOpen === 1 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
+                </div>
+                <div>
+                  <div className={`${travelerPhotoIsOpen === 2 ? "hidden" : "block"} text-[#0F1416] text-[18px] font-medium flex justify-between  py-3 items-center border-b cursor-pointer duration-300`} onClick={()=> setTravelerPhotoIsOpen(2)}>
+                    <span>Day 3</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M6.0026 1.08203V10.4154M1.33594 5.7487H10.6693" stroke="#0F1416" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                  {travelerPhotoIsOpen === 2 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
+                </div>
+                <div>
+                  <div className={`${travelerPhotoIsOpen === 3 ? "hidden" : "block"} text-[#0F1416] text-[18px] font-medium flex justify-between  py-3 items-center border-b cursor-pointer duration-300`} onClick={()=> setTravelerPhotoIsOpen(3)}>
+                    <span>Day 4</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M6.0026 1.08203V10.4154M1.33594 5.7487H10.6693" stroke="#0F1416" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                  {travelerPhotoIsOpen === 3 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
                 </div>
               </div>
+              :
+              <div>
+                <TravelerPhotos travellerPhotos={TravellerPhotos} />
+              </div>  
+            }
             </div>
           </div>
         </div>
@@ -1261,7 +1247,7 @@ const Details = ({
           </Slider>
         </div>
         <div className="w-full flex justify-center">
-          <button className="flex items-center gap-2 px-[18px] py-[12px] bg-orange-600 text-white rounded-full text-base">
+          <button className="flex items-center gap-2 px-[18px] py-[12px] bg-orange-600 text-white rounded-full text-base" onClick={handleShowAllReview}>
             <span>Read all reviews </span>
             <FaArrowRight />
           </button>
@@ -1272,6 +1258,21 @@ const Details = ({
           <CheckAvailability
             handleCheckAvailability={handleCheckAvailability}
           />
+        </div>
+      )}
+      {showAllReviews && (
+        <div className="inset-0 z-[99] h-screen bg-[#000e1999] overflow-hidden overflow-y-scroll fixed backdrop-blur-[2px] flex justify-end hide-scrollbar">
+          <AllReviews handleShowAllReview={handleShowAllReview} handlePostNewReview={handlePostNewReview} reviews={reviews} />
+        </div>
+      )}
+      {postNewReview && (
+        <div className="inset-0 z-[99] h-screen bg-[#000e1999] overflow-hidden overflow-y-scroll fixed backdrop-blur-[2px] flex items-center justify-center hide-scrollbar" >
+          <PostNewReview handlePostNewReview={handlePostNewReview} handleShowAllReview={handleShowAllReview} reviews={reviews} />
+        </div>
+      )}
+      {sharePhoto && (
+        <div className="inset-0 z-[99] h-screen bg-[#000e1999] overflow-hidden overflow-y-scroll fixed backdrop-blur-[2px] flex items-center justify-center hide-scrollbar" >
+          <SharePhotos img={selectedImage} title={details?.name} handleSharePhoto={handleSharePhoto}/>
         </div>
       )}
     </div>

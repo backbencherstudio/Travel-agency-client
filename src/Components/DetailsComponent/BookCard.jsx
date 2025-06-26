@@ -48,7 +48,7 @@ const BookCard = ({
 
   // console.log("deatils", details)
 
-  console.log("Path name:",location.pathname.split("/")[1])
+  // console.log("Path name:",location.pathname.split("/")[1])
 
   // Get today's date
   const today = new Date();

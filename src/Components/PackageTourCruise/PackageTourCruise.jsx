@@ -39,7 +39,7 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
       policy: "Check-in & Check-out"
     },
     created_at: "2025-02-01T08:37:27.072Z",
-    descriiption: "Bali is a paradise that promises breathtaking scenery, rich cultural heritage, and unforgettable experiences. From serene beaches and ancient temples to majestic waterfalls hidden in lush landscapes, Bali has something for every traveler. This guide takes you through the must-see spots in Bali for an adventure you'll treasure forever.",
+    description: "Bali is a paradise that promises breathtaking scenery, rich cultural heritage, and unforgettable experiences. From serene beaches and ancient temples to majestic waterfalls hidden in lush landscapes, Bali has something for every traveler. This guide takes you through the must-see spots in Bali for an adventure you'll treasure forever.",
     id: "cm6lxwpfj0005pjvk0553err9",
     duration: 1,
     max_capacity: 1,
@@ -47,7 +47,7 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
     name: "Sacred Temples of Bali",
     package_destinations: [
       {
-        description: {
+        destination: {
           country: {
             id: '20', name: "Bangladesh"
           },
@@ -213,8 +213,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
   const navigate = useNavigate();
   const [lovedPackages, setLovedPackages] = useState({});
   const [specialOffer, setSpecialOffer] = useState({
-    cm6lxw87f0001pjvknqzcxiq2: true,
-    cm6lxwpfj0005pjvk0553err9: false,
+    cm6lxw87f0001pjvknqzcxiq2: false,
+    cm6lxwpfj0005pjvk0553err9: true,
   });
   const searchParams = new URLSearchParams(location.search);
   // console.log('searchParams', searchParams)
@@ -1309,10 +1309,28 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
                 //     <CruiseCard key={cruise.id} cruise={cruise} />
                 //   ))}
                 // </div>
-                <CruiseCard cruise={cruiseData} isPackageRoute={isPackageRoute}
-                  lovedPackages={lovedPackages}
-                  specialOffer={specialOffer}
-                  handleLovedPackages={handleLovedPackages} />
+                <div className="flex flex-col gap-5">
+                  <CruiseCard cruise={cruiseData} isPackageRoute={isPackageRoute}
+                    lovedPackages={lovedPackages}
+                    specialOffer={specialOffer}
+                    handleLovedPackages={handleLovedPackages} />
+                  <CruiseCard cruise={cruiseData} isPackageRoute={isPackageRoute}
+                    lovedPackages={lovedPackages}
+                    specialOffer={specialOffer}
+                    handleLovedPackages={handleLovedPackages} />
+                  <CruiseCard cruise={cruiseData} isPackageRoute={isPackageRoute}
+                    lovedPackages={lovedPackages}
+                    specialOffer={specialOffer}
+                    handleLovedPackages={handleLovedPackages} />
+                  <CruiseCard cruise={cruiseData} isPackageRoute={isPackageRoute}
+                    lovedPackages={lovedPackages}
+                    specialOffer={specialOffer}
+                    handleLovedPackages={handleLovedPackages} />
+                  <CruiseCard cruise={cruiseData} isPackageRoute={isPackageRoute}
+                    lovedPackages={lovedPackages}
+                    specialOffer={specialOffer}
+                    handleLovedPackages={handleLovedPackages} />
+                </div>
               ) : (
                 <>
                   <div
