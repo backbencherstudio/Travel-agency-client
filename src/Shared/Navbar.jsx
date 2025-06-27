@@ -164,7 +164,7 @@ const Navbar = () => {
                   </NavLink>
                 </li>
 
-                <li>
+{/*                 <li>
                   <NavLink
                     to='/cruises'
                     className={({ isActive }) =>
@@ -174,7 +174,7 @@ const Navbar = () => {
                     {' '}
                     Cruises{' '}
                   </NavLink>
-                </li>
+                </li> */}
 
                 <li>
                   <NavLink
