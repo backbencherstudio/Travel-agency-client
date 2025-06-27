@@ -80,7 +80,7 @@ const Footer = () => {
               Home
             </Link>
             <Link to="/tours" onClick={handleLinkClick} className="text-base hover:text-orange-500">Tours</Link>
-            <Link to="/cruises" onClick={handleLinkClick} className="text-base hover:text-orange-500">Cruises</Link>
+{/*             <Link to="/cruises" onClick={handleLinkClick} className="text-base hover:text-orange-500">Cruises</Link> */}
             <Link to="/packages" onClick={handleLinkClick} className="text-base hover:text-orange-500">Packages</Link>
             <Link to="/reservations" onClick={handleLinkClick} className="text-base hover:text-orange-500">Reservations</Link>
             <Link to="/blogs" onClick={handleLinkClick} className="text-base hover:text-orange-500">Blogs</Link>
