@@ -30,8 +30,8 @@ export default function PostNewReview({ handlePostNewReview, handleShowAllReview
         <div className="bg-white relative rounded-xl p-[40px]">
             <div className="flex flex-col gap-[60px]">
                 <div className="flex flex-col items-center gap-3">
-                    <div className="w-[60px] h-[60px]">
-                        <img src={reviews[0].avatar} alt="Guest profile picture" className="w-full h-full object-cover" />
+                    <div className="w-[60px] h-[60px] rounded-full">
+                        <img src={reviews[0].avatar} alt="Guest profile picture" className="w-full h-full object-cover rounded-full" />
                     </div>
                     <div>
                         <h3 className="text-[20px] font-semibold text-[#323B47]">{reviews[0].user.name}</h3>
