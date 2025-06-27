@@ -2,8 +2,8 @@ export default function ReviewCard({ review }) {
     return (
         <div className="flex flex-col gap-[18px] border-b border-[#DFE1E7] py-[32px]">
             <div className="flex items-center gap-3">
-                <div className="w-[60px] h-[60px]">
-                    <img src={review.avatar} alt="Guest profile picture" className="w-full h-full object-cover" />
+                <div className="w-[60px] h-[60px] rounded-full">
+                    <img src={review.avatar} alt="Guest profile picture" className="w-full h-full object-cover rounded-full" />
                 </div>
                 <div>
                     <h3 className="text-[20px] font-semibold text-[#323B47]">{review.user.name}</h3>
