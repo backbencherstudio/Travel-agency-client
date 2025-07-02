@@ -133,17 +133,17 @@ const Chart = ({ title, data, timeInterval, setTimeInterval }) => {
           value={timeInterval}
           onChange={(e) => setTimeInterval(e.target.value)}
           style={{
+            color: "#fff",
             padding: "8px 16px",
             cursor: "pointer",
             fontSize: "14px",
-            border: "1px solid #e86731",
+            backgroundColor: "#EB5B2A",
             borderRadius: "4px",
             margin: "0 8px",
-            color: "#e86731",
           }}
         >
           <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
+          <option value="monthly">This Year</option>
           <option value="yearly">Yearly</option>
         </select>
       </div>
@@ -158,28 +158,35 @@ const Chart = ({ title, data, timeInterval, setTimeInterval }) => {
                 angle: 45,
                 textAnchor: 'start',
                 fontSize: 12
-              }
+              },
+              disableLine: true,
             },
           ]}
           yAxis={[
             {
               min: Math.max(0, minValue - yAxisBuffer),
-              max: maxValue + yAxisBuffer
+              max: maxValue + yAxisBuffer,
+              disableLine: true,
+              valueFormatter: (value) => `$${value}`,
             }
           ]}
           series={[
             {
               data: filteredData.map(item => item.y),
               label: title,
-              color: "#e86731",
+              color: "#ff971833",
               curve: "natural",
               area: true,
               showMark: true,
             },
           ]}
+          grid={{
+            horizontal: true,
+            vertical: false,
+          }}
           slotProps={{
             legend: {
-              hidden: true 
+              hidden: true
             }
           }}
         />

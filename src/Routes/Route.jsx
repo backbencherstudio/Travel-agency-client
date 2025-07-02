@@ -248,12 +248,12 @@ element:<Scanning/>
   },
   {
     path: "/dashboard",
-    // element: <DashboardLayout />,
+    element: <DashboardLayout />,
     element: (
-      <PrivateRoute role={["admin", "vendor"]}>
-        {/* <SocketNotificationProvider> */}
+      <PrivateRoute role={["admin", "vendor","user"]}>
+        <SocketNotificationProvider>
           <AdminLayout />
-        {/* </SocketNotificationProvider> */}
+        </SocketNotificationProvider>
       </PrivateRoute>
     ),
     children: [

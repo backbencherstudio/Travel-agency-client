@@ -2,7 +2,7 @@ import Dashboard from '../Pages/Dashboard/Dashboard'
 
 const DashboardLayout = () => {
   return (
-    <div>
+    <div className=''>
       <Dashboard />
     </div>
   )
