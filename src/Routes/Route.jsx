@@ -9,7 +9,7 @@ import Blogs from "../Pages/blogs/Blogs";
 import SingleBlog from "../Pages/blogs/SingleBlog";
 import TourDetails from "../Pages/Tours/TourDetails/TourDetails";
 import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
-// import DashboardLayout from '../Layout/DashboardLayout'
+import DashboardLayout from '../Layout/DashboardLayout'
 import DashboardAnalysis from "../Components/Dashboard/Dashboard/DashboardAnalysis";
 import Packages from "../Pages/Dashboard/Package/Packages";
 import ChangePassword from "../Pages/Auth/ChangePassword";
