@@ -689,7 +689,7 @@ const CustomTable = ({ tableType = "", title, columns }) => {
             <option value="cancelled">Cancelled</option>
           </select>
         </div>
-
+        {/* Table  */}
         <div className="w-full overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
