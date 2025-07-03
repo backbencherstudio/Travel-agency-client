@@ -36,30 +36,30 @@ const Settings = () => {
     { 
       icon: <RxCrossCircled className='text-xl' />, 
       label: 'Cancellation', 
-      adminOnly: true 
+      // adminOnly: true 
     },
     { 
       icon: <GoShieldLock className='text-lg' />, 
       label: 'Permission', 
-      adminOnly: true 
+      // adminOnly: true 
     },
     { 
       icon: <IoLockOpenOutline className='text-lg' />, 
       label: 'Password' 
     },
-    { 
-      icon: <RiCoupon2Line className='text-lg' />, 
-      label: 'Coupon' 
-    },
-    {
-      icon: <RiQuestionAnswerLine className='text-xl' />,
-      label: 'FAQ',
-      adminOnly: true
-    },
+    // { 
+    //   icon: <RiCoupon2Line className='text-lg' />, 
+    //   label: 'Coupon' 
+    // },
+    // {
+    //   icon: <RiQuestionAnswerLine className='text-xl' />,
+    //   label: 'FAQ',
+    //   adminOnly: true
+    // },
     {
       icon: <MdCopyright className="text-xl" />, 
       label: 'Social & Copyright',
-      adminOnly: true
+      // adminOnly: true
     },
   ].filter(item => !item.adminOnly || user?.type === 'admin')
 
@@ -79,10 +79,10 @@ const Settings = () => {
         return <Permission />
       case 'Password':
         return <Password />
-      case 'FAQ':
-        return <FaqAdded />
-      case 'Coupon':
-        return <Coupon />
+      // case 'FAQ':
+      //   return <FaqAdded />
+      // case 'Coupon':
+      //   return <Coupon />
       case 'Social & Copyright':
         return <SocialCopyRight />
       default:
@@ -102,7 +102,7 @@ const Settings = () => {
           <input
             type='text'
             placeholder='Search anything'
-            className='py-1.5 pl-10 pr-4 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full sm:w-[300px]'
+            className='py-1.5 pl-10 pr-4  rounded-md focus:outline-none focus:border-orange-400 w-full sm:w-[300px]'
           />
           <FaSearch className='absolute top-3 left-3 text-zinc-400' />
         </div>

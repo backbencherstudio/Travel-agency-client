@@ -10,7 +10,7 @@ const DashboardCard = ({
   return (
     <div
       onClick={() => setChartType(title)}
-      className={`px-3 py-6 rounded-lg ${
+      className={`flex-1 px-3 py-6 rounded-lg ${
         chartType === title ? "shadow-lg bg-[#061D35] text-white" : "bg-white "
       }`}
     >
@@ -21,7 +21,7 @@ const DashboardCard = ({
           {icon}
         </div>
         <div>
-          <span className={`text-[12px] font-medium ${
+          <span className={`text-[12px] text-nowrap font-medium ${
                   chartType === title ? "text-[#E9E9EA] " : "text-[#4A4C56]"
                 }`}> {title}</span>
           <div className="grid grid-cols-2 gap-2">

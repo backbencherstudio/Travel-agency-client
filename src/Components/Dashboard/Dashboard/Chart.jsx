@@ -125,8 +125,8 @@ const Chart = ({ title, data, timeInterval, setTimeInterval }) => {
 
   return (
     <div className="border rounded-xl p-4 my-4 bg-white">
-      <div className="flex justify-between" style={{ marginBottom: "16px" }}>
-        <h1 className="text-[24px] font-semibold">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between" style={{ marginBottom: "16px" }}>
+        <h1 className="text-[24px] font-semibold text-center sm:text-start">
           {title === "Earnings" ? "Revenue" : title} Statistics
         </h1>
         <select
@@ -142,7 +142,7 @@ const Chart = ({ title, data, timeInterval, setTimeInterval }) => {
             margin: "0 8px",
           }}
         >
-          <option value="weekly">Weekly</option>
+          <option value="weekly">This Month</option>
           <option value="monthly">This Year</option>
           <option value="yearly">Yearly</option>
         </select>

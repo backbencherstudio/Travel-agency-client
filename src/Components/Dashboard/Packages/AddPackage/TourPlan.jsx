@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FaPlus} from 'react-icons/fa';
+import { FaPlus } from 'react-icons/fa';
 import uploadIcon from '../../../../assets/dashboard/upload-icon.svg';
 import { LuTrash2 } from 'react-icons/lu';
 
@@ -16,22 +16,21 @@ const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
             {/* Dropzone Area */}
             <div
                 {...getRootProps()}
-                className={`border border-dashed bg-white flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${
-                    isDragActive ? 'bg-purple-900/50 border-purple-600' : 'border-gray-200'
-                }`}
+                className={`border border-dashed bg-white flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${isDragActive ? 'bg-purple-900/50 border-purple-600' : 'border-gray-200'
+                    }`}
             >
                 <img
                     src={uploadIcon}
-                    className="bg-[#EB5B2A] p-[10px] rounded-full mb-[6px]"
+                    className="bg-[#F6B49D] p-[10px] rounded-full mb-[6px]"
                     alt=""
                 />
                 <input {...getInputProps()} />
                 <p className="text-xs md:text-base text-black rounded-full">
                     Drag & Drop or <span className="text-[#EB5B2A]">Choose File</span> to upload
                 </p>
-                <p className="mt-1 text-xs md:text-base text-gray-400 text-center">
+                {/* <p className="mt-1 text-xs md:text-base text-gray-400 text-center">
                     Supported formats: jpeg, png
-                </p>
+                </p> */}
             </div>
 
             {/* Image Thumbnails */}
@@ -118,18 +117,18 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                             {tourPlan.length > 1 && index > 0 && (
                                 <button
                                     onClick={() => deleteDay(index)}
-                                   className='text-red-600 hover:text-red-700 transform duration-300'
+                                    className='text-red-600 hover:text-red-700 transform duration-300'
                                     title="Delete Day"
                                 >
-                                    <LuTrash2  className='text-lg'/>
+                                    <LuTrash2 className='text-lg' />
                                 </button>
                             )}
                         </div>
                         <div className="p-4 bg-[#F0F4F9] rounded-lg flex flex-col gap-3">
                             {/* Trip Title */}
                             <div>
-                                <label className="block text-gray-500 text-base font-medium mb-2">
-                                    Trip Title
+                                <label className="block text-[#4A4C56] text-base font-medium mb-2">
+                                    Tour Title
                                 </label>
                                 <input
                                     type="text"
@@ -144,8 +143,8 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
 
                             {/* Trip Overview */}
                             <div>
-                                <label className="block text-gray-500 text-base font-medium mb-2">
-                                    Trip Overview
+                                <label className="block text-[#4A4C56] text-base font-medium mb-2">
+                                    Plan Overview
                                 </label>
                                 <input
                                     type="text"
@@ -160,7 +159,7 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
 
                             {/* Upload Images */}
                             <div className="w-full">
-                                <h2 className="text-base font-medium text-gray-500 mb-2">
+                                <h2 className="text-base font-medium text-[#4A4C56] mb-2">
                                     Upload Images
                                 </h2>
                                 <ImageUploader
@@ -174,17 +173,23 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                                 />
                             </div>
                         </div>
-                        {index === tourPlan.length -1 && (
+                        {index === tourPlan.length - 1 && (
 
                             <button
-                            onClick={addDay}
-                            className={`px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded ${packageType === "tour" ? "hidden" : "block"}`}
+                                onClick={addDay}
+                                className={`px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded ${packageType === "tour" ? "hidden" : "block"}`}
                             >
-                            <FaPlus className="w-3 h-3" /> Add Another Day
-                        </button>
+                                <FaPlus className="w-3 h-3" /> Add Another Day
+                            </button>
                         )}
                     </div>
                 ))}
+            <button className='bg-[#EB5B2A] flex items-center gap-1 px-2 py-3 text-white font-medium rounded-md cursor-pointer'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10.0013 4.16602V15.8327M4.16797 9.99935H15.8346" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Add Another Day</span>
+            </button>
             </div>
         </div>
     );

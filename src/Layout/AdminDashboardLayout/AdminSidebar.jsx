@@ -150,52 +150,52 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
             <path d="M70.0095 4.83554C68.6058 2.46809 61.8806 4.10226 53.5002 7.97817C50.0643 5.88308 45.6017 5.67357 41.8725 7.87342C38.2479 10.0104 36.2367 13.8444 36.2995 17.7622C28.2963 23.2095 23.289 28.3005 24.7556 30.7727C26.6621 33.9782 38.5413 30.6889 50.8395 23.5866C63.1376 16.5052 71.937 8.04102 70.0095 4.83554ZM38.3527 24.0894C37.2633 24.2989 36.53 24.2361 36.2995 23.838C36.0481 23.419 36.3624 22.7276 37.1376 21.8477C37.4937 22.6857 37.8918 23.419 38.3527 24.0894ZM58.8427 16.5261C58.8008 16.17 58.7589 15.8348 58.696 15.4786C53.8983 19.3964 45.3922 24.0475 40.0707 26.0169C40.4059 26.3102 40.7411 26.5826 41.0973 26.834C35.6081 28.8453 31.2923 29.2643 30.2447 27.5254C29.1972 25.7864 31.837 22.6857 36.4252 19.2288C36.509 19.7526 36.6138 20.2763 36.7604 20.8001C33.8064 23.1885 32.1722 25.137 32.675 25.975C34.3511 28.7824 54.5687 18.1394 60.3302 12.1055C61.713 10.6599 62.4043 9.59139 62.0691 9.00476C61.5873 8.18768 59.1989 8.58575 55.8258 9.86375C55.4905 9.50759 55.1344 9.17237 54.7573 8.85811C59.7017 6.90967 63.4938 6.32305 64.4575 7.95722C65.4632 9.65424 63.1167 12.9645 58.8427 16.5261ZM56.58 10.7437C57.5437 10.597 58.1932 10.7018 58.4027 11.058C58.6122 11.4141 58.3818 12.0007 57.7951 12.734C57.4809 12.0636 57.0828 11.3932 56.58 10.7437Z" fill="url(#paint11_linear_5033_70639)" />
             <defs>
               <linearGradient id="paint0_linear_5033_70639" x1="181.408" y1="88.2366" x2="-122.503" y2="-35.5463" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#0000FF" />
-                <stop offset="1" stop-color="#00FFFF" />
+                <stop stopColor="#0000FF" />
+                <stop offset="1" stopColor="#00FFFF" />
               </linearGradient>
               <linearGradient id="paint1_linear_5033_70639" x1="182.786" y1="84.8585" x2="-121.126" y2="-38.9245" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#0000FF" />
-                <stop offset="1" stop-color="#00FFFF" />
+                <stop stopColor="#0000FF" />
+                <stop offset="1" stopColor="#00FFFF" />
               </linearGradient>
               <linearGradient id="paint2_linear_5033_70639" x1="189.758" y1="67.7319" x2="-114.153" y2="-56.0508" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#0000FF" />
-                <stop offset="1" stop-color="#00FFFF" />
+                <stop stopColor="#0000FF" />
+                <stop offset="1" stopColor="#00FFFF" />
               </linearGradient>
               <linearGradient id="paint3_linear_5033_70639" x1="191.495" y1="63.4725" x2="-112.416" y2="-60.3103" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#0000FF" />
-                <stop offset="1" stop-color="#00FFFF" />
+                <stop stopColor="#0000FF" />
+                <stop offset="1" stopColor="#00FFFF" />
               </linearGradient>
               <linearGradient id="paint4_linear_5033_70639" x1="195.161" y1="54.4673" x2="-108.75" y2="-69.3156" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#0000FF" />
-                <stop offset="1" stop-color="#00FFFF" />
+                <stop stopColor="#0000FF" />
+                <stop offset="1" stopColor="#00FFFF" />
               </linearGradient>
               <linearGradient id="paint5_linear_5033_70639" x1="197.625" y1="48.4202" x2="-106.286" y2="-75.3625" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#0000FF" />
-                <stop offset="1" stop-color="#00FFFF" />
+                <stop stopColor="#0000FF" />
+                <stop offset="1" stopColor="#00FFFF" />
               </linearGradient>
               <linearGradient id="paint6_linear_5033_70639" x1="199.837" y1="42.9912" x2="-104.074" y2="-80.7917" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#0000FF" />
-                <stop offset="1" stop-color="#00FFFF" />
+                <stop stopColor="#0000FF" />
+                <stop offset="1" stopColor="#00FFFF" />
               </linearGradient>
               <linearGradient id="paint7_linear_5033_70639" x1="201.319" y1="39.35" x2="-102.593" y2="-84.4329" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#0000FF" />
-                <stop offset="1" stop-color="#00FFFF" />
+                <stop stopColor="#0000FF" />
+                <stop offset="1" stopColor="#00FFFF" />
               </linearGradient>
               <linearGradient id="paint8_linear_5033_70639" x1="82.6136" y1="-26.8054" x2="1.57067" y2="57.4911" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#E23800" />
-                <stop offset="1" stop-color="#FF9718" />
+                <stop stopColor="#E23800" />
+                <stop offset="1" stopColor="#FF9718" />
               </linearGradient>
               <linearGradient id="paint9_linear_5033_70639" x1="85.1857" y1="-24.3282" x2="4.14266" y2="59.9681" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#E23800" />
-                <stop offset="1" stop-color="#FF9718" />
+                <stop stopColor="#E23800" />
+                <stop offset="1" stopColor="#FF9718" />
               </linearGradient>
               <linearGradient id="paint10_linear_5033_70639" x1="92.699" y1="-17.1049" x2="11.656" y2="67.1917" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#E23800" />
-                <stop offset="1" stop-color="#FF9718" />
+                <stop stopColor="#E23800" />
+                <stop offset="1" stopColor="#FF9718" />
               </linearGradient>
               <linearGradient id="paint11_linear_5033_70639" x1="86.0505" y1="-23.4967" x2="5.00755" y2="60.7999" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#E23800" />
-                <stop offset="1" stop-color="#FF9718" />
+                <stop stopColor="#E23800" />
+                <stop offset="1" stopColor="#FF9718" />
               </linearGradient>
             </defs>
           </svg>
@@ -325,11 +325,11 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 18 18" fill="none">
-                <path d="M6.0006 16.5H12.0006C15.0156 16.5 15.5556 15.2925 15.7131 13.8225L16.2756 7.8225C16.4781 5.9925 15.9531 4.5 12.7506 4.5H5.2506C2.0481 4.5 1.5231 5.9925 1.7256 7.8225L2.2881 13.8225C2.4456 15.2925 2.9856 16.5 6.0006 16.5Z" stroke="white" stroke-width="1.35" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M6 4.5V3.9C6 2.5725 6 1.5 8.4 1.5H9.6C12 1.5 12 2.5725 12 3.9V4.5" stroke="white" stroke-width="1.35" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M10.5 9.75V10.5C10.5 10.5075 10.5 10.5075 10.5 10.515C10.5 11.3325 10.4925 12 9 12C7.515 12 7.5 11.34 7.5 10.5225V9.75C7.5 9 7.5 9 8.25 9H9.75C10.5 9 10.5 9 10.5 9.75Z" stroke="white" stroke-width="1.35" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M16.2375 8.25C14.505 9.51 12.525 10.26 10.5 10.515" stroke="white" stroke-width="1.35" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M1.96497 8.45331C3.65247 9.60831 5.55747 10.3058 7.49997 10.5233" stroke="white" stroke-width="1.35" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M6.0006 16.5H12.0006C15.0156 16.5 15.5556 15.2925 15.7131 13.8225L16.2756 7.8225C16.4781 5.9925 15.9531 4.5 12.7506 4.5H5.2506C2.0481 4.5 1.5231 5.9925 1.7256 7.8225L2.2881 13.8225C2.4456 15.2925 2.9856 16.5 6.0006 16.5Z" stroke="white" strokeWidth="1.35" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M6 4.5V3.9C6 2.5725 6 1.5 8.4 1.5H9.6C12 1.5 12 2.5725 12 3.9V4.5" stroke="white" strokeWidth="1.35" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M10.5 9.75V10.5C10.5 10.5075 10.5 10.5075 10.5 10.515C10.5 11.3325 10.4925 12 9 12C7.515 12 7.5 11.34 7.5 10.5225V9.75C7.5 9 7.5 9 8.25 9H9.75C10.5 9 10.5 9 10.5 9.75Z" stroke="white" strokeWidth="1.35" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M16.2375 8.25C14.505 9.51 12.525 10.26 10.5 10.515" stroke="white" strokeWidth="1.35" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M1.96497 8.45331C3.65247 9.60831 5.55747 10.3058 7.49997 10.5233" stroke="white" strokeWidth="1.35" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span>Packages</span>
             </button>
@@ -367,10 +367,10 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M1.66663 7.08746H18.3333" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M5 13.7542H6.66667" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M8.75 13.7542H12.0833" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M5.36663 2.92078H14.625C17.5916 2.92078 18.3333 3.65411 18.3333 6.57911V13.4208C18.3333 16.3458 17.5916 17.0791 14.6333 17.0791H5.36663C2.40829 17.0874 1.66663 16.3541 1.66663 13.4291V6.57911C1.66663 3.65411 2.40829 2.92078 5.36663 2.92078Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M1.66663 7.08746H18.3333" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 13.7542H6.66667" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M8.75 13.7542H12.0833" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5.36663 2.92078H14.625C17.5916 2.92078 18.3333 3.65411 18.3333 6.57911V13.4208C18.3333 16.3458 17.5916 17.0791 14.6333 17.0791H5.36663C2.40829 17.0874 1.66663 16.3541 1.66663 13.4291V6.57911C1.66663 3.65411 2.40829 2.92078 5.36663 2.92078Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span>Payment</span>
             </button>
@@ -384,7 +384,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
               }`}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <g clip-path="url(#clip0_5033_70699)">
+              <g clipPath="url(#clip0_5033_70699)">
                 <path d="M14.6234 0.617188H3.37344C2.64266 0.617932 1.94203 0.908561 1.4253 1.4253C0.908561 1.94203 0.617932 2.64266 0.617188 3.37344V14.6234C0.617188 16.1433 1.85356 17.3797 3.37344 17.3797H14.6234C16.1433 17.3797 17.3797 16.1433 17.3797 14.6234V3.37344C17.3797 1.85356 16.1433 0.617188 14.6234 0.617188ZM3.37344 1.62969H14.6234C15.5848 1.62969 16.3672 2.41213 16.3672 3.37344V5.39844H1.62969V3.37344C1.62969 2.41213 2.41213 1.62969 3.37344 1.62969ZM14.6234 16.3672H3.37344C2.91115 16.3666 2.46797 16.1827 2.14108 15.8558C1.81419 15.5289 1.63028 15.0857 1.62969 14.6234V6.41094H16.3672V14.6234C16.3672 15.5848 15.5848 16.3672 14.6234 16.3672Z" fill="white" />
                 <path d="M3.9125 4.02031H4.87213C5.00639 4.02031 5.13516 3.96698 5.2301 3.87204C5.32504 3.77709 5.37838 3.64833 5.37838 3.51406C5.37838 3.3798 5.32504 3.25103 5.2301 3.15609C5.13516 3.06115 5.00639 3.00781 4.87213 3.00781H3.9125C3.77823 3.00781 3.64947 3.06115 3.55453 3.15609C3.45959 3.25103 3.40625 3.3798 3.40625 3.51406C3.40625 3.64833 3.45959 3.77709 3.55453 3.87204C3.64947 3.96698 3.77823 4.02031 3.9125 4.02031ZM7.09006 4.02031H14.0819C14.2162 4.02031 14.345 3.96698 14.4399 3.87204C14.5349 3.77709 14.5882 3.64833 14.5882 3.51406C14.5882 3.3798 14.5349 3.25103 14.4399 3.15609C14.345 3.06115 14.2162 3.00781 14.0819 3.00781H7.09006C6.9558 3.00781 6.82703 3.06115 6.73209 3.15609C6.63715 3.25103 6.58381 3.3798 6.58381 3.51406C6.58381 3.64833 6.63715 3.77709 6.73209 3.87204C6.82703 3.96698 6.9558 4.02031 7.09006 4.02031ZM9.78388 8.23287L5.83794 12.1799C5.70127 12.3152 5.61089 12.4902 5.57975 12.68L5.36375 13.9586C5.3393 14.1038 5.34992 14.2527 5.39472 14.3929C5.43951 14.5332 5.51719 14.6607 5.62128 14.7649C5.72536 14.869 5.85284 14.9467 5.99307 14.9916C6.1333 15.0365 6.28223 15.0472 6.42744 15.0228L7.70656 14.8068C7.89725 14.7747 8.0705 14.6853 8.20662 14.5492L12.1543 10.6021C12.4709 10.2854 12.6447 9.86469 12.6447 9.4175C12.6447 8.97031 12.4704 8.549 12.1543 8.23287C11.5209 7.60006 10.4167 7.60006 9.78388 8.23287ZM7.53894 13.8084L6.383 14.0036L6.57312 12.8763L9.33894 10.1105L10.2794 11.051L7.53894 13.8084ZM11.4376 9.88606L10.9938 10.3321L10.0556 9.39387L10.5005 8.94894C10.6248 8.82467 10.7933 8.75485 10.9691 8.75485C11.1448 8.75485 11.3134 8.82467 11.4376 8.94894C11.5619 9.07321 11.6317 9.24176 11.6317 9.4175C11.6317 9.59325 11.5619 9.76179 11.4376 9.88606Z" fill="white" />
               </g>
@@ -406,7 +406,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <g clip-path="url(#clip0_5033_70699)">
+                <g clipPath="url(#clip0_5033_70699)">
                   <path d="M14.6234 0.617188H3.37344C2.64266 0.617932 1.94203 0.908561 1.4253 1.4253C0.908561 1.94203 0.617932 2.64266 0.617188 3.37344V14.6234C0.617188 16.1433 1.85356 17.3797 3.37344 17.3797H14.6234C16.1433 17.3797 17.3797 16.1433 17.3797 14.6234V3.37344C17.3797 1.85356 16.1433 0.617188 14.6234 0.617188ZM3.37344 1.62969H14.6234C15.5848 1.62969 16.3672 2.41213 16.3672 3.37344V5.39844H1.62969V3.37344C1.62969 2.41213 2.41213 1.62969 3.37344 1.62969ZM14.6234 16.3672H3.37344C2.91115 16.3666 2.46797 16.1827 2.14108 15.8558C1.81419 15.5289 1.63028 15.0857 1.62969 14.6234V6.41094H16.3672V14.6234C16.3672 15.5848 15.5848 16.3672 14.6234 16.3672Z" fill="white" />
                   <path d="M3.9125 4.02031H4.87213C5.00639 4.02031 5.13516 3.96698 5.2301 3.87204C5.32504 3.77709 5.37838 3.64833 5.37838 3.51406C5.37838 3.3798 5.32504 3.25103 5.2301 3.15609C5.13516 3.06115 5.00639 3.00781 4.87213 3.00781H3.9125C3.77823 3.00781 3.64947 3.06115 3.55453 3.15609C3.45959 3.25103 3.40625 3.3798 3.40625 3.51406C3.40625 3.64833 3.45959 3.77709 3.55453 3.87204C3.64947 3.96698 3.77823 4.02031 3.9125 4.02031ZM7.09006 4.02031H14.0819C14.2162 4.02031 14.345 3.96698 14.4399 3.87204C14.5349 3.77709 14.5882 3.64833 14.5882 3.51406C14.5882 3.3798 14.5349 3.25103 14.4399 3.15609C14.345 3.06115 14.2162 3.00781 14.0819 3.00781H7.09006C6.9558 3.00781 6.82703 3.06115 6.73209 3.15609C6.63715 3.25103 6.58381 3.3798 6.58381 3.51406C6.58381 3.64833 6.63715 3.77709 6.73209 3.87204C6.82703 3.96698 6.9558 4.02031 7.09006 4.02031ZM9.78388 8.23287L5.83794 12.1799C5.70127 12.3152 5.61089 12.4902 5.57975 12.68L5.36375 13.9586C5.3393 14.1038 5.34992 14.2527 5.39472 14.3929C5.43951 14.5332 5.51719 14.6607 5.62128 14.7649C5.72536 14.869 5.85284 14.9467 5.99307 14.9916C6.1333 15.0365 6.28223 15.0472 6.42744 15.0228L7.70656 14.8068C7.89725 14.7747 8.0705 14.6853 8.20662 14.5492L12.1543 10.6021C12.4709 10.2854 12.6447 9.86469 12.6447 9.4175C12.6447 8.97031 12.4704 8.549 12.1543 8.23287C11.5209 7.60006 10.4167 7.60006 9.78388 8.23287ZM7.53894 13.8084L6.383 14.0036L6.57312 12.8763L9.33894 10.1105L10.2794 11.051L7.53894 13.8084ZM11.4376 9.88606L10.9938 10.3321L10.0556 9.39387L10.5005 8.94894C10.6248 8.82467 10.7933 8.75485 10.9691 8.75485C11.1448 8.75485 11.3134 8.82467 11.4376 8.94894C11.5619 9.07321 11.6317 9.24176 11.6317 9.4175C11.6317 9.59325 11.5619 9.76179 11.4376 9.88606Z" fill="white" />
                 </g>
@@ -440,8 +440,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 }`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path d="M2.25 6.83203V11.1595C2.25 12.7495 2.25 12.7495 3.75 13.762L7.875 16.147C8.4975 16.507 9.51 16.507 10.125 16.147L14.25 13.762C15.75 12.7495 15.75 12.7495 15.75 11.167V6.83203C15.75 5.24953 15.75 5.24953 14.25 4.23703L10.125 1.85203C9.51 1.49203 8.4975 1.49203 7.875 1.85203L3.75 4.23703C2.25 5.24953 2.25 5.24953 2.25 6.83203Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M2.25 6.83203V11.1595C2.25 12.7495 2.25 12.7495 3.75 13.762L7.875 16.147C8.4975 16.507 9.51 16.507 10.125 16.147L14.25 13.762C15.75 12.7495 15.75 12.7495 15.75 11.167V6.83203C15.75 5.24953 15.75 5.24953 14.25 4.23703L10.125 1.85203C9.51 1.49203 8.4975 1.49203 7.875 1.85203L3.75 4.23703C2.25 5.24953 2.25 5.24953 2.25 6.83203Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <span>Settings</span>
             </button>

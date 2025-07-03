@@ -37,7 +37,7 @@ const Cancellation = () => {
       setBody(res.data?.cancellation_policy)
     }
   }
-  
+
   const handleEdit = () => {
     setIsEditing(true)
   }
@@ -68,7 +68,7 @@ const Cancellation = () => {
   // console.log('body', body)
   return (
     <div className='p-4 sm:p-6'>
-       <Helmet>
+      <Helmet>
         <title>Around 360 - Cancellation</title>
       </Helmet>
       {/* Header Section */}
@@ -82,16 +82,16 @@ const Cancellation = () => {
             system offers.
           </p>
         </div>
-        {/* {!isEditing && (
+        {!isEditing && (
           <div className='flex justify-start sm:justify-end items-end'>
             <button
               className='bg-[#061D35] rounded px-4 py-2 text-white text-sm sm:text-[14px] hover:bg-[#050b11] transform duration-300'
               onClick={handleEdit}
             >
-              Add Policy
+              Edit Policy
             </button>
           </div>
-        )} */}
+        )}
       </div>
 
       {/* Policy Section */}
@@ -112,60 +112,62 @@ const Cancellation = () => {
 
         {/* Editing View */}
         {/* {body ? ( */}
-          <div>
-            <form onSubmit={handleSubmit(handleSave)}>
-              {/* <textarea
+        <div>
+          <form onSubmit={handleSubmit(handleSave)}>
+            {/* <textarea
                 value={policy}
                 onChange={handlePolicyChange}
                 placeholder='Write your cancellation policy here...'
                 className='w-full h-28 sm:h-32 p-3 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 resize-none'
               /> */}
-              <TinyMCE
-                value={body}
-                onChange={handleEditorChange}
-                height={400}
-                plugins={[
-                  'advlist',
-                  'autolink',
-                  'lists',
-                  'link',
-                  'image',
-                  'charmap',
-                  'preview',
-                  'anchor',
-                  'searchreplace',
-                  'visualblocks',
-                  'code',
-                  'fullscreen',
-                  'insertdatetime',
-                  'media',
-                  'table',
-                  'code',
-                  'help',
-                  'wordcount'
-                ]}
-                toolbar='undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
+            <TinyMCE
+              value={body}
+              onChange={handleEditorChange}
+              height={400}
+              plugins={[
+                'advlist',
+                'autolink',
+                'lists',
+                'link',
+                'image',
+                'charmap',
+                'preview',
+                'anchor',
+                'searchreplace',
+                'visualblocks',
+                'code',
+                'fullscreen',
+                'insertdatetime',
+                'media',
+                'table',
+                'code',
+                'help',
+              ]}
+              toolbar='undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help'
+              init={{
+                branding: false,
+              }}
             />
             {errors.body && (
               <span className='text-red-500 text-sm block mt-1'>
                 {errors.body.message}
               </span>
             )}
-              <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2'>
-                {/* <span className='text-gray-500 text-sm'>{charCount} / 1000</span> */}
-                <span className='text-gray-500 text-sm'>Add or Update the Contents</span>
-                <button
-                  type='submit'
-                  // onClick={handleSave}
-                  className='bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transform duration-300'
-                >
-                  Save Policy
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2'>
+              {/* <span className='text-gray-500 text-sm'>{charCount} / 1000</span> */}
+              {/* <span className='text-gray-500 text-sm'>Add or Update the Contents</span> */}
+              <button
+                type='submit'
+                onClick={handleSave}
+                className='bg-orange-500 text-white px-4 py-2 rounded-md hover:bg-orange-600 transform duration-300'
+              >
+                Save Policy
+              </button>
+            </div>
+          </form>
+        </div>
         {/* ) : ( */}
-          {/* <p className='text-gray-500 text-sm sm:text-base text-wrap'>
+        {/* <p className='text-gray-500 text-sm sm:text-base text-wrap'>
             {policy || 'No cancellation policy set yet.'}
           </p> */}
         {/* )} */}

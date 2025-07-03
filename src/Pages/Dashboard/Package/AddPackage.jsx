@@ -36,8 +36,8 @@ const AddPackage = () => {
   const [languages, setLanguages] = useState([]);
   const [travellerTypes, setTravellerTypes] = useState([]);
   const [tourPlan, setTourPlan] = useState([
-      { id: null, day: 1, title: "", description: "", images: [] },
-    ]);
+    { id: null, day: 1, title: "", description: "", images: [] },
+  ]);
   const [loading, setLoading] = useState(false);
   const [selectedDestinations, setSelectedDestinations] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
@@ -81,7 +81,7 @@ const AddPackage = () => {
             value: cat?.id,
             label: cat?.name,
           }))
-        );  
+        );
 
         const resTravellerTypes = await axiosClient.get("api/admin/traveller-type");
         setTravellerTypes(resTravellerTypes.data?.data);
@@ -289,7 +289,7 @@ const AddPackage = () => {
         form.append("extra_services", JSON.stringify(serviceIds));
       } else if (key === "destinations") {
         form.append("destinations", JSON.stringify(selectedDestinations));
-      }  else if (key === "languages") {
+      } else if (key === "languages") {
         form.append("languages", JSON.stringify(selectedLanguages));
       } else if (key === "travellerTypes") {
         form.append("traveller_types", JSON.stringify(selectedTravellerTypes));
@@ -315,17 +315,17 @@ const AddPackage = () => {
     //     }
     //     setLoading(false);
     // } else {
-        toast.info("Creating package...");
-        // Uncomment to send the form data to your API
-        const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package`;
-        const res = await axiosClient.post(url, form, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
-        console.log("Response:", res.data);
-        if (res.data.success) {
-            toast.info("Package created successfully!");
-        }
-        setLoading(false);
+    toast.info("Creating package...");
+    // Uncomment to send the form data to your API
+    const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package`;
+    const res = await axiosClient.post(url, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    console.log("Response:", res.data);
+    if (res.data.success) {
+      toast.info("Package created successfully!");
+    }
+    setLoading(false);
     // }
   };
 
@@ -340,7 +340,7 @@ const AddPackage = () => {
   const handleExtraServices = (serviceId, isChecked) => {
     if (isChecked) {
       // Add the ID to the array if checked
-      setServicesIds((prev) => [...prev, {id: serviceId}]);
+      setServicesIds((prev) => [...prev, { id: serviceId }]);
     } else {
       // Remove the ID from the array if unchecked
       setServicesIds((prev) => prev.filter((id) => id !== serviceId));
@@ -397,7 +397,7 @@ const AddPackage = () => {
 
   return (
     <div className="flex flex-col gap-4">
-       <Helmet>
+      <Helmet>
         <title>Around 360 - Add Package</title>
       </Helmet>
       <h3 className="text-2xl font-semibold text-[#080613]">
@@ -413,7 +413,7 @@ const AddPackage = () => {
               {/* Package Name */}
               <div>
                 <label className="block text-gray-500 text-base font-medium mb-2">
-                  Package Title
+                  Tour Title
                 </label>
                 <input
                   type="text"
@@ -456,11 +456,10 @@ const AddPackage = () => {
                 </h2>
                 <div
                   {...imageDropzone.getRootProps()}
-                  className={`border border-dashed flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${
-                    isDragging
-                      ? "bg-purple-900/50 border-purple-600"
-                      : "border-gray-200"
-                  }`}
+                  className={`border border-dashed flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${isDragging
+                    ? "bg-purple-900/50 border-purple-600"
+                    : "border-gray-200"
+                    }`}
                 >
                   <img
                     src={uploadIcon}
@@ -481,7 +480,7 @@ const AddPackage = () => {
                   {images.map((file, index) => (
                     <div key={index} className="relative">
                       {file.type === 'video' || file?.video_url ? (
-                        <div 
+                        <div
                           className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer"
                           onClick={() => window.open(file.video_url || URL.createObjectURL(file.file), '_blank')}
                         >
@@ -510,7 +509,7 @@ const AddPackage = () => {
               </div>
 
               {/* Included Packages */}
-              <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
+              <div >
                 <label className="block text-gray-500 text-base font-medium mb-2">
                   Included Package
                 </label>
@@ -526,7 +525,8 @@ const AddPackage = () => {
               </div>
 
               {/* Excluded Packages */}
-              <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
+              {/* <div className={`${packageType === "tour" ? "hidden" : "block"}`}> */}
+              <div>
                 <label className="block text-gray-500 text-base font-medium mb-2">
                   Excluded Package
                 </label>
@@ -541,17 +541,118 @@ const AddPackage = () => {
                 />
               </div>
 
+
+              {/* Package Type */}
+
+              {/* Reusable SVG Checkmark Component */}
+              <svg className="hidden" aria-hidden="true">
+                <symbol id="checkmark" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </symbol>
+              </svg>
+
+              <div className="space-y-4">
+                <h3 className="text-[#616161]">Package Type</h3>
+                <div className="space-y-4 p-4 border rounded-lg">
+                  {/* General Radio */}
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <input
+                        type="radio"
+                        name="type"
+                        id="general"
+                        value="general"
+                        className="absolute opacity-0 w-0 h-0 peer"
+                        aria-labelledby="general-label"
+                      />
+                      <div className="w-5 h-5 rounded-md border-2 border-[#DFDFDF] bg-white peer-checked:bg-[#F6B49D] peer-checked:border-[#F6B49D] peer-focus:ring-2 peer-focus:ring-[#F6B49D] transition-colors duration-200 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white hidden peer-checked:block">
+                          <use href="#checkmark" />
+                        </svg>
+                      </div>
+                    </div>
+                    <label id="general-label" htmlFor="general" className="text-[#4A4C56] font-normal text-[14px] cursor-pointer">General</label>
+                  </div>
+
+                  {/* Nested Options */}
+                  <div className="flex items-center gap-[46px] md:gap-4">
+                    {/* Special Offer Radio */}
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <input
+                          type="radio"
+                          name="type"
+                          id="special"
+                          value="special"
+                          className="absolute opacity-0 w-0 h-0 peer"
+                          aria-labelledby="special-label"
+                        />
+                        <div className="w-5 h-5 rounded-md border-2 border-[#DFDFDF] bg-white peer-checked:bg-[#F6B49D] peer-checked:border-[#F6B49D] peer-focus:ring-2 peer-focus:ring-[#F6B49D] transition-colors duration-200 flex items-center justify-center">
+                          <svg className="w-3 h-3 text-white hidden peer-checked:block">
+                            <use href="#checkmark" />
+                          </svg>
+                        </div>
+                      </div>
+                      <label id="special-label" htmlFor="special" className=" font-normal text-[14px] cursor-pointer">Special Offer</label>
+                    </div>
+
+                    {/* Price Input */}
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="text"
+                        name="price"
+                        id="price"
+                        className="w-[60px] min-w-[60px] px-2 py-1 rounded-md border border-[#DFDFDF]  outline-none"
+                        aria-label="Price amount"
+                      />
+
+                      {/* Percentage/Dollar Toggle */}
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <div className="relative">
+                            <input
+                              type="radio"
+                              name="currency"
+                              id="percent"
+                              value="percent"
+                              className="absolute opacity-0 w-0 h-0 peer"
+                              aria-labelledby="percent-label"
+                            />
+                            <div className="w-4 h-4 rounded-full border-2 border-gray-300 bg-white peer-checked:bg-[#EB5B2A] peer-checked:border-[#EB5B2A] peer-focus:ring-2 peer-focus:ring-white transition-colors duration-200 shadow-md"></div>
+                          </div>
+                          <label id="percent-label" htmlFor="percent" className="cursor-pointer text-[14px] text-[#4A4C56]">%</label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="relative">
+                            <input
+                              type="radio"
+                              name="currency"
+                              id="dollar"
+                              value="dollar"
+                              className="absolute opacity-0 w-0 h-0 peer"
+                              aria-labelledby="dollar-label"
+                            />
+                            <div className="w-4 h-4 rounded-full border-2 border-gray-300 bg-white peer-checked:bg-[#D2D2D5] peer-checked:border-[#D2D2D5] peer-focus:ring-2 peer-focus:ring-white transition-colors duration-200 shadow-md"></div>
+                          </div>
+                          <label id="dollar-label" htmlFor="dollar" className="cursor-pointer text-[14px] text-[#4A4C56]">$</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Tour Plan Section */}
               <div className="flex flex-col gap-4">
                 <h3 className="text-2xl font-semibold text-[#080613]">
-                  Tour Plan
+                  Trip Plan
                 </h3>
                 <TourPlan tourPlan={tourPlan} setTourPlan={setTourPlan} packageType={packageType} />
               </div>
             </div>
             <div className="p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0">
               <div className="flex flex-col gap-4 col-span-2">
-                <div>
+                {/* <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Package Type
                   </label>
@@ -574,9 +675,9 @@ const AddPackage = () => {
                       {errors.max_capacity.message}
                     </p>
                   )}
-                </div>
+                </div> */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
+                  <label className="block text-[#444] text-base font-medium mb-4">
                     Package/Tour Category
                   </label>
                   <select
@@ -602,7 +703,7 @@ const AddPackage = () => {
                     </p>
                   )}
                 </div>
-                <div>
+                {/* <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Destination{packageType === 'package' ? 's' : ''}
                   </label>
@@ -654,27 +755,56 @@ const AddPackage = () => {
                     className="react-select-container"
                     classNamePrefix="react-select"
                   />
-                </div>
-                <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
+                </div> */}
+                <div className="space-y-4">
+                  <label className="block text-[#444] text-base font-medium">
                     Package Price ($)
                   </label>
-                  <input
-                    type="number"
-                    placeholder="Start Price :"
-                    {...register("price", { required: "Price is required" })}
-                    className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  />
+                  <div className="space-y-3">
+                    <input
+                      type="number"
+                      placeholder="Start Price"
+                      {...register("minPrice", {
+                        min: 0,
+                        valueAsNumber: true
+                      })}
+                      className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    />
+                    <input
+                      type="number"
+                      placeholder="End Price"
+                      {...register("maxPrice", {
+                        min: 0,
+                        validate: (value) => {
+                          const minPrice = getValues("minPrice");
+                          return value >= minPrice || "End price must be greater than start price";
+                        },
+                        valueAsNumber: true
+                      })}
+                      className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    />
+                  </div>
                   {errors.price && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.price.message}
                     </p>
                   )}
                 </div>
+                <div className="space-y-4">
+                  <label className="block text-[#444] text-base font-medium">
+                    Package Discount ($)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="Discount Price "
+                    {...register("price", { required: "Price is required" })}
+                    className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  />
+                </div>
                 <div className="flex flex-col 2xl:flex-row gap-4">
                   <div>
-                    <label className="block text-gray-500 text-base font-medium mb-4">
-                      Package Duration <span className="text-xs">(Days/Hours)</span>
+                    <label className="block text-[#444] text-base font-medium mb-4">
+                      Package Duration <span className="text-base">(Days)</span>
                     </label>
                     <input
                       type="number"
@@ -704,13 +834,13 @@ const AddPackage = () => {
                       </p>
                     )}
                   </div>
-                  <div>
+                  {/* <div>
                     <label className="block text-gray-500 text-base font-medium mb-4">
                       Duration Type
                     </label>
                     <select
                       placeholder="Select Package Type"
-                      {...register("duration_type", { 
+                      {...register("duration_type", {
                         required: "Duration Type is required",
                         onChange: (e) => {
                           // Reset duration if it exceeds the new type's limit
@@ -735,9 +865,9 @@ const AddPackage = () => {
                         {errors.duration_type.message}
                       </p>
                     )}
-                  </div>
+                  </div> */}
                 </div>
-                <div>
+                {/* <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Min. Capacity
                   </label>
@@ -766,8 +896,8 @@ const AddPackage = () => {
                       {errors.min_capacity.message}
                     </p>
                   )}
-                </div>
-                <div>
+                </div> */}
+                {/* <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Max. Capacity
                   </label>
@@ -796,9 +926,9 @@ const AddPackage = () => {
                       {errors.max_capacity.message}
                     </p>
                   )}
-                </div>
+                </div> */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
+                  <label className="block text-[#444] text-base font-medium mb-4">
                     Cancellation Policy
                   </label>
                   <select
@@ -820,43 +950,58 @@ const AddPackage = () => {
                           <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
                       )} */}
                 </div>
-                <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
+                <div>
                   <ul class="flex flex-col gap-2 max-w-full mx-auto text-base text-[#C9C9C9] w-full p-4 rounded-md border border-gray-200 bg-white">
                     <li>
-                        <details class="group">
-                            <summary
-                                class="flex items-center justify-between gap-2 font-medium marker:content-none hover:cursor-pointer">
-                                <span class="flex gap-2 text-gray-500 text-base font-medium">
-                                    Extra Service
-                                </span>
-                                <svg class="w-4 h-4 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg"
-                                    width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                        d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z">
-                                    </path>
-                                </svg>
-                            </summary>
-                            <article class="">
-                                <ul class="flex flex-col gap-4 mt-4">
-                                  {extraServices?.map(service => 
-                                    <li class="flex gap-2" key={service.id}>
-                                      <input
-                                        type="checkbox"
-                                        value={service.id}
-                                        onClick={(e) => handleExtraServices(service.id, e.target.checked)}
-                                        className="w-4 text-[#49556D]"
-                                      />
-                                      <p className="text-base text-[#49556D]">{service.name}</p>
-                                    </li>
-                                  )}
-                                </ul>
-                            </article>
-                        </details>
+                      <details class="group">
+                        <summary
+                          class="flex items-center justify-between gap-2 font-medium marker:content-none hover:cursor-pointer">
+                          <span class="flex gap-2 text-[#444] text-base font-medium">
+                            Extra Service
+                          </span>
+                          <svg class="w-4 h-4 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg"
+                            width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                              d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z">
+                            </path>
+                          </svg>
+                        </summary>
+                        <article class="">
+                          <ul class="flex flex-col gap-4 mt-4">
+                            {extraServices?.map(service =>
+                              <li class="flex gap-2" key={service.id}>
+                                <input
+                                  type="checkbox"
+                                  value={service.id}
+                                  onClick={(e) => handleExtraServices(service.id, e.target.checked)}
+                                  className="w-4 text-[#49556D]"
+                                />
+                                <p className="text-base text-[#49556D]">{service.name}</p>
+                              </li>
+                            )}
+                          </ul>
+                        </article>
+                      </details>
                     </li>
                   </ul>
                 </div>
+                <div className="space-y-4">
+                  <h3 className="text-[#444] font-medium">Add Extra Service</h3>
+                  <form className="space-y-4">
+                    <div className="grid grid-cols-3 gap-3">
+                      <input className="col-span-2 p-2 rounded-md outline-none" type="text" placeholder="Serveice name" name="name" id="name" />
+                      <input className="p-2 rounded-md outline-none" type="number" name="price" id="price" placeholder="Price" />
+                    </div>
+                    <button type="submit" className="flex items-center gap-1 bg-[#EB5B2A] p-2 w-full justify-center font-medium text-white rounded-md">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10.0013 4.16602V15.8327M4.16797 9.99935H15.8346" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                      </svg>
+                      <span>Add Extra Service</span>
+                    </button>
+                  </form>
+                </div>
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
+                  <label className="block text-[#444] text-base font-medium mb-4">
                     Language
                   </label>
                   <Select
@@ -878,7 +1023,7 @@ const AddPackage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
+                  <label className="block text-[#444] text-base font-medium mb-4">
                     Image Gallery
                   </label>
                   <div className="grid grid-cols-2 gap-3">
@@ -907,8 +1052,8 @@ const AddPackage = () => {
               type="submit"
               className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
             >
-                {loading ? 'Creating...' : "Add New"} Package
-              
+              {loading ? 'Creating...' : "Add New"} Package
+
             </button>
           </div>
         </div>
