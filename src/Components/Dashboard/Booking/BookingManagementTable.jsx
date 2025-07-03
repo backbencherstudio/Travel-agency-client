@@ -1,5 +1,6 @@
 import { FaCheckCircle, FaTimesCircle, FaSearch, FaEye } from 'react-icons/fa'
 import { GoDotFill } from 'react-icons/go'
+import TablePagination from '../../../Shared/TablePagination'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   Table,
@@ -8,8 +9,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  TablePagination
+  Paper
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
@@ -34,7 +34,7 @@ const statusStyles = {
     border: '1px solid #FECDCA',
     icon: <FaTimesCircle />
   },
-  Requests: {
+  Booking_Requests: {
     color: '#067647',
     backgroundColor: '#ECFDF3',
     border: '1px solid #ABEFC6',
@@ -43,17 +43,17 @@ const statusStyles = {
 }
 
 const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
-  
+
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState()
   const [selectedStatus, setSelectedStatus] = useState('All Status')
   const [isOpen, setIsOpen] = useState(false)
   const statuses = [
     'All Status',
-    'Requests',
+    'Booking_Requests',
     'Pending',
     'Confirmed',
-    'Canceled'
+    'Cancelled'
   ]
   const navigate = useNavigate()
 
@@ -67,9 +67,9 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
   const debouncedSearch = useCallback(
     debounce((query, status, data) => {
       if (!data) return;
-      
+
       let filtered = data;
-      
+
       // Filter by search query
       if (query) {
         filtered = data.filter(item => {
@@ -77,16 +77,16 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
           const packageName = item.booking_items?.[0]?.package?.name?.toLowerCase() || '';
           const invoiceNumber = item.invoice_number?.toLowerCase() || '';
           const searchTerm = query.toLowerCase();
-          
-          return userName.includes(searchTerm) || 
-                 packageName.includes(searchTerm) || 
-                 invoiceNumber.includes(searchTerm);
+
+          return userName.includes(searchTerm) ||
+            packageName.includes(searchTerm) ||
+            invoiceNumber.includes(searchTerm);
         });
       }
 
       // Filter by status
       if (status !== 'All Status') {
-        filtered = filtered.filter(item => 
+        filtered = filtered.filter(item =>
           item.status?.toLowerCase() === status.toLowerCase()
         );
       }
@@ -99,7 +99,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
       else params.delete('search');
       if (status !== 'All Status') params.set('status', status);
       else params.delete('status');
-      
+
       const newUrl = `${window.location.pathname}?${params.toString()}`;
       window.history.pushState({}, '', newUrl);
     }, 500),
@@ -116,6 +116,14 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
+  }
+
+  const handleNextPage = (event) => {
+    setPage(prev => prev + 1)
+  };
+
+  const handlePreviousPage = ()=>{
+    setPage(prev => Math.max(0,prev - 1))
   }
 
   const handleChangeRowsPerPage = event => {
@@ -156,7 +164,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
             <input
               type='text'
               placeholder='Search...'
-              className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
+              className='py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
@@ -185,13 +193,12 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                       <button
                         key={status}
                         onClick={() => handleStatusChange(status)}
-                        className={`w-full px-5 py-5 text-left text-sm hover:bg-gray-200 ${
-                          selectedStatus === status
+                        className={`w-full px-5 py-5 text-left text-[#4A4C56] text-base hover:bg-gray-200 ${selectedStatus === status
                             ? 'bg-gray-100 font-semibold'
                             : ''
-                        }`}
+                          }`}
                       >
-                        {status}
+                        {status.split("_").join(" ")}
                       </button>
                     ))}
                   </div>
@@ -253,7 +260,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                   </TableCell>
                 )}
                 {/* {selectedStatus === 'Requests' || selectedStatus === 'Pending' && ( */}
-                  <TableCell
+                {/* <TableCell
                     sx={{
                       textAlign: 'center',
                       color: '#475467',
@@ -262,7 +269,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                     }}
                   >
                     Action
-                  </TableCell>
+                  </TableCell> */}
                 {/* )} */}
               </TableRow>
             </TableHead>
@@ -337,18 +344,18 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
                         </TableCell>
                       )}
                       {/* {selectedStatus === 'Requests' || selectedStatus === 'Pending' && ( */}
-                        <TableCell style={{ textAlign: 'center' }}>
-                          <button
-                            className='text-[#475467] hover:text-blue-700 transform duration-300'
-                            onClick={() =>
-                              navigate(
-                                `/dashboard/booking-request/${item.id}`
-                              )
-                            }
-                          >
-                            <FaEye className='text-lg' />
-                          </button>
-                        </TableCell>
+                      <TableCell style={{ textAlign: 'center' }}>
+                        <button
+                          className='text-[#475467] hover:text-blue-700 transform duration-300'
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/booking-request/${item.id}`
+                            )
+                          }
+                        >
+                          <FaEye className='text-lg' />
+                        </button>
+                      </TableCell>
                       {/* )} */}
                     </TableRow>
                   ))
@@ -368,7 +375,7 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
           </Table>
         </TableContainer>
 
-        <TablePagination
+        {/* <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
           count={filteredData?.length}
@@ -376,7 +383,8 @@ const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        />
+        /> */}
+        <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
       </Paper>
     </div>
   )

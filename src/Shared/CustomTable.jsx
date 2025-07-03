@@ -5,6 +5,7 @@ import client2 from '../assets/img/Admin Dashboard/client2.png';
 import { FaSearch } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRegSquarePlus } from "react-icons/fa6";
+import TablePagination from "./TablePagination";
 
 // Sort icon component to avoid repetition
 const SortIcon = () => (
@@ -38,16 +39,19 @@ const CustomTable = ({ tableType = "", title, columns }) => {
   const [statusFilter, setStatusFilter] = useState("all");
   const navigate = useNavigate();
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(7);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+  const handleNextPage = (event) => {
+    setPage(prev => prev + 1)
   };
+
+  const handlePreviousPage = ()=>{
+    setPage(prev => Math.max(0,prev - 1))
+  }
 
   const handleRowClick = (id) => {
     if (tableType === "user" || tableType === "blog") {
@@ -146,456 +150,6 @@ const CustomTable = ({ tableType = "", title, columns }) => {
       price: 1500,
       status: "confirmed"
     },
-    {
-      id: 11,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 12,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 13,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 14,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 15,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 16,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 17,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 18,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 19,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 20,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 21,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 22,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 23,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 24,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 25,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 26,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 27,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 28,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 29,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 30,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 1,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 2,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 3,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 4,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 5,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 6,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 7,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 8,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 9,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 10,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 11,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 12,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 13,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 14,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 15,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 16,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 17,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 18,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 19,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 20,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 21,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 22,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 23,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 24,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 25,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 26,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 27,
-      name: "Raphael Goodman",
-      package_name: "Venice Dreams",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 1500,
-      status: "confirmed"
-    },
-    {
-      id: 28,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
-    {
-      id: 29,
-      name: "Jerome Bell",
-      package_name: "Alpine Escape",
-      img: client1,
-      date: "Jun 25, 2024",
-      price: 2100,
-      status: "cancelled"
-    },
-    {
-      id: 30,
-      name: "Kathryn Murphy",
-      package_name: "Safari Adventure",
-      img: client2,
-      date: "Jun 25, 2024",
-      price: 3200,
-      status: "pending"
-    },
   ]);
 
   // Filter data based on search and status
@@ -644,7 +198,7 @@ const CustomTable = ({ tableType = "", title, columns }) => {
   return (
     <div className="bg-white p-4 rounded-xl flex flex-col gap-4">
       <div className="flex justify-between flex-wrap">
-        <h1 className="font-semibold text-[24px]">{title}</h1>
+        <h1 className="font-semibold text-[24px] text-center sm:text-start w-full">{title}</h1>
         {(tableType === "blog" || tableType === "package") && (
           <Link
             to="/dashboard/add-package"
@@ -657,7 +211,7 @@ const CustomTable = ({ tableType = "", title, columns }) => {
       </div>
 
       <div className="space-y-4">
-        <div className="flex justify-end gap-[14px] items-center rounded-t-xl">
+        <div className="flex flex-col sm:flex-row justify-end gap-[14px] items-center rounded-t-xl">
           <div className="relative md:col-span-1 bg-[#F7F8F8] rounded-lg">
             <input
               type="text"
@@ -691,7 +245,7 @@ const CustomTable = ({ tableType = "", title, columns }) => {
         </div>
         {/* Table  */}
         <div className="w-full overflow-x-auto">
-          <table className="w-full table-auto">
+          <table className="w-full table-auto min-w-[768px]">
             <thead>
               <tr>
                 <th>
@@ -748,14 +302,14 @@ const CustomTable = ({ tableType = "", title, columns }) => {
                             e.target.src = 'https://via.placeholder.com/24';
                           }}
                         />
-                        <h3 className="text-[#000E19] text-[12px] font-medium">{client.name}</h3>
+                        <h3 className="text-[#000E19] text-nowrap text-[12px] font-medium">{client.name}</h3>
                       </div>
                     </td>
-                    <td className="py-4 text-[#475467] text-[12px]">{client.package_name}</td>
-                    <td className="py-4 text-[#475467] text-[12px]">{client.date}</td>
+                    <td className="py-4 text-[#475467] text-[12px] text-nowrap">{client.package_name}</td>
+                    <td className="py-4 text-[#475467] text-[12px] text-nowrap">{client.date}</td>
                     <td className="py-4 text-[#475467] text-[12px]">${client.price.toLocaleString()}</td>
                     <td className="py-4">
-                      <div className={`flex items-center gap-1 px-[6px] py-[2px] w-[107px] rounded-full border ${getStatusStyles(client.status)}`}>
+                      <div className={`flex items-center gap-1 px-[6px] py-[2px] w-[107px] rounded-full border text-[12px] ${getStatusStyles(client.status)}`}>
                         {getStatusIcon(client.status)}
                         <span>{client.status.charAt(0).toUpperCase() + client.status.slice(1)}</span>
                       </div>
@@ -787,97 +341,7 @@ const CustomTable = ({ tableType = "", title, columns }) => {
             </tbody>
           </table>
         </div>
-
-        <div className="flex justify-between items-center px-5 pb-4">
-          <div className="flex gap-2 items-center justify-between w-full">
-            {/* Previous Button */}
-            <button
-              onClick={() => setPage(p => Math.max(0, p - 1))}
-              disabled={page === 0}
-              className="flex items-center gap-1 px-3 py-2 border border-[#D0D5DD] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <div className="flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M15.8333 9.99996H4.16663M4.16663 9.99996L9.99996 15.8333M4.16663 9.99996L9.99996 4.16663" stroke="#344054" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span>Previous</span>
-              </div>
-            </button>
-
-            {/* Page numbers - showing exactly 2 in center */}
-            <div className="flex gap-1 items-center">
-              {/* Always show first page */}
-              <button
-                onClick={() => setPage(0)}
-                className={`px-3 py-1 rounded-md ${page === 0 ? 'bg-[#EB5B2A] text-white' : 'border border-[#D0D5DD]'}`}
-              >
-                1
-              </button>
-
-              {/* Show ellipsis if current page is not adjacent to first page */}
-              {page > 1 && (
-                <span className="px-2">...</span>
-              )}
-
-              {/* Show current page and one adjacent page */}
-              {page > 0 && page < Math.ceil(filteredData.length / rowsPerPage) - 1 && (
-                <>
-                  {page > 1 && (
-                    <button
-                      onClick={() => setPage(page - 1)}
-                      className="px-3 py-1 rounded-md border border-[#D0D5DD]"
-                    >
-                      {page}
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setPage(page)}
-                    className="px-3 py-1 rounded-md bg-[#EB5B2A] text-white"
-                  >
-                    {page + 1}
-                  </button>
-                  {page < Math.ceil(filteredData.length / rowsPerPage) - 2 && (
-                    <button
-                      onClick={() => setPage(page + 1)}
-                      className="px-3 py-1 rounded-md border border-[#D0D5DD]"
-                    >
-                      {page + 2}
-                    </button>
-                  )}
-                </>
-              )}
-
-              {/* Show ellipsis if current page is not adjacent to last page */}
-              {page < Math.ceil(filteredData.length / rowsPerPage) - 2 && (
-                <span className="px-2">...</span>
-              )}
-
-              {/* Always show last page if there's more than 1 page */}
-              {Math.ceil(filteredData.length / rowsPerPage) > 1 && (
-                <button
-                  onClick={() => setPage(Math.ceil(filteredData.length / rowsPerPage) - 1)}
-                  className={`px-3 py-1 rounded-md ${page === Math.ceil(filteredData.length / rowsPerPage) - 1 ? 'bg-[#EB5B2A] text-white' : 'border border-[#D0D5DD]'}`}
-                >
-                  {Math.ceil(filteredData.length / rowsPerPage)}
-                </button>
-              )}
-            </div>
-
-            {/* Next Button */}
-            <button
-              onClick={() => setPage(p => p + 1)}
-              disabled={(page + 1) * rowsPerPage >= filteredData.length}
-              className="flex items-center gap-1 px-3 py-2 border border-[#D0D5DD] rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <div className="flex items-center gap-1">
-                <span>Next</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M4.16675 9.99996H15.8334M15.8334 9.99996L10.0001 4.16663M15.8334 9.99996L10.0001 15.8333" stroke="#344054" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </div>
-            </button>
-          </div>
-        </div>
+        <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage}/>
       </div>
     </div>
   );

@@ -1,0 +1,92 @@
+[
+    {
+      "id": 1,
+      "name": "Raphael Goodman",
+      "package_name": "Venice Dreams",
+      "img": "../assets/img/Admin Dashboard/client1.png",
+      "date": "Jun 25, 2024",
+      "price": 1500,
+      "status": "confirmed"
+    },
+    {
+      "id": 2,
+      "name": "Kathryn Murphy",
+      "package_name": "Safari Adventure",
+      "img": "../assets/img/Admin Dashboard/client2.png",
+      "date": "Jun 25, 2024",
+      "price": 3200,
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "name": "Jerome Bell",
+      "package_name": "Alpine Escape",
+      "img": "../assets/img/Admin Dashboard/client1.png",
+      "date": "Jun 25, 2024",
+      "price": 2100,
+      "status": "cancelled"
+    },
+    {
+      "id": 4,
+      "name": "Kathryn Murphy",
+      "package_name": "Safari Adventure",
+      "img": "../assets/img/Admin Dashboard/client2.png",
+      "date": "Jun 25, 2024",
+      "price": 3200,
+      "status": "pending"
+    },
+    {
+      "id": 5,
+      "name": "Raphael Goodman",
+      "package_name": "Venice Dreams",
+      "img": "../assets/img/Admin Dashboard/client1.png",
+      "date": "Jun 25, 2024",
+      "price": 1500,
+      "status": "confirmed"
+    },
+    {
+      "id": 6,
+      "name": "Jerome Bell",
+      "package_name": "Alpine Escape",
+      "img": "../assets/img/Admin Dashboard/client1.png",
+      "date": "Jun 25, 2024",
+      "price": 2100,
+      "status": "cancelled"
+    },
+    {
+      "id": 7,
+      "name": "Kathryn Murphy",
+      "package_name": "Safari Adventure",
+      "img": "../assets/img/Admin Dashboard/client2.png",
+      "date": "Jun 25, 2024",
+      "price": 3200,
+      "status": "pending"
+    },
+    {
+      "id": 8,
+      "name": "Jerome Bell",
+      "package_name": "Alpine Escape",
+      "img": "../assets/img/Admin Dashboard/client1.png",
+      "date": "Jun 25, 2024",
+      "price": 2100,
+      "status": "cancelled"
+    },
+    {
+      "id": 9,
+      "name": "Kathryn Murphy",
+      "package_name": "Safari Adventure",
+      "img": "../assets/img/Admin Dashboard/client2.png",
+      "date": "Jun 25, 2024",
+      "price": 3200,
+      "status": "pending"
+    },
+    {
+      "id": 10,
+      "name": "Raphael Goodman",
+      "package_name": "Venice Dreams",
+      "img": "../assets/img/Admin Dashboard/client1.png",
+      "date": "Jun 25, 2024",
+      "price": 1500,
+      "status": "confirmed"
+    }
+]
