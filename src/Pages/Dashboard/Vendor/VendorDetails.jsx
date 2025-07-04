@@ -107,11 +107,11 @@ const VendorDetails = () => {
                     {userData?.data?.name || 'Loading...'}
                   </h1>
                 </div>
-                <div className='h-16 px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 w-full flex-col justify-start items-start inline-flex'>
+                <div className='h-16 px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 w-full flex-col justify-start items-start inline-flex overflow-hidden'>
                   <h2 className='self-stretch text-[#a1a1a1] text-sm font-normal mb-[3px]'>
                     Email Address
                   </h2>
-                  <h1 className='self-stretch text-[#030b09] text-sm font-normal '>
+                  <h1 className='self-stretch text-[#030b09] text-sm font-normal text-wrap'>
                     {userData?.data?.email || 'Loading...'}
                   </h1>
                 </div>
@@ -132,28 +132,41 @@ const VendorDetails = () => {
                   </h1>
                 </div>
 
-                <div className='min-h-16 px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 w-full flex-col justify-start items-start inline-flex'>
-                  <h2 className='self-stretch text-[#a1a1a1] text-sm font-normal mb-[3px]'>
-                    Join Date
-                  </h2>
-                  <h1 className='self-stretch text-[#030b09] text-sm font-normal '>
-                    {userData?.data?.created_at
-                      ? new Date(userData.data.created_at).toLocaleDateString()
-                      : 'Not Available'}
-                  </h1>
-                </div>
+                <div className='flex col-span-10 gap-4'>
+                  <div className='min-h-16 px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 flex-1 flex-col justify-start items-start inline-flex'>
+                    <h2 className='self-stretch text-[#a1a1a1] text-sm font-normal mb-[3px]'>
+                      Join Date
+                    </h2>
+                    <h1 className='self-stretch text-[#030b09] text-sm font-normal '>
+                      {userData?.data?.created_at
+                        ? new Date(userData.data.created_at).toLocaleDateString()
+                        : 'Not Available'}
+                    </h1>
+                  </div>
 
-                <div className='min-h-16 px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 w-full flex-col justify-start items-start inline-flex'>
-                  <h2 className='self-stretch text-[#a1a1a1] text-sm font-normal mb-[3px]'>
-                    Date Of Birth
-                  </h2>
-                  <h1 className='self-stretch text-[#030b09] text-sm font-normal '>
-                    {userData?.data?.date_of_birth
-                      ? new Date(
+                  <div className='min-h-16 px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 flex-1 flex-col justify-start items-start inline-flex'>
+                    <h2 className=' text-[#a1a1a1] text-sm font-normal mb-[3px]'>
+                      Gender
+                    </h2>
+                    <h1 className=' text-[#030b09] text-sm font-normal '>
+                      {userData?.data?.gender
+                        ? userData?.data?.gender
+                        : 'Not Available'}
+                    </h1>
+                  </div>
+
+                  <div className='flex-1 min-h-16 px-3 py-2 bg-gray-50 rounded border border-[#e9eaec] mb-4 md:col-span-5 flex-col justify-start items-start inline-flex'>
+                    <h2 className=' text-[#a1a1a1] text-sm font-normal mb-[3px]'>
+                      Date Of Birth
+                    </h2>
+                    <h1 className=' text-[#030b09] text-sm font-normal '>
+                      {userData?.data?.date_of_birth
+                        ? new Date(
                           userData.data.date_of_birth
                         ).toLocaleDateString()
-                      : 'Not Available'}
-                  </h1>
+                        : 'Not Available'}
+                    </h1>
+                  </div>
                 </div>
               </div>
             </div>
@@ -173,6 +186,7 @@ const VendorDetails = () => {
               dateFilter={tourDateFilter}
               columns={columns}
               refetch={refetch}
+              showAction={false}
             />
           )}
         </div>

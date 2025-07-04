@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import { Helmet } from "react-helmet-async";
 
 const AddPackage = () => {
-  const { register, handleSubmit, setValue, formState: { errors }, } = useForm({
+  const { register, handleSubmit, setValue,getValues, formState: { errors }, } = useForm({
     defaultValues: {
       destinations: [],
       languages: []
@@ -812,16 +812,17 @@ const AddPackage = () => {
                       {...register("duration", {
                         required: "Package duration is required",
                         validate: (value) => {
-                          const durationType = document.querySelector('[name="duration_type"]').value;
-                          if (packageType === "tour") {
-                            if (durationType === 'days' && value > 1) {
-                              return "Duration cannot exceed 1 day for tour packages";
-                            }
-                            if (durationType === 'hours' && value > 24) {
-                              return "Duration cannot exceed 24 hours for tour packages";
-                            }
-                            return true;
-                          }
+                          // const durationType = document.querySelector('[name="duration_type"]').value;
+                          // if (packageType === "tour") {
+                          //   if (durationType === 'days' && value > 1) {
+                          //     return "Duration cannot exceed 1 day for tour packages";
+                          //   }
+                          //   if (durationType === 'hours' && value > 24) {
+                          //     return "Duration cannot exceed 24 hours for tour packages";
+                          //   }
+                          //   return true;
+                          // }
+                          return true;
                         }
                       })}
                       className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
