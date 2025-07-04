@@ -18,11 +18,11 @@ const Payments = () => {
     date: true
   })
   return (
-    <>
+    <div className='space-y-4 mt-4'>
       <Helmet>
         <title>Around 360 - Payment Overview</title>
       </Helmet>
-      <div className='flex justify-between items-center mb-5'>
+      <div className='flex justify-between items-center'>
         <h1 className='text-[#0D0E0D] text-[20px] font-semibold capitalize'>
           Payment Overview
         </h1>
@@ -30,7 +30,7 @@ const Payments = () => {
           <input
             type='text'
             placeholder='Search...'
-            className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
+            className='py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
             // value={searchQuery}
             // onChange={e => setSearchQuery(e.target.value)}
           />
@@ -65,7 +65,7 @@ const Payments = () => {
         data={paymentHistory}
         columns={columns}
       />
-    </>
+    </div>
   )
 }
 

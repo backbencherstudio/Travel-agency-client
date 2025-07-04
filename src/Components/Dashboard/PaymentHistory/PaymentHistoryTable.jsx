@@ -186,7 +186,7 @@ const BookingTable = ({ title }) => {
             <input
               type='text'
               placeholder='Search...'
-              className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
+              className='py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
