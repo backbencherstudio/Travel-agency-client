@@ -52,7 +52,7 @@ const BookingRequestDetails = () => {
   }
 
   return (
-    <div className='p-8 bg-white shadow-lg rounded-lg w-full  mx-auto'>
+    <div className='p-8 bg-white rounded-lg w-full'>
        <Helmet>
         <title>Around 360 - Booking Request Details</title>
       </Helmet>
@@ -64,22 +64,26 @@ const BookingRequestDetails = () => {
         <div className='w-full'>
           <h3 className='font-semibold text-lg mb-6'>Traveler Information</h3>
           <div className='grid grid-cols-2 gap-4'>
-            <p className='text-gray-600 text-sm'>Traveler's Name:</p>
+            <p className='text-gray-600 text-sm'>Traveler's Name</p>
             <p className='font-medium text-[#111827] text-[14px]'>
               {data?.data?.user?.name || 'N/A'}
             </p>
 
-            <p className='text-gray-600 text-sm'>Email:</p>
+            <p className='text-gray-600 text-sm'>Email</p>
             <p className='font-medium text-[#111827] text-[14px] break-words max-w-full overflow-hidden overflow-ellipsis whitespace-normal'>
               {data?.data?.user?.email || 'N/A'}
             </p>
 
-            <p className='text-gray-600 text-sm'>Booking Date:</p>
+            <p className='text-gray-600 text-sm'>Booking Date</p>
             <p className='font-medium text-[#111827] text-[14px]'>
               {moment(data?.data?.created_at).format('DD MMMM YYYY') || 'N/A'}
             </p>
 
-            <p className='text-gray-600 text-sm'>Phone:</p>
+            <p className='text-gray-600 text-sm'>Phone</p>
+            <p className='font-medium text-[#111827] text-[14px]'>
+              {data?.data?.user?.phone || 'N/A'}
+            </p>
+            <p className='text-gray-600 text-sm'>Package</p>
             <p className='font-medium text-[#111827] text-[14px]'>
               {data?.data?.user?.phone || 'N/A'}
             </p>
@@ -90,8 +94,8 @@ const BookingRequestDetails = () => {
         <div className='w-full'>
           <h3 className='font-semibold text-lg mb-6'>Package Information</h3>
           <div className='grid grid-cols-2 gap-4'>
-            <p className='text-gray-600 text-sm'>Package Name:</p>
-            <Link 
+            <p className='text-gray-600 text-sm'>Package</p>
+            {/* <Link 
               to={`/dashboard/packages/${data?.data?.booking_items?.[0]?.package?.id}`} 
               target="_blank"
               rel="noopener noreferrer"
@@ -112,17 +116,36 @@ const BookingRequestDetails = () => {
                   d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
                 />
               </svg>
-            </Link>
-
-            <p className='text-gray-600 text-sm'>Package Price:</p>
+            </Link> */}
             <p className='font-medium text-[#111827] text-[14px]'>
-              ${data?.data?.booking_items?.[0]?.package?.price || 'N/A'}
+              {data?.data?.booking_items?.[0]?.package?.name || 'N/A'}
             </p>
 
-            <p className='text-gray-600 text-sm'>Extra Service:</p>
+            <p className='text-gray-600 text-sm'>Tour Category</p>
+            <p className='font-medium text-[#111827] text-[14px]'>
+              {data?.data?.booking_items?.[0]?.package?.tour_category || 'N/A'}
+            </p>
+
+            <p className='text-gray-600 text-sm'>Geofencing</p>
+            <p className='font-medium text-[#111827] text-[14px]'>
+              {data?.data?.booking_items?.[0]?.package?.geofencing || 'N/A'}
+            </p>
+
+            <p className='text-gray-600 text-sm'>Package Duration (Days)</p>
+            <p className='font-medium text-[#111827] text-[14px]'>
+              {data?.data?.booking_items?.[0]?.package?.duration || 'N/A'}
+            </p>
+
+            <p className='text-gray-600 text-sm'>Extra Service</p>
             <p className='font-medium text-[#111827] text-[14px]'>
               {data?.data?.booking_extra_services?.map((item) => `${item?.extra_service?.name} ($${item.extra_service.price})`).join(', ') || 'N/A'}
             </p>
+
+            {/* <p className='text-gray-600 text-sm'>Total Amount:</p>
+            <p className='font-medium text-[#111827] text-[14px]'>
+              ${data?.data?.booking_items?.[0]?.package?.price || 'N/A'}
+            </p> */}
+
 
             {/* <p className='text-gray-600 text-sm'>Extra Service Price:</p>
             <p className='font-medium text-[#111827] text-[14px]'>
@@ -148,37 +171,22 @@ const BookingRequestDetails = () => {
       </div>
 
       {/* Action Buttons */}
-      <div className='mt-8 flex flex-col-reverse md:flex-row justify-between gap-6 md:gap-6'>
-        <button
-          className='bg-[#E7ECF2] hover:bg-gray-400 text-[14px] text-[#3B82F6] transform duration-300 font-medium py-2 px-5 rounded shadow'
+      <div className='mt-8 flex flex-col-reverse md:flex-row justify-center gap-6 md:gap-6'>
+        
+        <div className='flex gap-4 justify-between'>
+          <button onClick={()=>setSelectedStatus("confirmed")} className='bg-[#4CAF50] text-white px-4 rounded cursor-pointer'>Approve</button>
+          <button 
+            onClick={handleUpdateStatus} 
+            className='bg-[#FF5252] px-4 text-white rounded cursor-pointer font-medium'
+          >
+            Reject
+          </button>
+          <button
+          className='bg-[#E7ECF2] text-[14px] text-[#3B82F6] transform duration-300 font-medium py-[7px] px-6 rounded shadow'
           onClick={() => navigate(-1)}
         >
           Back
         </button>
-        <div className='flex gap-4 justify-between'>
-          <select 
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className='bg-white border border-gray-300 text-[14px] text-gray-700 py-2 px-5 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500'
-            value={selectedStatus}
-          >
-            <option value="" disabled>Select Status</option>
-            <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="paused">Paused</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
-          <button 
-            onClick={handleUpdateStatus} 
-            disabled={!selectedStatus}
-            className={`${
-              selectedStatus 
-                ? 'bg-[#4CAF50] hover:bg-green-600' 
-                : 'bg-gray-400 cursor-not-allowed'
-            } text-[14px] transform duration-300 text-white font-medium py-2 px-5 rounded shadow`}
-          >
-            Update Status
-          </button>
         </div>
       </div>
     </div>

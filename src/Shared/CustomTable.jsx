@@ -42,6 +42,7 @@ const CustomTable = ({ tableType = "", title, columns }) => {
   const [rowsPerPage, setRowsPerPage] = useState(7);
 
   const handleChangePage = (event, newPage) => {
+    console.log(newPage)
     setPage(newPage);
   };
 

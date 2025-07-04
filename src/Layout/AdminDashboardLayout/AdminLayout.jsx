@@ -43,7 +43,7 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="w-full h-full min-h-screen bg-[#e9f0f9]">
+    <div className="w-full h-screen bg-[#e9f0f9]">
        <Helmet>
         <title>Around 360 - Admin Dashboard</title>
       </Helmet>
@@ -97,7 +97,7 @@ const AdminLayout = () => {
             </div>
           )}
 
-          <div className="ml-0 mt-4 lg:ml-[275px] py-[80px] px-5">
+          <div className="ml-0 lg:ml-[275px] pt-[95px] px-5">
             <Outlet />
           </div>
         </div>

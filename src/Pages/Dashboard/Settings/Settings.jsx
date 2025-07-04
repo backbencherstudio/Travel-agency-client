@@ -91,7 +91,7 @@ const Settings = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-80px)] w-full'>
+    <div className='min-h-[calc(100vh-100px)] w-full'>
        <Helmet>
         <title>Around 360 - Settings</title>
       </Helmet>
