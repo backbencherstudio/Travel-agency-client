@@ -74,6 +74,7 @@ const Packages = () => {
             dateFilter={tourDateFilter}
             columns={columns}
             refetch={refetch}
+            showAction={true}
           />
         </div>
       )}

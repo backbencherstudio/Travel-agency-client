@@ -97,7 +97,7 @@ const AdminLayout = () => {
             </div>
           )}
 
-          <div className="ml-0 lg:ml-[275px] pt-[95px] px-5">
+          <div className="ml-0 lg:ml-[275px] pt-[75px] p-5">
             <Outlet />
           </div>
         </div>

@@ -26,7 +26,7 @@ import { LuTrash2 } from 'react-icons/lu'
 import { MdEdit } from 'react-icons/md'
 
 // const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
-const PackageTable = ({ tableType = '', title, columns, refetch }) => {
+const PackageTable = ({ tableType = '', title, columns, refetch,showAction }) => {
 
   const data = [
     {
@@ -260,8 +260,8 @@ const PackageTable = ({ tableType = '', title, columns, refetch }) => {
 
   return (
     <div className='bg-white rounded-lg space-y-4'>
-      <div className='flex flex-col md:flex-row justify-between  gap-3 px-4 pt-4 rounded-t-xl'>
-        <div className='flex md:gap-6 flex-1'>
+      <div className='flex flex-col md:flex-row justify-between items-center gap-3 px-4 pt-4 rounded-t-xl'>
+        <div className='flex md:gap-6 flex-1 text-nowrap'>
           <button
             className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3 ${showTab === 'all' &&
               'border-b-2 border-[#EB5B2A] text-[#A7411E]'
@@ -348,7 +348,7 @@ const PackageTable = ({ tableType = '', title, columns, refetch }) => {
                 </div>
               </th>
               {/* <TableCell>Approval</TableCell> */}
-              <th className='font-normal px-3'>Action</th>
+              {showAction && <th className='font-normal px-3'>Action</th>}
             </tr>
           </thead>
 
@@ -464,7 +464,7 @@ const PackageTable = ({ tableType = '', title, columns, refetch }) => {
                           </p>
                         </>
                       </TableCell> */}
-                      {columns?.action && (
+                      {(columns?.action && showAction) && (
                         <td className='px-3'>
                           <div className='relative w-fit'>
                             <svg className='cursor-pointer' onClick={e => toggleActionOpen(e, item.id)} xmlns="http://www.w3.org/2000/svg" width="60" height="25" viewBox="0 0 60 25" fill="none">
