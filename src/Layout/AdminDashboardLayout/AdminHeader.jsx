@@ -29,6 +29,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showMessage, setshowMessage] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const notificationRef = useRef(null);
 
@@ -238,7 +239,7 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
               className="bg-[#F7F8F8] mr-5 rounded-lg h-10 w-10 flex justify-center items-center text-gray-400 cursor-pointer relative"
               onClick={(e) => {
                 e.stopPropagation();
-                setShowNotifications(!showNotifications);
+                setshowMessage(!showMessage);
               }}
               ref={notificationRef}
             >
@@ -251,12 +252,12 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
                 <span className="absolute top-[9px] right-2 bg-red-500 text-white text-xs rounded-full w-2 h-2 flex items-center justify-center">
                 </span>
               )}
-              {showNotifications && (
+              {showMessage && (
                 <div
                   className="absolute top-16 md:-right-20 w-80 bg-white shadow-lg rounded-lg p-4 z-50 transition-all duration-300 ease-in-out transform"
                   style={{
-                    opacity: showNotifications ? 1 : 0,
-                    transform: showNotifications
+                    opacity: showMessage ? 1 : 0,
+                    transform: showMessage
                       ? "translateY(0)"
                       : "translateY(-10px)",
                   }}

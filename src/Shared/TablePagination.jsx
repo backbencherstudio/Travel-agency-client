@@ -37,7 +37,7 @@ export default function TablePagination({
       // Add ellipsis after first page if needed
       if (startPage > 1) {
         pages.push(
-          <span key="ellipsis-start" className="px-2 text-sm sm:text-base">⋯</span>
+          <span key="ellipsis-start" className="px-2 text-[12px] sm:text-base">⋯</span>
         );
       }
 
@@ -58,7 +58,7 @@ export default function TablePagination({
       // Add ellipsis before last page if needed
       if (endPage < totalPages - 2) {
         pages.push(
-          <span key="ellipsis-end" className="px-2 text-sm sm:text-base">⋯</span>
+          <span key="ellipsis-end" className="px-2 text-[12px] sm:text-base">⋯</span>
         );
       }
 
@@ -80,7 +80,7 @@ export default function TablePagination({
 
   return (
     <div className="flex justify-between items-center sm:px-5 pb-4">
-      <div className="flex gap-2 items-center justify-between w-full">
+      <div className="flex flex-col sm:flex-row gap-2 items-center justify-between w-full">
         {/* Previous Button */}
         <PaginationButton
           onClick={handlePreviousPage}
@@ -130,7 +130,7 @@ const PaginationButton = ({ onClick, disabled, direction }) => {
       } transition-colors duration-200`}
       aria-label={isPrevious ? "Previous page" : "Next page"}
     >
-      <div className="flex items-center gap-1 text-sm sm:text-base">
+      <div className="flex items-center gap-1 text-[12px] sm:text-base">
         {!isPrevious && <span>Next</span>}
         <svg 
           className="w-[16px] h-[16px] sm:w-[20px] sm:h-[20px]" 

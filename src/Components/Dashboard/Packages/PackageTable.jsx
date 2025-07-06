@@ -261,10 +261,10 @@ const PackageTable = ({ tableType = '', title, columns, refetch,showAction }) =>
   return (
     <div className='bg-white rounded-lg space-y-4'>
       <div className='flex flex-col md:flex-row justify-between items-center gap-3 px-4 pt-4 rounded-t-xl'>
-        <div className='flex md:gap-6 flex-1 text-nowrap'>
+        <div className='flex flex-col sm:flex-row md:gap-6 flex-1 text-nowrap'>
           <button
             className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3 ${showTab === 'all' &&
-              'border-b-2 border-[#EB5B2A] text-[#A7411E]'
+              'sm:border-b-2 border-[#EB5B2A] text-[#A7411E]'
               }`}
             onClick={() => handleActiveTab('all')}
           >
@@ -272,7 +272,7 @@ const PackageTable = ({ tableType = '', title, columns, refetch,showAction }) =>
           </button>
           <button
             className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === 'tour' &&
-              'border-b-2 border-[#EB5B2A] text-[#A7411E]'
+              'sm:border-b-2 border-[#EB5B2A] text-[#A7411E]'
               }`}
             onClick={() => handleActiveTab('tour')}
           >
@@ -280,7 +280,7 @@ const PackageTable = ({ tableType = '', title, columns, refetch,showAction }) =>
           </button>
           <button
             className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === 'cruise' &&
-              'border-b-2 border-[#EB5B2A] text-[#A7411E]'
+              'sm:border-b-2 border-[#EB5B2A] text-[#A7411E]'
               }`}
             onClick={() => handleActiveTab('cruise')}
           >

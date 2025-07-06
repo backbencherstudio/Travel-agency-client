@@ -404,8 +404,8 @@ const AddPackage = () => {
         Add New Travel Package
       </h3>
       <form onSubmit={handleSubmit(onSubmit)} className="">
-        <div className="bg-white min-h-screen pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
-          <div className="md:grid md:grid-cols-3 gap-8">
+        <div className="bg-white min-h-screen pt-8 px-0 sm:px-6 pb-6 rounded-lg flex flex-col gap-4">
+          <div className="md:grid md:grid-cols-3 gap-8 px-2">
             <div className="flex flex-col gap-8 col-span-2">
               <h3 className="text-2xl font-semibold text-[#080613]">
                 Package Details
@@ -575,7 +575,7 @@ const AddPackage = () => {
                   </div>
 
                   {/* Nested Options */}
-                  <div className="flex items-center gap-[46px] md:gap-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-[46px] md:gap-4">
                     {/* Special Offer Radio */}
                     <div className="flex items-center gap-3">
                       <div className="relative">

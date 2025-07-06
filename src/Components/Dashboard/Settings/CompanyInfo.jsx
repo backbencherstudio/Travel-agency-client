@@ -116,7 +116,7 @@ const CompanyInfo = () => {
         <h2 className='text-xl font-semibold mb-2 text-[#080613]'>
           Manage Company Information
         </h2>
-        <p className='text-[#687588] text-sm'>
+        <p className='text-[#687588] text-[12px]'>
           Update Your Company's Information Here
         </p>
       </div>
@@ -132,8 +132,8 @@ const CompanyInfo = () => {
             {...register('name', {
               required: 'Name is required'
             })}
-            placeholder='Enter name'
-            className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+            placeholder='Enter your company name'
+            className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 placeholder:text-[#CACACA] placeholder:text-[14px] ${
               errors.name ? 'border-red-500' : ''
             }`}
           />
@@ -157,7 +157,7 @@ const CompanyInfo = () => {
                 }
               })}
               placeholder='Type your email'
-              className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+              className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 placeholder:text-[#CACACA] placeholder:text-[14px] ${
                 errors.email ? 'border-red-500' : ''
               }`}
             />
@@ -182,7 +182,7 @@ const CompanyInfo = () => {
               onInput={e => {
                 e.target.value = e.target.value.replace(/[^0-9]/g, '')
               }}
-              className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+              className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 placeholder:text-[#CACACA] placeholder:text-[14px] ${
                 errors.phone_number ? 'border-red-500' : ''
               }`}
             />
@@ -200,7 +200,7 @@ const CompanyInfo = () => {
             type='text'
             {...register('address', { required: 'Address is required' })}
             placeholder='Type your address'
-            className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+            className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 placeholder:text-[#CACACA] placeholder:text-[14px] ${
               errors.address ? 'border-red-500' : ''
             }`}
           />

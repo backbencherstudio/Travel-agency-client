@@ -39,7 +39,7 @@ const Vendor = () => {
   if (error) return <p>Error loading vendors: {error}</p>;
 
   return (
-    <div>
+    <div className='overflow-y-auto'>
       <Helmet>
         <title>Around 360 - Vendor Management</title>
       </Helmet>

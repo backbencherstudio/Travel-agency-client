@@ -56,8 +56,8 @@ const Packages = () => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <div className='space-y-4'>
-          <div className='flex justify-between items-center'>
+        <div className='space-y-4 py-5'>
+          <div className='flex flex-col sm:flex-row justify-between items-center'>
             <h3 className='text-[#080613] text-[24px] font-semibold'>Travel Packages</h3>
             <button className='bg-[#EB5B2A] p-2 flex gap-1 rounded-md text-white cursor-pointer items-center'>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">

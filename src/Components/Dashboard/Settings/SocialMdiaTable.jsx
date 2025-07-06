@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
+import TablePagination from '../../../Shared/TablePagination'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TablePagination,
+  // Table,
+  // TableBody,
+  // TableCell,
+  // TableContainer,
+  // TableHead,
+  // TableRow,
+  // Paper,
+  // TablePagination,
   Modal,
   Box,
   CircularProgress
@@ -101,10 +102,10 @@ const SocialMdiaTable = ({
       })
       if (!confirmDelete.isConfirmed) return
 
-      setLoading(true) 
+      setLoading(true)
 
-      await deleteSocialMediaData(id) 
-      fetchData() 
+      await deleteSocialMediaData(id)
+      fetchData()
 
       Swal.fire({
         title: 'Deleted!',
@@ -166,6 +167,14 @@ const SocialMdiaTable = ({
     setPage(newPage)
   }
 
+  const handleNextPage = (event) => {
+    setPage(prev => prev + 1)
+  };
+
+  const handlePreviousPage = () => {
+    setPage(prev => Math.max(0, prev - 1))
+  }
+
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
@@ -176,6 +185,8 @@ const SocialMdiaTable = ({
     page * rowsPerPage + rowsPerPage
   )
 
+  console.log(paginatedData)
+
   return (
     <div>
       <div className='p-4 sm:p-6'>
@@ -184,118 +195,117 @@ const SocialMdiaTable = ({
             <h2 className=' text-lg sm:text-xl font-semibold mb-2 text-[#080613]'>
               Manage Social & Copyright Information
             </h2>
-            <p className='text-[#687588] text-sm'>
+            <p className='text-[#687588] text-[12px]'>
               Update Your Company's Social Here
             </p>
           </div>
           <div>
             <button
               onClick={handleModalToggle}
-              className='flex text-[14px] mt-5 sm:mt-0 items-center gap-1 bg-[#EB5B2A] hover:bg-[#eb5a2ae0] transform duration-300 text-white px-3 py-2 rounded-lg whitespace-nowrap'
+              className='flex mt-5 sm:mt-0 items-center gap-1 bg-[#EB5B2A] hover:bg-[#eb5a2ae0] transform duration-300 text-white p-3 rounded-lg whitespace-nowrap font-medium text-[12px]'
             >
-              <FaRegSquarePlus className='text-white text-xl' />
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M10.0052 4.16406V15.8307M4.17188 9.9974H15.8385" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
               Add Social
             </button>
           </div>
         </div>
 
-        <Paper style={{ borderRadius: '10px' }}>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
+        <div className='space-y-4'>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full table-auto min-w-[768px]">
+              <thead className='bg-[#F9FAFB]'>
+                <tr className='text-[12px] text-[#475467]'>
                   {columns.name && (
-                    <TableCell
-                      sx={{
-                        color: '#475467',
-                        fontSize: '13px',
-                        fontWeight: 600
-                      }}
-                    >
-                      Name
-                    </TableCell>
+                    <th className='font-medium  p-4 rounded-lg'>
+                      <div className='flex items-center gap-1'>
+                        <span>Name</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                        </svg>
+                      </div>
+                    </th>
                   )}
                   {columns.url && (
-                    <TableCell
-                      sx={{
-                        color: '#475467',
-                        fontSize: '13px',
-                        fontWeight: 600
-                      }}
-                    >
-                      Link
-                    </TableCell>
+                    <th className='font-medium  px-5 py-4 rounded-lg'>
+                      <div className='flex items-center gap-1'>
+                        <span>Link</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                          <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                        </svg>
+                      </div>
+                    </th>
                   )}
-                  <TableCell
-                    sx={{
-                      textAlign: 'center',
-                      color: '#475467',
-                      fontSize: '13px',
-                      fontWeight: 600
-                    }}
-                  >
+                  <th className='font-medium  px-5 py-4 rounded-lg'>
                     Action
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
                 {paginatedData.length > 0 ? (
                   paginatedData.map(item => (
-                    <TableRow key={item.id}>
+                    <tr key={item.id} className=' border-b border-[#F1F2F4] text-[#475467] text-[12px]'>
                       {columns.name && (
-                        <TableCell>
+                        <td className='p-4'>
                           <div className='flex items-center gap-3'>
                             <img
                               className='rounded-lg'
                               src={item.icon}
                               alt={item.name}
-                              style={{ width: '40px', height: '40px' }}
+                              style={{ width: '24px', height: '24px' }}
                             />
-                            <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
+                            <span className='truncate text-[#1D1F2C] text-[12px] font-medium'>
                               {item.name}
                             </span>
                           </div>
-                        </TableCell>
+                        </td>
                       )}
                       {columns.url && (
-                        <TableCell>
+                        <td className='p-4'>
                           <p className='truncate text-[#475467]'>{item.url}</p>
-                        </TableCell>
+                        </td>
                       )}
-                      <TableCell>
+                      <td className='p-4'>
                         <div className='flex items-center justify-center gap-4'>
                           <button
                             className='text-blue-500 hover:text-blue-600 transform duration-300'
                             onClick={() => openEditModal(item.id)}
                           >
-                            <FaEdit  className='text-lg' />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                              <path d="M1.91476 12.5747C1.94539 12.299 1.9607 12.1612 2.0024 12.0324C2.03941 11.9181 2.09168 11.8093 2.15782 11.709C2.23237 11.596 2.33043 11.4979 2.52655 11.3018L11.3307 2.4976C12.0671 1.76122 13.261 1.76122 13.9974 2.4976C14.7338 3.23398 14.7338 4.42789 13.9974 5.16427L5.19321 13.9684C4.99709 14.1646 4.89903 14.2626 4.78599 14.3372C4.68569 14.4033 4.57692 14.4556 4.46263 14.4926C4.3338 14.5343 4.19597 14.5496 3.92031 14.5802L1.66406 14.8309L1.91476 12.5747Z" stroke="#475467" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
                           </button>
                           <button
                             onClick={() => handleDelete(item.id)}
                             className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <LuTrash2 className='text-lg'/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                              <path d="M10.6667 4.50065V3.96732C10.6667 3.22058 10.6667 2.84721 10.5213 2.562C10.3935 2.31111 10.1895 2.10714 9.93865 1.97931C9.65344 1.83398 9.28007 1.83398 8.53333 1.83398H7.46667C6.71993 1.83398 6.34656 1.83398 6.06135 1.97931C5.81046 2.10714 5.60649 2.31111 5.47866 2.562C5.33333 2.84721 5.33333 3.22058 5.33333 3.96732V4.50065M6.66667 8.16732V11.5007M9.33333 8.16732V11.5007M2 4.50065H14M12.6667 4.50065V11.9673C12.6667 13.0874 12.6667 13.6475 12.4487 14.0753C12.2569 14.4516 11.951 14.7576 11.5746 14.9493C11.1468 15.1673 10.5868 15.1673 9.46667 15.1673H6.53333C5.41323 15.1673 4.85318 15.1673 4.42535 14.9493C4.04903 14.7576 3.74307 14.4516 3.55132 14.0753C3.33333 13.6475 3.33333 13.0874 3.33333 11.9673V4.50065" stroke="#475467" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
                           </button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))
                 ) : (
-                  <TableRow>
-                    <TableCell
+                  <tr>
+                    <td
                       colSpan={Object.keys(columns).length + 1}
                       align='center'
                     >
                       <p className='text-[#475467] font-medium py-6'>
                         No data found
                       </p>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
+              </tbody>
+            </table>
+          </div>
+          {/* <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component='div'
             count={data.length}
@@ -303,8 +313,9 @@ const SocialMdiaTable = ({
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
+          /> */}
+          <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={paginatedData} rowsPerPage={rowsPerPage} />
+        </div>
 
         {/* Modal */}
         <Modal open={isModalOpen} onClose={handleModalToggle}>
@@ -360,11 +371,10 @@ const SocialMdiaTable = ({
                       {...register(`socialLinks.${index}.name`, {
                         required: 'Social Media Name is required'
                       })}
-                      className={`w-full p-2 border ${
-                        errors.socialLinks?.[index]?.name
-                          ? 'border-red-500'
-                          : 'border-gray-300'
-                      } rounded-md focus:outline-none focus:border-orange-400`}
+                      className={`w-full p-2 border ${errors.socialLinks?.[index]?.name
+                        ? 'border-red-500'
+                        : 'border-gray-300'
+                        } rounded-md focus:outline-none focus:border-orange-400`}
                       placeholder='Enter social media name'
                     />
                     {errors.socialLinks?.[index]?.name && (
@@ -384,11 +394,10 @@ const SocialMdiaTable = ({
                           message: 'Invalid URL format'
                         }
                       })}
-                      className={`w-full p-2 border ${
-                        errors.socialLinks?.[index]?.iconUrl
-                          ? 'border-red-500'
-                          : 'border-gray-300'
-                      } rounded-md focus:outline-none focus:border-orange-400`}
+                      className={`w-full p-2 border ${errors.socialLinks?.[index]?.iconUrl
+                        ? 'border-red-500'
+                        : 'border-gray-300'
+                        } rounded-md focus:outline-none focus:border-orange-400`}
                       placeholder='Enter social icon URL'
                     />
                     {errors.socialLinks?.[index]?.iconUrl && (
@@ -408,11 +417,10 @@ const SocialMdiaTable = ({
                           message: 'Invalid URL format'
                         }
                       })}
-                      className={`w-full p-2 border ${
-                        errors.socialLinks?.[index]?.link
-                          ? 'border-red-500'
-                          : 'border-gray-300'
-                      } rounded-md focus:outline-none focus:border-orange-400`}
+                      className={`w-full p-2 border ${errors.socialLinks?.[index]?.link
+                        ? 'border-red-500'
+                        : 'border-gray-300'
+                        } rounded-md focus:outline-none focus:border-orange-400`}
                       placeholder='Enter social link'
                     />
                     {errors.socialLinks?.[index]?.link && (

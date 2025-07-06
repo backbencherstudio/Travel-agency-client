@@ -190,8 +190,8 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
     setSearchParams({ status })
     setIsOpen(false)
   }
-  
-  console.log("Vendors data : ",filteredData)
+
+  console.log("Vendors data : ", filteredData)
 
   return (
     <div>
@@ -248,129 +248,130 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
       </div>
 
 
-      <div className='bg-white rounded-lg p-4 space-y-4 w-full overflow-x-auto'>
-        <table className='table-auto w-full'>
-          <thead>
-            <tr className='text-[#475467] text-[12px] bg-[#F9FAFB]'>
-              {columns?.name && (
-                <td className='px-4 text-nowrap py-3 rounded-md'>
-                  Vendor Name
-                </td>
-              )}
-              {columns?.phone && (
-                <td className='px-4 text-nowrap'>
-                  Phone Number
-                </td>
-              )}
-              {columns?.address && (
-                <td className='px-4 text-nowrap'>
-                  Address
-                </td>
-              )}
-              {columns?.status && (
-                <td className='text-center px-4 text-nowrap'>
-                  Expert
-                </td>
-              )}
-              {/* {columns?.status && (
+      <div className='bg-white rounded-lg p-4 space-y-4'>
+        <div className=' w-full overflow-x-auto'>
+          <table className='table-auto w-full'>
+            <thead>
+              <tr className='text-[#475467] text-[12px] bg-[#F9FAFB]'>
+                {columns?.name && (
+                  <td className='px-4 text-nowrap py-3 rounded-md'>
+                    Vendor Name
+                  </td>
+                )}
+                {columns?.phone && (
+                  <td className='px-4 text-nowrap'>
+                    Phone Number
+                  </td>
+                )}
+                {columns?.address && (
+                  <td className='px-4 text-nowrap'>
+                    Address
+                  </td>
+                )}
+                {columns?.status && (
+                  <td className='text-center px-4 text-nowrap'>
+                    Expert
+                  </td>
+                )}
+                {/* {columns?.status && (
                 <td>
                   Status
                 </td>
               )} */}
-              {columns?.type && (
-                <td className='px-4 text-nowrap'>
-                  Type
+                {columns?.type && (
+                  <td className='px-4 text-nowrap'>
+                    Type
+                  </td>
+                )}
+
+                <td className='px-4 text-nowrap text-center'>
+                  Action
                 </td>
-              )}
+              </tr>
+            </thead>
 
-              <td className='px-4 text-nowrap text-center'>
-                Action
-              </td>
-            </tr>
-          </thead>
-
-          <tbody className='text-nowrap'>
-            {filteredData?.length > 0 ? (
-              filteredData
-                ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                ?.map(item => (
-                  <tr
-                    className={`text-[#1D1F2C] border-b border-[#EDEDED] ${(tableType === 'user' || tableType === 'blog') &&
-                      'cursor-pointer hover:bg-[#fdf0ea]'
-                      }`}
-                    key={item?.id}
-                    onClick={() => handleRowClick(item.id)}
-                  >
-                    {columns?.name && (
-                      <td className='px-4 py-3'>
-                        <div
-                          onClick={() =>
-                            navigate(`/dashboard/vendor-details/${item.id}`)
-                          }
-                          className='flex items-center gap-3 cursor-pointer '
-                        >
-                          {item.name.startsWith('http') ? (
-                            <img
-                              className=''
-                              src={item.name}
-                              alt={item.name}
-                              style={{ width: '48px', height: '48px' }}
-                            />
-                          ) : (
-                            <div className='w-[48px] h-[48px] rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-md'>
-                              <span className='text-white text-xl font-semibold '>
-                                {item.name?.charAt(0).toUpperCase()}
-                              </span>
+            <tbody className='text-nowrap'>
+              {filteredData?.length > 0 ? (
+                filteredData
+                  ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  ?.map(item => (
+                    <tr
+                      className={`text-[#1D1F2C] border-b border-[#EDEDED] ${(tableType === 'user' || tableType === 'blog') &&
+                        'cursor-pointer hover:bg-[#fdf0ea]'
+                        }`}
+                      key={item?.id}
+                      onClick={() => handleRowClick(item.id)}
+                    >
+                      {columns?.name && (
+                        <td className='px-4 py-3'>
+                          <div
+                            onClick={() =>
+                              navigate(`/dashboard/vendor-details/${item.id}`)
+                            }
+                            className='flex items-center gap-3 cursor-pointer '
+                          >
+                            {item.name.startsWith('http') ? (
+                              <img
+                                className=''
+                                src={item.name}
+                                alt={item.name}
+                                style={{ width: '48px', height: '48px' }}
+                              />
+                            ) : (
+                              <div className='w-[48px] h-[48px] rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-md'>
+                                <span className='text-white text-xl font-semibold '>
+                                  {item.name?.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                            )}
+                            <div>
+                              <p className='truncate text-[#1D1F2C] text-[14px]'>
+                                {item.name}
+                              </p>
+                              <p className='truncate text-[#757D83] text-[10px] font-medium flex  items-center gap-1 mt-1'>
+                                <LuMailOpen />
+                                <span>{item.email}</span>
+                              </p>
                             </div>
-                          )}
-                          <div>
-                            <p className='truncate text-[#1D1F2C] text-[14px]'>
-                              {item.name}
-                            </p>
-                            <p className='truncate text-[#757D83] text-[10px] font-medium flex  items-center gap-1 mt-1'>
-                              <LuMailOpen />
-                              <span>{item.email}</span>
-                            </p>
                           </div>
-                        </div>
-                      </td>
-                    )}
-                    {columns?.phone && (
-                      <td className='px-4 text-[12px]'>
-                        <p className='truncate text-[#475467]'>
-                          {item.phone_number
-                            ? item.phone_number
-                            : 'Not Available'}
-                        </p>
-                      </td>
-                    )}
-                    {columns?.address && (
-                      <td className='px-4 text-[12px]'>
-                        <p className='truncate text-[#475467]'>
-                          {item.address ? item.address : 'Not Available'}
-                        </p>
-                      </td>
-                    )}
-                    {columns?.status && (
-                      <td className='px-4'>
-                        <p
-                          className={`px-2 py-1 text-[12px] rounded-full text-center ${item.approved_at === null
-                            ? 'bg-[#FEF3F2]'
-                            : 'bg-[#FDEFEA]'
-                            }`}
-                        >
-                          {item.approved_at === null
-                            ? 'No Expertise'
-                            : 'Venice Tour Guide'}
-                        </p>
-                      </td>
-                    )}
+                        </td>
+                      )}
+                      {columns?.phone && (
+                        <td className='px-4 text-[12px]'>
+                          <p className='truncate text-[#475467]'>
+                            {item.phone_number
+                              ? item.phone_number
+                              : 'Not Available'}
+                          </p>
+                        </td>
+                      )}
+                      {columns?.address && (
+                        <td className='px-4 text-[12px]'>
+                          <p className='truncate text-[#475467]'>
+                            {item.address ? item.address : 'Not Available'}
+                          </p>
+                        </td>
+                      )}
+                      {columns?.status && (
+                        <td className='px-4'>
+                          <p
+                            className={`px-2 py-1 text-[12px] rounded-full text-center ${item.approved_at === null
+                              ? 'bg-[#FEF3F2]'
+                              : 'bg-[#FDEFEA]'
+                              }`}
+                          >
+                            {item.approved_at === null
+                              ? 'No Expertise'
+                              : 'Venice Tour Guide'}
+                          </p>
+                        </td>
+                      )}
 
-                    <td className='px-4'>
-                      <div className='flex gap-4'>
-                        {' '}
-                        {/* View Button */}
-                        {/* <div className='relative flex justify-center'>
+                      <td className='px-4'>
+                        <div className='flex gap-4'>
+                          {' '}
+                          {/* View Button */}
+                          {/* <div className='relative flex justify-center'>
                           <button
                             onClick={e => handleThreeDotsClick(e, item.id)}
                             className='text-blue-600 transition-all duration-500 ease-in-out'
@@ -417,39 +418,40 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
                             </DropdownPortal>
                           )}
                         </div> */}
-                        <button
-                          onClick={() =>
-                            navigate(`/dashboard/vendor-details/${item.id}`)
-                          }
-                          className='text-[#475467] hover:text-blue-400 transform duration-300'
-                        >
-                          <FaEye className='text-lg' />
-                        </button>
-                        {/* Delete Button */}
-                        <button
-                          onClick={() => handleDeleteUser(item.id)}
-                          className='text-[#333E47] hover:text-red-700 transform duration-300'
-                        >
-                          <LuTrash2 className='text-lg' />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={columns ? Object.keys(columns).length + 1 : 1}
-                  align='center'
-                >
-                  <p className='text-[#475467] font-medium py-6'>
-                    No data found
-                  </p>
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                          <button
+                            onClick={() =>
+                              navigate(`/dashboard/vendor-details/${item.id}`)
+                            }
+                            className='text-[#475467] hover:text-blue-400 transform duration-300'
+                          >
+                            <FaEye className='text-lg' />
+                          </button>
+                          {/* Delete Button */}
+                          <button
+                            onClick={() => handleDeleteUser(item.id)}
+                            className='text-[#333E47] hover:text-red-700 transform duration-300'
+                          >
+                            <LuTrash2 className='text-lg' />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={columns ? Object.keys(columns).length + 1 : 1}
+                    align='center'
+                  >
+                    <p className='text-[#475467] font-medium py-6'>
+                      No data found
+                    </p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
         <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
       </div>
 

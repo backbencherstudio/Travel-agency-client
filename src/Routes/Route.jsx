@@ -73,6 +73,9 @@ import MyProfile from "../Pages/User-dashboard/MyProfile";
 import ReservationDetail from "../Pages/User-dashboard/ReservationDetail";
 import GetStarted from "../Pages/getStarted/GetStarted";
 import Scanning from "../Pages/getStarted/Scanning";
+import OffersManagement from "../Pages/Dashboard/OffersManagement/OffersManagement";
+import ViewOffers from "../Pages/Dashboard/OffersManagement/ViewOffers";
+import EditOffers from "../Pages/Dashboard/OffersManagement/EditOffers";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 export const router = createBrowserRouter([
@@ -329,6 +332,18 @@ element:<Scanning/>
       {
         path: "vendor-details/:id",
         element: <VendorDetails />,
+      },
+      {
+        path: 'offers-management',
+        element: <OffersManagement />
+      },
+      {
+        path: 'edit-offers/:id',
+        element: <EditOffers />
+      },
+      {
+        path: 'view-offers/:id',
+        element: <ViewOffers />
       },
       {
         path: "payment",

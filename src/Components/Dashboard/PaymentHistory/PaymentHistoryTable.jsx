@@ -1,16 +1,18 @@
 import * as React from 'react'
 import { FaSearch, FaEye } from 'react-icons/fa'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TablePagination
-} from '@mui/material'
+import img1 from '../../../assets/img/tour-details/image-5.png'
+import TablePagination from '../../../Shared/TablePagination'
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   Paper,
+//   TablePagination
+// } from '@mui/material'
 import Swal from 'sweetalert2'
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
@@ -118,6 +120,14 @@ const BookingTable = ({ title }) => {
     setPage(newPage)
   }
 
+  const handleNextPage = (event) => {
+    setPage(prev => prev + 1)
+  };
+
+  const handlePreviousPage = () => {
+    setPage(prev => Math.max(0, prev - 1))
+  }
+
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
@@ -177,6 +187,9 @@ const BookingTable = ({ title }) => {
     return format(new Date(dateString), 'MMM dd, yyyy')
   }
 
+
+  console.log(filteredData)
+
   return (
     <>
       <div className='flex flex-col sm:flex-row justify-between items-center  py-5'>
@@ -185,12 +198,15 @@ const BookingTable = ({ title }) => {
           <div className='relative md:col-span-1'>
             <input
               type='text'
-              placeholder='Search...'
-              className='py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
+              placeholder='Search by Traveler Name'
+              className='py-1.5 pl-10 rounded-md placeholder:text-sm focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
-            <FaSearch className='absolute top-3 left-3 text-zinc-400' />
+            <svg className='absolute top-3 left-3 text-zinc-400' xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M7.25 2.5C4.62665 2.5 2.5 4.62665 2.5 7.25C2.5 9.87335 4.62665 12 7.25 12C9.87335 12 12 9.87335 12 7.25C12 4.62665 9.87335 2.5 7.25 2.5ZM1.5 7.25C1.5 4.07436 4.07436 1.5 7.25 1.5C10.4256 1.5 13 4.07436 13 7.25C13 10.4256 10.4256 13 7.25 13C4.07436 13 1.5 10.4256 1.5 7.25Z" fill="#757D83" />
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6089 10.6089C10.8042 10.4137 11.1208 10.4137 11.3161 10.6089L14.3536 13.6464C14.5488 13.8417 14.5488 14.1583 14.3536 14.3536C14.1583 14.5488 13.8417 14.5488 13.6464 14.3536L10.6089 11.3161C10.4137 11.1208 10.4137 10.8042 10.6089 10.6089Z" fill="#757D83" />
+            </svg>
           </div>
           <div className='flex justify-center' ref={dropdownRef}>
             <div className='relative inline-block text-left'>
@@ -223,123 +239,157 @@ const BookingTable = ({ title }) => {
           </div>
         </div>
       </div>
-      <Paper style={{ borderRadius: '10px' }}>
-        <TableContainer sx={{ padding: '16px' }}>
-          <Table sx={{ border: '1px solid #e0e0e0' }}>
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                >
-                  Invoice Number
-                </TableCell>
-                <TableCell
-                  sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                >
-                  Traveler's Name
-                </TableCell>
-                <TableCell
-                  sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                >
-                  Amount
-                </TableCell>
-                <TableCell
-                  sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                >
-                  Status
-                </TableCell>
-                <TableCell
-                  sx={{
-                    textAlign: 'center',
-                    color: '#475467',
-                    fontSize: '13px',
-                    fontWeight: 600
-                  }}
-                >
+      <div className='bg-white p-4 rounded-lg space-y-4'>
+        <div className='w-full overflow-x-auto'>
+          <table className="w-full table-auto min-w-[768px]">
+            <thead>
+              <tr className='text-[#475467] text-[12px] bg-[#F9FAFB]'>
+                <th className='font-medium p-6 rounded-lg'>
+
+                  <div className='flex items-center gap-1'>
+                    <span>Booking ID</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                    </svg>
+                  </div>
+                </th>
+                <th className='font-medium p-6'>
+                  <div className='flex items-center gap-1'>
+                    <span>Traveler's Name</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                    </svg>
+                  </div>
+                </th>
+                <th className='font-medium p-6'>
+                  <div className='flex items-center gap-1'>
+                    <span>Amount</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                    </svg>
+                  </div>
+                </th>
+                <th className='font-medium p-6'>
+                  <div className='flex items-center gap-1'>
+                    <span>Date</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                    </svg>
+                  </div>
+                </th>
+                {/* <th className='font-medium p-6'>
+                <div className='flex items-center gap-1'>
+                  <span>Status</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                  </svg>
+                </div>
+              </th> */}
+                <th className='font-medium p-6 rounded-lg'>
                   Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody className='text-nowrap'>
+                </th>
+              </tr>
+            </thead>
+            <tbody className='text-nowrap text-[12px]'>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={5} align='center'>
+                <tr>
+                  <td>
                     <p className='text-[#475467] font-medium py-6'>
                       Loading...
                     </p>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : filteredData.length > 0 ? (
                 filteredData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map(item => (
-                    <TableRow key={item.id}>
-                      <TableCell>
+                    <tr key={item.id}>
+                      <td className='p-6'>
                         <p className='text-[#475467] text-[12px]'>
                           #{item?.booking?.invoice_number}
                         </p>
-                      </TableCell>
-                      <TableCell style={{ minWidth: '200px' }}>
-                        <div className='flex items-center gap-3'>
+                      </td>
+                      <td className='p-6'>
+                        <div className='flex items-center gap-2'>
                           <img
                             className='rounded-full'
-                            src={item?.avatar || '/default-avatar.png'}
+                            src={item?.avatar || img1}
                             alt={item?.booking?.user?.name}
-                            style={{ width: '40px', height: '40px' }}
+                            style={{ width: '24px', height: '24px' }}
                           />
-                          <span className='truncate text-[#1D1F2C] text-[15px] font-medium'>
-                            {item?.booking?.user?.name}
+                          <span className='truncate text-[#1D1F2C] text-[14px]'>
+                            {item?.booking?.user?.name || "Miraz Hossain"}
                           </span>
                         </div>
-                      </TableCell>
-                      <TableCell style={{ minWidth: '200px' }}>
+                      </td>
+                      <td className='p-6'>
                         <p className='truncate text-[#475467]'>
                           ${item?.paid_amount || 0}
                         </p>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      <td className='p-6'>
                         <span
-                          className={`px-3 py-1 rounded-full ${
-                            item.status === 'succeeded'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
+                          className={`py-1 rounded-full text-[#475467]`}
                         >
-                          {item.status}
+                          {new Date(item.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
                         </span>
-                      </TableCell>
-                      <TableCell>
+                      </td>
+                      {/* <td className='p-6'>
+                      <span
+                        className={`px-3 py-1 rounded-full ${item.status === 'succeeded'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td> */}
+                      <td className='p-6'>
                         <div className='flex items-center justify-center gap-4'>
-                        <button
+                          <button
                             className='text-[#475467] hover:text-blue-700 transform duration-300'
                             onClick={() => handleOpen(item)}
                           >
-                            <FaEye className='text-lg' />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+                              <path d="M17.7808 8.20831C18.7471 9.22504 18.7471 10.7698 17.7808 11.7865C16.151 13.5013 13.3518 15.8307 10.1722 15.8307C6.9926 15.8307 4.19344 13.5013 2.56362 11.7865C1.59728 10.7698 1.59728 9.22504 2.56362 8.20831C4.19344 6.49351 6.9926 4.16406 10.1722 4.16406C13.3518 4.16406 16.151 6.49351 17.7808 8.20831Z" stroke="#475467" stroke-width="1.5" />
+                              <path d="M12.6722 9.9974C12.6722 11.3781 11.5529 12.4974 10.1722 12.4974C8.79149 12.4974 7.6722 11.3781 7.6722 9.9974C7.6722 8.61668 8.79149 7.4974 10.1722 7.4974C11.5529 7.4974 12.6722 8.61668 12.6722 9.9974Z" stroke="#475467" stroke-width="1.5" />
+                            </svg>
                           </button>
                           <button
                             onClick={() => handleDelete(item.id)}
-                            className='text-red-600 hover:text-red-700 transform duration-300'
+                            className='text-[#475467] hover:text-red-700 transform duration-300'
                           >
                             <LuTrash2 className='text-lg' />
                           </button>
-                         
+
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))
               ) : (
-                <TableRow>
-                  <TableCell colSpan={5} align='center'>
+                <tr>
+                  <td colSpan={5} align='center'>
                     <p className='text-[#475467] font-medium py-6'>
                       No transactions found
                     </p>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
+            </tbody>
+          </table>
+        </div>
+        <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
+      </div>
+      {/* <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
           count={filteredData.length}
@@ -347,8 +397,7 @@ const BookingTable = ({ title }) => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
+        /> */}
       <Modal
         aria-labelledby='transition-modal-title'
         aria-describedby='transition-modal-description'
