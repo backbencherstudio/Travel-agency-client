@@ -59,7 +59,7 @@ const VendorDetails = () => {
         <title>Around 360 - Vendor Details</title>
       </Helmet>
       <div className='content min-h-[calc(100vh-80px)] w-full bg-white p-6'>
-        <div className='userData'>
+        <div className='userData overflow-y-auto'>
           <div className='top grid grid-cols-12 gap-4'>
             <div className='first col-span-12 md:col-span-4 2xl:col-span-2 flex flex-col items-center'>
               {userData?.data?.avatar ? (

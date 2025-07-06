@@ -1,14 +1,8 @@
 import { FaEdit, FaEye, FaEyeSlash, FaSearch } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
+import TablePagination from '../../../Shared/TablePagination'
+import img1 from '../../../assets/img/tour-details/image-5.png'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TablePagination,
   CircularProgress,
   Dialog,
   DialogContent
@@ -56,8 +50,8 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
         } catch (error) {
           toast.error(
             error.response?.data?.message ||
-              error.message ||
-              'An error occurred while searching.'
+            error.message ||
+            'An error occurred while searching.'
           )
         } finally {
           setLoading(false)
@@ -76,6 +70,13 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
   }, [searchQuery, data, navigate, location.pathname])
 
   const handleChangePage = (event, newPage) => setPage(newPage)
+  const handleNextPage = (event) => {
+    setPage(prev => prev + 1)
+  };
+
+  const handlePreviousPage = () => {
+    setPage(prev => Math.max(0, prev - 1))
+  }
 
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(parseInt(event.target.value, 10))
@@ -231,95 +232,106 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
             <div className='relative'>
               <input
                 type='text'
-                placeholder='Search...'
-                className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
+                placeholder='Search Member'
+                className='py-1.5 pl-10 rounded-md bg-[#F0F4F9] focus:outline-none focus:border-orange-400 w-full lg:w-[100%] placeholder:text-[12px] placeholder:text-[#B3B7BA]'
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
               />
-              <FaSearch className='absolute top-3 left-3 text-zinc-400' />
+              {/* <FaSearch className='absolute top-3 left-3 text-zinc-400' /> */}
+              <svg className='absolute top-3 left-3 text-zinc-400' xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.75 2.5C5.12665 2.5 3 4.62665 3 7.25C3 9.87335 5.12665 12 7.75 12C10.3734 12 12.5 9.87335 12.5 7.25C12.5 4.62665 10.3734 2.5 7.75 2.5ZM2 7.25C2 4.07436 4.57436 1.5 7.75 1.5C10.9256 1.5 13.5 4.07436 13.5 7.25C13.5 10.4256 10.9256 13 7.75 13C4.57436 13 2 10.4256 2 7.25Z" fill="#757D83" />
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.1089 10.6089C11.3042 10.4137 11.6208 10.4137 11.8161 10.6089L14.8536 13.6464C15.0488 13.8417 15.0488 14.1583 14.8536 14.3536C14.6583 14.5488 14.3417 14.5488 14.1464 14.3536L11.1089 11.3161C10.9137 11.1208 10.9137 10.8042 11.1089 10.6089Z" fill="#757D83" />
+              </svg>
             </div>
             <button
               onClick={() => handleOpenModal()}
               className='flex text-[14px] items-center gap-1 bg-[#EB5B2A] hover:bg-[#eb5a2ae0] transform duration-300 text-white px-3 py-2 rounded-lg whitespace-nowrap'
             >
-              <FaRegSquarePlus className='text-white text-xl' />
+              <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20" viewBox="0 0 21 20" fill="none">
+                <path d="M10.5052 4.16406V15.8307M4.67188 9.9974H16.3385" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
               Admin Member
             </button>
           </div>
         </div>
       </div>
-      <Paper style={{ borderRadius: '10px' }}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
+      <div>
+        <div className="w-full overflow-x-auto">
+          <table className="w-full table-auto min-w-[768px]">
+            <thead className='text-[#475467] text-[12px] bg-[#F9FAFB]'>
+              <tr>
                 {columns.name && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Member
-                  </TableCell>
+                  <th className='font-medium py-4 px-6 rounded-lg'>
+                    <div className='flex items-center gap-1'>
+                      <span>Member</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
                 )}
                 {columns.email && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Email
-                  </TableCell>
+                  <th className='font-medium py-4 px-6 rounded-lg'>
+                    <div className='flex items-center gap-1'>
+                      <span>Email</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
                 )}
                 {columns.type && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    type
-                  </TableCell>
+                  <th className='font-medium py-4 px-6 rounded-lg'>
+                    <div className='flex items-center gap-1'>
+                      <span>Status</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
                 )}
-                <TableCell
-                  sx={{
-                    textAlign: 'center',
-                    color: '#475467',
-                    fontSize: '13px',
-                    fontWeight: 600
-                  }}
-                >
+                <th className='font-medium py-4 px-6 rounded-lg'>
                   Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {filteredData.length > 0 ? (
                 filteredData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map(item => (
-                    <TableRow key={item.id}>
+                    <tr key={item.id} className='border-b border-[#F1F2F4]'>
                       {columns.name && (
-                        <TableCell>
+                        <td className='px-6 py-[18px]'>
                           <div className='flex items-center gap-3'>
-                            {/* <img
-                              className='rounded-lg'
-                              src={item.memberImg}
+                            <img
+                              className='rounded-full'
+                              src={item.memberImg || img1}
                               alt={item.name}
-                              style={{ width: '50px', height: '50px' }}
-                            /> */}
-                            <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
+                              style={{ width: '24px', height: '24px' }}
+                            />
+                            <span className='truncate text-[#1D1F2C] text-[12px] font-medium'>
                               {item.name}
                             </span>
                           </div>
-                        </TableCell>
+                        </td>
                       )}
                       {columns.email && (
-                        <TableCell>
-                          <p className='truncate text-[#475467]'>
+                        <td className='px-6 py-[18px]'>
+                          <p className='truncate text-[#475467] text-[12px] font-medium'>
                             {item.email}
                           </p>
-                        </TableCell>
+                        </td>
                       )}
                       {columns.type && (
-                        <TableCell>
-                          <p className='truncate text-[#475467]'>{item.type}</p>
-                        </TableCell>
+                        <td className='px-6 py-[18px]'>
+                          <p className='truncate text-[#475467] text-[12px] font-medium'>{item.type}</p>
+                        </td>
                       )}
-                      <TableCell>
+                      <td className='px-4 py-[18px]'>
                         <div className='flex items-center justify-center gap-4'>
                           <button
                             onClick={e => {
@@ -328,34 +340,39 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
                             }}
                             className='text-blue-500 hover:text-blue-600 transform duration-300'
                           >
-                            <FaEdit  className='text-lg' />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none">
+                              <path d="M17.6138 8.70831C18.5801 9.72504 18.5801 11.2698 17.6138 12.2865C15.984 14.0013 13.1848 16.3307 10.0052 16.3307C6.82561 16.3307 4.02645 14.0013 2.39663 12.2865C1.43029 11.2698 1.43029 9.72504 2.39663 8.70831C4.02645 6.99351 6.82561 4.66406 10.0052 4.66406C13.1848 4.66406 15.984 6.99351 17.6138 8.70831Z" stroke="#475467" stroke-width="1.5" />
+                              <path d="M12.5052 10.4974C12.5052 11.8781 11.3859 12.9974 10.0052 12.9974C8.6245 12.9974 7.50521 11.8781 7.50521 10.4974C7.50521 9.11668 8.6245 7.9974 10.0052 7.9974C11.3859 7.9974 12.5052 9.11668 12.5052 10.4974Z" stroke="#475467" stroke-width="1.5" />
+                            </svg>
                           </button>
                           <button
                             onClick={() => handleDeleteUser(item.id)}
                             className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <LuTrash2 className='text-lg' />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17" viewBox="0 0 16 17" fill="none">
+                              <path d="M10.6667 4.50065V3.96732C10.6667 3.22058 10.6667 2.84721 10.5213 2.562C10.3935 2.31111 10.1895 2.10714 9.93865 1.97931C9.65344 1.83398 9.28007 1.83398 8.53333 1.83398H7.46667C6.71993 1.83398 6.34656 1.83398 6.06135 1.97931C5.81046 2.10714 5.60649 2.31111 5.47866 2.562C5.33333 2.84721 5.33333 3.22058 5.33333 3.96732V4.50065M6.66667 8.16732V11.5007M9.33333 8.16732V11.5007M2 4.50065H14M12.6667 4.50065V11.9673C12.6667 13.0874 12.6667 13.6475 12.4487 14.0753C12.2569 14.4516 11.951 14.7576 11.5746 14.9493C11.1468 15.1673 10.5868 15.1673 9.46667 15.1673H6.53333C5.41323 15.1673 4.85318 15.1673 4.42535 14.9493C4.04903 14.7576 3.74307 14.4516 3.55132 14.0753C3.33333 13.6475 3.33333 13.0874 3.33333 11.9673V4.50065" stroke="#475467" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
                           </button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))
               ) : (
-                <TableRow>
-                  <TableCell
+                <tr>
+                  <td
                     colSpan={Object.keys(columns).length + 1}
                     align='center'
                   >
                     <p className='text-[#475467] font-medium py-6'>
                       No data found
                     </p>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
+            </tbody>
+          </table>
+        </div>
+        {/* <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
           count={filteredData.length}
@@ -363,8 +380,9 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
+        /> */}
+        <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
+      </div>
 
       {/* Modal */}
       <Dialog open={openModal} onClose={handleCloseModal}>
@@ -382,9 +400,8 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
                   type='text'
                   {...register('name', { required: 'Name is required' })}
                   placeholder='Enter member name'
-                  className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                    errors.name ? 'border-red-500' : ''
-                  }`}
+                  className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${errors.name ? 'border-red-500' : ''
+                    }`}
                 />
                 {errors.name && (
                   <span className='text-red-500 text-sm'>
@@ -407,9 +424,8 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
                     }
                   })}
                   placeholder='Type your email'
-                  className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                    errors.email ? 'border-red-500' : ''
-                  }`}
+                  className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${errors.email ? 'border-red-500' : ''
+                    }`}
                   disabled={mode === 'edit'}
                 />
                 {errors.email && (
@@ -427,9 +443,8 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
                 <label className='block mb-2 font-medium'>type</label>
                 <select
                   {...register('type', { required: 'type is required' })}
-                  className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                    errors.type ? 'border-red-500' : ''
-                  }`}
+                  className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${errors.type ? 'border-red-500' : ''
+                    }`}
                 >
                   <option value=''>Select type</option>
                   <option value='manager'>Manager</option>
@@ -460,9 +475,8 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
                           }
                         })}
                         placeholder='Enter password'
-                        className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                          errors.password ? 'border-red-500' : ''
-                        }`}
+                        className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${errors.password ? 'border-red-500' : ''
+                          }`}
                       />
                       <button
                         type='button'
@@ -494,9 +508,8 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
                             'Passwords do not match'
                         })}
                         placeholder='Re-enter password'
-                        className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
-                          errors.rePassword ? 'border-red-500' : ''
-                        }`}
+                        className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${errors.rePassword ? 'border-red-500' : ''
+                          }`}
                       />
                       <button
                         type='button'

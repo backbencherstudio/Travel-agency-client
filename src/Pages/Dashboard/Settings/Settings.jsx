@@ -91,7 +91,7 @@ const Settings = () => {
   }
 
   return (
-    <div className='min-h-[calc(100vh-100px)] w-full'>
+    <div className='w-full pt-5' style={{minHeight: 'calc(100vh-100px)'}}>
        <Helmet>
         <title>Around 360 - Settings</title>
       </Helmet>
@@ -102,13 +102,13 @@ const Settings = () => {
           <input
             type='text'
             placeholder='Search anything'
-            className='py-1.5 pl-10 pr-4  rounded-md focus:outline-none focus:border-orange-400 w-full sm:w-[300px]'
+            className='py-1.5 pl-10 pr-4  rounded-md focus:outline-none focus:border-orange-400 w-full sm:w-[300px] placeholder:text-sm'
           />
           <FaSearch className='absolute top-3 left-3 text-zinc-400' />
         </div>
       </div>
 
-      <div className='bg-white rounded-xl p-4 md:p-5 min-h-[calc(100vh-180px)]'>
+      <div className='bg-white rounded-xl p-4 md:p-5'>
         {/* Mobile Tabs */}
         <div className='md:hidden w-full overflow-x-auto pb-2 mb-4'>
           <div className='flex gap-2 min-w-max'>
@@ -133,19 +133,19 @@ const Settings = () => {
         {/* Main Content */}
         <div className='flex flex-col md:flex-row gap-6'>
           {/* Sidebar Navigation - Hidden on Mobile */}
-          <div className='hidden md:block md:w-[200px] lg:w-[250px] xl:w-[300px] bg-[#FDEFEA] rounded-xl p-4 h-[calc(100vh-220px)]'>
+          <div className='hidden md:block md:w-fit lg:w-fit xl:w-fit bg-[#FDEFEA] rounded-xl p-4 h-[calc(100vh-220px)]'>
             {menuItems.map((item, index) => (
               <button
                 key={index}
                 onClick={() => setActiveTab(item.label)}
-                className={`w-full text-left px-4 py-2 rounded-lg mb-7 flex items-center gap-3 transition-colors ${
+                className={`w-full text-left px-4 py-2 rounded-lg mb-7 flex items-center gap-3 transition-colors text-[14px] text-[#1D1F2C] ${
                   activeTab === item.label
                     ? 'bg-orange-500 text-white'
                     : 'hover:bg-orange-100'
                 }`}
               >
                 <span>{item.icon}</span>
-                <span>{item.label}</span>
+                <span className='text-nowrap'>{item.label}</span>
               </button>
             ))}
           </div>

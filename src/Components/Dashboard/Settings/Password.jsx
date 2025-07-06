@@ -40,7 +40,7 @@ const Password = () => {
           <h2 className='text-xl font-semibold mb-2 text-[#080613]'>
             Update Password
         </h2>
-        <p className='text-[#687588] text-sm'>
+        <p className='text-[#687588] text-[12px] capitalize'>
           Change your password below to secure your account
         </p>
       </div>
@@ -58,8 +58,8 @@ const Password = () => {
               {...register('old_password', {
                 required: 'Current Password is required'
               })}
-              placeholder='Enter your Current Password'
-              className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+              placeholder='Enter your current password'
+              className={`w-full p-2 border border-[#E9EAEC] rounded-md focus:outline-none focus:border-orange-400 placeholder:text-[14px] placeholder:text-[#CACACA] ${
                 errors.old_password ? 'border-red-500' : ''
               }`}
             />
@@ -100,8 +100,8 @@ const Password = () => {
                 //     'Password must contain at least one letter, one number, and one special character'
                 // }
               })}
-              placeholder='Enter your New Password'
-              className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+              placeholder='Enter your new password'
+              className={`w-full p-2 border border-[#E9EAEC] rounded-md focus:outline-none focus:border-orange-400 placeholder:text-[14px] placeholder:text-[#CACACA] ${
                 errors.new_password ? 'border-red-500' : ''
               }`}
             />
@@ -125,7 +125,7 @@ const Password = () => {
 
         {/* Confirm Password */}
         <div>
-          <label className='block mb-2 font-medium'>Confirm Password</label>
+          <label className='block mb-2 font-medium'>Confirm New Password</label>
           <div className='relative'>
             <input
               type={showConfirmPassword ? 'text' : 'password'} // Toggle visibility
@@ -134,8 +134,8 @@ const Password = () => {
                 validate: value =>
                   value === watch('new_password') || 'Passwords do not match'
               })}
-              placeholder='Enter your Confirm Password'
-              className={`w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:border-orange-400 ${
+              placeholder='Confirm your new password'
+              className={`w-full p-2 border border-[#E9EAEC] rounded-md focus:outline-none focus:border-orange-400 placeholder:text-[14px] placeholder:text-[#CACACA] ${
                 errors.confirm_password ? 'border-red-500' : ''
               }`}
             />
@@ -159,7 +159,7 @@ const Password = () => {
 
         <button
           type='submit'
-          className='bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 transition-colors'
+          className='bg-orange-500 text-white px-6 py-2 rounded-md hover:bg-orange-600 transition-colors text-[12px]'
         >
           Update Password
         </button>

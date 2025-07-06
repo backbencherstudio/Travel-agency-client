@@ -265,174 +265,175 @@ const BookingManagementTable = ({ tableType = '', title, columns }) => {
         </div>
       </div>
 
-      <div className='rounded-[10px] bg-white p-4 w-full overflow-x-auto space-y-3'>
-        <table className='w-full table-auto'>
-          <thead className='text-nowrap'>
-            <tr className='bg-[#F9FAFB] rounded-md'>
-              {columns?.bookingId && (
+      <div className='space-y-3 bg-white rounded-lg'>
+        <div className='rounded-[10px] p-4 w-full overflow-x-auto space-y-3'>
+          <table className='w-full table-auto'>
+            <thead className='text-nowrap'>
+              <tr className='bg-[#F9FAFB] rounded-md'>
+                {columns?.bookingId && (
+                  <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
+                    <div className='flex items-center gap-1'>
+                      <span>Booking ID</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )}
+                {columns?.name && (
+                  <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
+                    <div className='flex items-center gap-1'>
+                      <span className='text-start'>Travelers Name</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )}
+                {columns?.packageName && (
+                  <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
+                    <div className='flex items-center gap-1'>
+                      <span>Package Name</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )}
+                {columns?.date && (
+                  <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
+                    <div className='flex items-center gap-1 justify-center'>
+                      <span>Date</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )}
+                {columns?.status && (
+                  <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
+                    <div className='flex items-center gap-1 justify-center'>
+                      <span className='text-center'>Status</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )}
                 <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
-                  <div className='flex items-center gap-1'>
-                    <span>Booking ID</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
-                    </svg>
-                  </div>
+                  Action
                 </th>
-              )}
-              {columns?.name && (
-                <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
-                  <div className='flex items-center gap-1'>
-                    <span className='text-start'>Travelers Name</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
-                    </svg>
-                  </div>
-                </th>
-              )}
-              {columns?.packageName && (
-                <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
-                  <div className='flex items-center gap-1'>
-                    <span>Package Name</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
-                    </svg>
-                  </div>
-                </th>
-              )}
-              {columns?.date && (
-                <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
-                  <div className='flex items-center gap-1 justify-center'>
-                    <span>Date</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
-                    </svg>
-                  </div>
-                </th>
-              )}
-              {columns?.status && (
-                <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
-                  <div className='flex items-center gap-1 justify-center'>
-                    <span className='text-center'>Status</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
-                    </svg>
-                  </div>
-                </th>
-              )}
-              <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
-                Action
-              </th>
-            </tr>
-          </thead>
-
-          <tbody className='text-nowrap'>
-            {filteredData?.length > 0 ? (
-              filteredData
-                ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                ?.map(item => (
-                  <tr key={item?.id} onClick={() => handleRowClick(item.id)} className='border-b border-[#EAECF0]'>
-                    {columns?.bookingId && (
-                      <td className='px-6 py-5'>
-                        <p className='text-[#475467] text-[12px]'>
-                          #{item?.invoice_number}
-                        </p>
-                      </td>
-                    )}
-                    {columns?.name && (
-                      <td className='px-6 py-5' style={{ minWidth: '200px' }}>
-                        <div className='flex items-center gap-3'>
-                          <img
-                            className='rounded-full'
-                            src={item.user?.image || 'default-image-url'}
-                            alt={item.user?.name}
-                            style={{ width: '24px', height: '24px' }}
-                          />
-                          <span className='truncate text-[#1D1F2C] text-[14px]'>
-                            {item.user?.name}
-                          </span>
-                        </div>
-                      </td>
-                    )}
-                    {columns?.packageName && (
-                      <td className='px-6 py-5' style={{ minWidth: '200px' }}>
-                        <p className='truncate text-[#475467] text-[12px] capitalize'>
-                          {item.booking_items?.[0]?.package?.name || 'N/A'}
-                        </p>
-                      </td>
-                    )}
-                    {columns?.date && (
-                      <td className='px-6 py-5' style={{ textAlign: 'center' }}>
-                        <p className='text-[#475467] text-[12px]'>
-                          {/* {new Date(item.created_at).toLocaleDateString()} */}
-                          {item.created_at}
-                        </p>
-                      </td>
-                    )}
-                    {columns?.status && (
-                      <td className='px-6 py-5' style={{ textAlign: 'center' }}>
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            backgroundColor:
-                              statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.backgroundColor ||
-                              'transparent',
-                            color:
-                              statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.color || 'black',
-                            padding: '1px 14px',
-                            borderRadius: '50px',
-                            fontSize: '12px',
-                            fontWeight: '500',
-                            border:
-                              statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.border || 'none',
-                            height: '30px',
-                          }}
-                          className='w-full'
-                        >
-                          {statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.icon}
-                          <span>{item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}</span>
-                        </span>
-                      </td>
-                    )}
-                    {/* {selectedStatus === 'Booking_Requests' || selectedStatus === 'Pending' && ( */}
-                    {(item.status === "requests" || item.status === "pending") && <td className='px-6 py-5' style={{ textAlign: 'center' }}>
-                      <button
-                        className='text-[#475467] hover:text-blue-700 transform duration-300'
-                        onClick={() =>
-                          navigate(
-                            `/dashboard/booking-request/${item.id}`
-                          )
-                        }
-                      >
-                        <FaEye className='text-lg' />
-                      </button>
-                    </td>}
-                    {/* )} */}
-                  </tr>
-                ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={columns ? Object.keys(columns).length + 1 : 1}
-                  align='center'
-                >
-                  <p className='text-[#475467] font-medium py-6'>
-                    No data found
-                  </p>
-                </td>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
 
-        {/* <TablePagination
+            <tbody className='text-nowrap'>
+              {filteredData?.length > 0 ? (
+                filteredData
+                  ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  ?.map(item => (
+                    <tr key={item?.id} onClick={() => handleRowClick(item.id)} className='border-b border-[#EAECF0]'>
+                      {columns?.bookingId && (
+                        <td className='px-6 py-5'>
+                          <p className='text-[#475467] text-[12px]'>
+                            #{item?.invoice_number}
+                          </p>
+                        </td>
+                      )}
+                      {columns?.name && (
+                        <td className='px-6 py-5' style={{ minWidth: '200px' }}>
+                          <div className='flex items-center gap-3'>
+                            <img
+                              className='rounded-full'
+                              src={item.user?.image || 'default-image-url'}
+                              alt={item.user?.name}
+                              style={{ width: '24px', height: '24px' }}
+                            />
+                            <span className='truncate text-[#1D1F2C] text-[14px]'>
+                              {item.user?.name}
+                            </span>
+                          </div>
+                        </td>
+                      )}
+                      {columns?.packageName && (
+                        <td className='px-6 py-5' style={{ minWidth: '200px' }}>
+                          <p className='truncate text-[#475467] text-[12px] capitalize'>
+                            {item.booking_items?.[0]?.package?.name || 'N/A'}
+                          </p>
+                        </td>
+                      )}
+                      {columns?.date && (
+                        <td className='px-6 py-5' style={{ textAlign: 'center' }}>
+                          <p className='text-[#475467] text-[12px]'>
+                            {/* {new Date(item.created_at).toLocaleDateString()} */}
+                            {item.created_at}
+                          </p>
+                        </td>
+                      )}
+                      {columns?.status && (
+                        <td className='px-6 py-5' style={{ textAlign: 'center' }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '8px',
+                              backgroundColor:
+                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.backgroundColor ||
+                                'transparent',
+                              color:
+                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.color || 'black',
+                              padding: '1px 14px',
+                              borderRadius: '50px',
+                              fontSize: '12px',
+                              fontWeight: '500',
+                              border:
+                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.border || 'none',
+                              height: '30px',
+                            }}
+                            className='w-full'
+                          >
+                            {statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.icon}
+                            <span>{item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}</span>
+                          </span>
+                        </td>
+                      )}
+                      {/* {selectedStatus === 'Booking_Requests' || selectedStatus === 'Pending' && ( */}
+                      {(item.status === "requests" || item.status === "pending") && <td className='px-6 py-5' style={{ textAlign: 'center' }}>
+                        <button
+                          className='text-[#475467] hover:text-blue-700 transform duration-300'
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/booking-request/${item.id}`
+                            )
+                          }
+                        >
+                          <FaEye className='text-lg' />
+                        </button>
+                      </td>}
+                      {/* )} */}
+                    </tr>
+                  ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={columns ? Object.keys(columns).length + 1 : 1}
+                    align='center'
+                  >
+                    <p className='text-[#475467] font-medium py-6'>
+                      No data found
+                    </p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+
+          {/* <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
           count={filteredData?.length}
@@ -441,6 +442,7 @@ const BookingManagementTable = ({ tableType = '', title, columns }) => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         /> */}
+        </div>
         <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
       </div>
     </div>

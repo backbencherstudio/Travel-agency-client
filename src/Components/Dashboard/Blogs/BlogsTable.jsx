@@ -1,15 +1,17 @@
 import { FaSearch, FaCheckCircle, FaEdit } from 'react-icons/fa'
 import { useState, useEffect, useRef } from 'react'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TablePagination
-} from '@mui/material'
+import TablePagination from '../../../Shared/TablePagination'
+import img1 from '../../../assets/img/tour-details/image-5.png'
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableContainer,
+//   TableHead,
+//   TableRow,
+//   Paper,
+//   TablePagination
+// } from '@mui/material'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
@@ -127,6 +129,14 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
   // Other handlers remain the same
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
+  }
+
+  const handleNextPage = (event) => {
+    setPage(prev => prev + 1)
+  };
+
+  const handlePreviousPage = () => {
+    setPage(prev => Math.max(0, prev - 1))
   }
 
   const handleChangeRowsPerPage = event => {
@@ -270,6 +280,8 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
     return <div>Loading...</div>
   }
 
+  console.log(filteredData)
+
   return (
     <>
       <div className='flex flex-col sm:flex-row justify-between items-center py-5'>
@@ -279,7 +291,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
             <input
               type='text'
               placeholder='Search...'
-              className='py-1.5 pl-10 border border-zinc-300 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
+              className='py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
               onChange={handleSearchChange}
             />
@@ -307,11 +319,10 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                       <button
                         key={status}
                         onClick={() => handleStatusChange(status)}
-                        className={`block w-full px-5 py-5 text-left text-sm text-gray-700 hover:bg-gray-200 ${
-                          selectedStatus === status
-                            ? 'font-bold bg-gray-100'
-                            : ''
-                        }`}
+                        className={`block w-full px-5 py-5 text-left text-sm text-gray-700 hover:bg-gray-200 ${selectedStatus === status
+                          ? 'font-bold bg-gray-100'
+                          : ''
+                          }`}
                       >
                         {status}
                       </button>
@@ -324,8 +335,8 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
         </div>
       </div>
 
-      <Paper style={{ borderRadius: '10px' }}>
-        <div className='flex justify-end p-5'>
+      <div className='bg-white space-y-4' style={{ borderRadius: '10px' }}>
+        {/* <div className='flex justify-end p-5'>
           <button
             onClick={handleAddBlogClick}
             className='flex text-[14px] items-center gap-1 bg-[#EB5B2A] hover:bg-[#eb5a2ae0] transform duration-300 text-white px-3 py-2 rounded-lg whitespace-nowrap'
@@ -333,134 +344,149 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
             <FaRegSquarePlus className='text-white text-xl' />
             Create Blog
           </button>
-        </div>
+        </div> */}
 
-        <TableContainer sx={{ padding: '16px' }}>
-          <Table sx={{ border: '1px solid #e0e0e0' }}>
-            <TableHead>
-              <TableRow>
+        <div className='w-full overflow-x-auto p-4'>
+          <table className="w-full table-auto min-w-[768px]">
+            <thead className='bg-[#F9FAFB] text-[#475467] text-[12px]'>
+              <tr>
                 {columns?.title && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Title
-                  </TableCell>
+                  <th className='p-6 rounded-lg font-medium'>
+
+                    <div className='flex items-center gap-1'>
+                      <span>Title</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
                 )}
                 {columns?.user && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Author
-                  </TableCell>
+                  <th className='p-6 rounded-lg font-medium'>
+
+                    <div className='flex items-center gap-1'>
+                      <span>Author</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
                 )}
                 {columns?.status && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Status
-                  </TableCell>
+                  <th className='p-6 rounded-lg font-medium'>
+
+                    <div className='flex items-center gap-1'>
+                      <span>Status</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
                 )}
-                {columns?.approved_at && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Approval
-                  </TableCell>
-                )}
+                {/* {columns?.approved_at && (
+                  <th className='p-6 rounded-lg font-medium'>
+
+                    <div className='flex items-center gap-1'>
+                      <span>Approval</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )} */}
                 {columns?.created_at && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Published Date
-                  </TableCell>
+                  <th className='p-6 rounded-lg font-medium'>
+                    <div className='flex items-center gap-1'>
+                      <span>Published Date</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
                 )}
                 {columns?.updated_at && (
-                  <TableCell
-                    sx={{ color: '#475467', fontSize: '13px', fontWeight: 600 }}
-                  >
-                    Modified Date
-                  </TableCell>
-                )}
-                <TableCell
-                  sx={{
-                    textAlign: 'center',
-                    color: '#475467',
-                    fontSize: '13px',
-                    fontWeight: 600
-                  }}
-                >
-                  Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
+                  <th className='p-6 rounded-lg font-medium' >
 
-            <TableBody className='text-nowrap'>
+                    <div className='flex items-center gap-1'>
+                      <span>Modified Date</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )}
+                <th className='p-6 rounded-lg font-medium'>
+                  Action
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className='text-nowrap'>
               {filteredData?.length > 0 ? (
                 filteredData
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   ?.map(item => (
-                    <TableRow
+                    <tr
                       key={item?.id}
                       onClick={() => handleRowClick(item.id)}
                     >
                       {columns?.title && (
-                        <TableCell style={{ minWidth: '200px' }}>
-                          <div className='flex items-center gap-3'>
+                        <td className='px-6 py-4'>
+                          <div className='flex items-center gap-3 w-[300px]'>
                             <img
                               className='rounded-lg'
                               // alt={item.title}
                               alt='blog image'
-                              style={{ width: '80px', height: '80px' }}
+                              style={{ width: '72px', height: '72px' }}
+                              src={img1}
                             />
-                            <span className='truncate text-[#1D1F2C] text-[14px] font-medium'>
+                            <span className='text-wrap text-[#1D1F2C] text-[12px] font-medium'>
                               {item.title}
                             </span>
                           </div>
-                        </TableCell>
+                        </td>
                       )}
                       {columns?.user && (
-                        <TableCell style={{ minWidth: '200px' }}>
-                          <p className='truncate text-[#475467]'>
+                        <td className='px-6 py-4'>
+                          <p className='truncate text-[#475467] text-[12px]'>
                             {item?.user?.type}
                           </p>
-                        </TableCell>
+                        </td>
                       )}
                       {columns?.status && (
-                        <TableCell style={{ minWidth: '200px' }}>
+                        <td className='px-6 py-4'>
                           {item.status === 1 ? (
-                            <span
-                              className='bg-[#ECFDF3] border-[#ABEFC6] border text-[13px] text-[#067647] px-2 py-1 rounded-full'
-                              style={{
-                                height: '30px',
-                                width: '100px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              Active
-                            </span>
+                            <div className='flex  items-center gap-1 border border-[#ABEFC6] rounded-full py-1 px-3 text-[12px] text-[#067647] justify-center bg-[#ECFDF3]'>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
+                                <path d="M10.5 3L5 8.5L2.5 6" stroke="#17B26A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                              </svg>
+                              <span className=''>
+                                Published
+                              </span>
+                            </div>
                           ) : item.status === 0 ? (
-                            <span
-                              className='bg-[#FEF3F2] border text-[#B42318] text-[13px] border-[#FECDCA] px-2 py-1 rounded-full'
-                              style={{
-                                height: '30px',
-                                width: '100px',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              Deactivated
-                            </span>
+                            <div className='flex  items-center gap-1 border border-[#90A9C3] rounded-full py-1 px-3 text-[12px] text-[#0A3159] justify-center bg-[#E7ECF2]'>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="7" height="6" viewBox="0 0 7 6" fill="none">
+                                <circle cx="3.5" cy="3" r="3" fill="#0E457D" />
+                              </svg>
+                              <span className=''>
+                                Hold
+                              </span>
+                            </div>
                           ) : null}
-                        </TableCell>
+                        </td>
                       )}
 
-                      {columns?.approved_at && (
-                        <TableCell style={{ minWidth: '200px' }}>
+                      {/* {columns?.approved_at && (
+                        <td className='px-6 py-4'>
                           {item?.user?.type === 'admin' ||
-                          item?.user?.type === 'vendor' ? (
+                            item?.user?.type === 'vendor' ? (
                             <>
                               <p className='truncate text-[#475467]'>
                                 {item.approved_at === null ? (
@@ -527,52 +553,50 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                           ) : (
                             <></>
                           )}
-                        </TableCell>
-                      )}
+                        </td>
+                      )} */}
                       {columns?.created_at && (
-                        <TableCell>
-                          <p className='text-[#475467]'>
+                        <td className='px-6 py-4'>
+                          <p className='text-[#475467] text-[12px]'>
                             {item.created_at
                               ? new Date(item.created_at).toLocaleString(
-                                  'en-US',
-                                  {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                    hour: 'numeric',
-                                    minute: 'numeric',
-                                    second: 'numeric',
-                                    hour12: true
-                                  }
-                                )
+                                'en-US',
+                                {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: 'numeric',
+                                  minute: 'numeric',
+                                  hour12: true
+                                }
+                              )
                               : ''}
                           </p>
-                        </TableCell>
+                        </td>
                       )}
                       {columns?.updated_at && (
-                        <TableCell>
-                          <p className='text-[#475467]'>
+                        <td className='px-6 py-4'>
+                          <p className='text-[#475467] text-[12px]'>
                             {item.created_at
                               ? new Date(item.updated_at).toLocaleString(
-                                  'en-US',
-                                  {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                    hour: 'numeric',
-                                    minute: 'numeric',
-                                    second: 'numeric',
-                                    hour12: true
-                                  }
-                                )
+                                'en-US',
+                                {
+                                  month: 'short',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                  hour: 'numeric',
+                                  minute: 'numeric',
+                                  hour12: true
+                                }
+                              )
                               : ''}
                           </p>
-                        </TableCell>
+                        </td>
                       )}
-                      <TableCell>
+                      <td className='px-6 py-4'>
                         <div className='relative flex items-center justify-center gap-4'>
                           <div className='relative flex justify-center'>
-                            <button
+                            {/* <button
                               onClick={e => handleThreeDotsClick(e, item.id)}
                               className='text-blue-600 transition-all duration-500 ease-in-out'
                             >
@@ -581,9 +605,9 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                               ) : (
                                 <BsThreeDots className='text-xl opacity-100 scale-100 transition-transform duration-300 ease-in-out' />
                               )}
-                            </button>
+                            </button> */}
 
-                            {isOpenAction === item.id && (
+                            {/* {isOpenAction === item.id && (
                               <DropdownPortal
                                 isOpen={isOpenAction === item.id}
                                 position={dropdownPosition}
@@ -595,14 +619,13 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                                   className='absolute bg-white py-5 px-4 flex flex-col -right-20 top-5 space-y-1 rounded-2xl shadow-2xl popup w-60 z-50'
                                 >
                                   {item?.user?.type === 'admin' ||
-                                  item?.user?.type === 'vendor' ? (
+                                    item?.user?.type === 'vendor' ? (
                                     <>
                                       <button
-                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${
-                                          item.status === 1
-                                            ? 'bg-green-600 text-white cursor-default'
-                                            : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
-                                        }`}
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${item.status === 1
+                                          ? 'bg-green-600 text-white cursor-default'
+                                          : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
+                                          }`}
                                         disabled={item.status === 1}
                                         onClick={() =>
                                           handleStatusUpdate(item.id, 'Active')
@@ -611,11 +634,10 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                                         Active
                                       </button>
                                       <button
-                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${
-                                          item.status === 0
-                                            ? 'bg-red-600 text-white cursor-default'
-                                            : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
-                                        }`}
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${item.status === 0
+                                          ? 'bg-red-600 text-white cursor-default'
+                                          : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
+                                          }`}
                                         disabled={item.status === 0}
                                         onClick={() =>
                                           handleStatusUpdate(
@@ -630,11 +652,10 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                                   ) : item?.user?.type === 'admin' ? (
                                     <>
                                       <button
-                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${
-                                          item.approved_at !== null
-                                            ? 'bg-green-600 text-white cursor-default'
-                                            : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
-                                        }`}
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${item.approved_at !== null
+                                          ? 'bg-green-600 text-white cursor-default'
+                                          : 'hover:bg-green-600 text-zinc-600 hover:text-white duration-300'
+                                          }`}
                                         disabled={item.approved_at !== null}
                                         onClick={() =>
                                           handleApproveClick(item.id)
@@ -643,11 +664,10 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                                         Approve
                                       </button>
                                       <button
-                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${
-                                          item.approved_at === null
-                                            ? 'bg-red-600 text-white cursor-default'
-                                            : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
-                                        }`}
+                                        className={`flex item-center gap-3 py-2 px-4 rounded-md text-sm ${item.approved_at === null
+                                          ? 'bg-red-600 text-white cursor-default'
+                                          : 'hover:bg-red-600 text-zinc-600 hover:text-white duration-300'
+                                          }`}
                                         disabled={item.approved_at === null}
                                         onClick={() =>
                                           handleRejectClick(item.id)
@@ -663,17 +683,8 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                                   )}
                                 </div>
                               </DropdownPortal>
-                            )}
+                            )} */}
                           </div>
-                          <button
-                            onClick={e => {
-                              e.stopPropagation()
-                              handleEditClick(item.id)
-                            }}
-                            className='text-blue-500 hover:text-blue-600 transform duration-300'
-                          >
-                            <FaEdit className='text-lg' />
-                          </button>
                           <button
                             onClick={e => {
                               e.stopPropagation()
@@ -681,29 +692,40 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                             }}
                             className='text-red-600 hover:text-red-700 transform duration-300'
                           >
-                            <LuTrash2 className='text-lg' />
+                            <LuTrash2 className='text-lg text-[#475467]' />
+                          </button>
+                          <button
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleEditClick(item.id)
+                            }}
+                            className='text-blue-500 hover:text-blue-600 transform duration-300'
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
+                              <path d="M2.41769 12.0766C2.44831 11.801 2.46363 11.6632 2.50533 11.5343C2.54234 11.42 2.59461 11.3113 2.66075 11.211C2.7353 11.0979 2.83336 10.9999 3.02948 10.8037L11.8337 1.99955C12.5701 1.26317 13.764 1.26317 14.5003 1.99955C15.2367 2.73593 15.2367 3.92984 14.5003 4.66622L5.69614 13.4704C5.50002 13.6665 5.40196 13.7646 5.28892 13.8391C5.18862 13.9053 5.07985 13.9575 4.96556 13.9945C4.83673 14.0362 4.6989 14.0516 4.42324 14.0822L2.16699 14.3329L2.41769 12.0766Z" stroke="#475467" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
                           </button>
                         </div>
-                      </TableCell>
-                    </TableRow>
+                      </td>
+                    </tr>
                   ))
               ) : (
-                <TableRow>
-                  <TableCell
+                <tr>
+                  <td
                     colSpan={columns ? Object.keys(columns).length + 1 : 1}
                     align='center'
                   >
                     <p className='text-[#475467] font-medium py-6'>
                       No data found
                     </p>
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </tbody>
+          </table>
+        </div>
 
-        <TablePagination
+        {/* <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component='div'
           count={filteredData?.length}
@@ -711,8 +733,9 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
+        /> */}
+        <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
+      </div>
     </>
   )
 }
