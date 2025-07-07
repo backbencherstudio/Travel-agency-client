@@ -260,7 +260,7 @@ const PackageTable = ({ tableType = '', title, columns, refetch,showAction }) =>
 
   return (
     <div className='bg-white rounded-lg space-y-4'>
-      <div className='flex flex-col md:flex-row justify-between items-center gap-3 px-4 pt-4 rounded-t-xl'>
+      {user?.type === "admin" && <div className='flex flex-col md:flex-row justify-between items-center gap-3 px-4 pt-4 rounded-t-xl'>
         <div className='flex flex-col sm:flex-row md:gap-6 flex-1 text-nowrap'>
           <button
             className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3 ${showTab === 'all' &&
@@ -297,7 +297,7 @@ const PackageTable = ({ tableType = '', title, columns, refetch,showAction }) =>
           />
           <FaSearch className='absolute top-3 left-3 text-zinc-400' />
         </div>
-      </div>
+      </div>}
       <div className="w-full overflow-x-auto p-4">
         <table className="w-full table-auto min-w-[768px]">
           <thead>

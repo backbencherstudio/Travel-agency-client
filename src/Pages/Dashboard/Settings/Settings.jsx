@@ -16,6 +16,7 @@ import SocialCopyRight from '../../../Components/Dashboard/Settings/SocialCopyRi
 import { MdCopyright } from 'react-icons/md'
 import { AuthContext } from '../../../Context/AuthProvider/AuthProvider'
 import { Helmet } from 'react-helmet-async'
+import Account from '../Account/Account'
 
 const Settings = () => {
   const navigate = useNavigate()
@@ -31,21 +32,27 @@ const Settings = () => {
   const menuItems = [
     {
       icon: <IoMdInformationCircleOutline className='text-xl' />,
-      label: 'Company Info'
+      label: 'Company Info',
+      adminOnly: true,
     },
-    { 
-      icon: <RxCrossCircled className='text-xl' />, 
-      label: 'Cancellation', 
-      // adminOnly: true 
+    {
+      icon: <IoMdInformationCircleOutline className='text-xl' />,
+      label: 'Account',
+      vendorOnly: true,
     },
-    { 
-      icon: <GoShieldLock className='text-lg' />, 
-      label: 'Permission', 
-      // adminOnly: true 
+    {
+      icon: <RxCrossCircled className='text-xl' />,
+      label: 'Cancellation',
+      adminOnly: true
     },
-    { 
-      icon: <IoLockOpenOutline className='text-lg' />, 
-      label: 'Password' 
+    {
+      icon: <GoShieldLock className='text-lg' />,
+      label: 'Permission',
+      adminOnly: true
+    },
+    {
+      icon: <IoLockOpenOutline className='text-lg' />,
+      label: 'Password'
     },
     // { 
     //   icon: <RiCoupon2Line className='text-lg' />, 
@@ -57,11 +64,20 @@ const Settings = () => {
     //   adminOnly: true
     // },
     {
-      icon: <MdCopyright className="text-xl" />, 
+      icon: <MdCopyright className="text-xl" />,
       label: 'Social & Copyright',
-      // adminOnly: true
+      adminOnly: true
     },
-  ].filter(item => !item.adminOnly || user?.type === 'admin')
+  ].filter(item => {
+    if (user?.type === 'admin') {
+      return !item.vendorOnly; // Admin sees everything except vendor-only items
+    } else if (user?.type === 'vendor') {
+      return !item.adminOnly; // Vendor sees everything except admin-only items
+    }
+    return false; // Default case (if user type is neither)
+  })
+
+
 
   // Save active tab to localStorage and update the URL when it changes
   useEffect(() => {
@@ -85,14 +101,16 @@ const Settings = () => {
       //   return <Coupon />
       case 'Social & Copyright':
         return <SocialCopyRight />
+      case 'Account':
+        return <Account/>
       default:
         return <CompanyInfo />
     }
   }
 
   return (
-    <div className='w-full pt-5' style={{minHeight: 'calc(100vh-100px)'}}>
-       <Helmet>
+    <div className='w-full pt-5' style={{ minHeight: 'calc(100vh-100px)' }}>
+      <Helmet>
         <title>Around 360 - Settings</title>
       </Helmet>
       {/* Header with Search */}
@@ -117,10 +135,9 @@ const Settings = () => {
                 key={index}
                 onClick={() => setActiveTab(item.label)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg whitespace-nowrap transition-colors
-                  ${
-                    activeTab === item.label
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-orange-50 hover:bg-orange-100'
+                  ${activeTab === item.label
+                    ? 'bg-orange-500 text-white'
+                    : 'bg-orange-50 hover:bg-orange-100'
                   }`}
               >
                 <span>{item.icon}</span>
@@ -138,11 +155,10 @@ const Settings = () => {
               <button
                 key={index}
                 onClick={() => setActiveTab(item.label)}
-                className={`w-full text-left px-4 py-2 rounded-lg mb-7 flex items-center gap-3 transition-colors text-[14px] text-[#1D1F2C] ${
-                  activeTab === item.label
+                className={`w-full text-left px-4 py-2 rounded-lg mb-7 flex items-center gap-3 transition-colors text-[14px] text-[#1D1F2C] ${activeTab === item.label
                     ? 'bg-orange-500 text-white'
                     : 'hover:bg-orange-100'
-                }`}
+                  }`}
               >
                 <span>{item.icon}</span>
                 <span className='text-nowrap'>{item.label}</span>
