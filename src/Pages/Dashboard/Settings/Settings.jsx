@@ -104,7 +104,10 @@ const Settings = () => {
       case 'Account':
         return <Account/>
       default:
-        return <CompanyInfo />
+        if(user?.type === "admin")
+          return <CompanyInfo/>
+        else
+          return <Account/>
     }
   }
 
