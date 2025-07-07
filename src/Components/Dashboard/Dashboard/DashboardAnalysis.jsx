@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { GiProfit } from "react-icons/gi";
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { PiUserCirclePlusBold } from "react-icons/pi";
@@ -13,10 +13,13 @@ import TravelChart from "./TravelChart";
 import { statusData } from "../../../data/data";
 import DashboardApis from "../../../Apis/DashboardApis";
 import { Helmet } from "react-helmet-async";
+import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
+
 
 const DashboardAnalysis = () => {
   const [chartType, setChartType] = useState("Total Booking");
   const [timeInterval, setTimeInterval] = useState("monthly");
+  const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({
@@ -124,7 +127,7 @@ const DashboardAnalysis = () => {
   ];
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-5">
       <Helmet>
         <title>Around 360 - Admin Dashboard</title>
       </Helmet>
@@ -141,7 +144,7 @@ const DashboardAnalysis = () => {
           />
         ))}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-3">
+      {user?.type === "admin" && <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-3">
         <div className="md:col-span-2">
           <Chart
             title={chartType}
@@ -159,7 +162,7 @@ const DashboardAnalysis = () => {
           />
         </div>
         <TravelChart statusData={statusData} />
-      </div>
+      </div>}
       <CustomTable title={"Recent Booking"} data={stats.bookings} columns={columns} loading={loading} />
     </div>
   );
