@@ -21,13 +21,13 @@ import Account from '../Account/Account'
 const Settings = () => {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user } = useContext(AuthContext);
 
   // Retrieve active tab from URL (query parameter)
   const queryParams = new URLSearchParams(location.search)
-  const defaultTab = queryParams.get('tab') || 'Company Info'
+  const defaultTab = queryParams.get('tab') || user?.type === "admin"? 'Company Info':'Account'
   const [activeTab, setActiveTab] = useState(defaultTab)
 
-  const { user } = useContext(AuthContext);
 
   const menuItems = [
     {
