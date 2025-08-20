@@ -3,58 +3,90 @@ import PackageTourCruise from '../../Components/PackageTourCruise/PackageTourCru
 import bgImg from '../../assets/img/packages/banner.png'
 import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
+import { useState,useEffect } from 'react'
+import Pagination from '~/Shared/Pagination'
 
 const ClientPackages = () => {
-  // const blogsArray = [
-  //     {
-  //         id: 1,
-  //         title: "Hidden Gems: 7 Underrated Destinations to Visit",
-  //         description: "Step off the beaten path with these hidden destinations that promise unique experiences and fewer crowds.",
-  //         days: 7,
-  //         image: image1,
-  //         user: {name: 'Bessie Cooper', role: 'Tour Expert', image: avatar3},
-  //       },
-  //       {
-  //         id: 2,
-  //         title: "A Food Lover’s Guide to Southeast Asia",
-  //         description: "Indulge in Southeast Asia’s rich food culture with our guide to must-try dishes, from Thai street food to Malaysian delights.",
-  //         days: 5,
-  //         image: image2,
-  //         user: {name: 'Bessie Cooper', role: 'Tour Expert', image: avatar3},
-  //       },
-  //       {
-  //         id: 3,
-  //         title: "Top 10 Most Scenic Road Trips Worldwide",
-  //         description: "Hit the road with our list of scenic drives, featuring breathtaking landscapes, winding routes, and memorable stops along the way.",
-  //         days: 10,
-  //         image: image3,
-  //         user: {name: 'Bessie Cooper', role: 'Tour Expert', image: avatar3},
-  //       },
-  //       {
-  //         id: 4,
-  //         title: "Top 10 Most Scenic Road Trips Worldwide",
-  //         description: "Hit the road with our list of scenic drives, featuring breathtaking landscapes, winding routes, and memorable stops along the way.",
-  //         days: 10,
-  //         image: image3,
-  //         user: {name: 'Bessie Cooper', role: 'Tour Expert', image: avatar3},
-  //       },
-  //     {
-  //         id: 5,
-  //         title: "A Food Lover’s Guide to Southeast Asia",
-  //         description: "Indulge in Southeast Asia’s rich food culture with our scenic drives, featuring breathtaking landscapes, winding rou guide to must-try dishes, from Thai street food to Malaysian delights.",
-  //         days: 5,
-  //         image: "https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg",
-  //         user: { name: 'Bessie Cooper', role: 'Tour Expert', image: "https://png.pngtree.com/png-vector/20230928/ourmid/pngtree-young-indian-man-png-image_10149659.png" },
-  //     },
-  //     {
-  //         id: 6,
-  //         title: "Top 10 Most Scenic Road Trips Worldwide",
-  //         description: "Hit the road with our list of scenic drives, featuring breathtaking landscapes, winding routes, and memorable stops along the way.",
-  //         days: 10,
-  //         image: "https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg",
-  //         user: { name: 'Bessie Cooper', role: 'Tour Expert', image: "https://png.pngtree.com/png-vector/20230928/ourmid/pngtree-young-indian-man-png-image_10149659.png" },
-  //     },
-  // ];
+  const [packages, setPackages] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages,setTotalPages] = useState(1);
+  const [pageLoading, setPageLoading] = useState(false);
+  const [pageLeft, setPageLeft] = useState([]);
+  const [pageRight, setPageRight] = useState([]);
+  const [isLargeScreen, setIsLargeScreen] = useState(2);
+
+  const getPackagesData = (packages) => {
+    setPackages(packages?.data);
+    setTotalPages(packages?.pagination?.total);
+  };
+
+  const handlePageChange = async (pageNumber) => {
+    if (pageNumber != currentPage) {
+      setPageLoading(true);
+      setCurrentPage(pageNumber);
+      // Add a small delay to create a smooth transition effect
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      setPageLoading(false);
+    }
+  };
+
+  const getPageNumbers = () => {
+      const pageNumbers = [];
+      let startPage = 1;
+      if (totalPages >= 6) {
+        if (Math.abs(totalPages - currentPage) <= 6) {
+          if (isLargeScreen === 3) startPage = Math.abs(totalPages - 6);
+          else startPage = Math.abs(totalPages - 4);
+        } else {
+          startPage = currentPage;
+        }
+      }
+      for (let i = startPage; i <= totalPages; i++) {
+        pageNumbers.push(i);
+      }
+  
+      let left = [];
+      let right = [];
+  
+      if (pageNumbers.length <= 4) {
+        left = pageNumbers;
+      } else {
+        if (isLargeScreen === 3 && pageNumbers.length > 7) {
+          // Large number of pages – show first 3 and last 3
+          left = pageNumbers.slice(0, isLargeScreen);
+          right = pageNumbers.slice(-isLargeScreen); // last 3 elements
+        } else {
+          if (isLargeScreen === 3) {
+            left = pageNumbers;
+          } else {
+            left = pageNumbers.slice(0, isLargeScreen);
+            right = pageNumbers.slice(-isLargeScreen);
+          }
+        }
+      }
+  
+      setPageLeft(left);
+      setPageRight(right);
+    };
+  
+    useEffect(() => {
+      const handleResize = () => {
+        setIsLargeScreen(window.innerWidth >= 600 ? 3 : 2);
+      };
+  
+      // Check on mount
+      handleResize();
+  
+      // Listen to resize event
+      window.addEventListener("resize", handleResize);
+  
+      // Cleanup listener on unmount
+      return () => window.removeEventListener("resize", handleResize);
+    });
+  
+    useEffect(() => {
+      getPageNumbers();
+    }, [currentPage, isLargeScreen]);
 
   return (
     <div>
@@ -108,7 +140,12 @@ const ClientPackages = () => {
         </div>
       </div>
       <div className='bg-[#F0F4F9] lg:min-h-screen'>
-        <PackageTourCruise />
+        <PackageTourCruise
+          getPackagesData={getPackagesData}
+          pageLoading={pageLoading}
+          currentPage={currentPage}
+        />
+        <Pagination data={packages} handlePageChange={handlePageChange} currentPage={currentPage} pageLeft={pageLeft} pageRight={pageRight} totalPages={totalPages}/>
       </div>
     </div>
   )

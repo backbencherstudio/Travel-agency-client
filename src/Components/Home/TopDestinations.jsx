@@ -12,16 +12,7 @@ import { useTravelData } from '../../Context/TravelDataContext/TravelDataContext
 
 const TopDestinations = () => {
     const { homeData } = useTravelData();
-    // console.log("homeData", homeData);
-
-    const destinations = [
-        { name: "Indonesia", tours: "78 Times Tour", image: image1 },
-        { name: "Bali", tours: "100 Times Tour", image: image2 },
-        { name: "Iceland", tours: "50 Times Tour", image: image3 },
-        { name: "Japan", tours: "98 Times Tour", image: image4 },
-        { name: "Italy", tours: "26 Times Tour", image: image5 },
-        { name: "Paris", tours: "48 Times Tour", image: image6 },
-      ];
+    console.log("homeData", homeData);
 
   return (
     <div className="max-w-[1216px] mx-auto px-4">
@@ -43,8 +34,8 @@ const TopDestinations = () => {
                     : ""
                 }`}
                 >
-                <LazyLoadImage
-                    src={destination?.destination_images[0]?.image}
+                <img
+                    src={destination?.destination_images[0]?.image_url}
                     alt={destination?.destination_images[0]?.image}
                     effect="blur"
                     className="absolute inset-0 h-full w-full object-cover"

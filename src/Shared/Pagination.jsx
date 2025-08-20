@@ -2,7 +2,6 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 
 export default function Pagination({ data, handlePageChange, currentPage, pageLeft, pageRight, totalPages }) {
-    console.log("Pagination : ", data)
     return (<div className="flex justify-center items-center mt-10 mb-4 max-w-[1200px] mx-auto font-bold">
         <div className="flex items-center border border-[#D0D5DD] rounded-lg sm:px-4">
             <button

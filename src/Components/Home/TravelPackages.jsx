@@ -39,7 +39,7 @@ const TravelPackages = () => {
                         <Link to={`/packages/${tour?.id}`} key={tour?.id}>
                             <div className="relative flex flex-col my-6 bg-white group shadow-md hover:shadow-lg hover:border-orange-500 transform duration-300 border border-slate-200 rounded-lg">
                                 <div className="relative h-56 m-2.5 overflow-hidden text-white rounded-md">
-                                    <img src={tour?.package_files[0]?.file_url} alt={tour?.package_files[0]?.file_url} />
+                                    <img src={tour?.package_files?.[0]?.file_url} alt={tour?.package_files[0]?.file_url} />
                                 </div>
                                 <div className="p-4">
                                     <div className='flex items-center gap-1'>

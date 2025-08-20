@@ -337,13 +337,16 @@ const CruiseDetails = () => {
                 </div>
               </div>
               <ParentComponent>
-                <Details details={cruiseData} includeExclude={includeExclude}
+                <Details
+                  details={cruiseData}
+                  includeExclude={includeExclude}
                   tripPlan={tripPlan}
                   meetingData={meetingData}
                   additionalInformation={additionalInformation}
                   mapImgPackage={mapImgPackage}
                   TravellerPhotos={TravellerPhotos}
-                  topReviews={topReviews} />
+                  topReviews={topReviews}
+                />
               </ParentComponent>
             </div>
           </div>
