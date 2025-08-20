@@ -61,7 +61,7 @@ const Blogs = () => {
         links={links}
         description='Explore our blog for the latest travel tips, destination guides, and inspiring stories to fuel your wanderlust. From must-see locations to insider advice, we’re here to make your journey unforgettable.'
       />
-      <div className='bg-[#F0F4F9]'>
+      <div className='bg-[#F0F4F9] px-5 pt-12'>
         <ParentComponent>
           {/* Featured Section */}
           <Featured blogs={displayedBlogs} />

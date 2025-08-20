@@ -84,7 +84,7 @@ const Contacts = () => {
       <Helmet>
         <title>Around 360 - Contact Us</title>
       </Helmet>
-      <div className="bg-white">
+      <div className="bg-white space-y-12">
         <HeroSection
           bgImg={image}
           pageName="Contact Us"
@@ -96,7 +96,7 @@ const Contacts = () => {
 
         {/* Main Content Wrapper */}
         <ParentComponent>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-5">
             {/* -------------------------- Contact Form Section -------------------------- */}
             <div className="bg-[#F5F7F9] rounded-lg border p-[32px]">
               <form onSubmit={handleSubmit(onSubmit)}>

@@ -3,7 +3,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
         <div>
             <h3 className="pb-5 text-[18px] font-semibold text-[#0F1416]">Traveler Photos:</h3>
             <div className="flex flex-col sm:flex-row gap-2 relative">
-                {travellerPhotos.length >= 1 && (
+                {travellerPhotos?.length >= 1 && (
                     <div className="flex-1 relative">
                         <div className="w-[280px] sm:w-[357px] h-[306px]">
                             <img
@@ -32,7 +32,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                 )}
                 <div className="flex-1 flex gap-2 overflow-hidden w-[280px] sm:w-[357px]">
                     <div className=" w-1/2 h-[306px] flex flex-col gap-2">
-                        {travellerPhotos.length >= 2 && (
+                        {travellerPhotos?.length >= 2 && (
                             <div className="h-1/2 rounded-xl">
                                 <img
                                     src={travellerPhotos[1]}
@@ -41,7 +41,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                                 />
                             </div>
                         )}
-                        {travellerPhotos.length >= 3 && (
+                        {travellerPhotos?.length >= 3 && (
                             <div className="flex-1 h-1/2 rounded-xl overflow-hidden">
                                 <img
                                     src={travellerPhotos[2]}
@@ -52,7 +52,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                         )}
                     </div>
                     <div className="w-1/2 flex h-[306px] flex-col gap-2">
-                        {travellerPhotos.length >= 4 && (
+                        {travellerPhotos?.length >= 4 && (
                             <div className="h-1/2">
                                 <img
                                     src={travellerPhotos[3]}
@@ -61,7 +61,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                                 />
                             </div>
                         )}
-                        {travellerPhotos.length >= 5 && (
+                        {travellerPhotos?.length >= 5 && (
                             <div
                                 className={`w-full ${window.innerWidth <= 325
                                     ? "h-[127px]"

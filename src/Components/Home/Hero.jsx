@@ -14,6 +14,8 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Skeleton } from '@mui/material';
 
+import toast,{Toaster} from 'react-hot-toast';
+
 const Hero = () => {
     const [input, setInput] = useState();
     const [selectedDate, setSelectedDate] = useState(null);
@@ -56,12 +58,18 @@ const Hero = () => {
       }
 
       const handleSubmit = async() => {
-        const data = { q: input, selectedDate: selectedDate }
-        navigate(`/search-results?${new URLSearchParams(data).toString()}`, { replace: true });
+        if(selectedDate){
+            toast.dismiss();
+            const data = { q: input, selectedDate: selectedDate }
+            navigate(`/search-results?${new URLSearchParams(data).toString()}`, { replace: true });
+        }else{
+            toast.error("Please select a date.");
+        }
       }
 
   return (
     <div className='max-w-[1600px] mx-auto'>
+        <Toaster position='top-right'/>
         <div className='rectangular-1'></div>
         <div className='rectangular-2'></div>
         <div className=''>

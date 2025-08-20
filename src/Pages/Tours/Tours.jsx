@@ -12,14 +12,15 @@ import Pagination from "../../Shared/Pagination";
 function Tours() {
   const [packages, setPackages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 20;
+  const [totalPages,setTotalPages] = useState(1);
   const [pageLoading, setPageLoading] = useState(false);
   const [pageLeft, setPageLeft] = useState([]);
   const [pageRight, setPageRight] = useState([]);
   const [isLargeScreen, setIsLargeScreen] = useState(2);
 
   const getPackagesData = (packages) => {
-    setPackages(packages);
+    setPackages(packages?.data);
+    setTotalPages(packages?.pagination?.total);
   };
 
   // Handle page changes with smooth transition

@@ -13,7 +13,7 @@ function TourCard({
   specialOffer,
   specialPrice = 300,
 }) {
-  console.log("Rating : ", tour);
+  // console.log("Rating : ", tour);
   const navigate = useNavigate();
   // console.log("Tour Data : ", tour);
   // console.log("Tour id : ", tour.id);
@@ -74,7 +74,6 @@ function TourCard({
         />
         {/* Special Offer Badge */}
         {/* {tour?.is_special_offer && ( */}
-
       </div>
       <div className="flex-1 flex flex-col justify-between">
         <div className="p-4">
@@ -117,12 +116,12 @@ function TourCard({
           </p>
           <div className="flex items-center gap-2 mt-3">
             <p className=" text-sm text-[#1D1F2C]">
-              {tour?.reviews[0]?.rating_value
-                ? `${tour.reviews[0].rating_value}`
+              {tour?.average_rating
+                ? `${tour.average_rating}`
                 : "0.0"}
             </p>
             <div className="flex gap-1 items-center">
-              {renderStars(tour?.reviews[0]?.rating_value)}
+              {renderStars(tour?.average_rating)}
             </div>
             {!location.pathname === "/cruise" &&<div className="flex items-center">
               <div className="ms-1 text-sm font-medium text-gray-500">

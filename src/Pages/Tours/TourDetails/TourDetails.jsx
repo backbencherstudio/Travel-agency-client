@@ -26,7 +26,7 @@ const TourDetails = () => {
   const [loading, setLoading] = useState(true);
   const [tour, setTour] = useState(null);
   const { id } = useParams();
-  const [openChat,setOpenChat] = useState(false)
+  const [openChat, setOpenChat] = useState(false)
 
   useEffect(() => {
     tourDetails();
@@ -48,10 +48,10 @@ const TourDetails = () => {
     "Sight Seen": false,
     "City Tour": false,
     "Custom Duty": false,
-    "Professional Tour Guide":true,
-    "Transfer Between Destinations":true,
-    "Personal Expenses":false,
-    "How to use premade UI kits":true,
+    "Professional Tour Guide": true,
+    "Transfer Between Destinations": true,
+    "Personal Expenses": false,
+    "How to use premade UI kits": true,
   });
   const [tripPlan, setTripPlan] = useState([
     {
@@ -90,8 +90,8 @@ const TourDetails = () => {
   ];
 
   const meetingData = {
-    meetingPointDetails:meetingPointDetails,
-    travelingCity:travelingCity,
+    meetingPointDetails: meetingPointDetails,
+    travelingCity: travelingCity,
     startDate: startDate,
     endDate: endDate,
     operatingDayAndTime: operatingDayAndTime
@@ -168,12 +168,12 @@ const TourDetails = () => {
 
   // console.log('id', id)
 
-  const handleChatOpen=()=>{
+  const handleChatOpen = () => {
     setOpenChat(prev => !prev);
   }
 
 
-  console.log("Tore data : ",tour)
+  console.log("Tore data : ", tour)
 
   return (
     <div className="pt-[54px] pb-[80px] px-4 xl:px-[192px] w-full">
@@ -285,7 +285,7 @@ const TourDetails = () => {
         </div>
       )}
       {openChat && <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">
-        <Chatcard handleChatOpen={handleChatOpen}/>
+        <Chatcard handleChatOpen={handleChatOpen} />
       </div>}
     </div>
   );
