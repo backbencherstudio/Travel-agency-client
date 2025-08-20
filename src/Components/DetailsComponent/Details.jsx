@@ -44,6 +44,7 @@ const Details = ({
   const [postNewReview, setPostNewReview] = useState(false);
   const [travelerPhotoIsOpen, setTravelerPhotoIsOpen] = useState(0)
   const [sharePhoto, setSharePhoto] = useState(false)
+  const [reviewSlideNumber, setReviewSlideNumber] = useState(1);
 
 
   console.log("Include exlude : ", includeExclude)
@@ -73,6 +74,10 @@ const Details = ({
     }
     return stars;
   };
+
+  const handleUpdateReviewSlider=(num)=>{
+    setReviewSlideNumber(num);
+  }
 
   const handleShowImage = (image) => {
     setSelectedImage(image); // Update the selected image
@@ -159,6 +164,7 @@ const Details = ({
             details={details}
             handleSharePhoto={handleSharePhoto}
             selectedImage={selectedImage}
+            handleUpdateReviewSlider={handleUpdateReviewSlider}
           />
           <AdditionalInformation
             additionalInformation={additionalInformation}
@@ -183,6 +189,7 @@ const Details = ({
 
       {/* <ReviewSlider 
       details={details}
+      reviewSlideNumber={reviewSlideNumber}
       /> */}
 
       {checkAvailabilityPopup && (

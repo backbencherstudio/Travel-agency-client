@@ -41,8 +41,8 @@ const renderStars = (rating) => {
 
 
 
-export default function ReviewSlider({ details }) {
-    const [reviewSlideNumber, setReviewSlideNumber] = useState(1);
+export default function ReviewSlider({ details,reviewSlideNumber }) {
+    
     const settings = {
         dots: false,
         infinite: true,
