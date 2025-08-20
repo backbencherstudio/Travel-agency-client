@@ -18,7 +18,7 @@ const renderStars = (rating) => {
     return stars;
 };
 
-export default function DetailsImageSlider({ details, handleSharePhoto, selectedImage }) {
+export default function DetailsImageSlider({ details, handleSharePhoto, selectedImage,handleUpdateReviewSlider }) {
     const [slidersWidth, setSlidersWidth] = useState(0);
     const [showImageModal, setShowImageModal] = useState(false);
     const [activeTab, setActiveTab] = useState('provider');
@@ -27,19 +27,19 @@ export default function DetailsImageSlider({ details, handleSharePhoto, selected
         const handleResize = () => {
             const width = window.innerWidth;
             if (width >= 310 && width < 374) {
-                setReviewSlideNumber(1);
+                handleUpdateReviewSlider(1)
                 setSlidersWidth(63);
             } else if (width <= 375) {
-                setReviewSlideNumber(1);
+                handleUpdateReviewSlider(1)
                 setSlidersWidth(75);
             } else if (width <= 425) {
-                setReviewSlideNumber(1);
+                handleUpdateReviewSlider(1)
                 setSlidersWidth(87);
             } else if (width >= 1000 && width <= 1280) {
                 setSlidersWidth(151);
             } else {
                 setSlidersWidth(163);
-                setReviewSlideNumber(2);
+                handleUpdateReviewSlider(2)
             }
         };
 
