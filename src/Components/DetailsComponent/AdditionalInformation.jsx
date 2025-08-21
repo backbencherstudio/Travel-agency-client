@@ -372,6 +372,19 @@ export default function AdditionalInformation({ details, additionalInformation, 
                                 <path d="M6.0026 1.08203V10.4154M1.33594 5.7487H10.6693" stroke="#0F1416" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </div>
+                        {travelerPhotoIsOpen === 0 &&<div>
+                            <div className="pt-[30px] flex flex-col gap-5 text-[#0F1416]">
+                                <div className="text-[24px] font-semibold">Trip Plan</div>
+                                {tripPlan?.length <= 3
+                                    ? tripPlan?.map((plan) => displayTripPlan(plan))
+                                    : tripPlan?.splice(0, 3).map((plan = displayTripPlan(plan)))}
+                            </div>
+                            {tripPlan?.length > 3 && (
+                                <div className="text-[14px] font-medium text-orange-500">
+                                    Show {tripPlan?.length - 3} more stops
+                                </div>
+                            )}
+                        </div>}
                         {travelerPhotoIsOpen === 0 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
                     </div>
                     <div>
@@ -381,6 +394,19 @@ export default function AdditionalInformation({ details, additionalInformation, 
                                 <path d="M6.0026 1.08203V10.4154M1.33594 5.7487H10.6693" stroke="#0F1416" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </div>
+                        {travelerPhotoIsOpen === 1 &&<div>
+                            <div className="pt-[30px] flex flex-col gap-5 text-[#0F1416]">
+                                <div className="text-[24px] font-semibold">Trip Plan</div>
+                                {tripPlan?.length <= 3
+                                    ? tripPlan?.map((plan) => displayTripPlan(plan))
+                                    : tripPlan?.splice(0, 3).map((plan = displayTripPlan(plan)))}
+                            </div>
+                            {tripPlan?.length > 3 && (
+                                <div className="text-[14px] font-medium text-orange-500">
+                                    Show {tripPlan?.length - 3} more stops
+                                </div>
+                            )}
+                        </div>}
                         {travelerPhotoIsOpen === 1 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
                     </div>
                     <div>
@@ -390,6 +416,19 @@ export default function AdditionalInformation({ details, additionalInformation, 
                                 <path d="M6.0026 1.08203V10.4154M1.33594 5.7487H10.6693" stroke="#0F1416" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </div>
+                        {travelerPhotoIsOpen === 2 &&<div>
+                            <div className="pt-[30px] flex flex-col gap-5 text-[#0F1416]">
+                                <div className="text-[24px] font-semibold">Trip Plan</div>
+                                {tripPlan?.length <= 3
+                                    ? tripPlan?.map((plan) => displayTripPlan(plan))
+                                    : tripPlan?.splice(0, 3).map((plan = displayTripPlan(plan)))}
+                            </div>
+                            {tripPlan?.length > 3 && (
+                                <div className="text-[14px] font-medium text-orange-500">
+                                    Show {tripPlan?.length - 3} more stops
+                                </div>
+                            )}
+                        </div>}
                         {travelerPhotoIsOpen === 2 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
                     </div>
                     <div>
@@ -399,6 +438,19 @@ export default function AdditionalInformation({ details, additionalInformation, 
                                 <path d="M6.0026 1.08203V10.4154M1.33594 5.7487H10.6693" stroke="#0F1416" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </div>
+                        {travelerPhotoIsOpen === 3 &&<div>
+                            <div className="pt-[30px] flex flex-col gap-5 text-[#0F1416]">
+                                <div className="text-[24px] font-semibold">Trip Plan</div>
+                                {tripPlan?.length <= 3
+                                    ? tripPlan?.map((plan) => displayTripPlan(plan))
+                                    : tripPlan?.splice(0, 3).map((plan = displayTripPlan(plan)))}
+                            </div>
+                            {tripPlan?.length > 3 && (
+                                <div className="text-[14px] font-medium text-orange-500">
+                                    Show {tripPlan?.length - 3} more stops
+                                </div>
+                            )}
+                        </div>}
                         {travelerPhotoIsOpen === 3 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
                     </div>
                 </div>
