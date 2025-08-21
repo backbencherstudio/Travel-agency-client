@@ -27,7 +27,7 @@ const CardComponent = ({ blog }) => {
           <div className='relative h-56 overflow-hidden text-white rounded-t-xl'>
             <img
               // src={blog?.image}
-              src={blog?.image || 'https://via.placeholder.com/300x200'}
+              src={blog?.blog_images[0]?.image_url || 'https://via.placeholder.com/300x200'}
               // alt={blog?.blog_images[0]?.image_url}
               className='object-cover w-full h-full'
             />
@@ -58,7 +58,7 @@ const CardComponent = ({ blog }) => {
             <div className='w-full flex items-center '>
               <div className='overflow-hidden rounded-full w-10 h-10 bg-gray-50 shadow'>
                 <img
-                  src={blog?.user?.avatar || 'https://via.placeholder.com/40'}
+                  src={blog?.user?.avatar_url || 'https://via.placeholder.com/40'}
                   alt=''
                   className='object-cover w-full h-full'
                 />

@@ -3,6 +3,13 @@ import { FaStar, FaRegStar, FaStarHalfAlt } from 'react-icons/fa';
 import Slider from 'react-slick';
 import { useEffect, useState } from 'react';
 import ImageModal from './ImageModal';
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "../../Components/ui/carousel";
 
 const renderStars = (rating) => {
     const stars = [];
@@ -18,7 +25,7 @@ const renderStars = (rating) => {
     return stars;
 };
 
-export default function DetailsImageSlider({ details, handleSharePhoto, selectedImage,handleUpdateReviewSlider }) {
+export default function DetailsImageSlider({ details, handleSharePhoto, selectedImage, handleUpdateReviewSlider }) {
     const [slidersWidth, setSlidersWidth] = useState(0);
     const [showImageModal, setShowImageModal] = useState(false);
     const [activeTab, setActiveTab] = useState('provider');
@@ -42,14 +49,8 @@ export default function DetailsImageSlider({ details, handleSharePhoto, selected
                 handleUpdateReviewSlider(2)
             }
         };
-
-        // Run once on mount
         handleResize();
-
-        // Add listener
         window.addEventListener("resize", handleResize);
-
-        // Cleanup on unmount
         return () => {
             window.removeEventListener("resize", handleResize);
         };
@@ -98,16 +99,6 @@ export default function DetailsImageSlider({ details, handleSharePhoto, selected
     };
 
 
-    const setting = {
-        dots: false,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        nextArrow: <NextArrow />,
-    };
-
-
     return (
         <div>
             <div className="w-full flex justify-between">
@@ -130,7 +121,7 @@ export default function DetailsImageSlider({ details, handleSharePhoto, selected
                         <div className="flex gap-1 items-center">
                             {renderStars(details?.reviews[0]?.rating_value || 0.0)}{" "}
                         </div>
-                        <span className="text-[10px] sm:text-xs md:text-base text-[#8993A0]">
+                        <span className="text-[10px] sm:text-xs md:text-base text-[#8993A0] text-nowrap">
                             ({details?.reviews?.length} reviews)
                         </span>
                     </div>}
@@ -171,9 +162,7 @@ export default function DetailsImageSlider({ details, handleSharePhoto, selected
                         }}
                     />
                     <div className="flex justify-end items-center gap-2">
-                        {/* <LuMessageSquareMore /> */}
                         <p className="text-sm text-[#0F1416]">
-                            {/* Offered in: {details?.package_languages[0]?.language?.name} */}
                             {details?.package_languages?.length > 1 && (
                                 <Tooltip
                                     title={
@@ -194,28 +183,37 @@ export default function DetailsImageSlider({ details, handleSharePhoto, selected
                     </div>
                 </div>
                 {/* Grid images */}
-                <div className="relative overflow-hidden">
-                    <Slider {...setting}>
-                        {details?.package_files?.map((planimg, index) => (
-                            <div
-                                key={planimg.id}
-                                className="sm:w-[163px] w-[63px] sm:h-[163px] h-[60px] rounded-2xl overflow-hidden"
-                                onClick={() => {
-                                    handleImageClick(true, index)
-                                }}
-                            >
-                                {location.pathname.split("/")[1] === "cruises" ? <img
-                                    src={planimg?.file}
-                                    alt="Image"
-                                    className="w-full h-full object-cover"
-                                /> : <img
-                                    src={planimg?.file_url}
-                                    alt="Image"
-                                    className="w-full h-full object-cover"
-                                />}
-                            </div>
-                        ))}
-                    </Slider>
+                <div className="relative overflow-hidden mx-auto">
+                    <div className="w-full max-w-[85%] mx-auto">
+                        <Carousel infinite loop>
+                            <CarouselContent className="flex gap-2">
+                                {details?.package_files?.map((planimg, index) => (
+                                    <CarouselItem key={planimg.id} className=" basis-1/5">
+                                        <div
+                                            onClick={() => handleImageClick(true, index)}
+                                            className="cursor-pointer"
+                                        >
+                                            {location.pathname.split("/")[1] === "cruises" ? (
+                                                <img
+                                                    src={planimg?.file}
+                                                    alt="Image"
+                                                    className="w-full aspect-square object-cover"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={planimg?.file_url}
+                                                    alt="Image"
+                                                    className="w-full aspect-video object-cover"
+                                                />
+                                            )}
+                                        </div>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                            {/* <CarouselPrevious /> */}
+                            <CarouselNext />
+                        </Carousel>
+                    </div>
                     {showImageModal && (
                         <ImageModal
                             showImageModal={showImageModal}

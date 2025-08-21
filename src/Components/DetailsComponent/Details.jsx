@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import BookCard from "./BookCard";
 import CheckAvailability from "./CheckAvaiability";
 import { FaArrowRight } from "react-icons/fa6";
@@ -15,6 +14,7 @@ import "./details.css"
 import DetailsImageSlider from "./DetailsImageSlider";
 import AdditionalInformation from "./AdditionalInformation";
 import ReviewSlider from "./ReviewSlider";
+
 
 
 //Icon imports
@@ -75,7 +75,7 @@ const Details = ({
     return stars;
   };
 
-  const handleUpdateReviewSlider=(num)=>{
+  const handleUpdateReviewSlider = (num) => {
     setReviewSlideNumber(num);
   }
 
@@ -157,7 +157,7 @@ const Details = ({
 
 
   return (
-    <div className={`pb-[80px] pt-12`}>
+    <div className={`pt-12`}>
       <div className="flex flex-col lg:flex-row w-full sm:gap-6 bg-[#fff] items-center lg:items-start p-4">
         <div className="w-full lg:max-w-[640px] max-w-[700px] xl:max-w-[700px] flex flex-col gap-5">
           <DetailsImageSlider
@@ -187,10 +187,20 @@ const Details = ({
       </div>
       {/* Top rated reviews */}
 
-      {/* <ReviewSlider 
-      details={details}
-      reviewSlideNumber={reviewSlideNumber}
-      /> */}
+      {details?.reviews[0] && <div>
+        <div className="flex items-center justify-between p-4">
+          <h2 className="text-[#1D1F2C] text-5xl font-bold">Top-Rated Reviews</h2>
+          <div className="text-orange-500 flex items-center gap-1">
+            <FaStar />
+            <span className="text-[#0F1416]">{details?.reviews[0]?.rating_value || 0.0}</span>
+            <span className="text-[#0F1416] underline">({details?.reviews?.length} reviews)</span>
+          </div>
+        </div>
+        <ReviewSlider
+          details={details}
+          reviewSlideNumber={reviewSlideNumber}
+        />
+      </div>}
 
       {checkAvailabilityPopup && (
         <div className="top-0 left-0 z-[99] w-screen h-screen bg-[#000e1999] overflow-hidden fixed flex items-center justify-center backdrop-blur-[2px]">

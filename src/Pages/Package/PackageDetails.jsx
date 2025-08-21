@@ -81,6 +81,26 @@ const PackageDetails = () => {
               />
             </ParentComponent>
           </div>
+          <ParentComponent>
+            <div
+              className="relative w-full px-4 sm:px-8 py-16 rounded-2xl bg-cover bg-bottom bg-no-repeat"
+              style={{ backgroundImage: `url(${cancellationBg})` }}
+            >
+              <div className="absolute inset-0 bg-blue-900/80 rounded-2xl"></div>
+              <div className="relative z-10 max-w-xl mx-auto flex flex-col justify-center items-center gap-4 text-center">
+                <h1 className="text-2xl md:text-5xl font-bold text-white">
+                  Free cancellation
+                </h1>
+                <p className="text-base md:text-xl font-normal text-white">
+                  You'll receive a full refund if you cancel at least 24 hours
+                  in advance of most experiences.
+                </p>
+              </div>
+            </div>
+            <div className="pt-20">
+              <TravelPackages />
+            </div>
+          </ParentComponent>
         </div>
       )}
     </div>
