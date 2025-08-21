@@ -9,6 +9,7 @@ export default function AdditionalInformation({ details, additionalInformation, 
     const [isIncludedOpen, setIsIncludedOpen] = useState(false);
     const [showMoreInclude, setShowMoreInclude] = useState(3)
     const [showMoreExclude, setShowMoreExclude] = useState(3)
+    const [travelerPhotoIsOpen, setTravelerPhotoIsOpen] = useState(0);
 
     const toggleIncluded = () => {
         setIsIncludedOpen((prev) => !prev);
@@ -363,18 +364,7 @@ export default function AdditionalInformation({ details, additionalInformation, 
                 </div>
             )}
             <div className="flex flex-col gap-5">
-                <div className="pt-[30px] flex flex-col gap-5 text-[#0F1416]">
-                    <div className="text-[24px] font-semibold">Trip Plan</div>
-                    {tripPlan?.length <= 3
-                        ? tripPlan?.map((plan) => displayTripPlan(plan))
-                        : tripPlan?.splice(0, 3).map((plan = displayTripPlan(plan)))}
-                </div>
-                {tripPlan?.length > 3 && (
-                    <div className="text-[14px] font-medium text-orange-500">
-                        Show {tripPlan?.length - 3} more stops
-                    </div>
-                )}
-                {location?.pathname.split("/")[1] === "cruises" ? <div className="pb-[80px] flex flex-col gap-4">
+                <div className="pb-[80px] flex flex-col gap-4">
                     <div>
                         <div className={`${travelerPhotoIsOpen === 0 ? "hidden" : "block"} text-[#0F1416] text-[18px] font-medium flex justify-between  py-3 items-center border-b cursor-pointer duration-300`} onClick={() => setTravelerPhotoIsOpen(0)}>
                             <span>Day 1</span>
@@ -412,11 +402,6 @@ export default function AdditionalInformation({ details, additionalInformation, 
                         {travelerPhotoIsOpen === 3 && <TravelerPhotos travellerPhotos={TravellerPhotos} />}
                     </div>
                 </div>
-                    :
-                    <div>
-                        <TravelerPhotos travellerPhotos={TravellerPhotos} />
-                    </div>
-                }
             </div>
         </div>
     )

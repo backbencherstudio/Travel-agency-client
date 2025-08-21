@@ -179,7 +179,7 @@ function TourCard({
               onClick={handleBookNow}
               className="flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white"
             >
-              <Link to={`/tour/${tour.id}`}>
+              <Link to={`/tours/${tour.id}`}>
                 {!location.pathname === "/cruise" ? <div className="text-sm ">Book Now</div>:<div className="text-sm ">View Details</div>}
               </Link>
               <svg
