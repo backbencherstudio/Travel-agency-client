@@ -34,9 +34,10 @@ const Home = () => {
       <div className='py-20'>
         <Testimonials />
       </div>
-      <div className='py-20 bg-[#F0F4F9]'>
+      <hr/>
+      {/* <div className='py-20 bg-[#F0F4F9]'>
         <Gift />
-      </div>
+      </div> */}
       <div className='py-20'>
         <Destinations />
       </div>

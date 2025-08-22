@@ -10,6 +10,11 @@ import ClientPackageApis from "../../Apis/clientApi/ClientPackageApis";
 import { useEffect, useState } from "react";
 import Loading from "../../Shared/Loading";
 import { Helmet } from 'react-helmet-async';
+import travelVideo from "../../assets/img/tour-details/travel-video.png";
+import travelPhoto1 from "../../assets/img/tour-details/travel-img1.png";
+import travelPhoto2 from "../../assets/img/tour-details/travel-img2.png";
+import travelPhoto3 from "../../assets/img/tour-details/travel-img3.png";
+import travelPhoto4 from "../../assets/img/tour-details/travel-img4.jpg";
 
 const PackageDetails = () => {
   const links = [{ name: "Home", path: "/" }, { name: "Packages", path: "/packages" }, { name: "Package Details", path: "" },]
@@ -50,6 +55,38 @@ const PackageDetails = () => {
     operatingDayAndTime: operatingDayAndTime
   }
 
+   const [tripPlan, setTripPlan] = useState([
+    {
+      id: 1,
+      title: "Paraces",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
+      time: 45,
+      fee: "Free",
+    },
+    {
+      id: 2,
+      title: "Oasis Huacachina",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. ",
+      time: 45,
+      fee: "Free",
+    },
+    {
+      id: 3,
+      title: "Miraflores",
+      body: "Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy.",
+      time: 45,
+      fee: "Free",
+    },
+  ]);
+
+    const TravellerPhotos = [
+      travelVideo,
+      travelPhoto1,
+      travelPhoto2,
+      travelPhoto3,
+      travelPhoto4,
+    ];
+
 
   useEffect(() => {
     getPackageDetails();
@@ -78,6 +115,8 @@ const PackageDetails = () => {
                 details={packageDetails}
                 includeExclude={includeExclude}
                 meetingData={meetingData}
+                tripPlan={tripPlan}
+                TravellerPhotos={TravellerPhotos}
               />
             </ParentComponent>
           </div>

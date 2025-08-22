@@ -265,12 +265,12 @@ const SingleBlog = () => {
       />
 
       <ParentComponent>
-        <div className='blog-details grid grid-cols-12  gap-6 '>
+        <div className='blog-details grid grid-cols-12  gap-6 py-6'>
           {/* blog deatils section  */}
           <div className='col-span-12 lg:col-span-8'>
             <div>
               <img
-                className='rounded-2xl'
+                className='rounded-2xl w-full'
                 src={blog.data?.blog_images[0]?.image_url}
                 alt={blog.data?.title}
               />
@@ -282,9 +282,8 @@ const SingleBlog = () => {
                 disabled={isLiking}
               >
                 <SlLike
-                  className={`text-xl ${
-                    isLiked ? 'text-orange-500' : 'text-orange-500'
-                  } cursor-pointer`}
+                  className={`text-xl ${isLiked ? 'text-orange-500' : 'text-orange-500'
+                    } cursor-pointer`}
                 />
                 {blog.data?.like_count}
               </button>
@@ -299,11 +298,18 @@ const SingleBlog = () => {
                 {blog.data?.title}
               </h2>
 
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: blog.data?.body || 'No content available'
-                }}
-              ></div>
+              <div className='space-y-3'>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: blog.data?.description || 'No content available'
+                  }}
+                ></div>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: blog.data?.body || 'No content available'
+                  }}
+                ></div>
+              </div>
             </div>
 
             {/* commment section */}
@@ -415,9 +421,8 @@ const SingleBlog = () => {
                       suggestions.map((suggestion, index) => (
                         <div
                           key={suggestion.id}
-                          className={`p-3 cursor-pointer ${
-                            index === selectedIndex ? 'bg-gray-100' : ''
-                          }`}
+                          className={`p-3 cursor-pointer ${index === selectedIndex ? 'bg-gray-100' : ''
+                            }`}
                           onClick={() => handleSuggestionClick(suggestion.id)}
                         >
                           {suggestion.title}
@@ -435,7 +440,7 @@ const SingleBlog = () => {
 
             <div className='bg-[#f0f4f9] mt-4  py-5 rounded-lg'>
               <h2 className='font-inter text-[20px] font-bold'>Recent Posts</h2>
-              <div className='mt-5'>
+              <div className='mt-5 flex flex-col'>
                 {blog.data?.recent_blogs.map(item => (
                   <Link
                     to={`/blogDetails/${item.id}`}

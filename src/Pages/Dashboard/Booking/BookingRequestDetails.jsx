@@ -27,10 +27,10 @@ const BookingRequestDetails = () => {
 
   console.log(data);
 
-  const handleUpdateStatus = async () => {
-    if (!selectedStatus) return;
+  const handleUpdateStatus = async (status) => {
+    if (!status) return;
     
-    const res = await BookManageApis.update(id, { status: selectedStatus })
+    const res = await BookManageApis.update(id, { status })
     console.log('res', res)
     if(res.success){
       toast.success(res.message);
@@ -174,9 +174,9 @@ const BookingRequestDetails = () => {
       <div className='mt-8 flex flex-col-reverse md:flex-row justify-center gap-6 md:gap-6'>
         
         <div className='flex gap-4 justify-between'>
-          <button onClick={()=>setSelectedStatus("confirmed")} className='bg-[#4CAF50] text-white px-4 rounded cursor-pointer'>Approve</button>
+          <button onClick={()=>{setSelectedStatus("confirmed");handleUpdateStatus("confirmed")}} className='bg-[#4CAF50] text-white px-4 rounded cursor-pointer'>Approve</button>
           <button 
-            onClick={handleUpdateStatus} 
+            onClick={()=>handleUpdateStatus("cancelled")} 
             className='bg-[#FF5252] px-4 text-white rounded cursor-pointer font-medium'
           >
             Reject

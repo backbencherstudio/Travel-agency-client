@@ -52,7 +52,22 @@ const Blogs = () => {
             <div className=' grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8 py-12'>
                 {
                     homeData?.blogs?.map(item => (
-                        <CardComponent blog={item} key={item.id} />
+                        <CardComponent
+                            key={item.id}
+                            blog={{
+                                id: item?.id,
+                                title: item?.title,
+                                body: item?.body,
+                                createTime: item?.created_at,
+                                readTime: item?.read_time,
+                                image: item?.blog_images?.[0]?.image_url || blogImage,
+                                user: {
+                                    name: item?.user?.name || 'Guest Author',
+                                    avatar:
+                                        item?.user?.avatar_url || 'https://via.placeholder.com/40'
+                                }
+                            }}
+                        />
                     ))
                 }
             </div>

@@ -216,7 +216,6 @@ const AddPackage = () => {
       package_images: images.map((image) => (image.file ? image.file : image)),
       tourPlan,
     };
-    console.log('formDataObject', formDataObject)
 
     const package_images = [];
     const imagesArray = [];
