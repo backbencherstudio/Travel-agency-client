@@ -50,6 +50,8 @@ const Blogs = () => {
 
   const skeletonArray = Array.from({ length: blogsPerPage })
 
+
+
   return (
     <div>
       <Helmet>
@@ -102,16 +104,16 @@ const Blogs = () => {
                 <CardComponent
                   key={item.id}
                   blog={{
-                    id: item.id,
-                    title: item.title,
-                    body: item.body,
-                    createTime: item.created_at,
-                    readTime: item.read_time,
-                    image: item.blog_images[0]?.image_url || blogImage,
+                    id: item?.id,
+                    title: item?.title,
+                    body: item?.body,
+                    createTime: item?.created_at,
+                    readTime: item?.read_time,
+                    image: item?.blog_images?.[0]?.image_url || blogImage,
                     user: {
-                      name: item.user.name || 'Guest Author',
+                      name: item?.user?.name || 'Guest Author',
                       avatar:
-                        item.user.avatar || 'https://via.placeholder.com/40'
+                        item?.user?.avatar_url || 'https://via.placeholder.com/40'
                     }
                   }}
                 />

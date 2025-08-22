@@ -52,50 +52,7 @@ const statusStyles = {
 }
 
 // const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
-const BookingManagementTable = ({ tableType = '', title, columns }) => {
-
-
-  const data = [
-    {
-      id: 1,
-      invoice_number: "00001",
-      user: {
-        image: user1,
-        name: "Raphael Goodman"
-      },
-      booking_items: [
-        { package: { name: "Venice Dreams" } }
-      ],
-      created_at: "Jun 25, 2024",
-      status: "confirmed"
-    },
-    {
-      id: 2,
-      invoice_number: "00002",
-      user: {
-        image: user1,
-        name: "Raphael Goodman"
-      },
-      booking_items: [
-        { package: { name: "Venice Dreams" } }
-      ],
-      created_at: "Jun 25, 2024",
-      status: "requests"
-    },
-    {
-      id: 3,
-      invoice_number: "00003",
-      user: {
-        image: user1,
-        name: "Raphael Goodman"
-      },
-      booking_items: [
-        { package: { name: "Venice Dreams" } }
-      ],
-      created_at: "Jun 25, 2024",
-      status: "cancelled"
-    },
-  ]
+const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState()
@@ -116,7 +73,7 @@ const BookingManagementTable = ({ tableType = '', title, columns }) => {
 
   // Pagination states
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(2)
+  const [rowsPerPage, setRowsPerPage] = useState(10)
 
   // Debounced search function
   const debouncedSearch = useCallback(
@@ -210,6 +167,9 @@ const BookingManagementTable = ({ tableType = '', title, columns }) => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [])
+
+
+  console.log("Booking data : ",filteredData)
 
   return (
     <div>
@@ -349,7 +309,7 @@ const BookingManagementTable = ({ tableType = '', title, columns }) => {
                           <div className='flex items-center gap-3'>
                             <img
                               className='rounded-full'
-                              src={item.user?.image || 'default-image-url'}
+                              src={item.user?.avatar_url || 'default-image-url'}
                               alt={item.user?.name}
                               style={{ width: '24px', height: '24px' }}
                             />

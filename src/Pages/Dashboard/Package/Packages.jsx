@@ -6,7 +6,6 @@ import { Helmet } from 'react-helmet-async'
 
 const Packages = () => {
   const [tourDateFilter, setTourDateFilter] = useState('all')
-  const [packageData, setPackageData] = useState([])
   const [columns] = useState({
     packageName: true,
     package: true,
@@ -21,32 +20,21 @@ const Packages = () => {
   const {
     isLoading,
     isError,
-    data = [],
+    data,
     error,
     refetch
-  }= "hello";
-  // } = useQuery({
-  //   queryKey: ['packages'],
-  //   queryFn: async () => {
-  //     const response = await axiosClient.get('/api/admin/package')
-  //     return response.data
-  //   }
-  // })
+  } = useQuery({
+    queryKey: ['packages'],
+    queryFn: async () => {
+      const response = await axiosClient.get('/api/admin/package')
+      return response.data
+    }
+  })
 
-  console.log('data', data)
+  if (isError) {
+    console.error('Error fetching packages:', error)
+  }
 
-  // useEffect(() => {
-  //   const fetchPackages = async () => {
-  //       try {
-  //           const resPackages = await axiosClient.get(`/api/admin/package`);
-  //           console.log('resDetails', resPackages)
-  //           setPackageData(resPackages.data.data);
-  //       } catch (error) {
-  //         console.error('Error fetching data:', error);
-  //       }
-  //   }
-  //   fetchPackages();
-  // }, [])
 
   return (
     <div>
