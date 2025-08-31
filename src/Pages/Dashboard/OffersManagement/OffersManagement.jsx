@@ -151,7 +151,7 @@ export default function OffersManagement() {
                                         <td className="p-6">{new Date(item.starts_at).toLocaleDateString()}</td>
                                         <td className="p-6">{new Date(item.expires_at).toLocaleDateString()}</td>
                                         <td className="p-6">
-                                            {item.status === 0 ? "Active" : item.status === 1 ? "Used" : "Inactive"}
+                                            {item.status === 1 ? "Active" : item.status === 2?"Inactive":"Used"}
                                         </td>
                                         <td className="p-6">{item.max_uses | "Unlimited"}</td>
                                         <td className="p-6 flex items-center gap-[10px]">

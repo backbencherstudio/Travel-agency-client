@@ -32,9 +32,21 @@ OfferManagementApis.getOne = async (id) => {
 
 // Update the status of an offer
 OfferManagementApis.update = async (id, data) => {
-    const url = `/api/admin/coupon/${id}`;  // Fixed the URL to match "coupon"
+    const url = `/api/admin/coupon/${id}`;
     try {
         const response = await axiosClient.patch(url, {status:data});
+        return response.data;
+    } catch (error) {
+        return {
+            errors: error.response?.data?.errors || null,
+            message: error.response?.data?.message || 'An error occurred while updating the offer status.'
+        };
+    }
+};
+OfferManagementApis.updateAll = async (id, data) => {
+    const url = `/api/admin/coupon/${id}`;
+    try {
+        const response = await axiosClient.patch(url, data);
         return response.data;
     } catch (error) {
         return {

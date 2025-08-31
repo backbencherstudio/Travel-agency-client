@@ -124,6 +124,20 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                                 </button>
                             )}
                         </div>
+                        <div>
+                            <div>
+                                <label htmlFor="">title</label>
+                                <input type="text" name="" id="" />
+                            </div>
+                            <div>
+                                <label htmlFor="">Description</label>
+                                <input type="text" name="" id="" />
+                            </div>
+                            <div>
+                                <label htmlFor="">Time</label>
+                                <input type="text" name="" id="" />
+                            </div>
+                        </div>
                         <div className="p-4 bg-[#F0F4F9] rounded-lg flex flex-col gap-3">
                             {/* Trip Title */}
                             <div>
@@ -173,7 +187,7 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                                 />
                             </div>
                         </div>
-                        {index === tourPlan.length - 1 && (
+                        {/* {index === tourPlan.length - 1 && (
 
                             <button
                                 onClick={addDay}
@@ -181,15 +195,22 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                             >
                                 <FaPlus className="w-3 h-3" /> Add Another Day
                             </button>
-                        )}
+                        )} */}
                     </div>
                 ))}
-            <button className='bg-[#EB5B2A] flex items-center gap-1 px-2 py-3 text-white font-medium rounded-md cursor-pointer'>
+                {/* <button className='bg-[#EB5B2A] flex items-center gap-1 px-2 py-3 text-white font-medium rounded-md cursor-pointer'>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path d="M10.0013 4.16602V15.8327M4.16797 9.99935H15.8346" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 <span>Add Another Day</span>
-            </button>
+            </button> */}
+                <button
+                type='button'
+                    onClick={addDay}
+                    className={`px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded`}
+                >
+                    <FaPlus className="w-3 h-3" /> Add Another Day
+                </button>
             </div>
         </div>
     );
