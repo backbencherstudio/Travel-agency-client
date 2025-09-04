@@ -76,6 +76,7 @@ import Scanning from "../Pages/getStarted/Scanning";
 import OffersManagement from "../Pages/Dashboard/OffersManagement/OffersManagement";
 import ViewOffers from "../Pages/Dashboard/OffersManagement/ViewOffers";
 import EditOffers from "../Pages/Dashboard/OffersManagement/EditOffers";
+import PackagePlaces from "~/Pages/Dashboard/Package/PackagePlaces";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 export const router = createBrowserRouter([
@@ -308,6 +309,10 @@ element:<Scanning/>
       {
         path: "package-disallow-traveller",
         element: <PackageDisAllowTraveller />,
+      },
+      {
+        path: "package-places",
+        element: <PackagePlaces />,
       },
       {
         path: "packages",

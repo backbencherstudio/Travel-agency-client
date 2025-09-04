@@ -30,6 +30,7 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
+  const [isLoading,setIsLoading] = useState(false);
 
   const fetchConversations = async () => {
     try {
@@ -144,6 +145,8 @@ const Chat = () => {
   };
 
   const handleSendMessage = async () => {
+    console.log("New message : ",newMessage);
+    setIsLoading(true)
     if (!newMessage.trim() || !activeConversation || !socket || !isConnected) return;
 
     try {
@@ -198,6 +201,7 @@ const Chat = () => {
       });
 
       await ChatApis.sendMessage(messagePayload);
+      setIsLoading(false);
       socket.emit("sendMessage", { to: messagePayload.receiver_id, data: newMsg });
       setNewMessage("");
     } catch (error) {
@@ -407,16 +411,16 @@ const Chat = () => {
                       >
                         <User
                           active={activeConversation?.id === data.id}
-                          id={chatUser.id}
-                          image={chatUser.avatar_url || (
+                          id={chatUser?.id}
+                          image={chatUser?.avatar_url || (
                             <div className="w-9 h-9 rounded-full bg-[#eb5a2a20] text-[#eb5b2a] flex items-center justify-center text-lg font-semibold">
-                              {chatUser.name?.charAt(0).toUpperCase()}
+                              {chatUser?.name?.charAt(0)?.toUpperCase()}
                             </div>
                           )}
-                          name={chatUser.name}
-                          hint={data.unread ? <strong>{lastMessage}</strong> : lastMessage}
-                          time={data.updated_at
-                            ? new Date(data.updated_at).toLocaleTimeString([], {
+                          name={chatUser?.name}
+                          hint={data?.unread ? <strong>{lastMessage}</strong> : lastMessage}
+                          time={data?.updated_at
+                            ? new Date(data?.updated_at).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
                             })
@@ -439,27 +443,27 @@ const Chat = () => {
           {/* Chat Header */}
           <div className="p-4 border-b border-gray-100">
             <div className="flex items-center">
-              {(user.id === activeConversation.participant_id
-                ? activeConversation.creator.avatar_url
+              {(user?.id === activeConversation.participant_id
+                ? activeConversation?.creator?.avatar_url
                 : activeConversation.participant.avatar_url) ? (
                 <img
                   src={user.id === activeConversation.participant_id
-                    ? activeConversation.creator.avatar_url
-                    : activeConversation.participant.avatar_url}
+                    ? activeConversation?.creator?.avatar_url
+                    : activeConversation?.participant?.avatar_url}
                   className="rounded-full h-9 w-9"
                   alt="User Avatar"
                 />
               ) : (
                 <div className="w-9 h-9 rounded-full bg-[#eb5a2a20] text-[#eb5b2a] flex items-center justify-center text-lg font-semibold">
-                  {(user.id === activeConversation.participant_id
-                    ? activeConversation.creator.name
+                  {(user.id === activeConversation?.participant_id
+                    ? activeConversation?.creator?.name
                     : activeConversation.participant.name)?.charAt(0).toUpperCase()}
                 </div>
               )}
               <div className="ml-3">
                 <h5 className="text-gray-800 font-bold text-lg">
                   {user.id === activeConversation.participant_id
-                    ? activeConversation.creator.name
+                    ? activeConversation?.creator?.name
                     : activeConversation.participant.name}
                 </h5>
               </div>
@@ -522,6 +526,7 @@ const Chat = () => {
                 <input
                   type="text"
                   value={newMessage}
+                  disabled={isLoading}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
@@ -534,6 +539,7 @@ const Chat = () => {
               </div>
               <button
                 onClick={handleSendMessage}
+                disabled={isLoading}
                 className="flex items-center justify-center -rotate-45 h-10 w-10 rounded-full bg-gray-200 hover:bg-[#eb5a2a20] text-[#eb5b2a]"
               >
                 <svg
