@@ -382,9 +382,9 @@ export default function PackagePlaces() {
               className="w-full px-2 py-3 border rounded"
               required
             >
-              <option value="meetingPoint">Meeting Point</option>
-              <option value="pickupPoint">Pickup Point</option>
-              <option value="endPoint">End Point</option>
+              <option value="Meeting Point">Meeting Point</option>
+              <option value="Pickup Point">Pickup Point</option>
+              <option value="End Point">End Point</option>
             </select>
           </div>
 
@@ -481,7 +481,7 @@ export default function PackagePlaces() {
                         <TableCell>{service.name}</TableCell>
                         <TableCell>{service.description}</TableCell>
                         <TableCell>
-                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                          <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs text-nowrap">
                             {service.type}
                           </span>
                         </TableCell>
