@@ -64,7 +64,12 @@ const AddPackage = () => {
   const [languages, setLanguages] = useState([]);
   const [travellerTypes, setTravellerTypes] = useState([]);
   const [tourPlan, setTourPlan] = useState([
-    { id: null, day: 1, title: "", description: "", images: [] },
+    { id: null, day: 1, tripPlan:[{
+        title: "",
+        description: "",
+        time: 0,
+        ticket: "free"
+      }], images: [] },
   ]);
   const [loading, setLoading] = useState(false);
 
@@ -326,30 +331,30 @@ const AddPackage = () => {
       toast.info("Creating package...");
 
       const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package`;
-      const res = await axiosClient.post(url, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // const res = await axiosClient.post(url, form, {
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
 
-      if (res.data?.success) {
-        toast.success("Package created successfully!");
-        // Optional: reset fields
-        // previews cleanup
-        previewsRef.current.forEach(url => URL.revokeObjectURL(url));
-        previewsRef.current.clear();
-        setImages([]);
-        setIncludedPackages([]);
-        setExcludedPackages([]);
-        setSelectedDestinations([]);
-        setSelectedLanguages([]);
-        setSelectedTravellerTypes([]);
-        setServicesIds([]);
-        setTourPlan([{ id: null, day: 1, title: "", description: "", images: [] }]);
-        resetField("name"); resetField("description"); resetField("price"); resetField("duration");
-        resetField("type"); resetField("duration_type"); resetField("package_category");
-        resetField("cancellation_policy_id");
-      } else {
-        toast.error(res.data?.message || "Failed to create package");
-      }
+      // if (res.data?.success) {
+      //   toast.success("Package created successfully!");
+      //   // Optional: reset fields
+      //   // previews cleanup
+      //   previewsRef.current.forEach(url => URL.revokeObjectURL(url));
+      //   previewsRef.current.clear();
+      //   setImages([]);
+      //   setIncludedPackages([]);
+      //   setExcludedPackages([]);
+      //   setSelectedDestinations([]);
+      //   setSelectedLanguages([]);
+      //   setSelectedTravellerTypes([]);
+      //   setServicesIds([]);
+      //   setTourPlan([{ id: null, day: 1, title: "", description: "", images: [] }]);
+      //   resetField("name"); resetField("description"); resetField("price"); resetField("duration");
+      //   resetField("type"); resetField("duration_type"); resetField("package_category");
+      //   resetField("cancellation_policy_id");
+      // } else {
+      //   toast.error(res.data?.message || "Failed to create package");
+      // }
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || "Error creating package");
@@ -491,7 +496,7 @@ const AddPackage = () => {
                   placeholder="Select a meeting point"
                   className="w-full border p-2 rounded-sm"
                   value={selectedMeetingPoint}
-                  onChange={(value)=> setSelectedMeetingPoint(value)}
+                  onChange={(value)=> {setSelectedMeetingPoint(value.target.value);console.log("Meeting point : ",value.target.value)}}
                 >
                   {
                     meetingPoints?.map(item=>(
