@@ -11,19 +11,19 @@ import { useNavigate } from "react-router-dom";
 
 const token = localStorage.getItem("token");
 
-const socket = io(import.meta.env.VITE_API_BASE_URL, {
-  auth: {
-    token: token,
-  },
-});
+// const socket = io(import.meta.env.VITE_API_BASE_URL, {
+//   auth: {
+//     token: token,
+//   },
+// });
 
-socket.on("connect", () => {
-  // console.log("Admin Dashboard Connected to server!");
-});
+// socket.on("connect", () => {
+//   // console.log("Admin Dashboard Connected to server!");
+// });
 
-socket.on("disconnect", (reason) => {
-  console.log("Disconnected:", reason);
-});
+// socket.on("disconnect", (reason) => {
+//   console.log("Disconnected:", reason);
+// });
 
 const AdminHeader = ({ showSidebar, setShowSidebar }) => {
   const navigate = useNavigate();
@@ -97,22 +97,22 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
 
   // Handle real-time notifications
   useEffect(() => {
-    socket.on("notification", (notification) => {
-      console.log('notification', notification);
+    // socket.on("notification", (notification) => {
+    //   console.log('notification', notification);
 
-      // Check receiver_id and user type conditions
-      if (notification.receiver_id === null) {
-        // Show notification only to admin users
-        if (user?.type?.toLowerCase() === 'admin') {
-          addNewNotification(notification);
-        }
-      } else {
-        // Show notification if receiver_id matches user's ID
-        if (notification.receiver_id === user?.id) {
-          addNewNotification(notification);
-        }
-      }
-    });
+    //   // Check receiver_id and user type conditions
+    //   if (notification.receiver_id === null) {
+    //     // Show notification only to admin users
+    //     if (user?.type?.toLowerCase() === 'admin') {
+    //       addNewNotification(notification);
+    //     }
+    //   } else {
+    //     // Show notification if receiver_id matches user's ID
+    //     if (notification.receiver_id === user?.id) {
+    //       addNewNotification(notification);
+    //     }
+    //   }
+    // });
 
     // Helper function to add new notification
     const addNewNotification = (notification) => {
@@ -147,9 +147,9 @@ const AdminHeader = ({ showSidebar, setShowSidebar }) => {
       }
     };
 
-    return () => {
-      socket.off("notification");
-    };
+    // return () => {
+    //   socket.off("notification");
+    // };
   }, [user]); // Added user to dependency array
 
   const handleClickOutside = (event) => {
