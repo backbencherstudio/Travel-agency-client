@@ -220,14 +220,16 @@ const Chat = () => {
     const token = localStorage.getItem("token");
 
     if (!socket && user?.id) {
-      const newSocket = io(import.meta.env.VITE_API_BASE_URL, {
-        auth: { token },
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        timeout: 10000,
-        transports: ['websocket']
-      });
+      // const newSocket = io(import.meta.env.VITE_API_BASE_URL, {
+      //   auth: { token },
+      //   reconnection: true,
+      //   reconnectionAttempts: 5,
+      //   reconnectionDelay: 1000,
+      //   timeout: 10000,
+      //   transports: ['websocket']
+      // });
+
+      // console.log("Sockate url ",import.meta.env.VITE_API_BASE_URL)
 
       newSocket.on("connect", () => {
         console.log("Socket connected with user id:", user.id);
