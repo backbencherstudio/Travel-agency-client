@@ -28,7 +28,7 @@ const User = ({ id, image, name, hint, time, active = false }) => {
                   typeof image === 'string' && image.startsWith('http') ? 'hidden' : ''
                 }`}
               >
-                {name.charAt(0).toUpperCase()}
+                {name?.charAt(0)?.toUpperCase()}
               </div>
 
               {/* ========== active status ========== */}

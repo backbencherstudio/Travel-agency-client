@@ -45,6 +45,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
       'package-category-&-tag': 'packageCategory&Tag',
       'package-destination-&-policy': 'packageDestination&Policy',
       'package-extra-service': 'packageExtraService',
+      'package-places':'packagePlaces',
       'language': 'language',
       'package-disallow-traveller': 'packageDisallowTraveller'
     }
@@ -103,7 +104,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
       tab === 'packageDestination&Policy' ||
       tab === 'packageExtraService' ||
       tab === 'language' ||
-      tab === 'packageDisallowTraveller'
+      tab === 'packageDisallowTraveller'||
+      tab === 'packagePlaces'
     ) {
       setSubmenuOpen(true)
     } else {
@@ -229,7 +231,8 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 selectedTab === 'packageDestination&Policy' ||
                 selectedTab === 'packageExtraService' ||
                 selectedTab === 'language' ||
-                selectedTab === 'packageDisallowTraveller'
+                selectedTab === 'packageDisallowTraveller' ||
+                selectedTab === 'packagePlace'
                 ? 'bg-[#eb5b2a] text-white font-semibold'
                 : 'hover:bg-[#0d3055]'
                 }`}
@@ -329,6 +332,15 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                         }`}
                     >
                       <span>Disallow Traveller</span>
+                    </button>
+                    <button
+                      onClick={() => handleNavigation('packagePlaces', 'package-places')}
+                      className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${selectedTab === 'packageDisallowTraveller'
+                        ? 'bg-[#eb5b2a] text-white font-semibold'
+                        : 'hover:bg-[#0d3055]'
+                        }`}
+                    >
+                      <span>Package Place</span>
                     </button>
                   </>
                 )}

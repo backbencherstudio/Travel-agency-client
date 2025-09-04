@@ -447,7 +447,7 @@ const AdminMembersAddTable = ({ title, data = [], columns = {}, onDataUpdate }) 
                     }`}
                 >
                   <option value=''>Select type</option>
-                  <option value='manager'>Manager</option>
+                  <option value='user'>User</option>
                   <option value='vendor'>Vendor</option>
                 </select>
                 {errors.type && (

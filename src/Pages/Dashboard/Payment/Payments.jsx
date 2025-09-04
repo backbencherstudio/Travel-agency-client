@@ -1,15 +1,19 @@
 import { FaClock, FaDollarSign, FaSearch } from 'react-icons/fa'
 import { AiOutlineDollar } from 'react-icons/ai'
 import PaymentHistoryTable from '../../../Components/Dashboard/PaymentHistory/PaymentHistoryTable'
-import { useState } from 'react'
-import { paymentHistory } from '../../../data/paymentHistory'
+import { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
+import PaymentApi from '~/Apis/PaymentApi'
+
 const Payments = () => {
-  const data = [
+  // State to hold the data fetched from the API
+  const [data, setData] = useState([
     { icon: <AiOutlineDollar />, label: 'Total Earnings', value: '$12,890' },
     { icon: <FaClock />, label: 'Pending Payments', value: '$1,200' },
     { icon: <FaDollarSign />, label: 'Last Payment', value: '$400' }
-  ]
+  ])
+
+  const [paymentData,setPaymentData] = useState([]);
 
   const [columns] = useState({
     bookingId: true,
@@ -17,6 +21,29 @@ const Payments = () => {
     amount: true,
     date: true
   })
+
+  // Fetch the data using PaymentApi.get when the component mounts
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await PaymentApi.get('/path-to-your-endpoint') // Add the correct endpoint
+        const fetchedData = response.data
+
+        // Update the data state with the fetched data
+        setData([
+          { icon: <AiOutlineDollar />, label: 'Total Earnings', value: fetchedData?.summary?.total_earnings },
+          { icon: <FaClock />, label: 'Pending Payments', value: fetchedData?.summary?.pending_payments },
+          { icon: <FaDollarSign />, label: 'Last Payment', value: fetchedData?.summary?.last_payment }
+        ])
+        setPaymentData(fetchData?.history)
+      } catch (error) {
+        console.error('Error fetching payment data:', error)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   return (
     <div className='space-y-4 mt-4'>
       <Helmet>
@@ -62,7 +89,7 @@ const Payments = () => {
 
       <PaymentHistoryTable
         title={'Payment History'}
-        data={paymentHistory}
+        data={paymentData}
         columns={columns}
       />
     </div>

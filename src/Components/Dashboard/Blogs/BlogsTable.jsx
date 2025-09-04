@@ -444,7 +444,7 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                               // alt={item.title}
                               alt='blog image'
                               style={{ width: '72px', height: '72px' }}
-                              src={img1}
+                              src={item?.blog_images[0]?.image_url}
                             />
                             <span className='text-wrap text-[#1D1F2C] text-[12px] font-medium'>
                               {item.title}

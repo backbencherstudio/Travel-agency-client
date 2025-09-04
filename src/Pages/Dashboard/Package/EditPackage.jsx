@@ -1,283 +1,225 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import uploadIcon from "../../../assets/dashboard/upload-icon.svg";
 import Select from "react-select";
-import TourPlan from "../../../Components/Dashboard/Packages/AddPackage/TourPlan";
 import image1 from "../../../assets/img/tour-details/image-1.png";
 import image2 from "../../../assets/img/tour-details/image-2.png";
 import image3 from "../../../assets/img/tour-details/image-3.png";
 import image4 from "../../../assets/img/tour-details/image-4.png";
-import axios from "axios";
 import axiosClient from "../../../axiosClient";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import EditTourPlan from "../../../Components/Dashboard/Packages/EditPackage/EditTourPlan";
 
+const toOption = (id, label) => ({ value: id, label });
+const getSelectedOptions = (options, selectedIds) =>
+  options.filter(o => selectedIds.some(s => s.id === o.value));
+
 const EditPackage = () => {
+  const { id } = useParams();
+  const editId = id;
+
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
+    resetField,
   } = useForm();
+
   const [isDragging, setIsDragging] = useState(false);
-  const [packageName, setPackageName] = useState("");
-  const [includedPackages, setIncludedPackages] = useState([]);
-  const [excludedPackages, setExcludedPackages] = useState([]);
   const [packageType, setPackageType] = useState("tour");
+
+  // reference data
   const [tags, setTags] = useState([]);
   const [categories, setCategories] = useState([]);
   const [policies, setPolicies] = useState([]);
   const [destinations, setDestinations] = useState([]);
-  const [images, setImages] = useState([]);
-  const [extraServices, setExtraServices] = useState([]);
-  const [serviceIds, setServicesIds] = useState([]);
   const [languages, setLanguages] = useState([]);
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [travellerTypes, setTravellerTypes] = useState([]);
-  const [selectedTravellerTypes, setSelectedTravellerTypes] = useState([]);
+  const [extraServices, setExtraServices] = useState([]);
+
+  // selections
+  const [includedPackages, setIncludedPackages] = useState([]);
+  const [excludedPackages, setExcludedPackages] = useState([]);
+  const [selectedDestinations, setSelectedDestinations] = useState([]); // [{id}]
+  const [selectedLanguages, setSelectedLanguages] = useState([]);       // [{id}]
+  const [selectedTravellerTypes, setSelectedTravellerTypes] = useState([]); // [{id}]
+  const [serviceIds, setServicesIds] = useState([]); // number[] (IDs only)
+
+  // media + tour plan
+  const [images, setImages] = useState([]); // mix of {id, file_url|video_url} or {file, preview, type}
   const [tourPlan, setTourPlan] = useState([
     { id: null, day: 1, title: "", description: "", images: [] },
   ]);
+
   const [loading, setLoading] = useState(false);
-  const [selectedDestinations, setSelectedDestinations] = useState([]);
+  const previewsRef = useRef(new Set());
 
-  console.log("selectedTravellerTypes", selectedTravellerTypes);
-
-  const { id } = useParams();
-  const editId = id;
-  //   console.log("editId", editId);
+  /** -------- Fetch reference + edit data -------- */
   useEffect(() => {
-    const fetchData = async () => {
+    let mounted = true;
+    (async () => {
       try {
-        const resTag = await axiosClient.get("api/admin/tag");
-        setTags(
-          resTag.data?.data?.map((tag) => ({
-            value: tag?.id,
-            label: tag?.name,
-          }))
-        );
+        const [
+          resTag,
+          resCategory,
+          resPolicies,
+          resDestinations,
+          resServices,
+          resLanguages,
+          resTravellerTypes,
+          resPackage,
+        ] = await Promise.all([
+          axiosClient.get("api/admin/tag"),
+          axiosClient.get("api/admin/category"),
+          axiosClient.get("api/admin/package-cancellation-policy"),
+          axiosClient.get("api/admin/destination"),
+          axiosClient.get("api/admin/extra-service"),
+          axiosClient.get("api/admin/language"),
+          axiosClient.get("api/admin/traveller-type"),
+          editId ? axiosClient.get(`api/admin/package/${editId}`) : Promise.resolve({ data: { data: null } }),
+        ]);
 
-        const resCategory = await axiosClient.get("api/admin/category");
-        setCategories(
-          resCategory.data?.data?.map((cat) => ({
-            value: cat?.id,
-            label: cat?.name,
-          }))
-        );
+        if (!mounted) return;
 
-        const resPolicies = await axiosClient.get(
-          "api/admin/package-cancellation-policy"
-        );
-        setPolicies(
-          resPolicies.data?.data?.map((cat) => ({
-            value: cat?.id,
-            label: cat?.policy,
-          }))
-        );
+        // options
+        setTags((resTag.data?.data || []).map(t => toOption(t.id, t.name)));
+        setCategories((resCategory.data?.data || []).map(c => toOption(c.id, c.name)));
+        setPolicies((resPolicies.data?.data || []).map(p => toOption(p.id, p.policy)));
+        setDestinations((resDestinations.data?.data || []).map(d => toOption(d.id, d.name)));
+        setExtraServices(resServices.data?.data || []);
+        setLanguages(resLanguages.data?.data || []);
+        setTravellerTypes(resTravellerTypes.data?.data || []);
 
-        const resDestinations = await axiosClient.get("api/admin/destination");
-        setDestinations(
-          resDestinations.data?.data?.map((cat) => ({
-            value: cat?.id,
-            label: cat?.name,
-          }))
-        );
+        // prefill for edit
+        const pkg = resPackage.data?.data;
+        if (pkg) {
+          setValue("name", pkg.name || "");
+          setValue("description", pkg.description || "");
+          setValue("price", pkg.price ?? "");
+          setValue("duration", pkg.duration ?? "");
+          setValue("duration_type", pkg.duration_type || "");
+          setValue("min_capacity", pkg.min_capacity ?? "");
+          setValue("max_capacity", pkg.max_capacity ?? "");
+          setValue("cancellation_policy_id", pkg.cancellation_policy?.id || "");
+          setValue("type", pkg.type || "");
+          setPackageType(pkg.type || "tour");
 
-        const resServices = await axiosClient.get("api/admin/extra-service");
-        setExtraServices(resServices.data?.data);
-
-        const resLanguages = await axiosClient.get("api/admin/language");
-        setLanguages(resLanguages.data?.data);
-
-        const resTravellerTypes = await axiosClient.get(
-          "api/admin/traveller-type"
-        );
-        setTravellerTypes(resTravellerTypes.data?.data);
-
-        if (editId) {
-          const resPackage = await axiosClient.get(
-            `api/admin/package/${editId}`
-          );
-          const packageData = resPackage.data.data;
-          console.log("packageData", packageData);
-          setValue("name", packageData.name);
-          setPackageName(packageData.name);
-          setValue("description", packageData.description);
-          setValue(
-            "package_category",
-            packageData.package_categories?.map(
-              (category) => category?.category?.id
-            )
-          );
-          setPackageType(packageData.type);
-          if (packageData.package_destinations) {
-            setSelectedDestinations(
-              packageData.package_destinations.map((dest) => ({
-                id: dest.destination.id,
-              }))
-            );
-            setValue(
-              "destinations",
-              packageData.package_destinations.map((dest) => ({
-                id: dest.destination.id,
-              }))
-            );
-          } else if (packageData.package_destinations) {
-            setSelectedDestinations([
-              { id: packageData.package_destinations.destination.id },
-            ]);
-            setValue("destinations", [
-              { id: packageData.package_destinations.destination.id },
-            ]);
+          // categories (assuming single category id; if array needed, adapt)
+          if (pkg.package_categories?.length) {
+            // choose first category id
+            const firstCat = pkg.package_categories[0]?.category?.id;
+            if (firstCat) setValue("package_category", firstCat);
           }
-          if (packageData.package_languages) {
-            setSelectedLanguages(
-              packageData.package_languages.map((dest) => ({
-                id: dest.language.id,
-              }))
-            );
-            setValue(
-              "languages",
-              packageData.package_languages.map((dest) => ({
-                id: dest.language.id,
-              }))
-            );
+
+          // destinations
+          if (pkg.package_destinations?.length) {
+            const dest = pkg.package_destinations.map(d => ({ id: d.destination.id }));
+            setSelectedDestinations(dest);
+            setValue("destinations", dest);
           }
-          if (packageData.package_traveller_types) {
-            setSelectedTravellerTypes(
-              packageData.package_traveller_types.map((dest) => ({
-                id: dest.traveller_type.id,
-              }))
-            );
-            setValue(
-              "travellerTypes",
-              packageData.package_traveller_types.map((dest) => ({
-                id: dest.traveller_type.id,
-              }))
-            );
+
+          // languages
+          if (pkg.package_languages?.length) {
+            const langs = pkg.package_languages.map(l => ({ id: l.language.id }));
+            setSelectedLanguages(langs);
+            setValue("languages", langs);
           }
-          setValue("price", packageData.price);
-          setValue("duration", packageData.duration);
-          setValue("duration_type", packageData.duration_type);
-          setValue("min_capacity", packageData.min_capacity);
-          setValue("max_capacity", packageData.max_capacity);
-          // setSelectedPolicy(packageData.cancellation_policy?.id || "");
-          setValue(
-            "cancellation_policy_id",
-            packageData.cancellation_policy?.id
-          );
-          setValue("type", packageData.type);
-          setValue("language", packageData.language);
-          setImages(packageData.package_files);
-          setIncludedPackages(
-            packageData.package_tags
-              ?.filter((tag) => tag?.type === "included")
-              .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
-          );
-          setExcludedPackages(
-            packageData.package_tags
-              ?.filter((tag) => tag?.type === "excluded")
-              .map((tag) => ({ value: tag?.tag?.id, label: tag?.tag?.name }))
-          );
-          setServicesIds(
-            packageData.package_extra_services?.map((service) => ({
-              id: service.extra_service?.id, // Extract `id` and wrap it in an object
-            }))
-          );
-          if (
-            packageData.package_trip_plans &&
-            packageData.package_trip_plans.length > 0
-          ) {
+
+          // traveller types
+          if (pkg.package_traveller_types?.length) {
+            const tts = pkg.package_traveller_types.map(t => ({ id: t.traveller_type.id }));
+            setSelectedTravellerTypes(tts);
+            setValue("travellerTypes", tts);
+          }
+
+          // services as IDs
+          if (pkg.package_extra_services?.length) {
+            const svcIds = pkg.package_extra_services.map(s => s.extra_service?.id).filter(Boolean);
+            setServicesIds(svcIds);
+          }
+
+          // files already in server
+          setImages(pkg.package_files || []);
+
+          // trip plans
+          if (pkg.package_trip_plans?.length) {
             setTourPlan(
-              packageData.package_trip_plans?.map((plan, index) => ({
-                id: plan?.id,
-                day: index + 1,
-                title: plan?.title || "",
-                description: plan?.description || "",
-                images: plan?.package_trip_plan_images?.map((img) => img),
+              pkg.package_trip_plans.map((plan, idx) => ({
+                id: plan.id,
+                day: idx + 1,
+                title: plan.title || "",
+                description: plan.description || "",
+                images: plan.package_trip_plan_images?.map(img => img) || [],
               }))
+            );
+          }
+
+          // tags
+          if (pkg.package_tags?.length) {
+            setIncludedPackages(
+              pkg.package_tags
+                .filter(t => t.type === "included")
+                .map(t => toOption(t.tag.id, t.tag.name))
+            );
+            setExcludedPackages(
+              pkg.package_tags
+                .filter(t => t.type === "excluded")
+                .map(t => toOption(t.tag.id, t.tag.name))
             );
           }
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch (e) {
+        console.error(e);
+        toast.error("Failed to load package data.");
       }
+    })();
+
+    return () => {
+      mounted = false;
+      previewsRef.current.forEach(url => URL.revokeObjectURL(url));
+      previewsRef.current.clear();
     };
+  }, [editId, setValue]);
 
-    fetchData();
-  }, [editId]);
-
-  const imageGalleries = [
-    { image: image1 },
-    { image: image2 },
-    { image: image3 },
-    { image: image4 },
-  ];
-  console.log("imageGalleries", imageGalleries);
-  const packageOptions = [
-    { value: "flight", label: "Flight Ticket & Cab Transportation" },
-    { value: "meals", label: "Breakfast, Lunch & Dinner" },
-    { value: "hotel", label: "Hotel Accommodation" },
-    { value: "sight", label: "Sight-Seeing" },
-    { value: "cityTour", label: "City Tour" },
-    { value: "customDuty", label: "Custom Duty" },
-  ];
-
+  /** -------- Dropzone -------- */
   const onImageDrop = (acceptedFiles) => {
-    // Count existing images and videos
-    const existingVideos = images.filter(
-      (file) => file.type === "video" || file?.video_url
-    ).length;
-    const existingImages = images.filter(
-      (file) => file.type !== "video" && !file?.video_url
-    ).length;
+    // current caps
+    const existingVideos = images.filter(i => i.type === "video" || i?.video_url).length;
+    const existingImages = images.filter(i => i.type !== "video" && !i?.video_url).length;
 
-    // First, separate videos and images
     const videoFiles = [];
     const imageFiles = [];
-
-    // Categorize new files
-    acceptedFiles.forEach((file) => {
-      if (file.type.startsWith("video/")) {
-        videoFiles.push(file);
-      } else {
-        imageFiles.push(file);
-      }
+    acceptedFiles.forEach(file => {
+      if (file.type.startsWith("video/")) videoFiles.push(file);
+      else imageFiles.push(file);
     });
 
-    // Check limits
     if (existingVideos + videoFiles.length > 2) {
       toast.error("Maximum 2 videos allowed");
       return;
     }
-
     if (existingImages + imageFiles.length > 10) {
       toast.error("Maximum 10 images allowed");
       return;
     }
 
-    // Process accepted files
-    const newFiles = [...videoFiles, ...imageFiles].map((file) => {
+    const next = [...videoFiles, ...imageFiles].map(file => {
       const isVideo = file.type.startsWith("video/");
-      return {
-        file,
-        preview: isVideo ? null : URL.createObjectURL(file),
-        type: isVideo ? "video" : "image",
-      };
+      const preview = isVideo ? null : URL.createObjectURL(file);
+      if (preview) previewsRef.current.add(preview);
+      return { file, preview, type: isVideo ? "video" : "image" };
     });
-
-    if (newFiles.length > 0) {
-      setImages((prev) => [...prev, ...newFiles]);
-    }
+    if (next.length) setImages(prev => [...prev, ...next]);
     setIsDragging(false);
   };
 
-  const imageDropzone = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop: onImageDrop,
     accept: {
-      "image/*": [".jpeg", ".jpg", ".png"],
+      "image/*": [".jpeg", ".jpg", ".png", ".webp"],
       "video/*": [".mp4", ".avi", ".mov"],
     },
     multiple: true,
@@ -286,177 +228,45 @@ const EditPackage = () => {
   });
 
   const handleDeleteImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const onSubmit = async (data) => {
-    // Count images and videos
-    const videoCount = images.filter(
-      (file) => file.type === "video" || file?.video_url
-    ).length;
-    const imageCount = images.filter((file) => file.type !== "video" && !file?.video_url
-    ).length;
-
-    // Validate minimum requirements
-    // if (videoCount < 1) {
-    //   toast.error('Please upload at least 1 video');
-    //   return;
-    // }
-    // if (imageCount < 3) {
-    //   toast.error('Please upload at least 3 images');
-    //   return;
-    // }
-    const formDataObject = {
-      ...data,
-      includedPackages,
-      excludedPackages,
-      serviceIds,
-      package_images: images.map((image) => (image.id ? image.id : image.file)),
-      destinations: selectedDestinations,
-    };
-
-    const package_images = [];
-    const imagesArray = [];
-
-    // for(tourPlan) {
-    //     tourPlan.images.map(tripImage => (
-    //         imagesArray.push(tripImage);
-    //     ))
-    // }
-    // for (const image in images) {
-    //   package_images.push(image);
-    // }
-
-    const form = new FormData();
-    for (let key in formDataObject) {
-      if (key === "tourPlan") {
-        // handle trip_plans_images
-        const trip_plans_images = [];
-        formDataObject[key].forEach((tripPlan, index) => {
-          tripPlan.images.forEach((image) => {
-            if (image instanceof File) {
-              // Append the file directly if it's a File object
-              form.append(`trip_plans_images`, image);
-            } else {
-              // Append the object as a JSON string if it's not a File object
-
-              // form.append(`trip_plans_images`, JSON.stringify(image));
-              trip_plans_images.push(image);
-            }
-          });
-        });
-        form.append(`trip_plans_images`, JSON.stringify(trip_plans_images));
-        console.log("trip_plans_images", trip_plans_images);
-        // Append trip_plans as JSON
-        form.append("trip_plans", JSON.stringify(formDataObject[key]));
-      } else if (key === "package_images") {
-        const package_files = [];
-        formDataObject[key].forEach((image) => {
-          if (image instanceof File) {
-            // Append the file directly if it's a File object
-            console.log("image file", image);
-
-            form.append("package_files", image);
-          } else {
-            // const package_images = [];
-            // const imagesArray = [];
-            // for(tourPlan) {
-            //     tourPlan.images.map(tripImage => (
-            //         imagesArray.push(tripImage);
-            //     ))
-            // }
-            // for (const img in image) {
-            console.log("package image", image);
-            package_files.push({id: image});
-            // }
-          }
-        });
-        console.log("result", package_files);
-
-        form.append("package_files", JSON.stringify(package_files));
-      } else if (key === "includedPackages" || key === "excludedPackages") {
-        const packages = formDataObject[key].map((item) => ({
-          id: item.value,
-        }));
-        form.append(
-          key === "includedPackages"
-            ? "included_packages"
-            : "excluded_packages",
-          JSON.stringify(packages)
-        );
-      } else if (key === "serviceIds") {
-        form.append("extra_services", JSON.stringify(serviceIds));
-      } else if (key === "destinations") {
-        form.append("destinations", JSON.stringify(selectedDestinations));
-      } else if (key === "languages") {
-        form.append("languages", JSON.stringify(selectedLanguages));
-      } else if (key === "travellerTypes") {
-        form.append("traveller_types", JSON.stringify(selectedTravellerTypes));
-      } else {
-        form.append(key, formDataObject[key]);
+    setImages(prev => {
+      const copy = [...prev];
+      const item = copy[index];
+      if (item?.preview) {
+        URL.revokeObjectURL(item.preview);
+        previewsRef.current.delete(item.preview);
       }
-    }
-
-    for (let pair of form.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-    setLoading(true);
-    if (editId) {
-      toast.info("Updating package...");
-      // Uncomment to send the form data to your API
-      const url = `${
-        import.meta.env.VITE_API_BASE_URL
-      }/api/admin/package/${editId}`;
-      // const url = `http://192.168.10.159:4000/api/admin/package/${editId}`;
-      const res = await axiosClient.patch(url, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log("Response:", res.data);
-      if (res.data.success) {
-        toast.info("Package updated successfully!");
-      }
-      setLoading(false);
-    }
+      copy.splice(index, 1);
+      return copy;
+    });
   };
 
-  const handleIncludedPackagesChange = (selected) => {
-    setIncludedPackages(selected || []); // Store the selected objects in state
-  };
+  /** -------- Options (memo) -------- */
+  const destinationOptions = useMemo(() => destinations, [destinations]);
+  const categoryOptions = useMemo(() => categories, [categories]);
+  const policyOptions = useMemo(() => policies, [policies]);
+  const languageOptions = useMemo(
+    () => languages.map(l => toOption(l.id, l.name)),
+    [languages]
+  );
+  const travellerTypeOptions = useMemo(
+    () => travellerTypes.map(t => toOption(t.id, t.type)),
+    [travellerTypes]
+  );
 
-  const handleExcludedPackagesChange = (selected) => {
-    setExcludedPackages(selected || []); // Store the selected objects in state
-  };
-
-  console.log("includedPackages", includedPackages);
-
-  const handleExtraServices = (serviceId, isChecked) => {
-    console.log("serviceId", serviceId);
-    console.log("isChecked", isChecked);
-    if (isChecked) {
-      // Add the service ID as an object if checked
-      setServicesIds((prev) => [...prev, { id: serviceId }]);
-    } else {
-      // Remove the service ID object if unchecked
-      setServicesIds((prev) =>
-        prev.filter((service) => service.id !== serviceId)
-      );
-    }
-  };
+  /** -------- Select handlers -------- */
+  const handleIncludedPackagesChange = (selected) => setIncludedPackages(selected || []);
+  const handleExcludedPackagesChange = (selected) => setExcludedPackages(selected || []);
 
   const handleDestinationChange = (selected) => {
     if (Array.isArray(selected)) {
-      // For multiple selections (package type)
-      setSelectedDestinations(selected.map((item) => ({ id: item.value })));
-      setValue(
-        "destinations",
-        selected.map((item) => ({ id: item.value }))
-      );
+      const ids = selected.map(s => ({ id: s.value }));
+      setSelectedDestinations(ids);
+      setValue("destinations", ids);
     } else if (selected) {
-      // For single selection (tour/cruise type)
-      setSelectedDestinations([{ id: selected.value }]);
-      setValue("destinations", [{ id: selected.value }]);
+      const ids = [{ id: selected.value }];
+      setSelectedDestinations(ids);
+      setValue("destinations", ids);
     } else {
-      // Handle clearing the selection
       setSelectedDestinations([]);
       setValue("destinations", []);
     }
@@ -464,14 +274,13 @@ const EditPackage = () => {
 
   const handleLanguageChange = (selected) => {
     if (Array.isArray(selected)) {
-      setSelectedLanguages(selected.map((item) => ({ id: item.value })));
-      setValue(
-        "languages",
-        selected.map((item) => ({ id: item.value }))
-      );
+      const ids = selected.map(s => ({ id: s.value }));
+      setSelectedLanguages(ids);
+      setValue("languages", ids);
     } else if (selected) {
-      setSelectedLanguages([{ id: selected.value }]);
-      setValue("languages", [{ id: selected.value }]);
+      const ids = [{ id: selected.value }];
+      setSelectedLanguages(ids);
+      setValue("languages", ids);
     } else {
       setSelectedLanguages([]);
       setValue("languages", []);
@@ -480,142 +289,191 @@ const EditPackage = () => {
 
   const handleTravellerTypesChange = (selected) => {
     if (Array.isArray(selected)) {
-      setSelectedTravellerTypes(selected.map((item) => ({ id: item.value })));
-      setValue(
-        "travellerTypes",
-        selected.map((item) => ({ id: item.value }))
-      );
+      const ids = selected.map(s => ({ id: s.value }));
+      setSelectedTravellerTypes(ids);
+      setValue("travellerTypes", ids);
     } else if (selected) {
-      setSelectedTravellerTypes([{ id: selected.value }]);
-      setValue("travellerTypes", [{ id: selected.value }]);
+      const ids = [{ id: selected.value }];
+      setSelectedTravellerTypes(ids);
+      setValue("travellerTypes", ids);
     } else {
       setSelectedTravellerTypes([]);
       setValue("travellerTypes", []);
     }
   };
 
+  const handleExtraServices = (serviceId, isChecked) => {
+    setServicesIds(prev =>
+      isChecked ? [...new Set([...prev, serviceId])] : prev.filter(id => id !== serviceId)
+    );
+  };
+
+  /** -------- Submit (PATCH edit) -------- */
+  const onSubmit = async (data) => {
+    // media minimums are relaxed in edit; keep only caps via dropzone
+
+    const form = new FormData();
+
+    // primitives
+    form.append("name", data.name ?? "");
+    form.append("description", data.description ?? "");
+    if (data.package_category) form.append("package_category", data.package_category);
+    if (data.price != null && data.price !== "") form.append("price", String(data.price));
+    if (data.duration) form.append("duration", String(data.duration));
+    if (data.duration_type) form.append("duration_type", data.duration_type);
+    if (data.min_capacity) form.append("min_capacity", String(data.min_capacity));
+    if (data.max_capacity) form.append("max_capacity", String(data.max_capacity));
+    if (data.type) form.append("type", data.type);
+    if (data.cancellation_policy_id) form.append("cancellation_policy_id", data.cancellation_policy_id);
+
+    // relations
+    form.append("destinations", JSON.stringify(selectedDestinations));         // [{id}]
+    form.append("languages", JSON.stringify(selectedLanguages));               // [{id}]
+    form.append("traveller_types", JSON.stringify(selectedTravellerTypes));    // [{id}]
+    form.append("extra_services", JSON.stringify(serviceIds.map(id => ({ id })))); // [{id}]
+
+    // tags
+    const inc = (includedPackages || []).map(i => ({ id: i.value }));
+    const exc = (excludedPackages || []).map(i => ({ id: i.value }));
+    form.append("included_packages", JSON.stringify(inc));
+    form.append("excluded_packages", JSON.stringify(exc));
+
+    // package media
+    const existingPackageImages = [];
+    images.forEach(item => {
+      if (item.file) {
+        form.append("package_files", item.file); // new uploads
+      } else if (item.id) {
+        existingPackageImages.push({ id: item.id }); // keep existing by id
+      }
+    });
+    form.append("package_images", JSON.stringify(existingPackageImages));
+
+    // trip plans: files + existing refs
+    const trip_plans_images_json = [];
+    (tourPlan || []).forEach(plan => {
+      (plan.images || []).forEach(img => {
+        // img may be File, {file}, or existing row with id
+        if (img instanceof File || img?.file instanceof File) {
+          form.append("trip_plans_images", img.file ? img.file : img);
+        } else if (img?.id) {
+          trip_plans_images_json.push({ id: img.id });
+        } else {
+          // fallback for objects carrying urls only
+          trip_plans_images_json.push(img);
+        }
+      });
+    });
+    form.append("trip_plans_images", JSON.stringify(trip_plans_images_json));
+    form.append("trip_plans", JSON.stringify(tourPlan));
+
+    try {
+      setLoading(true);
+      toast.info("Updating package...");
+      const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package/${editId}`;
+      const res = await axiosClient.patch(url, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (res.data?.success) {
+        toast.success("Package updated successfully!");
+      } else {
+        toast.error(res.data?.message || "Update failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || "Error updating package");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /** static gallery */
+  const imageGalleries = useMemo(() => ([
+    { image: image1 }, { image: image2 }, { image: image3 }, { image: image4 },
+  ]), []);
+
   return (
     <div className="flex flex-col gap-4">
       <h3 className="text-2xl font-semibold text-[#080613]">
         {editId ? "Edit" : "Add New"} Travel Package
       </h3>
-      <form onSubmit={handleSubmit(onSubmit)} className="">
+
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="bg-white min-h-screen pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4">
           <div className="md:grid md:grid-cols-3 gap-8">
-            <div className="flex flex-col gap-8 col-span-2 ">
-              <h3 className="text-2xl font-semibold text-[#080613]">
-                Package Details
-              </h3>
-              {/* Package Name */}
+            {/* LEFT */}
+            <div className="flex flex-col gap-8 col-span-2">
+              <h3 className="text-2xl font-semibold text-[#080613]">Package Details</h3>
+
+              {/* name */}
               <div>
-                <label className="block text-gray-500 text-base font-medium mb-2">
-                  Package Title
-                </label>
+                <label className="block text-gray-500 text-base font-medium mb-2">Package Title</label>
                 <input
                   type="text"
                   placeholder="Enter your package title"
-                  {...register("name", {
-                    required: "Package name is required",
-                  })}
+                  {...register("name", { required: "Package name is required" })}
                   className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  aria-invalid={!!errors.name}
                 />
-                {errors.name && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.name.message}
-                  </p>
-                )}
+                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
               </div>
 
-              {/* Package Description */}
+              {/* description */}
               <div>
-                <label className="block text-gray-500 text-base font-medium mb-2">
-                  Package Description
-                </label>
+                <label className="block text-gray-500 text-base font-medium mb-2">Package Description</label>
                 <textarea
                   placeholder="Enter package description"
-                  {...register("description", {
-                    required: "Description is required",
-                  })}
+                  {...register("description", { required: "Description is required" })}
                   className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  aria-invalid={!!errors.description}
                 />
-                {errors.description && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.description.message}
-                  </p>
-                )}
+                {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
               </div>
 
-              {/* Image Upload Section */}
+              {/* upload */}
               <div className="w-full">
-                <h2 className="text-base font-medium text-gray-500 mb-2">
-                  Upload Images
-                </h2>
+                <h2 className="text-base font-medium text-gray-500 mb-2">Upload Images</h2>
                 <div
-                  {...imageDropzone.getRootProps()}
-                  className={`border border-dashed flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${
-                    isDragging
-                      ? "bg-purple-900/50 border-purple-600"
-                      : "border-gray-200"
-                  }`}
+                  {...getRootProps()}
+                  className={`border border-dashed flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${isDragging ? "bg-purple-900/5 border-purple-600" : "border-gray-200"}`}
                 >
-                  <img
-                    src={uploadIcon}
-                    className="bg-[#EB5B2A] p-[10px] rounded-full mb-[6px]"
-                    alt=""
-                  />
-                  <input {...imageDropzone.getInputProps()} />
-                  <p className="text-xs md:text-base text-black rounded-full">
-                    Drag & Drop or{" "}
-                    <span className="text-[#EB5B2A]">Choose File</span> to
-                    upload
+                  <img src={uploadIcon} className="bg-[#EB5B2A] p-[10px] rounded-full mb-[6px]" alt="" />
+                  <input {...getInputProps()} aria-label="Upload images or videos" />
+                  <p className="text-xs md:text-base text-black">
+                    Drag & Drop or <span className="text-[#EB5B2A]">Choose File</span> to upload
                   </p>
                   <p className="mt-1 text-xs md:text-base text-gray-400 text-center">
-                    Supported formats : jpeg, png, mp4, avi, mov
+                    Supported: jpeg, png, webp, mp4, avi, mov
                   </p>
                 </div>
-                <div className="mt-4 flex flex-wrap gap-4 justify-start items-start">
+
+                {/* thumbs */}
+                <div className="mt-4 flex flex-wrap gap-4">
                   {images.map((file, index) => (
-                    <div key={index} className="relative">
+                    <div key={file.id ?? index} className="relative">
                       {file.type === "video" || file?.video_url ? (
                         <div
                           className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer"
-                          onClick={() =>
-                            window.open(
-                              file.video_url || URL.createObjectURL(file.file),
-                              "_blank"
-                            )
-                          }
+                          onClick={() => window.open(file.video_url || URL.createObjectURL(file.file), "_blank")}
+                          title="Open video"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-8 w-8 text-gray-500"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                              clipRule="evenodd"
-                            />
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                           </svg>
                         </div>
                       ) : (
                         <img
                           src={file.preview || file?.file_url}
-                          alt={file.preview || file?.fileurl}
+                          alt="preview"
                           className="w-16 h-16 object-cover rounded-lg cursor-pointer"
-                          onClick={() =>
-                            window.open(
-                              file.preview || file?.file_url,
-                              "_blank"
-                            )
-                          }
+                          onClick={() => window.open(file.preview || file?.file_url, "_blank")}
                         />
                       )}
                       <button
                         type="button"
                         className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
                         onClick={() => handleDeleteImage(index)}
+                        aria-label="Remove media"
                       >
                         &times;
                       </button>
@@ -624,40 +482,35 @@ const EditPackage = () => {
                 </div>
               </div>
 
-              {/* Included Packages */}
+              {/* tags */}
               <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
-                <label className="block text-gray-500 text-base font-medium mb-2">
-                  Included Package
-                </label>
+                <label className="block text-gray-500 text-base font-medium mb-2">Included Package</label>
                 <Select
-                  options={tags} // Tags are now in { value: id, label: name } format
+                  options={tags}
                   isMulti
-                  value={includedPackages} // This will be an array of objects in { value, label } format
-                  onChange={handleIncludedPackagesChange}
+                  value={includedPackages}
+                  onChange={setIncludedPackages}
                   placeholder="Select included items"
                   className="react-select-container"
                   classNamePrefix="react-select"
                 />
               </div>
 
-              {/* Excluded Packages */}
               <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
-                <label className="block text-gray-500 text-base font-medium mb-2">
-                  Excluded Package
-                </label>
+                <label className="block text-gray-500 text-base font-medium mb-2">Excluded Package</label>
                 <Select
-                  options={tags} // Tags are now in { value: id, label: name } format
+                  options={tags}
                   isMulti
-                  value={excludedPackages} // This will be an array of objects in { value, label } format
-                  onChange={handleExcludedPackagesChange}
+                  value={excludedPackages}
+                  onChange={setExcludedPackages}
                   placeholder="Select excluded items"
                   className="react-select-container"
                   classNamePrefix="react-select"
                 />
               </div>
 
-              {/* <div className="flex flex-col md:flex-row justify-between items-end gap-4"> */}
-              <div className="flex flex-col md:flex-row justify-center  md:items-end gap-4 h-full">
+              {/* actions (left) */}
+              <div className="flex flex-col md:flex-row justify-center md:items-end gap-4 h-full">
                 <Link
                   to="/dashboard/packages"
                   className="border border-[#061D35] px-8 xl:px-20 py-3 rounded-full text-base font-normal text-center text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
@@ -667,72 +520,51 @@ const EditPackage = () => {
                 <button
                   type="submit"
                   className="border border-[#061D35] px-8 xl:px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
+                  disabled={loading}
                 >
-                  {loading && editId
-                    ? "Updating..."
-                    : loading
-                    ? "Creating..."
-                    : `${editId ? "Update" : "Add New"} Package`}
+                  {loading ? (editId ? "Updating..." : "Creating...") : (editId ? "Update Package" : "Add New Package")}
                 </button>
               </div>
-              {/* <Link to={`/dashboard/edit-package/${packageName}/tour-plan/${editId}`} className="border border-[#061D35] px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]">
-                    Edit Trip Plans
-                </Link> */}
-              {/* </div> */}
             </div>
+
+            {/* RIGHT */}
             <div className="p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0">
-              <div className="flex flex-col gap-4 col-span-2">
+              <div className="flex flex-col gap-4">
+                {/* type */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Package Type
-                  </label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Package Type</label>
                   <select
-                    placeholder="Select Package Type"
                     {...register("type", { required: "Type is required" })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     value={packageType}
                     onChange={(e) => setPackageType(e.target.value)}
+                    aria-invalid={!!errors.type}
                   >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select Package Type
-                    </option>
+                    <option value="">Select Package Type</option>
                     <option value="tour">Tour</option>
                     <option value="cruise">Cruise</option>
                     <option value="package">Package</option>
                   </select>
-                  {errors.type && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.type.message}
-                    </p>
-                  )}
+                  {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type.message}</p>}
                 </div>
+
+                {/* category */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Package/Tour Category
-                  </label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Package/Tour Category</label>
                   <select
-                    type="text"
-                    placeholder="Select a package"
-                    {...register("package_category", {
-                      required: "Package/Tour category is required",
-                    })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    {...register("package_category", { required: "Package/Tour category is required" })}
+                    className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    aria-invalid={!!errors.package_category}
                   >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select a package
-                    </option>
-                    {categories.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option> // Ensure a return for each <option>
+                    <option value="">Select a category</option>
+                    {categoryOptions.map(cat => (
+                      <option key={cat.value} value={cat.value}>{cat.label}</option>
                     ))}
                   </select>
-                  {errors.package_category && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.package_category.message}
-                    </p>
-                  )}
+                  {errors.package_category && <p className="text-red-500 text-xs mt-1">{errors.package_category.message}</p>}
                 </div>
+
+                {/* destinations */}
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Destination{packageType === "package" ? "s" : ""}
@@ -740,12 +572,8 @@ const EditPackage = () => {
                   {packageType === "package" ? (
                     <Select
                       isMulti
-                      options={destinations}
-                      value={destinations.filter((option) =>
-                        selectedDestinations.some(
-                          (dest) => dest.id === option.value
-                        )
-                      )}
+                      options={destinationOptions}
+                      value={getSelectedOptions(destinationOptions, selectedDestinations)}
                       onChange={handleDestinationChange}
                       placeholder="Select destinations"
                       className="react-select-container"
@@ -753,235 +581,141 @@ const EditPackage = () => {
                     />
                   ) : (
                     <Select
-                      options={destinations}
-                      value={destinations.find(
-                        (option) => selectedDestinations[0]?.id === option.value
-                      )}
+                      options={destinationOptions}
+                      value={destinationOptions.find(o => selectedDestinations[0]?.id === o.value) || null}
                       onChange={handleDestinationChange}
                       placeholder="Select a destination"
                       className="react-select-container"
                       classNamePrefix="react-select"
                     />
                   )}
-                  {errors.destinations && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.destinations.message}
-                    </p>
-                  )}
+                  {errors.destinations && <p className="text-red-500 text-xs mt-1">{errors.destinations.message}</p>}
                 </div>
+
+                {/* traveller types */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Traveller Type
-                  </label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Traveller Type</label>
                   <Select
                     isMulti
-                    options={travellerTypes?.map((type) => ({
-                      value: type.id,
-                      label: type.type,
-                    }))}
-                    value={travellerTypes
-                      ?.filter((type) =>
-                        selectedTravellerTypes?.some(
-                          (sel) => sel.id === type.id
-                        )
-                      )
-                      .map((type) => ({
-                        value: type.id,
-                        label: type.type,
-                      }))}
+                    options={travellerTypeOptions}
+                    value={getSelectedOptions(travellerTypeOptions, selectedTravellerTypes)}
                     onChange={handleTravellerTypesChange}
                     placeholder="Select traveller types"
                     className="react-select-container"
                     classNamePrefix="react-select"
                   />
                 </div>
+
+                {/* price */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Package Price ($)
-                  </label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Package Price ($)</label>
                   <input
                     type="number"
                     placeholder="Start Price :"
-                    {...register("price", { required: "Price is required" })}
+                    {...register("price", { required: "Price is required", min: { value: 0, message: "Must be >= 0" }, valueAsNumber: true })}
                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    aria-invalid={!!errors.price}
                   />
-                  {errors.price && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.price.message}
-                    </p>
-                  )}
+                  {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
                 </div>
+
+                {/* duration + type */}
                 <div className="flex flex-col 2xl:flex-row gap-4">
                   <div>
                     <label className="block text-gray-500 text-base font-medium mb-4">
-                      Package Duration{" "}
-                      <span className="text-xs">(Days/Hours)</span>
+                      Package Duration <span className="text-xs">(Days/Hours)</span>
                     </label>
                     <input
                       type="number"
                       placeholder="Write duration"
-                      {...register("duration", {
-                        required: "Package duration is required",
-                      })}
-                      className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                      {...register("duration", { required: "Package duration is required" })}
+                      className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                      aria-invalid={!!errors.duration}
+                      min={1}
                     />
-                    {errors.duration && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.duration.message}
-                      </p>
-                    )}
+                    {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration.message}</p>}
                   </div>
                   <div>
-                    <label className="block text-gray-500 text-base font-medium mb-4">
-                      Duration Type
-                    </label>
+                    <label className="block text-gray-500 text-base font-medium mb-4">Duration Type</label>
                     <select
-                      placeholder="Select Package Type"
-                      {...register("duration_type", {
-                        required: "Duration Type is required",
-                      })}
-                      className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                      {...register("duration_type", { required: "Duration Type is required" })}
+                      className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                      aria-invalid={!!errors.duration_type}
                     >
-                      <option value="" className="text-base text-[#C9C9C9]">
-                        Select Duration Type
-                      </option>
+                      <option value="">Select Duration Type</option>
                       <option value="days">Days</option>
                       <option value="hours">Hours</option>
                     </select>
-                    {errors.duration_type && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.duration_type.message}
-                      </p>
-                    )}
+                    {errors.duration_type && <p className="text-red-500 text-xs mt-1">{errors.duration_type.message}</p>}
                   </div>
                 </div>
-                <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Min. Capacity
-                  </label>
+
+                {/* min/max capacity */}
+                {/* <div>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Min. Capacity</label>
                   <select
-                    placeholder="Select min capacity"
-                    {...register("min_capacity", {
-                      required: "Min. capacity is required",
-                    })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    {...register("min_capacity", { required: "Min. capacity is required" })}
+                    className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    aria-invalid={!!errors.min_capacity}
                   >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select min. capacity
-                    </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
+                    <option value="">Select min. capacity</option>
+                    {[1,2,3,4,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
-                  {errors.min_capacity && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.min_capacity.message}
-                    </p>
-                  )}
+                  {errors.min_capacity && <p className="text-red-500 text-xs mt-1">{errors.min_capacity.message}</p>}
                 </div>
+
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Max. Capacity
-                  </label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Max. Capacity</label>
                   <select
-                    placeholder="Select max. capacity"
-                    {...register("max_capacity", {
-                      required: "Max. capacity is required",
-                    })}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    {...register("max_capacity", { required: "Max. capacity is required" })}
+                    className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    aria-invalid={!!errors.max_capacity}
                   >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select max. capacity
-                    </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
+                    <option value="">Select max. capacity</option>
+                    {[1,2,3,4,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
                   </select>
-                  {errors.max_capacity && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.max_capacity.message}
-                    </p>
-                  )}
-                </div>
+                  {errors.max_capacity && <p className="text-red-500 text-xs mt-1">{errors.max_capacity.message}</p>}
+                </div> */}
+
+                {/* policy */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Cancellation Policy
-                  </label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Cancellation Policy</label>
                   <select
-                    type="text"
-                    placeholder="Enter cancellation policy"
                     {...register("cancellation_policy_id")}
-                    className="text-base text-[#C9C9C9] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                    // defaultChecked={selectedPolicy ? selectedPolicy : ''}
+                    className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                   >
-                    <option value="" className="text-base text-[#C9C9C9]">
-                      Select a policy
-                    </option>
-                    {policies.map((cat) => (
-                      <option key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </option> // Ensure a return for each <option>
+                    <option value="">Select a policy</option>
+                    {policyOptions.map(p => (
+                      <option key={p.value} value={p.value}>{p.label}</option>
                     ))}
                   </select>
-                  {/* {errors.cancelation_policy && (
-                                        <p className="text-red-500 text-xs mt-1">{errors.cancelation_policy.message}</p>
-                                    )} */}
                 </div>
+
+                {/* extra services */}
                 <div>
-                  <ul class="flex flex-col gap-2 max-w-full mx-auto text-base text-[#C9C9C9] w-full p-4 rounded-md border border-gray-200 bg-white">
+                  <ul className="flex flex-col gap-2 max-w-full mx-auto text-base w-full p-4 rounded-md border border-gray-200 bg-white">
                     <li>
-                      <details class="group">
-                        <summary class="flex items-center justify-between gap-2 font-medium marker:content-none hover:cursor-pointer">
-                          <span class="flex gap-2 text-gray-500 text-base font-medium">
-                            Extra Service
-                          </span>
-                          <svg
-                            class="w-4 h-4 text-gray-500 transition group-open:rotate-90"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="currentColor"
-                            viewBox="0 0 16 16"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
-                            ></path>
+                      <details className="group">
+                        <summary className="flex items-center justify-between gap-2 font-medium hover:cursor-pointer">
+                          <span className="flex gap-2 text-gray-500 text-base font-medium">Extra Service</span>
+                          <svg className="w-4 h-4 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
                           </svg>
                         </summary>
-                        <article class="">
-                          <ul class="flex flex-col gap-4 mt-4">
-                            {extraServices?.map((service) => (
-                              <li class="flex gap-2" key={service.id}>
+                        <article>
+                          <ul className="flex flex-col gap-3 mt-4">
+                            {extraServices?.map(service => (
+                              <li className="flex gap-2 items-center" key={service.id}>
                                 <input
                                   type="checkbox"
-                                  value={service.id}
-                                  checked={serviceIds.some(
-                                    (s) => s.id === service?.id
-                                  )}
-                                  onClick={(e) =>
-                                    handleExtraServices(
-                                      service.id,
-                                      e.target.checked
-                                    )
-                                  }
-                                  className="w-4 text-[#49556D]"
+                                  checked={serviceIds.includes(service.id)}
+                                  onChange={(e) => handleExtraServices(service.id, e.target.checked)}
+                                  className="w-4 h-4"
+                                  id={`svc-${service.id}`}
                                 />
-                                <p className="text-base text-[#49556D]">
+                                <label htmlFor={`svc-${service.id}`} className="text-base text-[#49556D]">
                                   {service.name}
-                                </p>
+                                </label>
                               </li>
                             ))}
                           </ul>
@@ -990,45 +724,28 @@ const EditPackage = () => {
                     </li>
                   </ul>
                 </div>
+
+                {/* language */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Language
-                  </label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Language</label>
                   <Select
                     isMulti
-                    options={languages.map((lang) => ({
-                      value: lang.id,
-                      label: lang.name,
-                    }))}
-                    value={languages
-                      .filter((lang) =>
-                        selectedLanguages.some((sel) => sel.id === lang.id)
-                      )
-                      .map((lang) => ({
-                        value: lang.id,
-                        label: lang.name,
-                      }))}
+                    options={languageOptions}
+                    value={getSelectedOptions(languageOptions, selectedLanguages)}
                     onChange={handleLanguageChange}
                     placeholder="Select language"
                     className="react-select-container"
                     classNamePrefix="react-select"
                   />
-                  {/* {errors.language && (
-                          <p className="text-red-500 text-xs mt-1">{errors.language.message}</p>
-                      )} */}
                 </div>
+
+                {/* static gallery */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Image Gallery
-                  </label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">Image Gallery</label>
                   <div className="grid grid-cols-2 gap-3">
-                    {imageGalleries.map((gallery, index) => (
-                      <div key={index}>
-                        <img
-                          src={gallery.image}
-                          alt=""
-                          className="w-full h-[120px] rounded-lg object-cover"
-                        />
+                    {imageGalleries.map((g, i) => (
+                      <div key={i}>
+                        <img src={g.image} alt="" className="w-full h-[120px] rounded-lg object-cover" />
                       </div>
                     ))}
                   </div>
@@ -1036,6 +753,7 @@ const EditPackage = () => {
               </div>
             </div>
           </div>
+
           {/* Tour Plan Section */}
           <div className="flex flex-col gap-4 mt-4">
             <h3 className="text-2xl font-semibold text-[#080613]">Tour Plan</h3>
