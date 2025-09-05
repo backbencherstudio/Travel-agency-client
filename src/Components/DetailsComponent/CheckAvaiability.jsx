@@ -17,7 +17,7 @@ export default function CheckAvailability({handleCheckAvailability}) {
                 </div>
                 <div className="flex flex-col gap-[30px] w-full">
                     <div className="text-center flex flex-col gap-[10px]">
-                        <h3 className="text-[18px] font-medium text-[#0F1416] text-nowrap">Sorry, this date is sold out for 5 travelers</h3>
+                        <h3 className="text-[18px] font-medium text-[#0F1416] text-wrap">Sorry, No availability found for the selected date</h3>
                         <p className="text-[16px] text-[#475467] font-medium">We're sorry: this package is currently unavailable for booking. Please check back later or explore other options.</p>
                     </div>
                     <Link to="/" onClick={handleCheckAvailability}>

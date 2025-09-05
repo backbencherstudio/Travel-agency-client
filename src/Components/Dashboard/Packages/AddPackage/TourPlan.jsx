@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { FaPlus } from "react-icons/fa";
 import uploadIcon from "../../../../assets/dashboard/upload-icon.svg";
@@ -139,6 +139,10 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
     });
   };
 
+  useEffect(()=>{
+    console.log("Updated plan : ",tourPlan);
+  },[tourPlan])
+
   return (
     <div>
       <div className="px-4 py-3 bg-[#fffcfb] border border-[#DFDFDF] rounded-lg">
@@ -175,7 +179,7 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                 
                 <div>
                   <label className="block text-[#4A4C56] text-base font-medium mb-2">
-                    Title{planIndex+1}
+                    Title
                   </label>
                   <input
                     type="text"
@@ -230,7 +234,11 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
             <div className="px-4">
               <button
                 type="button"
-                onClick={() => addPlan(dayIndex)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addPlan(dayIndex);
+                }}
+
                 className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded hover:bg-[#d14a20] transition-colors"
               >
                 <FaPlus className="w-3 h-3" /> Add Another Plan

@@ -454,7 +454,7 @@ const Navbar = () => {
                 {[
                   { name: 'Home', to: '/' },
                   { name: 'Tours', to: '/tours' },
-                  { name: 'Cruises', to: '/cruises' },
+                  // { name: 'Cruises', to: '/cruises' },
                   { name: 'Packages', to: '/packages' },
                   { name: 'Bookings', to: '/booking-history' },
                   // { name: 'Reservations', to: '/reservations' },

@@ -6,18 +6,20 @@ import calender from "../../assets/img/tour-details/calender.svg";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../Context/AuthProvider/AuthProvider";
-import { createCheckout } from "../../Apis/clientApi/ClientBookApi";
+import { createCheckout,checkAvailability } from "../../Apis/clientApi/ClientBookApi";
 import Loading from "../../Shared/Loading";
 import TourDatePicker from "./TourDatePicker";
 import ReservetionConfirmation from "./ReservetaionConfirmation";
 import FreeCancellation from "./FreeCancellation";
+import {datePickerIcon,avatarIcon} from '../../../public/Icons'
 const BookCard = ({
   details,
   renderStars,
   handleCheckAvailability,
   booking,
   cancelDesc,
-  bookNowPayLaterDesc
+  bookNowPayLaterDesc,
+  handleBooking
 }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -32,7 +34,7 @@ const BookCard = ({
   const [adultTravelers, setAdultTravelers] = useState(1);
   const [childTravelers, setChildTravelers] = useState(0);
   const [infantTravelers, setInfantTravelers] = useState(0);
-  const [totalTravelers, setTotalTravelers] = useState(1);
+  const [totalTravelers, setTotalTravelers] = useState(0);
   const [showTravelerMenu, setShowTravelerMenu] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [numberOfPeople, setNumberOfPeople] = useState("Number of people");
@@ -106,24 +108,22 @@ const BookCard = ({
       return;
     }
 
-    if (!checkInCheckOutDate || !totalTravelers) {
-      toast.error("Please select both start and end dates.");
+    if (!checkInCheckOutDate || totalTravelers <= 0) {
+      toast.error("Please select both check-in date and number of travellers.");
       return;
     }
 
     const bookingData = {
       package_id: details?.id,
-      start_date: checkInCheckOutDate[0].toLocaleDateString("en-US", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      }),
-      end_date: checkInCheckOutDate[0].toLocaleDateString("en-US", {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-      }),
-      totalTravelers: totalTravelers,
+      selected_date: checkInCheckOutDate[0],
+      // end_date: checkInCheckOutDate[0].toLocaleDateString("en-US", {
+      //   month: "short",
+      //   day: "2-digit",
+      //   year: "numeric",
+      // }),
+      adults_count: adultTravelers,
+      children_count: childTravelers,
+      infants_count: infantTravelers,
     };
 
     try {
@@ -132,11 +132,11 @@ const BookCard = ({
 
       setTimeout(async () => {
         try {
-          const response = await createCheckout(bookingData);
-          if (response.errors) {
-            toast.error(response.message || "Failed to complete booking.");
-          } else {
+          const response = await checkAvailability(bookingData);
+          if (!response.success) {
+            handleBooking(checkInCheckOutDate[0]);
             // navigate(`/booking/${response?.data?.id}`);
+          } else {
             handleCheckAvailability();
           }
         } catch (error) {
@@ -179,6 +179,7 @@ const BookCard = ({
     setNumberOfPeople(`${totalTravelers} Travelers`);
     setShowTravelerMenu((prev) => !prev);
     setOpenDatePicker(false);
+    setTotalTravelers(1);
   };
 
   const handleAdultTravelersAdding = () => {
@@ -285,42 +286,7 @@ const BookCard = ({
                   className="text-2xl cursor-pointer ml-2 w-fit"
                   onClick={handleOpenDatePicker}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="25"
-                    height="24"
-                    viewBox="0 0 25 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M3.25 9H21.25"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M8.25 2L8.25 5"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M16.25 2V5"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
-                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
-                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
-                  </svg>
+                  {datePickerIcon}
                 </div>
               )}
               <div>
@@ -339,42 +305,7 @@ const BookCard = ({
               </div>
               {booking && (
                 <div className="text-2xl ml-2 w-fit">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="25"
-                    height="24"
-                    viewBox="0 0 25 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M3.25 9H21.25"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M8.25 2L8.25 5"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M16.25 2V5"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
-                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
-                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
-                  </svg>
+                  {datePickerIcon}
                 </div>
               )}
               
@@ -395,42 +326,7 @@ const BookCard = ({
                   className="text-2xl cursor-pointer ml-2 w-fit"
                   onClick={handleOpenDatePicker}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="25"
-                    height="24"
-                    viewBox="0 0 25 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M3.25 9H21.25"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M8.25 2L8.25 5"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M16.25 2V5"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
-                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
-                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
-                  </svg>
+                  {datePickerIcon}
                 </div>
               )}
               <div>
@@ -449,42 +345,7 @@ const BookCard = ({
               </div>
               {booking && (
                 <div className="text-2xl ml-2 w-fit">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="25"
-                    height="24"
-                    viewBox="0 0 25 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M3.25 7.5C3.25 5.29086 5.04086 3.5 7.25 3.5H17.25C19.4591 3.5 21.25 5.29086 21.25 7.5V18C21.25 20.2091 19.4591 22 17.25 22H7.25C5.04086 22 3.25 20.2091 3.25 18V7.5Z"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                    />
-                    <path
-                      d="M3.25 9H21.25"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M8.25 2L8.25 5"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M16.25 2V5"
-                      stroke="#0F1416"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <circle cx="12.25" cy="15" r="1" fill="#0F1416" />
-                    <circle cx="16.25" cy="15" r="1" fill="#0F1416" />
-                    <circle cx="8.25" cy="15" r="1" fill="#0F1416" />
-                  </svg>
+                  {datePickerIcon}
                 </div>
               )}
             </div>}
@@ -497,26 +358,7 @@ const BookCard = ({
                 onClick={toggleTravelerMenu}
                 className="text-2xl cursor-pointer ml-2 w-fit"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="22"
-                  viewBox="0 0 20 22"
-                  fill="none"
-                >
-                  <path
-                    d="M4.82757 14.4816C3.4128 15.324 -0.296635 17.0441 1.96266 19.1966C3.06631 20.248 4.29549 21 5.84087 21H14.6591C16.2045 21 17.4337 20.248 18.5373 19.1966C20.7966 17.0441 17.0872 15.324 15.6724 14.4816C12.3548 12.5061 8.14519 12.5061 4.82757 14.4816Z"
-                    stroke="#1D1F2C"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M14.75 5.5C14.75 7.98528 12.7353 10 10.25 10C7.76472 10 5.75 7.98528 5.75 5.5C5.75 3.01472 7.76472 1 10.25 1C12.7353 1 14.75 3.01472 14.75 5.5Z"
-                    stroke="#1D1F2C"
-                    strokeWidth="1.5"
-                  />
-                </svg>
+                {avatarIcon}
               </div>
             )}
 
