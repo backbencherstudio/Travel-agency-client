@@ -1,5 +1,3 @@
-'use client'
-
 import { useState } from 'react'
 import GreenMark from '../../assets/user-dashboard/icons/GreenMark'
 import UpcomingIcon from '../../assets/user-dashboard/icons/UpcomingIcon'
