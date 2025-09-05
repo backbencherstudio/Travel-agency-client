@@ -149,9 +149,9 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
         {tourPlan?.map((dayPlan, dayIndex) => (
           <div key={dayIndex} className="flex flex-col gap-3 mb-6 p-4 bg-white rounded-lg border border-gray-200">
             <div className="flex justify-between items-center">
-              <h3 className="text-2xl font-medium text-[#4A4C56]">
+              {packageType === "package" && <h3 className="text-2xl font-medium text-[#4A4C56]">
                 Day {dayPlan.day}
-              </h3>
+              </h3>}
               {/* Delete Day Button */}
               {tourPlan.length > 1 && (
                 <button
@@ -249,7 +249,8 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
               {/* Upload Images */}
               <div className="w-full">
                 <h2 className="text-base font-medium text-[#4A4C56] mb-2">
-                  Upload Images for Day {dayPlan.day}
+                  Upload Images
+                  {packageType === "package" && <span> for Day {dayPlan.day}</span>}
                 </h2>
                 <ImageUploader
                   images={dayPlan.images}
@@ -261,13 +262,13 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
           </div>
         ))}
         
-        <button
+        {packageType === "package" && <button
           type="button"
           onClick={addDay}
           className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded hover:bg-[#d14a20] transition-colors mt-4"
         >
           <FaPlus className="w-3 h-3" /> Add Another Day
-        </button>
+        </button>}
       </div>
     </div>
   );

@@ -338,52 +338,97 @@ const AddPackage = () => {
 
     // Trip plan: append files + JSON
     // Attach *file* images to `trip_plans_images` and keep non-files in `trip_plans_images_json`
-    const trip_plans_images_json = [];
-    (tourPlan || []).forEach((plan) => {
-      (plan.images || []).forEach((img) => {
-        if (img instanceof File || img?.file instanceof File) {
-          form.append("trip_plans_images", img.file ? img.file : img);
-        } else {
-          // Likely existing object with image_url or id
-          trip_plans_images_json.push(img);
-        }
-      });
-    });
-    form.append("trip_plans_images", JSON.stringify(trip_plans_images_json));
-    form.append("trip_plans", JSON.stringify(tourPlan));
+    // const trip_plans_images_json = [];
+    // (tourPlan || []).forEach((plan) => {
+    //   (plan.images || []).forEach((img) => {
+    //     if (img instanceof File || img?.file instanceof File) {
+    //       form.append("trip_plans_images", img.file ? img.file : img);
+    //     } else {
+    //       // Likely existing object with image_url or id
+    //       trip_plans_images_json.push(img);
+    //     }
+    //   });
+    // });
+    // form.append("trip_plans_images", JSON.stringify(trip_plans_images_json));
+    // form.append("trip_plans", JSON.stringify(tourPlan));
 
     // Debug (optional)
     // for (let p of form.entries()) console.log(p[0], p[1]);
+
+    for(let i=0;i < tourPlan.length;i++){
+      tourPlan[i]?.images?.forEach(tour=>{
+        form.append(`trip_plans_${i}_images`,tour)
+      })
+    }
+
+
+    const trip_plan = [];
+    for(let i=0 ; i<tourPlan.length ; i++){
+      const title = `Day ${i+1}`;
+      const details = tourPlan[i]?.tripPlan?.map(trip=>{
+        return{
+          title:trip.title,
+          description:trip.description,
+          time:trip.time,
+          note:trip.ticket
+        }
+      })
+      trip_plan.push({
+        title,
+        details
+      })
+    }
+
+    form.append("trip_plans",JSON.stringify(trip_plan));
+
+    const package_places = [];
+    package_places.push({
+      package_place:selectedMeetingPoint,
+      type:"meeting_point"
+    })
+
+    form.append("package_places",JSON.stringify(package_places));
+
+    const availability = availableDates.map(date=>{
+      return{
+        start_date:date.start,
+        end_date:date.end,
+      }
+    })
+
+
+    form.append("package_availability",availability);
+
 
     try {
       setLoading(true);
       toast.info("Creating package...");
 
       const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package`;
-      // const res = await axiosClient.post(url, form, {
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
+      const res = await axiosClient.post(url, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      // if (res.data?.success) {
-      //   toast.success("Package created successfully!");
-      //   // Optional: reset fields
-      //   // previews cleanup
-      //   previewsRef.current.forEach(url => URL.revokeObjectURL(url));
-      //   previewsRef.current.clear();
-      //   setImages([]);
-      //   setIncludedPackages([]);
-      //   setExcludedPackages([]);
-      //   setSelectedDestinations([]);
-      //   setSelectedLanguages([]);
-      //   setSelectedTravellerTypes([]);
-      //   setServicesIds([]);
-      //   setTourPlan([{ id: null, day: 1, title: "", description: "", images: [] }]);
-      //   resetField("name"); resetField("description"); resetField("price"); resetField("duration");
-      //   resetField("type"); resetField("duration_type"); resetField("package_category");
-      //   resetField("cancellation_policy_id");
-      // } else {
-      //   toast.error(res.data?.message || "Failed to create package");
-      // }
+      if (res.data?.success) {
+        toast.success("Package created successfully!");
+        // Optional: reset fields
+        // previews cleanup
+        previewsRef.current.forEach(url => URL.revokeObjectURL(url));
+        previewsRef.current.clear();
+        setImages([]);
+        setIncludedPackages([]);
+        setExcludedPackages([]);
+        setSelectedDestinations([]);
+        setSelectedLanguages([]);
+        setSelectedTravellerTypes([]);
+        setServicesIds([]);
+        setTourPlan([{ id: null, day: 1, title: "", description: "", images: [] }]);
+        resetField("name"); resetField("description"); resetField("price"); resetField("duration");
+        resetField("type"); resetField("duration_type"); resetField("package_category");
+        resetField("cancellation_policy_id");
+      } else {
+        toast.error(res.data?.message || "Failed to create package");
+      }
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || "Error creating package");
@@ -689,10 +734,9 @@ const AddPackage = () => {
                   value={selectedMeetingPoint}
                   onChange={(value) => {
                     setSelectedMeetingPoint(value.target.value);
-                    console.log("Meeting point : ", value.target.value);
                   }}
                 >
-                  {meetingPoints?.map((item) => (
+                  {meetingPoints?.filter(point => point.type === "Meeting Point").map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.name}
                     </option>
@@ -947,7 +991,7 @@ const AddPackage = () => {
                 </div>
 
                 {/* Static gallery */}
-                <div>
+                {/* <div>
                   <label className="block text-[#444] text-base font-medium mb-4">
                     Image Gallery
                   </label>
@@ -962,7 +1006,7 @@ const AddPackage = () => {
                       </div>
                     ))}
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
