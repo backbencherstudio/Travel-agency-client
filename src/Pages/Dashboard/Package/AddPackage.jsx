@@ -205,7 +205,7 @@ const AddPackage = () => {
   const tagOptions = useMemo(() => tags, [tags]);
   const categoryOptions = useMemo(() => categories, [categories]);
   const policyOptions = useMemo(() => policies, [policies]);
-  const [selectedMeetingPoint, setSelectedMeetingPoint] = useState("");
+  const [selectedMeetingPoint, setSelectedMeetingPoint] = useState("select");
   const languageOptions = useMemo(
     () => languages.map((l) => toOption(l.id, l.name)),
     [languages]
@@ -736,6 +736,7 @@ const AddPackage = () => {
                     setSelectedMeetingPoint(value.target.value);
                   }}
                 >
+                <option value="select">Select a meeting point</option>
                   {meetingPoints?.filter(point => point.type === "Meeting Point").map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.name}
