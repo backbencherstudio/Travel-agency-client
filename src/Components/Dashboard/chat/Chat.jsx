@@ -220,16 +220,14 @@ const Chat = () => {
     const token = localStorage.getItem("token");
 
     if (!socket && user?.id) {
-      // const newSocket = io(import.meta.env.VITE_API_BASE_URL, {
-      //   auth: { token },
-      //   reconnection: true,
-      //   reconnectionAttempts: 5,
-      //   reconnectionDelay: 1000,
-      //   timeout: 10000,
-      //   transports: ['websocket']
-      // });
-
-      // console.log("Sockate url ",import.meta.env.VITE_API_BASE_URL)
+      const newSocket = io(import.meta.env.VITE_API_BASE_URL_SOCKET, {
+        auth: { token },
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 10000,
+        transports: ['websocket']
+      });
 
       newSocket.on("connect", () => {
         console.log("Socket connected with user id:", user.id);
@@ -471,7 +469,7 @@ const Chat = () => {
           </div>
 
           {/* Messages Area */}
-          <div ref={messagesContainerRef} className="h-[73vh] p-4 lg:p-6 overflow-y-auto">
+          <div ref={messagesContainerRef} className="h-[70vh] p-4 lg:p-6 overflow-y-auto">
             {isLoadingMessages ? (
               <p className="text-center text-gray-500">Loading messages...</p>
             ) : messageData?.length > 0 ? (

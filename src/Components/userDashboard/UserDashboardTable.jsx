@@ -34,7 +34,6 @@ export default function UserDashboardTable() {
       {/* Table */}
       <div className="overflow-x-auto      ">
         <table className="w-full text-sm text-left">
-           
           <thead className="  text-[#475467] text-xs font-medium  bg-[#F9FAFB] border-b border-[#EAECF0]">
             <tr>
               <th className="px-6 py-3 ">Invoice</th>

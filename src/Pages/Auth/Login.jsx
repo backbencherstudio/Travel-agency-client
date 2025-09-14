@@ -46,7 +46,7 @@ const Login = () => {
         setIsLoading(false)
         if (role === 'user') {
           navigate('/get-started')
-        } else {
+        } else if(role === 'admin') {
           navigate('/dashboard')
         }
       }, 500)

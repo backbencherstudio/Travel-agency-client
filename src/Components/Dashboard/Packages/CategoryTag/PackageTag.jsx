@@ -141,15 +141,15 @@ const PackageTag = () => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>ID</TableCell>
+                                            <TableCell>SL</TableCell>
                                             <TableCell>Name</TableCell>
                                             <TableCell>Actions</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {data?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((tag) => (
-                                            <TableRow key={tag.id}>
-                                                <TableCell>{tag.id}</TableCell>
+                                        {data?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((tag,index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>{index+1}</TableCell>
                                                 <TableCell>{tag.name}</TableCell>
                                                 <TableCell>
                                                     <button type='button'

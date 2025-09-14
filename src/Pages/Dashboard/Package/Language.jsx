@@ -244,7 +244,7 @@ const Language = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>ID</TableCell>
+                      <TableCell>SL</TableCell>
                       <TableCell>Name</TableCell>
                       <TableCell>Code</TableCell>
                       <TableCell>Actions</TableCell>
@@ -256,9 +256,9 @@ const Language = () => {
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
                       )
-                      ?.map(language => (
+                      ?.map((language,index) => (
                         <TableRow key={language.id}>
-                          <TableCell>{language.id}</TableCell>
+                          <TableCell>{index + 1}</TableCell>
                           <TableCell>{language.name}</TableCell>
                           <TableCell>{language.code}</TableCell>
                           <TableCell>

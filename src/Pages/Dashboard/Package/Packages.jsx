@@ -57,7 +57,7 @@ const Packages = () => {
           <PackageTable
             tableType='package'
             title={'Travel Packages'}
-            data={data?.data}
+            data={data?.data?.filter(item=> item?.type?.toLowerCase() !== 'cruise')}
             setDateFilter={setTourDateFilter}
             dateFilter={tourDateFilter}
             columns={columns}
