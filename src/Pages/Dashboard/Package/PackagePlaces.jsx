@@ -463,6 +463,7 @@ export default function PackagePlaces() {
               <Table>
                 <TableHead>
                   <TableRow>
+                    <TableCell>SL</TableCell>
                     <TableCell>Name</TableCell>
                     <TableCell>Description</TableCell>
                     <TableCell>Type</TableCell>
@@ -476,8 +477,9 @@ export default function PackagePlaces() {
                 <TableBody>
                   {services
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((service) => (
+                    .map((service,index) => (
                       <TableRow key={service.id}>
+                        <TableCell>{index + 1}</TableCell>
                         <TableCell>{service.name}</TableCell>
                         <TableCell>{service.description}</TableCell>
                         <TableCell>

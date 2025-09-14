@@ -279,7 +279,7 @@ const PackageDestination = () => {
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>ID</TableCell>
+                                        <TableCell>SL</TableCell>
                                         <TableCell>Name</TableCell>
                                         <TableCell>Description</TableCell>
                                         <TableCell>Country</TableCell>
@@ -287,9 +287,9 @@ const PackageDestination = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {data?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((category) => (
+                                    {data?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)?.map((category,index) => (
                                         <TableRow key={category.id}>
-                                            <TableCell>{category.id}</TableCell>
+                                            <TableCell>{index+1}</TableCell>
                                             <TableCell>{category.name}</TableCell>
                                             <TableCell>{category.description}</TableCell>
                                             <TableCell>{category.country.name}</TableCell>

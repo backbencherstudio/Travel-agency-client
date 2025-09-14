@@ -175,7 +175,7 @@ const PackageDisAllowTraveller = () => {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>ID</TableCell>
+                      <TableCell>SL</TableCell>
                       <TableCell>Type</TableCell>
                       <TableCell>Actions</TableCell>
                     </TableRow>
@@ -186,9 +186,9 @@ const PackageDisAllowTraveller = () => {
                         page * rowsPerPage,
                         page * rowsPerPage + rowsPerPage
                       )
-                      ?.map(disallowTraveller => (
+                      ?.map((disallowTraveller,index) => (
                         <TableRow key={disallowTraveller.id}>
-                          <TableCell>{disallowTraveller.id}</TableCell>
+                          <TableCell>{index + 1}</TableCell>
                           <TableCell>{disallowTraveller.type}</TableCell>
                           <TableCell>
                             <button

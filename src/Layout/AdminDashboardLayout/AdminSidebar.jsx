@@ -133,7 +133,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
       ></div>
 
       <div
-        className={`w-[275px] fixed flex flex-col px-5 pt-4 bg-[#061d35] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/5%)]  transition-all ${showSidebar ? 'left-0' : '-left-[275px] lg:left-0'
+        className={`w-[285px] overflow-y-auto fixed flex flex-col px-5 pt-4 bg-[#061d35] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/5%)]  transition-all ${showSidebar ? 'left-0' : '-left-[275px] lg:left-0'
           }`}
       >
         <a href='/' className='w-full h-8 mt-3 flex items-center justify-center'>
@@ -269,7 +269,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 >
                   <span>Add Package</span>
                 </button>
-                {user?.type === 'admin' && (
+                {(user?.type === 'admin' || user?.type === 'vendor') && (
                   <button
                     onClick={() =>
                       handleNavigation(
@@ -299,7 +299,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 >
                   <span>Package Destinations & Policies</span>
                 </button>
-                {user?.type === 'admin' && (
+                {(user?.type === 'admin' || user?.type === 'vendor') && (
                   <>
                     <button
                       onClick={() =>

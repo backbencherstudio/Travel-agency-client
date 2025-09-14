@@ -49,6 +49,8 @@ const DashboardAnalysis = () => {
       destination: booking.booking_items?.[0]?.package?.name || "N/A",
       amount: `$${parseFloat(booking.total_amount || 0).toLocaleString()}`,
       status: booking.status?.charAt(0)?.toUpperCase() + booking.status?.slice(1) || "N/A",
+      avatar: booking?.user?.avatar,
+      package: booking?.booking_items?.[0]?.package?.name
     }));
   };
 

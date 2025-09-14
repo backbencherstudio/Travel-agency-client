@@ -6,6 +6,7 @@ import BookManageApis from '../../../Apis/BookManageApis'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import { Helmet } from 'react-helmet-async'
+import Loading from '~/Shared/Loading'
 
 const BookingRequestDetails = () => {
   const { id } = useParams()
@@ -21,26 +22,25 @@ const BookingRequestDetails = () => {
 
   useEffect(() => {
     if (data?.data?.status) {
+      setLoading(false);
       setSelectedStatus(data.data.status);
     }
   }, [data]);
 
-  console.log(data);
-
   const handleUpdateStatus = async (status) => {
+    setLoading(true);
     if (!status) return;
-    
     const res = await BookManageApis.update(id, { status })
-    console.log('res', res)
     if(res.success){
       toast.success(res.message);
-      // navigate(-1);
+      navigate(-1);
+      setLoading(false);
       refetch();
     }
   }
 
-  if (isLoading) {
-    return <div className='text-center mt-4'>Loading...</div>
+  if (loading) {
+    return <Loading />
   }
 
   if (!data) {
@@ -85,7 +85,7 @@ const BookingRequestDetails = () => {
             </p>
             <p className='text-gray-600 text-sm'>Package</p>
             <p className='font-medium text-[#111827] text-[14px]'>
-              {data?.data?.user?.phone || 'N/A'}
+              {data?.data?.booking_items?.[0]?.package?.name || 'N/A'}
             </p>
           </div>
         </div>

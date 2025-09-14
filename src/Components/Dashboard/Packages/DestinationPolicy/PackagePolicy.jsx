@@ -159,16 +159,16 @@ const PackagePolicy = () => {
                             <Table>
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>ID</TableCell>
+                                        <TableCell>SL</TableCell>
                                         <TableCell>Name</TableCell>
                                         <TableCell>Description</TableCell>
                                         <TableCell>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {data?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((category) => (
+                                    {data?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((category,index) => (
                                         <TableRow key={category.id}>
-                                            <TableCell>{category.id}</TableCell>
+                                            <TableCell>{index + 1}</TableCell>
                                             <TableCell>{category.policy}</TableCell>
                                             <TableCell>{category.description}</TableCell>
                                             <TableCell>

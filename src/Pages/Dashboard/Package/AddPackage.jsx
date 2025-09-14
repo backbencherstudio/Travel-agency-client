@@ -397,7 +397,7 @@ const AddPackage = () => {
     })
 
 
-    form.append("package_availability",availability);
+    form.append("package_availability",JSON.stringify(availability));
 
 
     try {
@@ -883,10 +883,7 @@ const AddPackage = () => {
                   <input
                     type="number"
                     placeholder="Price"
-                    {...register("price", {
-                      min: { value: 0, message: "Must be >= 0" },
-                      valueAsNumber: true,
-                    })}
+                    {...register("price",{require:true})}
                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     aria-invalid={!!errors.price}
                   />
