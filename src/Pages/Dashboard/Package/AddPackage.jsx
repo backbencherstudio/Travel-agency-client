@@ -56,7 +56,7 @@ const AddPackage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
-  const [packageType, setPackageType] = useState("tour");
+  const [packageType, setPackageType] = useState("");
   const [tags, setTags] = useState([]);
   const [categories, setCategories] = useState([]);
   const [policies, setPolicies] = useState([]);
@@ -205,7 +205,7 @@ const AddPackage = () => {
   const tagOptions = useMemo(() => tags, [tags]);
   const categoryOptions = useMemo(() => categories, [categories]);
   const policyOptions = useMemo(() => policies, [policies]);
-  const [selectedMeetingPoint, setSelectedMeetingPoint] = useState("select");
+  const [selectedMeetingPoint, setSelectedMeetingPoint] = useState("");
   const languageOptions = useMemo(
     () => languages.map((l) => toOption(l.id, l.name)),
     [languages]
@@ -737,7 +737,7 @@ const AddPackage = () => {
                   }}
                 >
                 <option value="select">Select a meeting point</option>
-                  {meetingPoints?.filter(point => point.type === "Meeting Point").map((item) => (
+                  {meetingPoints?.filter(point => point.type === "meetingPoint").map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.name}
                     </option>

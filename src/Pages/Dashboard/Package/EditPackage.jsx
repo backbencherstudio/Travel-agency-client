@@ -11,10 +11,11 @@ import axiosClient from "../../../axiosClient";
 import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import EditTourPlan from "../../../Components/Dashboard/Packages/EditPackage/EditTourPlan";
+import { UserServices } from "~/userServices/user.services";
 
 const toOption = (id, label) => ({ value: id, label });
 const getSelectedOptions = (options, selectedIds) =>
-  options.filter(o => selectedIds.some(s => s.id === o.value));
+  options.filter((o) => selectedIds.some((s) => s.id === o.value));
 
 const EditPackage = () => {
   const { id } = useParams();
@@ -44,9 +45,11 @@ const EditPackage = () => {
   const [includedPackages, setIncludedPackages] = useState([]);
   const [excludedPackages, setExcludedPackages] = useState([]);
   const [selectedDestinations, setSelectedDestinations] = useState([]); // [{id}]
-  const [selectedLanguages, setSelectedLanguages] = useState([]);       // [{id}]
+  const [selectedLanguages, setSelectedLanguages] = useState([]); // [{id}]
   const [selectedTravellerTypes, setSelectedTravellerTypes] = useState([]); // [{id}]
   const [serviceIds, setServicesIds] = useState([]); // number[] (IDs only)
+  const [selectedMeetingPoint, setSelectedMeetingPoint] = useState("");
+  const [meetingPoints, setMeetingPoints] = useState();
 
   // media + tour plan
   const [images, setImages] = useState([]); // mix of {id, file_url|video_url} or {file, preview, type}
@@ -56,6 +59,20 @@ const EditPackage = () => {
 
   const [loading, setLoading] = useState(false);
   const previewsRef = useRef(new Set());
+
+  const fetchMeetingPlace = async () => {
+    try {
+      console.clear();
+      const res = await UserServices.getAllPlaces();
+      setMeetingPoints(res.data);
+    } catch (error) {
+      console.error("Failed to fetch meeting places:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMeetingPlace();
+  }, []);
 
   /** -------- Fetch reference + edit data -------- */
   useEffect(() => {
@@ -79,16 +96,24 @@ const EditPackage = () => {
           axiosClient.get("api/admin/extra-service"),
           axiosClient.get("api/admin/language"),
           axiosClient.get("api/admin/traveller-type"),
-          editId ? axiosClient.get(`api/admin/package/${editId}`) : Promise.resolve({ data: { data: null } }),
+          editId
+            ? axiosClient.get(`api/admin/package/${editId}`)
+            : Promise.resolve({ data: { data: null } }),
         ]);
 
         if (!mounted) return;
 
         // options
-        setTags((resTag.data?.data || []).map(t => toOption(t.id, t.name)));
-        setCategories((resCategory.data?.data || []).map(c => toOption(c.id, c.name)));
-        setPolicies((resPolicies.data?.data || []).map(p => toOption(p.id, p.policy)));
-        setDestinations((resDestinations.data?.data || []).map(d => toOption(d.id, d.name)));
+        setTags((resTag.data?.data || []).map((t) => toOption(t.id, t.name)));
+        setCategories(
+          (resCategory.data?.data || []).map((c) => toOption(c.id, c.name))
+        );
+        setPolicies(
+          (resPolicies.data?.data || []).map((p) => toOption(p.id, p.policy))
+        );
+        setDestinations(
+          (resDestinations.data?.data || []).map((d) => toOption(d.id, d.name))
+        );
         setExtraServices(resServices.data?.data || []);
         setLanguages(resLanguages.data?.data || []);
         setTravellerTypes(resTravellerTypes.data?.data || []);
@@ -106,6 +131,8 @@ const EditPackage = () => {
           setValue("cancellation_policy_id", pkg.cancellation_policy?.id || "");
           setValue("type", pkg.type || "");
           setPackageType(pkg.type || "tour");
+          setSelectedMeetingPoint(pkg?.package_places?.[0]?.place?.id);
+          setValue('package_category',pkg?.package_categories?.[0]?.category.id)
 
           // categories (assuming single category id; if array needed, adapt)
           if (pkg.package_categories?.length) {
@@ -116,28 +143,36 @@ const EditPackage = () => {
 
           // destinations
           if (pkg.package_destinations?.length) {
-            const dest = pkg.package_destinations.map(d => ({ id: d.destination.id }));
+            const dest = pkg.package_destinations.map((d) => ({
+              id: d.destination.id,
+            }));
             setSelectedDestinations(dest);
             setValue("destinations", dest);
           }
 
           // languages
           if (pkg.package_languages?.length) {
-            const langs = pkg.package_languages.map(l => ({ id: l.language.id }));
+            const langs = pkg.package_languages.map((l) => ({
+              id: l.language.id,
+            }));
             setSelectedLanguages(langs);
             setValue("languages", langs);
           }
 
           // traveller types
           if (pkg.package_traveller_types?.length) {
-            const tts = pkg.package_traveller_types.map(t => ({ id: t.traveller_type.id }));
+            const tts = pkg.package_traveller_types.map((t) => ({
+              id: t.traveller_type.id,
+            }));
             setSelectedTravellerTypes(tts);
             setValue("travellerTypes", tts);
           }
 
           // services as IDs
           if (pkg.package_extra_services?.length) {
-            const svcIds = pkg.package_extra_services.map(s => s.extra_service?.id).filter(Boolean);
+            const svcIds = pkg.package_extra_services
+              .map((s) => s.extra_service?.id)
+              .filter(Boolean);
             setServicesIds(svcIds);
           }
 
@@ -150,9 +185,8 @@ const EditPackage = () => {
               pkg.package_trip_plans.map((plan, idx) => ({
                 id: plan.id,
                 day: idx + 1,
-                title: plan.title || "",
-                description: plan.description || "",
-                images: plan.package_trip_plan_images?.map(img => img) || [],
+                images: plan.package_trip_plan_images?.map((img) => img) || [],
+                tripPlan: plan?.package_trip_plan_details
               }))
             );
           }
@@ -161,13 +195,13 @@ const EditPackage = () => {
           if (pkg.package_tags?.length) {
             setIncludedPackages(
               pkg.package_tags
-                .filter(t => t.type === "included")
-                .map(t => toOption(t.tag.id, t.tag.name))
+                .filter((t) => t.type === "included")
+                .map((t) => toOption(t.tag.id, t.tag.name))
             );
             setExcludedPackages(
               pkg.package_tags
-                .filter(t => t.type === "excluded")
-                .map(t => toOption(t.tag.id, t.tag.name))
+                .filter((t) => t.type === "excluded")
+                .map((t) => toOption(t.tag.id, t.tag.name))
             );
           }
         }
@@ -179,20 +213,28 @@ const EditPackage = () => {
 
     return () => {
       mounted = false;
-      previewsRef.current.forEach(url => URL.revokeObjectURL(url));
+      previewsRef.current.forEach((url) => URL.revokeObjectURL(url));
       previewsRef.current.clear();
     };
   }, [editId, setValue]);
 
+  useEffect(()=>{
+    console.log("Selected : ",selectedMeetingPoint);
+  },[selectedMeetingPoint])
+
   /** -------- Dropzone -------- */
   const onImageDrop = (acceptedFiles) => {
     // current caps
-    const existingVideos = images.filter(i => i.type === "video" || i?.video_url).length;
-    const existingImages = images.filter(i => i.type !== "video" && !i?.video_url).length;
+    const existingVideos = images.filter(
+      (i) => i.type === "video" || i?.video_url
+    ).length;
+    const existingImages = images.filter(
+      (i) => i.type !== "video" && !i?.video_url
+    ).length;
 
     const videoFiles = [];
     const imageFiles = [];
-    acceptedFiles.forEach(file => {
+    acceptedFiles.forEach((file) => {
       if (file.type.startsWith("video/")) videoFiles.push(file);
       else imageFiles.push(file);
     });
@@ -206,13 +248,13 @@ const EditPackage = () => {
       return;
     }
 
-    const next = [...videoFiles, ...imageFiles].map(file => {
+    const next = [...videoFiles, ...imageFiles].map((file) => {
       const isVideo = file.type.startsWith("video/");
       const preview = isVideo ? null : URL.createObjectURL(file);
       if (preview) previewsRef.current.add(preview);
       return { file, preview, type: isVideo ? "video" : "image" };
     });
-    if (next.length) setImages(prev => [...prev, ...next]);
+    if (next.length) setImages((prev) => [...prev, ...next]);
     setIsDragging(false);
   };
 
@@ -228,7 +270,7 @@ const EditPackage = () => {
   });
 
   const handleDeleteImage = (index) => {
-    setImages(prev => {
+    setImages((prev) => {
       const copy = [...prev];
       const item = copy[index];
       if (item?.preview) {
@@ -244,22 +286,25 @@ const EditPackage = () => {
   const destinationOptions = useMemo(() => destinations, [destinations]);
   const categoryOptions = useMemo(() => categories, [categories]);
   const policyOptions = useMemo(() => policies, [policies]);
+  const tagOptions = useMemo(() => tags, [tags]);
   const languageOptions = useMemo(
-    () => languages.map(l => toOption(l.id, l.name)),
+    () => languages.map((l) => toOption(l.id, l.name)),
     [languages]
   );
   const travellerTypeOptions = useMemo(
-    () => travellerTypes.map(t => toOption(t.id, t.type)),
+    () => travellerTypes.map((t) => toOption(t.id, t.type)),
     [travellerTypes]
   );
 
   /** -------- Select handlers -------- */
-  const handleIncludedPackagesChange = (selected) => setIncludedPackages(selected || []);
-  const handleExcludedPackagesChange = (selected) => setExcludedPackages(selected || []);
+  const handleIncludedPackagesChange = (selected) =>
+    setIncludedPackages(selected || []);
+  const handleExcludedPackagesChange = (selected) =>
+    setExcludedPackages(selected || []);
 
   const handleDestinationChange = (selected) => {
     if (Array.isArray(selected)) {
-      const ids = selected.map(s => ({ id: s.value }));
+      const ids = selected.map((s) => ({ id: s.value }));
       setSelectedDestinations(ids);
       setValue("destinations", ids);
     } else if (selected) {
@@ -274,7 +319,7 @@ const EditPackage = () => {
 
   const handleLanguageChange = (selected) => {
     if (Array.isArray(selected)) {
-      const ids = selected.map(s => ({ id: s.value }));
+      const ids = selected.map((s) => ({ id: s.value }));
       setSelectedLanguages(ids);
       setValue("languages", ids);
     } else if (selected) {
@@ -289,7 +334,7 @@ const EditPackage = () => {
 
   const handleTravellerTypesChange = (selected) => {
     if (Array.isArray(selected)) {
-      const ids = selected.map(s => ({ id: s.value }));
+      const ids = selected.map((s) => ({ id: s.value }));
       setSelectedTravellerTypes(ids);
       setValue("travellerTypes", ids);
     } else if (selected) {
@@ -303,44 +348,57 @@ const EditPackage = () => {
   };
 
   const handleExtraServices = (serviceId, isChecked) => {
-    setServicesIds(prev =>
-      isChecked ? [...new Set([...prev, serviceId])] : prev.filter(id => id !== serviceId)
+    setServicesIds((prev) =>
+      isChecked
+        ? [...new Set([...prev, serviceId])]
+        : prev.filter((id) => id !== serviceId)
     );
   };
 
   /** -------- Submit (PATCH edit) -------- */
   const onSubmit = async (data) => {
-    // media minimums are relaxed in edit; keep only caps via dropzone
 
     const form = new FormData();
 
     // primitives
     form.append("name", data.name ?? "");
     form.append("description", data.description ?? "");
-    if (data.package_category) form.append("package_category", data.package_category);
-    if (data.price != null && data.price !== "") form.append("price", String(data.price));
+    if (data.package_category)
+      form.append("package_category", data.package_category);
+    if (data.price != null && data.price !== "")
+      form.append("price", String(data.price));
     if (data.duration) form.append("duration", String(data.duration));
     if (data.duration_type) form.append("duration_type", data.duration_type);
-    if (data.min_capacity) form.append("min_capacity", String(data.min_capacity));
-    if (data.max_capacity) form.append("max_capacity", String(data.max_capacity));
+    if (data.min_capacity)
+      form.append("min_capacity", String(data.min_capacity));
+    if (data.max_capacity)
+      form.append("max_capacity", String(data.max_capacity));
     if (data.type) form.append("type", data.type);
-    if (data.cancellation_policy_id) form.append("cancellation_policy_id", data.cancellation_policy_id);
+    if (data.cancellation_policy_id)
+      form.append("cancellation_policy_id", data.cancellation_policy_id);
 
     // relations
-    form.append("destinations", JSON.stringify(selectedDestinations));         // [{id}]
-    form.append("languages", JSON.stringify(selectedLanguages));               // [{id}]
-    form.append("traveller_types", JSON.stringify(selectedTravellerTypes));    // [{id}]
-    form.append("extra_services", JSON.stringify(serviceIds.map(id => ({ id })))); // [{id}]
+    form.append("destinations", JSON.stringify(selectedDestinations)); // [{id}]
+    form.append("languages", JSON.stringify(selectedLanguages)); // [{id}]
+    form.append("traveller_types", JSON.stringify(selectedTravellerTypes)); // [{id}]
+    form.append(
+      "extra_services",
+      JSON.stringify(serviceIds.map((id) => ({ id })))
+    ); // [{id}]
 
     // tags
-    const inc = (includedPackages || []).map(i => ({ id: i.value }));
-    const exc = (excludedPackages || []).map(i => ({ id: i.value }));
+    const inc = (includedPackages || []).map((i) => ({ id: i.value }));
+    const exc = (excludedPackages || []).map((i) => ({ id: i.value }));
     form.append("included_packages", JSON.stringify(inc));
     form.append("excluded_packages", JSON.stringify(exc));
+    form.append('package_places',JSON.stringify([{
+      place_id: selectedMeetingPoint,
+      type: 'meeting_point'
+    }]));
 
     // package media
     const existingPackageImages = [];
-    images.forEach(item => {
+    images.forEach((item) => {
       if (item.file) {
         form.append("package_files", item.file); // new uploads
       } else if (item.id) {
@@ -351,8 +409,8 @@ const EditPackage = () => {
 
     // trip plans: files + existing refs
     const trip_plans_images_json = [];
-    (tourPlan || []).forEach(plan => {
-      (plan.images || []).forEach(img => {
+    (tourPlan || []).forEach((plan) => {
+      (plan.images || []).forEach((img) => {
         // img may be File, {file}, or existing row with id
         if (img instanceof File || img?.file instanceof File) {
           form.append("trip_plans_images", img.file ? img.file : img);
@@ -370,7 +428,9 @@ const EditPackage = () => {
     try {
       setLoading(true);
       toast.info("Updating package...");
-      const url = `${import.meta.env.VITE_API_BASE_URL}/api/admin/package/${editId}`;
+      const url = `${
+        import.meta.env.VITE_API_BASE_URL
+      }/api/admin/package/${editId}`;
       const res = await axiosClient.patch(url, form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -388,13 +448,19 @@ const EditPackage = () => {
   };
 
   /** static gallery */
-  const imageGalleries = useMemo(() => ([
-    { image: image1 }, { image: image2 }, { image: image3 }, { image: image4 },
-  ]), []);
+  const imageGalleries = useMemo(
+    () => [
+      { image: image1 },
+      { image: image2 },
+      { image: image3 },
+      { image: image4 },
+    ],
+    []
+  );
 
   return (
     <div className="flex flex-col gap-4">
-      <h3 className="text-2xl font-semibold text-[#080613]">
+      <h3 className="text-2xl font-semibold text-[#080613] pt-[20px]">
         {editId ? "Edit" : "Add New"} Travel Package
       </h3>
 
@@ -403,44 +469,77 @@ const EditPackage = () => {
           <div className="md:grid md:grid-cols-3 gap-8">
             {/* LEFT */}
             <div className="flex flex-col gap-8 col-span-2">
-              <h3 className="text-2xl font-semibold text-[#080613]">Package Details</h3>
+              <h3 className="text-2xl font-semibold text-[#080613]">
+                Package Details
+              </h3>
 
               {/* name */}
               <div>
-                <label className="block text-gray-500 text-base font-medium mb-2">Package Title</label>
+                <label className="block text-gray-500 text-base font-medium mb-2">
+                  Package Title
+                </label>
                 <input
                   type="text"
                   placeholder="Enter your package title"
-                  {...register("name", { required: "Package name is required" })}
+                  {...register("name", {
+                    required: "Package name is required",
+                  })}
                   className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                   aria-invalid={!!errors.name}
                 />
-                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
 
               {/* description */}
               <div>
-                <label className="block text-gray-500 text-base font-medium mb-2">Package Description</label>
+                <label className="block text-gray-500 text-base font-medium mb-2">
+                  Package Description
+                </label>
                 <textarea
                   placeholder="Enter package description"
-                  {...register("description", { required: "Description is required" })}
-                  className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  {...register("description", {
+                    required: "Description is required",
+                  })}
+                  className="w-full h-[100px] resize-none p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                   aria-invalid={!!errors.description}
                 />
-                {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+                {errors.description && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.description.message}
+                  </p>
+                )}
               </div>
 
               {/* upload */}
               <div className="w-full">
-                <h2 className="text-base font-medium text-gray-500 mb-2">Upload Images</h2>
+                <h2 className="text-base font-medium text-gray-500 mb-2">
+                  Upload Images
+                </h2>
                 <div
                   {...getRootProps()}
-                  className={`border border-dashed flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${isDragging ? "bg-purple-900/5 border-purple-600" : "border-gray-200"}`}
+                  className={`border border-dashed flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${
+                    isDragging
+                      ? "bg-purple-900/5 border-purple-600"
+                      : "border-gray-200"
+                  }`}
                 >
-                  <img src={uploadIcon} className="bg-[#EB5B2A] p-[10px] rounded-full mb-[6px]" alt="" />
-                  <input {...getInputProps()} aria-label="Upload images or videos" />
+                  <img
+                    src={uploadIcon}
+                    className="bg-[#EB5B2A] p-[10px] rounded-full mb-[6px]"
+                    alt=""
+                  />
+                  <input
+                    {...getInputProps()}
+                    aria-label="Upload images or videos"
+                  />
                   <p className="text-xs md:text-base text-black">
-                    Drag & Drop or <span className="text-[#EB5B2A]">Choose File</span> to upload
+                    Drag & Drop or{" "}
+                    <span className="text-[#EB5B2A]">Choose File</span> to
+                    upload
                   </p>
                   <p className="mt-1 text-xs md:text-base text-gray-400 text-center">
                     Supported: jpeg, png, webp, mp4, avi, mov
@@ -454,11 +553,25 @@ const EditPackage = () => {
                       {file.type === "video" || file?.video_url ? (
                         <div
                           className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center cursor-pointer"
-                          onClick={() => window.open(file.video_url || URL.createObjectURL(file.file), "_blank")}
+                          onClick={() =>
+                            window.open(
+                              file.video_url || URL.createObjectURL(file.file),
+                              "_blank"
+                            )
+                          }
                           title="Open video"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-8 w-8 text-gray-500"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                         </div>
                       ) : (
@@ -466,7 +579,12 @@ const EditPackage = () => {
                           src={file.preview || file?.file_url}
                           alt="preview"
                           className="w-16 h-16 object-cover rounded-lg cursor-pointer"
-                          onClick={() => window.open(file.preview || file?.file_url, "_blank")}
+                          onClick={() =>
+                            window.open(
+                              file.preview || file?.file_url,
+                              "_blank"
+                            )
+                          }
                         />
                       )}
                       <button
@@ -482,9 +600,64 @@ const EditPackage = () => {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-gray-500 text-base font-medium mb-2">
+                  Included Package
+                </label>
+                <Select
+                  options={tagOptions}
+                  isMulti
+                  value={includedPackages}
+                  onChange={handleIncludedPackagesChange}
+                  placeholder="Select included items"
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-500 text-base font-medium mb-2">
+                  Excluded Package
+                </label>
+                <Select
+                  options={tagOptions}
+                  isMulti
+                  value={excludedPackages}
+                  onChange={handleExcludedPackagesChange}
+                  placeholder="Select excluded items"
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-500 text-base font-medium mb-2">
+                  Select A Meeting Point
+                </label>
+                <select
+                  placeholder="Select a meeting point"
+                  className="w-full border p-2 rounded-sm"
+                  value={selectedMeetingPoint}
+                  onChange={(value) => {
+                    setSelectedMeetingPoint(value.target.value);
+                  }}
+                >
+                  <option value="select">Select a meeting point</option>
+                  {meetingPoints
+                    ?.filter((point) => point.type === "meetingPoint")
+                    .map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
               {/* tags */}
               <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
-                <label className="block text-gray-500 text-base font-medium mb-2">Included Package</label>
+                <label className="block text-gray-500 text-base font-medium mb-2">
+                  Included Package
+                </label>
                 <Select
                   options={tags}
                   isMulti
@@ -497,7 +670,9 @@ const EditPackage = () => {
               </div>
 
               <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
-                <label className="block text-gray-500 text-base font-medium mb-2">Excluded Package</label>
+                <label className="block text-gray-500 text-base font-medium mb-2">
+                  Excluded Package
+                </label>
                 <Select
                   options={tags}
                   isMulti
@@ -509,22 +684,19 @@ const EditPackage = () => {
                 />
               </div>
 
-              {/* actions (left) */}
-              <div className="flex flex-col md:flex-row justify-center md:items-end gap-4 h-full">
-                <Link
-                  to="/dashboard/packages"
-                  className="border border-[#061D35] px-8 xl:px-20 py-3 rounded-full text-base font-normal text-center text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
-                >
-                  Cancel
-                </Link>
-                <button
-                  type="submit"
-                  className="border border-[#061D35] px-8 xl:px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
-                  disabled={loading}
-                >
-                  {loading ? (editId ? "Updating..." : "Creating...") : (editId ? "Update Package" : "Add New Package")}
-                </button>
+              <div className="flex flex-col gap-4 mt-4">
+                <h3 className="text-2xl font-semibold text-[#080613]">
+                  Tour Plan
+                </h3>
+                <EditTourPlan
+                  package_id={editId}
+                  tourPlan={tourPlan}
+                  setTourPlan={setTourPlan}
+                  packageType={packageType}
+                />
               </div>
+
+              {/* actions (left) */}
             </div>
 
             {/* RIGHT */}
@@ -532,7 +704,9 @@ const EditPackage = () => {
               <div className="flex flex-col gap-4">
                 {/* type */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">Package Type</label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Package Type
+                  </label>
                   <select
                     {...register("type", { required: "Type is required" })}
                     className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
@@ -545,23 +719,37 @@ const EditPackage = () => {
                     <option value="cruise">Cruise</option>
                     <option value="package">Package</option>
                   </select>
-                  {errors.type && <p className="text-red-500 text-xs mt-1">{errors.type.message}</p>}
+                  {errors.type && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.type.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* category */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">Package/Tour Category</label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Package/Tour Category
+                  </label>
                   <select
-                    {...register("package_category", { required: "Package/Tour category is required" })}
+                    {...register("package_category", {
+                      required: "Package/Tour category is required",
+                    })}
                     className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     aria-invalid={!!errors.package_category}
                   >
                     <option value="">Select a category</option>
-                    {categoryOptions.map(cat => (
-                      <option key={cat.value} value={cat.value}>{cat.label}</option>
+                    {categoryOptions.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
                     ))}
                   </select>
-                  {errors.package_category && <p className="text-red-500 text-xs mt-1">{errors.package_category.message}</p>}
+                  {errors.package_category && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.package_category.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* destinations */}
@@ -573,7 +761,10 @@ const EditPackage = () => {
                     <Select
                       isMulti
                       options={destinationOptions}
-                      value={getSelectedOptions(destinationOptions, selectedDestinations)}
+                      value={getSelectedOptions(
+                        destinationOptions,
+                        selectedDestinations
+                      )}
                       onChange={handleDestinationChange}
                       placeholder="Select destinations"
                       className="react-select-container"
@@ -582,23 +773,36 @@ const EditPackage = () => {
                   ) : (
                     <Select
                       options={destinationOptions}
-                      value={destinationOptions.find(o => selectedDestinations[0]?.id === o.value) || null}
+                      value={
+                        destinationOptions.find(
+                          (o) => selectedDestinations[0]?.id === o.value
+                        ) || null
+                      }
                       onChange={handleDestinationChange}
                       placeholder="Select a destination"
                       className="react-select-container"
                       classNamePrefix="react-select"
                     />
                   )}
-                  {errors.destinations && <p className="text-red-500 text-xs mt-1">{errors.destinations.message}</p>}
+                  {errors.destinations && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.destinations.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* traveller types */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">Traveller Type</label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Traveller Type
+                  </label>
                   <Select
                     isMulti
                     options={travellerTypeOptions}
-                    value={getSelectedOptions(travellerTypeOptions, selectedTravellerTypes)}
+                    value={getSelectedOptions(
+                      travellerTypeOptions,
+                      selectedTravellerTypes
+                    )}
                     onChange={handleTravellerTypesChange}
                     placeholder="Select traveller types"
                     className="react-select-container"
@@ -608,37 +812,58 @@ const EditPackage = () => {
 
                 {/* price */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">Package Price ($)</label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Package Price ($)
+                  </label>
                   <input
                     type="number"
                     placeholder="Start Price :"
-                    {...register("price", { required: "Price is required", min: { value: 0, message: "Must be >= 0" }, valueAsNumber: true })}
+                    {...register("price", {
+                      required: "Price is required",
+                      min: { value: 0, message: "Must be >= 0" },
+                      valueAsNumber: true,
+                    })}
                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     aria-invalid={!!errors.price}
                   />
-                  {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
+                  {errors.price && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.price.message}
+                    </p>
+                  )}
                 </div>
 
                 {/* duration + type */}
                 <div className="flex flex-col 2xl:flex-row gap-4">
                   <div>
                     <label className="block text-gray-500 text-base font-medium mb-4">
-                      Package Duration <span className="text-xs">(Days/Hours)</span>
+                      Package Duration{" "}
+                      <span className="text-xs">(Days/Hours)</span>
                     </label>
                     <input
                       type="number"
                       placeholder="Write duration"
-                      {...register("duration", { required: "Package duration is required" })}
+                      {...register("duration", {
+                        required: "Package duration is required",
+                      })}
                       className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                       aria-invalid={!!errors.duration}
                       min={1}
                     />
-                    {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration.message}</p>}
+                    {errors.duration && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.duration.message}
+                      </p>
+                    )}
                   </div>
                   <div>
-                    <label className="block text-gray-500 text-base font-medium mb-4">Duration Type</label>
+                    <label className="block text-gray-500 text-base font-medium mb-4">
+                      Duration Type
+                    </label>
                     <select
-                      {...register("duration_type", { required: "Duration Type is required" })}
+                      {...register("duration_type", {
+                        required: "Duration Type is required",
+                      })}
                       className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                       aria-invalid={!!errors.duration_type}
                     >
@@ -646,7 +871,11 @@ const EditPackage = () => {
                       <option value="days">Days</option>
                       <option value="hours">Hours</option>
                     </select>
-                    {errors.duration_type && <p className="text-red-500 text-xs mt-1">{errors.duration_type.message}</p>}
+                    {errors.duration_type && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.duration_type.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -679,14 +908,18 @@ const EditPackage = () => {
 
                 {/* policy */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">Cancellation Policy</label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Cancellation Policy
+                  </label>
                   <select
                     {...register("cancellation_policy_id")}
                     className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                   >
                     <option value="">Select a policy</option>
-                    {policyOptions.map(p => (
-                      <option key={p.value} value={p.value}>{p.label}</option>
+                    {policyOptions.map((p) => (
+                      <option key={p.value} value={p.value}>
+                        {p.label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -697,23 +930,46 @@ const EditPackage = () => {
                     <li>
                       <details className="group">
                         <summary className="flex items-center justify-between gap-2 font-medium hover:cursor-pointer">
-                          <span className="flex gap-2 text-gray-500 text-base font-medium">Extra Service</span>
-                          <svg className="w-4 h-4 text-gray-500 transition group-open:rotate-90" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path fillRule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                          <span className="flex gap-2 text-gray-500 text-base font-medium">
+                            Extra Service
+                          </span>
+                          <svg
+                            className="w-4 h-4 text-gray-500 transition group-open:rotate-90"
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+                            />
                           </svg>
                         </summary>
                         <article>
                           <ul className="flex flex-col gap-3 mt-4">
-                            {extraServices?.map(service => (
-                              <li className="flex gap-2 items-center" key={service.id}>
+                            {extraServices?.map((service) => (
+                              <li
+                                className="flex gap-2 items-center"
+                                key={service.id}
+                              >
                                 <input
                                   type="checkbox"
                                   checked={serviceIds.includes(service.id)}
-                                  onChange={(e) => handleExtraServices(service.id, e.target.checked)}
+                                  onChange={(e) =>
+                                    handleExtraServices(
+                                      service.id,
+                                      e.target.checked
+                                    )
+                                  }
                                   className="w-4 h-4"
                                   id={`svc-${service.id}`}
                                 />
-                                <label htmlFor={`svc-${service.id}`} className="text-base text-[#49556D]">
+                                <label
+                                  htmlFor={`svc-${service.id}`}
+                                  className="text-base text-[#49556D]"
+                                >
                                   {service.name}
                                 </label>
                               </li>
@@ -727,11 +983,16 @@ const EditPackage = () => {
 
                 {/* language */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">Language</label>
+                  <label className="block text-gray-500 text-base font-medium mb-4">
+                    Language
+                  </label>
                   <Select
                     isMulti
                     options={languageOptions}
-                    value={getSelectedOptions(languageOptions, selectedLanguages)}
+                    value={getSelectedOptions(
+                      languageOptions,
+                      selectedLanguages
+                    )}
                     onChange={handleLanguageChange}
                     placeholder="Select language"
                     className="react-select-container"
@@ -740,7 +1001,7 @@ const EditPackage = () => {
                 </div>
 
                 {/* static gallery */}
-                <div>
+                {/* <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">Image Gallery</label>
                   <div className="grid grid-cols-2 gap-3">
                     {imageGalleries.map((g, i) => (
@@ -749,20 +1010,32 @@ const EditPackage = () => {
                       </div>
                     ))}
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
 
           {/* Tour Plan Section */}
-          <div className="flex flex-col gap-4 mt-4">
-            <h3 className="text-2xl font-semibold text-[#080613]">Tour Plan</h3>
-            <EditTourPlan
-              package_id={editId}
-              tourPlan={tourPlan}
-              setTourPlan={setTourPlan}
-              packageType={packageType}
-            />
+          <div className="flex flex-col md:flex-row justify-center md:items-end gap-4 h-full">
+            <Link
+              to="/dashboard/packages"
+              className="border border-[#061D35] px-8 xl:px-20 py-3 rounded-full text-base font-normal text-center text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
+            >
+              Cancel
+            </Link>
+            <button
+              type="submit"
+              className="border border-[#061D35] px-8 xl:px-16 py-3 rounded-full bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
+              disabled={loading}
+            >
+              {loading
+                ? editId
+                  ? "Updating..."
+                  : "Creating..."
+                : editId
+                ? "Update Package"
+                : "Add New Package"}
+            </button>
           </div>
         </div>
       </form>

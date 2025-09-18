@@ -3,6 +3,7 @@ import PackageTable from '../../../Components/Dashboard/Packages/PackageTable'
 import axiosClient from '../../../axiosClient'
 import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
+import { Link } from 'react-router-dom'
 
 const Packages = () => {
   const [tourDateFilter, setTourDateFilter] = useState('all')
@@ -51,13 +52,13 @@ const Packages = () => {
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M10.0052 4.16406V15.8307M4.17188 9.9974H15.8385" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span className='text-[12px] font-medium text-center'>Add Package</span>
+              <Link to="/dashboard/add-package" className='text-[12px] font-medium text-center'>Add Package</Link>
             </button>
           </div>
           <PackageTable
             tableType='package'
             title={'Travel Packages'}
-            data={data?.data?.filter(item=> item?.type?.toLowerCase() !== 'cruise')}
+            data={data?.data?.filter(item=> item?.type?.toLowerCase() !== 'cruise' || item?.rejected_at)}
             setDateFilter={setTourDateFilter}
             dateFilter={tourDateFilter}
             columns={columns}

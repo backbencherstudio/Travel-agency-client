@@ -204,10 +204,10 @@ const Details = ({
             handleUpdateReviewSlider={handleUpdateReviewSlider}
           />
           <AdditionalInformation
-            additionalInformation={additionalInformation}
+            details={details}
+            additionalInformation={details?.package_additional_info}
             tripPlan={tripPlan}
             TravellerPhotos={TravellerPhotos}
-            includeExclude={includeExclude}
             meetingData={meetingData}
           />
         </div>

@@ -465,11 +465,11 @@ const PackageTable = ({
                           </p>
                           <p className="text-xs font-medium text-[#000E19] text-wrap">
                             {item.name}
-                            {user?.id === item?.user?.id && (
+                            {/* {user?.id === item?.user?.id && (
                               <span className="text-xs font-normal text-[#475467]">
                                 me
                               </span>
-                            )}
+                            )} */}
                           </p>
                         </div>
                       </div>
@@ -484,7 +484,7 @@ const PackageTable = ({
                     >
                       {item.type || "Not Available"}
                     </td>
-                    <td className="block min-w-[200px] text-[12px]  text-wrap py-5 px-3 capitalize text-[#475467]">
+                    <td className="block min-w-[300px] text-[12px]  text-wrap py-5 px-3 capitalize text-[#475467]">
                       {item.description}
                     </td>
                     <td className="text-[#475467] text-[12px] px-3">
@@ -568,7 +568,7 @@ const PackageTable = ({
                           )}
                           {!item?.approved_at && (
                             <div
-                              onClick={(e) => handleApprove(item.id)}
+                              onClick={(e) => handleApproveClick(item.id)}
                               className={`flex w-fit gap-3 p-2 text-3xl rounded-md font-medium text-[#4A4C56]`}
                             >
                               <FcApproval className="cursor-pointer"/>
@@ -576,7 +576,7 @@ const PackageTable = ({
                           )}
                           {!item?.approved_at && (
                             <div
-                              onClick={(e) => handleReject(item.id)}
+                              onClick={(e) => handleRejectClick(item.id)}
                               className={`flex w-fit gap-3 p-2 text-3xl rounded-md font-medium text-[#4A4C56]`}
                             >
                               <IoMdCloseCircle className="cursor-pointer"/>
