@@ -100,9 +100,9 @@ export default function DetailsImageSlider({ details, handleSharePhoto, selected
 
 
     return (
-        <div>
+        <div className=' space-y-4'>
             <div className="w-full flex justify-between">
-                <h1 className="text-xl sm:text-3xl md:text-[40px] text-[#0F1416] font-semibold">
+                <h1 className="text-xl sm:text-3xl md:text-[40px] text-[#0F1416] font-semibold pr-4">
                     {details?.name}
                 </h1>
                 <div className="flex items-center gap-3">
@@ -127,9 +127,9 @@ export default function DetailsImageSlider({ details, handleSharePhoto, selected
                     </div>}
                 </div>
                 <div className="grid justify-center border-r-2 border-l-2 border-[#a6aaac33]">
-                    <p className="text-xs sm:text-sm text-[#8993A0]">Days</p>
+                    <p className="text-xs sm:text-sm text-[#8993A0]">Duration</p>
                     <p className="text-sm sm:text-base font-medium text-[#0F1416]">
-                        {details?.duration} days
+                        {details?.duration} {details?.type === "tour"?"hours":"days"}
                     </p>
                 </div>
                 <div className="grid justify-end">

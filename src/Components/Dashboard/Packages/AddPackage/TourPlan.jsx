@@ -32,14 +32,11 @@ const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
           Drag & Drop or <span className="text-[#EB5B2A]">Choose File</span> to
           upload
         </p>
-        {/* <p className="mt-1 text-xs md:text-base text-gray-400 text-center">
-                    Supported formats: jpeg, png
-                </p> */}
       </div>
 
       {/* Image Thumbnails */}
       <div className="mt-4 flex flex-wrap gap-4 justify-start items-start">
-        {images.map((file, idx) => {
+        {images?.map((file, idx) => {
           const imageUrl =
             file instanceof File || file instanceof Blob
               ? URL.createObjectURL(file)
@@ -70,7 +67,7 @@ const ImageUploader = ({ images, onImageDrop, onImageDelete }) => {
 
 const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
   const handlePlanChange = (dayIndex, planIndex, field, value) => {
-    setTourPlan(prev => {
+    setTourPlan((prev) => {
       const updatedPlan = [...prev];
       updatedPlan[dayIndex].tripPlan[planIndex][field] = value;
       return updatedPlan;
@@ -78,7 +75,7 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
   };
 
   const handleImageUpdate = (dayIndex, acceptedFiles) => {
-    setTourPlan(prev => {
+    setTourPlan((prev) => {
       const updatedPlan = [...prev];
       updatedPlan[dayIndex].images = [
         ...(updatedPlan[dayIndex].images || []),
@@ -89,7 +86,7 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
   };
 
   const handleImageDelete = (dayIndex, imageIndex) => {
-    setTourPlan(prev => {
+    setTourPlan((prev) => {
       const updatedPlan = [...prev];
       updatedPlan[dayIndex].images.splice(imageIndex, 1);
       return updatedPlan;
@@ -97,34 +94,39 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
   };
 
   const addDay = () => {
-    setTourPlan(prev => [
+    setTourPlan((prev) => [
       ...prev,
-      { 
+      {
         day: prev.length + 1,
-        id:null, 
-        tripPlan: [{ title: "", description: "", time: 0, ticket: "free" }], 
-        images: [] 
+        id: null,
+        tripPlan: [{ title: "", description: "", time: 0, ticket: "free" }],
+        images: [],
       },
     ]);
   };
 
   const addPlan = (dayIndex) => {
-    setTourPlan(prev => {
+    setTourPlan((prev) => {
       const updatedPlan = [...prev];
-      updatedPlan[dayIndex]?.tripPlan?.push({
-        title: "",
-        description: "",
-        time: 0,
-        ticket: "free"
-      });
+      if (updatedPlan[dayIndex]?.tripPlan) {
+
+          updatedPlan[dayIndex].tripPlan = [
+            ...updatedPlan[dayIndex].tripPlan,
+            {
+              title: "",
+              description: "",
+              time: 0,
+              ticket: "free",
+            },
+          ];
+      }
       return updatedPlan;
     });
   };
 
   const deletePlan = (dayIndex, planIndex) => {
-    setTourPlan(prev => {
+    setTourPlan((prev) => {
       const updatedPlan = [...prev];
-      // Only remove if there's more than one plan for the day
       if (updatedPlan[dayIndex].tripPlan.length > 1) {
         updatedPlan[dayIndex].tripPlan.splice(planIndex, 1);
       }
@@ -133,25 +135,26 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
   };
 
   const deleteDay = (index) => {
-    setTourPlan(prev => {
+    setTourPlan((prev) => {
       const updatedPlan = prev.filter((_, idx) => idx !== index);
       return updatedPlan.map((day, idx) => ({ ...day, day: idx + 1 }));
     });
   };
 
-  useEffect(()=>{
-    console.log("Updated plan : ",tourPlan);
-  },[tourPlan])
-
   return (
     <div>
       <div className="px-4 py-3 bg-[#fffcfb] border border-[#DFDFDF] rounded-lg">
         {tourPlan?.map((dayPlan, dayIndex) => (
-          <div key={dayIndex} className="flex flex-col gap-3 mb-6 p-4 bg-white rounded-lg border border-gray-200">
+          <div
+            key={dayIndex}
+            className="flex flex-col gap-3 mb-6 p-4 bg-white rounded-lg border border-gray-200"
+          >
             <div className="flex justify-between items-center">
-              {packageType === "package" && <h3 className="text-2xl font-medium text-[#4A4C56]">
-                Day {dayPlan.day}
-              </h3>}
+              {packageType === "package" && (
+                <h3 className="text-2xl font-medium text-[#4A4C56]">
+                  Day {dayPlan.day}
+                </h3>
+              )}
               {/* Delete Day Button */}
               {tourPlan.length > 1 && (
                 <button
@@ -163,10 +166,13 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                 </button>
               )}
             </div>
-            
+
             {/* Trip plan fields for each plan in the day */}
             {dayPlan?.tripPlan?.map((plan, planIndex) => (
-              <div key={planIndex} className="p-4 bg-[#F0F4F9] rounded-lg flex flex-col gap-3 relative">
+              <div
+                key={planIndex}
+                className="p-4 bg-[#F0F4F9] rounded-lg flex flex-col gap-3 relative"
+              >
                 {dayPlan?.tripPlan?.length > 1 && (
                   <button
                     onClick={() => deletePlan(dayIndex, planIndex)}
@@ -176,7 +182,7 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                     <LuTrash2 className="text-md" />
                   </button>
                 )}
-                
+
                 <div>
                   <label className="block text-[#4A4C56] text-base font-medium mb-2">
                     Title
@@ -184,24 +190,38 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                   <input
                     type="text"
                     value={plan.title}
-                    onChange={(e) => handlePlanChange(dayIndex, planIndex, "title", e.target.value)}
+                    onChange={(e) =>
+                      handlePlanChange(
+                        dayIndex,
+                        planIndex,
+                        "title",
+                        e.target.value
+                      )
+                    }
                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     placeholder="Enter activity title"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-[#4A4C56] text-base font-medium mb-2">
                     Description
                   </label>
                   <textarea
                     value={plan.description}
-                    onChange={(e) => handlePlanChange(dayIndex, planIndex, "description", e.target.value)}
+                    onChange={(e) =>
+                      handlePlanChange(
+                        dayIndex,
+                        planIndex,
+                        "description",
+                        e.target.value
+                      )
+                    }
                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600 min-h-[100px]"
                     placeholder="Describe this activity"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-[#4A4C56] text-base font-medium mb-2">
                     Time (hours)
@@ -209,19 +229,33 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                   <input
                     type="number"
                     value={plan.time}
-                    onChange={(e) => handlePlanChange(dayIndex, planIndex, "time", parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handlePlanChange(
+                        dayIndex,
+                        planIndex,
+                        "time",
+                        parseInt(e.target.value) || 0
+                      )
+                    }
                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     min="0"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-[#4A4C56] text-base font-medium mb-2">
                     Ticket
                   </label>
-                  <select 
+                  <select
                     value={plan.ticket}
-                    onChange={(e) => handlePlanChange(dayIndex, planIndex, "ticket", e.target.value)}
+                    onChange={(e) =>
+                      handlePlanChange(
+                        dayIndex,
+                        planIndex,
+                        "ticket",
+                        e.target.value
+                      )
+                    }
                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                   >
                     <option value="free">Admission Ticket Free</option>
@@ -230,7 +264,7 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                 </div>
               </div>
             ))}
-            
+
             <div className="px-4">
               <button
                 type="button"
@@ -238,37 +272,44 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                   e.stopPropagation();
                   addPlan(dayIndex);
                 }}
-
                 className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded hover:bg-[#d14a20] transition-colors"
               >
                 <FaPlus className="w-3 h-3" /> Add Another Plan
               </button>
             </div>
-            
+
             <div className="p-4 bg-[#F0F4F9] rounded-lg flex flex-col gap-3">
               {/* Upload Images */}
               <div className="w-full">
                 <h2 className="text-base font-medium text-[#4A4C56] mb-2">
                   Upload Images
-                  {packageType === "package" && <span> for Day {dayPlan.day}</span>}
+                  {packageType === "package" && (
+                    <span> for Day {dayPlan.day}</span>
+                  )}
                 </h2>
                 <ImageUploader
                   images={dayPlan.images}
-                  onImageDrop={(acceptedFiles) => handleImageUpdate(dayIndex, acceptedFiles)}
-                  onImageDelete={(imageIndex) => handleImageDelete(dayIndex, imageIndex)}
+                  onImageDrop={(acceptedFiles) =>
+                    handleImageUpdate(dayIndex, acceptedFiles)
+                  }
+                  onImageDelete={(imageIndex) =>
+                    handleImageDelete(dayIndex, imageIndex)
+                  }
                 />
               </div>
             </div>
           </div>
         ))}
-        
-        {packageType === "package" && <button
-          type="button"
-          onClick={addDay}
-          className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded hover:bg-[#d14a20] transition-colors mt-4"
-        >
-          <FaPlus className="w-3 h-3" /> Add Another Day
-        </button>}
+
+        {packageType === "package" && (
+          <button
+            type="button"
+            onClick={addDay}
+            className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded hover:bg-[#d14a20] transition-colors mt-4"
+          >
+            <FaPlus className="w-3 h-3" /> Add Another Day
+          </button>
+        )}
       </div>
     </div>
   );
