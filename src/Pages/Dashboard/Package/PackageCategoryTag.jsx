@@ -9,7 +9,7 @@ const PackageCategoryTag = () => {
        <Helmet>
         <title>Around 360 - Package Categories & Tags</title>
       </Helmet>
-        <h3 className="text-2xl font-semibold text-[#080613]">Package Categories & Tags</h3>
+        <h3 className="text-2xl font-semibold text-[#080613] mt-5">Package Categories & Tags</h3>
         <PackageCategory />
         <PackageTag />
     </div>

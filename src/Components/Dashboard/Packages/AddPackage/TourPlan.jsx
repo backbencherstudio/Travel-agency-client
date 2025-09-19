@@ -119,6 +119,15 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
               ticket: "free",
             },
           ];
+      }else{
+        updatedPlan[dayIndex].tripPlan = [
+            {
+              title: "",
+              description: "",
+              time: 0,
+              ticket: "free",
+            },
+          ];
       }
       return updatedPlan;
     });

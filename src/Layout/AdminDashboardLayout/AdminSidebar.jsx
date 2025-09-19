@@ -31,7 +31,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
 
     // Map paths to tab names
     const pathToTab = {
-      '': 'Dashboard',
+      'dashboard': 'Dashboard',
       'packages': 'Packages',
       'bookings': 'Bookings',
       'vendor': 'Vendor',
@@ -133,7 +133,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
       ></div>
 
       <div
-        className={`w-[285px] overflow-y-auto fixed flex flex-col px-5 pt-4 bg-[#061d35] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/5%)]  transition-all ${showSidebar ? 'left-0' : '-left-[275px] lg:left-0'
+        className={`w-[285px] overflow-y-auto fixed flex flex-col px-5 pt-4 bg-[#061d35] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/5%)]  transition-all ${showSidebar ? 'left-0' : '-left-[282px] lg:left-0'
           }`}
       >
         <a href='/' className='w-full h-8 mt-3 flex items-center justify-center'>
@@ -232,13 +232,13 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                 selectedTab === 'packageExtraService' ||
                 selectedTab === 'language' ||
                 selectedTab === 'packageDisallowTraveller' ||
-                selectedTab === 'packagePlace'
+                selectedTab === 'packagePlaces'
                 ? 'bg-[#eb5b2a] text-white font-semibold'
                 : 'hover:bg-[#0d3055]'
                 }`}
             >
               <div className='flex items-center space-x-2'>
-                {(selectedTab === "addPackage" || selectedTab === "packageCategory&Tag" || selectedTab === 'packageDestination&Policy' || selectedTab === 'packageExtraService' || selectedTab === 'language' || selectedTab === 'packageDisallowTraveller') ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                {(selectedTab === "addPackage" || selectedTab === "packageCategory&Tag" || selectedTab === 'packageDestination&Policy' || selectedTab === 'packageExtraService' || selectedTab === 'language' || selectedTab === 'packageDisallowTraveller' || selectedTab === 'packagePlaces') ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M12.3158 0H3.68421C2.70795 0.00277743 1.77247 0.391826 1.08215 1.08215C0.391826 1.77247 0.00277743 2.70795 0 3.68421L0 12.3158C0.00277743 13.292 0.391826 14.2275 1.08215 14.9179C1.77247 15.6082 2.70795 15.9972 3.68421 16H12.3158C13.292 15.9972 14.2275 15.6082 14.9179 14.9179C15.6082 14.2275 15.9972 13.292 16 12.3158V3.68421C15.9972 2.70795 15.6082 1.77247 14.9179 1.08215C14.2275 0.391826 13.292 0.00277743 12.3158 0ZM11.2853 8.68947H8.85684C8.83814 8.68933 8.8196 8.69291 8.80229 8.70001C8.78499 8.7071 8.76927 8.71756 8.75605 8.73078C8.74282 8.74401 8.73236 8.75973 8.72527 8.77703C8.71818 8.79434 8.7146 8.81288 8.71474 8.83158V11.2632C8.71474 11.4527 8.63943 11.6345 8.50539 11.7686C8.37136 11.9026 8.18956 11.9779 8 11.9779C7.81044 11.9779 7.62864 11.9026 7.49461 11.7686C7.36057 11.6345 7.28526 11.4527 7.28526 11.2632V8.83158C7.2854 8.81288 7.28182 8.79434 7.27473 8.77703C7.26764 8.75973 7.25718 8.74401 7.24395 8.73078C7.23073 8.71756 7.21501 8.7071 7.1977 8.70001C7.1804 8.69291 7.16186 8.68933 7.14316 8.68947H4.71474C4.62088 8.68947 4.52793 8.67099 4.44122 8.63507C4.3545 8.59915 4.27571 8.5465 4.20934 8.48013C4.14297 8.41376 4.09032 8.33497 4.05441 8.24825C4.01849 8.16154 4 8.0686 4 7.97474C4 7.88088 4.01849 7.78794 4.05441 7.70122C4.09032 7.6145 4.14297 7.53571 4.20934 7.46934C4.27571 7.40297 4.3545 7.35032 4.44122 7.31441C4.52793 7.27849 4.62088 7.26 4.71474 7.26H7.14316C7.16186 7.26014 7.1804 7.25656 7.1977 7.24947C7.21501 7.24238 7.23073 7.23191 7.24395 7.21869C7.25718 7.20547 7.26764 7.18975 7.27473 7.17244C7.28182 7.15514 7.2854 7.1366 7.28526 7.1179V4.68947C7.28526 4.49991 7.36057 4.31812 7.49461 4.18408C7.62864 4.05004 7.81044 3.97474 8 3.97474C8.18956 3.97474 8.37136 4.05004 8.50539 4.18408C8.63943 4.31812 8.71474 4.49991 8.71474 4.68947V7.1179C8.71417 7.13686 8.71743 7.15574 8.72433 7.17341C8.73124 7.19109 8.74163 7.20719 8.7549 7.22075C8.76816 7.23431 8.78403 7.24505 8.80155 7.25234C8.81906 7.25963 8.83787 7.26331 8.85684 7.26316H11.2853C11.4748 7.26316 11.6566 7.33846 11.7907 7.4725C11.9247 7.60654 12 7.78833 12 7.97789C12 8.16745 11.9247 8.34925 11.7907 8.48329C11.6566 8.61733 11.4748 8.69263 11.2853 8.69263V8.68947Z" fill="white" />
                 </svg>
                   :
@@ -335,7 +335,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
                     </button>
                     <button
                       onClick={() => handleNavigation('packagePlaces', 'package-places')}
-                      className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${selectedTab === 'packageDisallowTraveller'
+                      className={`text-xs flex items-center space-x-2 hover:bg-[#0d3055] p-2 rounded ${selectedTab === 'packagePlaces'
                         ? 'bg-[#eb5b2a] text-white font-semibold'
                         : 'hover:bg-[#0d3055]'
                         }`}

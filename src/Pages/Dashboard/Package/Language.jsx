@@ -164,6 +164,7 @@ const Language = () => {
       <Helmet>
         <title>Around 360 - Language</title>
       </Helmet>
+      <h3 className="text-2xl font-semibold text-[#080613] my-5">Package Languages</h3>
       {/* Form for adding/editing a language */}
       <form onSubmit={handleSubmit(onSubmit)} className=''>
         <div className='bg-white h-fit pt-8 px-6 pb-6 rounded-lg flex flex-col gap-4'>

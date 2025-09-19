@@ -50,6 +50,7 @@ const EditPackage = () => {
   const [serviceIds, setServicesIds] = useState([]); // number[] (IDs only)
   const [selectedMeetingPoint, setSelectedMeetingPoint] = useState("");
   const [meetingPoints, setMeetingPoints] = useState();
+  const [selectedPickupPoints, setSelectedPickupPoints] = useState([""]);
 
   // media + tour plan
   const [images, setImages] = useState([]); // mix of {id, file_url|video_url} or {file, preview, type}
@@ -120,6 +121,8 @@ const EditPackage = () => {
 
         // prefill for edit
         const pkg = resPackage.data?.data;
+        console.clear();
+        console.log(pkg);
         if (pkg) {
           setValue("name", pkg.name || "");
           setValue("description", pkg.description || "");
@@ -132,7 +135,10 @@ const EditPackage = () => {
           setValue("type", pkg.type || "");
           setPackageType(pkg.type || "tour");
           setSelectedMeetingPoint(pkg?.package_places?.[0]?.place?.id);
-          setValue('package_category',pkg?.package_categories?.[0]?.category.id)
+          setValue(
+            "package_category",
+            pkg?.package_categories?.[0]?.category.id
+          );
 
           // categories (assuming single category id; if array needed, adapt)
           if (pkg.package_categories?.length) {
@@ -186,7 +192,7 @@ const EditPackage = () => {
                 id: plan.id,
                 day: idx + 1,
                 images: plan.package_trip_plan_images?.map((img) => img) || [],
-                tripPlan: plan?.package_trip_plan_details
+                tripPlan: plan?.package_trip_plan_details,
               }))
             );
           }
@@ -218,9 +224,9 @@ const EditPackage = () => {
     };
   }, [editId, setValue]);
 
-  useEffect(()=>{
-    console.log("Selected : ",selectedMeetingPoint);
-  },[selectedMeetingPoint])
+  useEffect(() => {
+    console.log("Selected : ", selectedMeetingPoint);
+  }, [selectedMeetingPoint]);
 
   /** -------- Dropzone -------- */
   const onImageDrop = (acceptedFiles) => {
@@ -301,6 +307,8 @@ const EditPackage = () => {
     setIncludedPackages(selected || []);
   const handleExcludedPackagesChange = (selected) =>
     setExcludedPackages(selected || []);
+  const handlePickupPoints = (selected) =>
+    setSelectedPickupPoints(selected || []);
 
   const handleDestinationChange = (selected) => {
     if (Array.isArray(selected)) {
@@ -357,7 +365,6 @@ const EditPackage = () => {
 
   /** -------- Submit (PATCH edit) -------- */
   const onSubmit = async (data) => {
-
     const form = new FormData();
 
     // primitives
@@ -391,10 +398,21 @@ const EditPackage = () => {
     const exc = (excludedPackages || []).map((i) => ({ id: i.value }));
     form.append("included_packages", JSON.stringify(inc));
     form.append("excluded_packages", JSON.stringify(exc));
-    form.append('package_places',JSON.stringify([{
-      place_id: selectedMeetingPoint,
-      type: 'meeting_point'
-    }]));
+    const package_places = [];
+    package_places.push({
+      place_id: selectedMeetingPoint.value,
+      type: "meeting_point",
+    });
+
+    const pickuppoints = selectedPickupPoints?.map((place) => {
+      return {
+        place_id: place.value,
+        type: "pickup_point",
+      };
+    });
+    package_places.push(...pickuppoints);
+
+    form.append("package_places", JSON.stringify(package_places));
 
     // package media
     const existingPackageImages = [];
@@ -634,51 +652,29 @@ const EditPackage = () => {
                 <label className="block text-gray-500 text-base font-medium mb-2">
                   Select A Meeting Point
                 </label>
-                <select
-                  placeholder="Select a meeting point"
-                  className="w-full border p-2 rounded-sm"
-                  value={selectedMeetingPoint}
-                  onChange={(value) => {
-                    setSelectedMeetingPoint(value.target.value);
-                  }}
-                >
-                  <option value="select">Select a meeting point</option>
-                  {meetingPoints
-                    ?.filter((point) => point.type === "meetingPoint")
-                    .map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-
-              {/* tags */}
-              <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
-                <label className="block text-gray-500 text-base font-medium mb-2">
-                  Included Package
-                </label>
                 <Select
-                  options={tags}
-                  isMulti
-                  value={includedPackages}
-                  onChange={setIncludedPackages}
+                  options={meetingPoints
+                    ?.filter((point) => point.type === "meetingPoint")
+                    .map((item) => toOption(item.id, item.name))}
+                  value={selectedMeetingPoint}
+                  onChange={(select) => setSelectedMeetingPoint(select || "")}
                   placeholder="Select included items"
                   className="react-select-container"
                   classNamePrefix="react-select"
                 />
               </div>
-
-              <div className={`${packageType === "tour" ? "hidden" : "block"}`}>
+              <div>
                 <label className="block text-gray-500 text-base font-medium mb-2">
-                  Excluded Package
+                  Select A Pickup Point
                 </label>
                 <Select
-                  options={tags}
+                  options={meetingPoints
+                    ?.filter((point) => point.type === "Pickup Point")
+                    .map((item) => toOption(item.id, item.name))}
                   isMulti
-                  value={excludedPackages}
-                  onChange={setExcludedPackages}
-                  placeholder="Select excluded items"
+                  value={selectedPickupPoints}
+                  onChange={handlePickupPoints}
+                  placeholder="Select included items"
                   className="react-select-container"
                   classNamePrefix="react-select"
                 />
@@ -695,8 +691,6 @@ const EditPackage = () => {
                   packageType={packageType}
                 />
               </div>
-
-              {/* actions (left) */}
             </div>
 
             {/* RIGHT */}

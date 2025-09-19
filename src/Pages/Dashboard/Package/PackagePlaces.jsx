@@ -252,10 +252,11 @@ export default function PackagePlaces() {
   };
 
   return (
-    <div className="p-6">
+    <div className="">
       <Helmet>
         <title>Around 360 - Package Places</title>
       </Helmet>
+      <h3 className="text-2xl font-semibold text-[#080613] my-5">Package Places</h3>
 
       {/* Form */}
       <form
