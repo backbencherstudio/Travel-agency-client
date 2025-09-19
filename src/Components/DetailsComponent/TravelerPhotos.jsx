@@ -1,3 +1,5 @@
+
+
 export default function TravelerPhotos({ travellerPhotos }) {
     return (
         <div>
@@ -7,12 +9,12 @@ export default function TravelerPhotos({ travellerPhotos }) {
                     <div className="flex-1 relative">
                         <div className="w-[280px] sm:w-[357px] h-[306px]">
                             <img
-                                src={travellerPhotos[0]}
+                                src={travellerPhotos[0]?.image_url}
                                 alt="Travel video"
                                 className="w-full h-full object-cover rounded-xl"
                             ></img>
                         </div>
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-[10px] bg-[#FFFFFFCC] rounded-full cursor-pointer">
+                        {/* <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-[10px] bg-[#FFFFFFCC] rounded-full cursor-pointer">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="12"
@@ -27,7 +29,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                                     strokeLinejoin="round"
                                 />
                             </svg>
-                        </div>
+                        </div> */}
                     </div>
                 )}
                 <div className="flex-1 flex gap-2 overflow-hidden w-[280px] sm:w-[357px]">
@@ -35,7 +37,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                         {travellerPhotos?.length >= 2 && (
                             <div className="h-1/2 rounded-xl">
                                 <img
-                                    src={travellerPhotos[1]}
+                                    src={travellerPhotos[1]?.image_url}
                                     alt="Travel Photo"
                                     className="w-full h-full object-cover rounded-xl"
                                 />
@@ -44,7 +46,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                         {travellerPhotos?.length >= 3 && (
                             <div className="flex-1 h-1/2 rounded-xl overflow-hidden">
                                 <img
-                                    src={travellerPhotos[2]}
+                                    src={travellerPhotos[2]?.image_url}
                                     alt="Travel Photo"
                                     className="w-full h-full object-cover rounded-xl"
                                 />
@@ -55,7 +57,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                         {travellerPhotos?.length >= 4 && (
                             <div className="h-1/2">
                                 <img
-                                    src={travellerPhotos[3]}
+                                    src={travellerPhotos[3]?.image_url}
                                     alt="Travel Photo"
                                     className="w-full h-full object-cover rounded-xl"
                                 />
@@ -73,7 +75,7 @@ export default function TravelerPhotos({ travellerPhotos }) {
                                     } max-w-full relative overflow-hidden`}
                             >
                                 <img
-                                    src={travellerPhotos[4]}
+                                    src={travellerPhotos[4]?.image_url}
                                     alt="Travel Photo"
                                     className="w-full h-full object-cover rounded-xl"
                                 />

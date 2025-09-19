@@ -36,7 +36,7 @@ const AddPackage = () => {
     setValue,
     formState: { errors },
     watch,
-    resetField,
+    reset,
   } = useForm({
     defaultValues: {
       destinations: [],
@@ -206,6 +206,7 @@ const AddPackage = () => {
   const categoryOptions = useMemo(() => categories, [categories]);
   const policyOptions = useMemo(() => policies, [policies]);
   const [selectedMeetingPoint, setSelectedMeetingPoint] = useState("");
+  const [selectedPickupPoints, setSelectedPickupPoints] = useState([""]);
   const languageOptions = useMemo(
     () => languages.map((l) => toOption(l.id, l.name)),
     [languages]
@@ -218,6 +219,8 @@ const AddPackage = () => {
   /** ----- Select handlers ----- */
   const handleIncludedPackagesChange = (selected) =>
     setIncludedPackages(selected || []);
+  const handlePickupPoints = (selected) =>
+    setSelectedPickupPoints(selected || []);
   const handleExcludedPackagesChange = (selected) =>
     setExcludedPackages(selected || []);
 
@@ -355,50 +358,55 @@ const AddPackage = () => {
     // Debug (optional)
     // for (let p of form.entries()) console.log(p[0], p[1]);
 
-    for(let i=0;i < tourPlan.length;i++){
-      tourPlan[i]?.images?.forEach(tour=>{
-        form.append(`trip_plans_${i}_images`,tour)
-      })
+    for (let i = 0; i < tourPlan.length; i++) {
+      tourPlan[i]?.images?.forEach((tour) => {
+        form.append(`trip_plans_${i}_images`, tour);
+      });
     }
-
 
     const trip_plan = [];
-    for(let i=0 ; i<tourPlan.length ; i++){
-      const title = `Day ${i+1}`;
-      const details = tourPlan[i]?.tripPlan?.map(trip=>{
-        return{
-          title:trip.title,
-          description:trip.description,
-          time:trip.time,
-          note:trip.ticket
-        }
-      })
+    for (let i = 0; i < tourPlan.length; i++) {
+      const title = `Day ${i + 1}`;
+      const details = tourPlan[i]?.tripPlan?.map((trip) => {
+        return {
+          title: trip.title,
+          description: trip.description,
+          time: trip.time,
+          note: trip.ticket,
+        };
+      });
       trip_plan.push({
         title,
-        details
-      })
+        details,
+      });
     }
 
-    form.append("trip_plans",JSON.stringify(trip_plan));
+    form.append("trip_plans", JSON.stringify(trip_plan));
 
     const package_places = [];
     package_places.push({
-      package_place:selectedMeetingPoint,
-      type:"meeting_point"
-    })
+      place_id: selectedMeetingPoint.value,
+      type: "meeting_point",
+    });
 
-    form.append("package_places",JSON.stringify(package_places));
+    const pickuppoints = selectedPickupPoints?.map((place) => {
+      return {
+        place_id: place.value,
+        type: "pickup_point",
+      };
+    });
+    package_places.push(...pickuppoints);
 
-    const availability = availableDates.map(date=>{
-      return{
-        start_date:date.start,
-        end_date:date.end,
-      }
-    })
+    form.append("package_places", JSON.stringify(package_places));
 
+    const availability = availableDates.map((date) => {
+      return {
+        start_date: date.start,
+        end_date: date.end,
+      };
+    });
 
-    form.append("package_availability",JSON.stringify(availability));
-
+    form.append("package_availability", JSON.stringify(availability));
 
     try {
       setLoading(true);
@@ -413,7 +421,7 @@ const AddPackage = () => {
         toast.success("Package created successfully!");
         // Optional: reset fields
         // previews cleanup
-        previewsRef.current.forEach(url => URL.revokeObjectURL(url));
+        previewsRef.current.forEach((url) => URL.revokeObjectURL(url));
         previewsRef.current.clear();
         setImages([]);
         setIncludedPackages([]);
@@ -421,11 +429,27 @@ const AddPackage = () => {
         setSelectedDestinations([]);
         setSelectedLanguages([]);
         setSelectedTravellerTypes([]);
+        setPackageType('')
         setServicesIds([]);
-        setTourPlan([{ id: null, day: 1, title: "", description: "", images: [] }]);
-        resetField("name"); resetField("description"); resetField("price"); resetField("duration");
-        resetField("type"); resetField("duration_type"); resetField("package_category");
-        resetField("cancellation_policy_id");
+        setAvailableDates([]);
+        setTourPlan([
+          {
+            id: null,
+            day: 1,
+            tripPlan: [
+              {
+                title: "",
+                description: "",
+                time: 0,
+                ticket: "free",
+              },
+            ],
+            images: [],
+          },
+        ]);
+        setSelectedPickupPoints([""]);
+        selectedMeetingPoint("");
+        reset();
       } else {
         toast.error(res.data?.message || "Failed to create package");
       }
@@ -455,10 +479,7 @@ const AddPackage = () => {
   const handleCheckInCheckOutDate = (data) => {
     if (data[0]) {
       setCheckInCheckOutDate(data);
-      setAvailableDates((prev) => [
-        ...prev,
-        { start: data[0], end: data[1] },
-      ]);
+      setAvailableDates((prev) => [...prev, { start: data[0], end: data[1] }]);
     }
   };
 
@@ -468,7 +489,7 @@ const AddPackage = () => {
   };
 
   const hanleRemoveAvailableDate = (index) => {
-    const updatedDates = availableDates.filter((date,idx)=> idx != index);
+    const updatedDates = availableDates.filter((date, idx) => idx != index);
     setAvailableDates(updatedDates);
   };
 
@@ -492,27 +513,27 @@ const AddPackage = () => {
               </h3>
 
               {/* Package type (select) */}
-                <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
-                    Package Type
-                  </label>
-                  <select
-                    {...register("type", { required: "Type is required" })}
-                    className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                    value={packageType}
-                    onChange={(e) => setPackageType(e.target.value)}
-                    aria-invalid={!!errors.type}
-                  >
-                    <option value="">Select Package Type</option>
-                    <option value="tour">Tour</option>
-                    <option value="package">Package</option>
-                  </select>
-                  {errors.type && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {errors.type.message}
-                    </p>
-                  )}
-                </div>
+              <div>
+                <label className="block text-gray-500 text-base font-medium mb-4">
+                  Package Type
+                </label>
+                <select
+                  {...register("type", { required: "Type is required" })}
+                  className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  value={packageType}
+                  onChange={(e) => setPackageType(e.target.value)}
+                  aria-invalid={!!errors.type}
+                >
+                  <option value="">Select Package Type</option>
+                  <option value="tour">Tour</option>
+                  <option value="package">Package</option>
+                </select>
+                {errors.type && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.type.message}
+                  </p>
+                )}
+              </div>
 
               {/* Name */}
               <div>
@@ -557,55 +578,57 @@ const AddPackage = () => {
 
               {/* Available date picker */}
 
-              {packageType === "package" && <div className="relative">
-                <label className="block text-gray-500 text-base font-medium mb-2">
-                  Select Available Dates
-                </label>
-                <div
-                  className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
-                  onClick={handleOpenDatePicker}
-                >
-                  {availableDates.length <= 0 && (
-                    <span className="text-sm text-[#999] font-semibold">
-                      Click here to add available dates.
-                    </span>
-                  )}
-                  <div className="flex flex-wrap gap-3 justify-between">
-                    {availableDates.map((date, index) => (
-                      <div
-                        key={index}
-                        className="bg-gray-200 px-4 py-2 rounded-md relative"
-                      >
-                        {date?.start.toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "2-digit",
-                        })}
-                        {" - "}
-                        {date?.end.toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "2-digit",
-                        })}
+              {packageType === "package" && (
+                <div className="relative">
+                  <label className="block text-gray-500 text-base font-medium mb-2">
+                    Select Available Dates
+                  </label>
+                  <div
+                    className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    onClick={handleOpenDatePicker}
+                  >
+                    {availableDates.length <= 0 && (
+                      <span className="text-sm text-[#999] font-semibold">
+                        Click here to add available dates.
+                      </span>
+                    )}
+                    <div className="flex flex-wrap gap-3 justify-between">
+                      {availableDates.map((date, index) => (
                         <div
-                          className="bg-red-500 w-fit h-fit rounded-full cursor-pointer text-white absolute -top-1 -right-1"
-                          onClick={(e) => {
-                            e.stopPropagation(); // This stops the event from bubbling up
-                            hanleRemoveAvailableDate(index);
-                          }}
+                          key={index}
+                          className="bg-gray-200 px-4 py-2 rounded-md relative"
                         >
-                          <IoIosClose />
+                          {date?.start.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "2-digit",
+                          })}
+                          {" - "}
+                          {date?.end.toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "2-digit",
+                          })}
+                          <div
+                            className="bg-red-500 w-fit h-fit rounded-full cursor-pointer text-white absolute -top-1 -right-1"
+                            onClick={(e) => {
+                              e.stopPropagation(); // This stops the event from bubbling up
+                              hanleRemoveAvailableDate(index);
+                            }}
+                          >
+                            <IoIosClose />
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
+                  {openDatePicker && (
+                    <AddPackageDatePicker
+                      handleOpenDatePicker={handleOpenDatePicker}
+                      handleSelectedDate={handleSelectedDate}
+                      handleCheckInCheckOutDate={handleCheckInCheckOutDate}
+                    />
+                  )}
                 </div>
-                {openDatePicker && (
-                  <AddPackageDatePicker
-                    handleOpenDatePicker={handleOpenDatePicker}
-                    handleSelectedDate={handleSelectedDate}
-                    handleCheckInCheckOutDate={handleCheckInCheckOutDate}
-                  />
-                )}
-              </div>}
+              )}
 
               {/* Upload */}
               <div className="w-full">
@@ -728,21 +751,32 @@ const AddPackage = () => {
                 <label className="block text-gray-500 text-base font-medium mb-2">
                   Select A Meeting Point
                 </label>
-                <select
-                  placeholder="Select a meeting point"
-                  className="w-full border p-2 rounded-sm"
+                <Select
+                  options={meetingPoints
+                    ?.filter((point) => point.type === "meetingPoint")
+                    .map((item) => toOption(item.id, item.name))}
                   value={selectedMeetingPoint}
-                  onChange={(value) => {
-                    setSelectedMeetingPoint(value.target.value);
-                  }}
-                >
-                <option value="select">Select a meeting point</option>
-                  {meetingPoints?.filter(point => point.type === "meetingPoint").map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(select) => setSelectedMeetingPoint(select || "")}
+                  placeholder="Select included items"
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-500 text-base font-medium mb-2">
+                  Select A Pickup Point
+                </label>
+                <Select
+                  options={meetingPoints
+                    ?.filter((point) => point.type === "Pickup Point")
+                    .map((item) => toOption(item.id, item.name))}
+                  isMulti
+                  value={selectedPickupPoints}
+                  onChange={handlePickupPoints}
+                  placeholder="Select included items"
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                />
               </div>
 
               {/* Trip plan */}
@@ -883,7 +917,7 @@ const AddPackage = () => {
                   <input
                     type="number"
                     placeholder="Price"
-                    {...register("price",{require:true})}
+                    {...register("price", { require: true })}
                     className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
                     aria-invalid={!!errors.price}
                   />

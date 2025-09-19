@@ -6,7 +6,8 @@ import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 
 const Packages = () => {
-  const [tourDateFilter, setTourDateFilter] = useState('all')
+  const [tourDateFilter, setTourDateFilter] = useState('all');
+  const [packageData,setPakcageData] = useState([]);
   const [columns] = useState({
     packageName: true,
     package: true,
@@ -36,6 +37,11 @@ const Packages = () => {
     console.error('Error fetching packages:', error)
   }
 
+  useEffect(()=>{
+    const filtered = data?.data?.filter(item => item?.rejected_at === null)
+    setPakcageData(filtered);
+  },[data])
+
 
   return (
     <div>
@@ -58,7 +64,7 @@ const Packages = () => {
           <PackageTable
             tableType='package'
             title={'Travel Packages'}
-            data={data?.data?.filter(item=> item?.type?.toLowerCase() !== 'cruise' || item?.rejected_at)}
+            data={packageData?.filter(item => item.type.toLowerCase() !== 'cruise')}
             setDateFilter={setTourDateFilter}
             dateFilter={tourDateFilter}
             columns={columns}

@@ -10,6 +10,7 @@ import {
   watchIcon,
 } from "../../../public/Icons";
 import TravelerPhotos from "./TravelerPhotos";
+import { Link } from "react-router-dom";
 
 export default function AdditionalInformation({
   details,
@@ -25,8 +26,6 @@ export default function AdditionalInformation({
   const [travelerPhotoIsOpen, setTravelerPhotoIsOpen] = useState(0);
   const [included, setIncluded] = useState([]);
   const [excluded, setExcluded] = useState([]);
-
-  console.log("Details : ", details);
 
   useEffect(() => {
     const incl = details?.package_tags?.filter(
@@ -65,13 +64,13 @@ export default function AdditionalInformation({
     });
   };
 
-  const displayTripPlan = (plan,index) => (
+  const displayTripPlan = (plan, index) => (
     <div
       key={index + 1}
       className="relative flex flex-col gap-1 border-l border-[#FDEFEA] pl-5 ml-4"
     >
       <div className="text-[18px] font-medium">{plan.title}</div>
-      <p className="text-sm sm:text-base">{plan.body}</p>
+      <p className="text-sm sm:text-base">{plan.description}</p>
       <div className="text-xs sm:text-sm text-[#475467]">
         <span>{plan.time} minutes </span>.
         <span> Admission Ticket {plan.fee}</span>
@@ -82,7 +81,7 @@ export default function AdditionalInformation({
     </div>
   );
 
-  console.log("Trip : ",details)
+  console.log("Trip : ", details);
 
   return (
     <div className="flex flex-col gap-[30px]">
@@ -242,9 +241,9 @@ export default function AdditionalInformation({
                       </p>
                       <div className="flex flex-col gap-2">
                         <div className="flex gap-2 items-center">
-                          <span className="underline cursor-pointer">
+                          <Link to={`https://www.google.com/maps?q=${details?.package_destinations?.[0]?.destination?.latitude},${details?.package_destinations?.[0]?.destination?.longitude}`} className="underline cursor-pointer">
                             Open In Google Maps
-                          </span>
+                          </Link>
                           <div className="-rotate-90">{downArrow}</div>
                         </div>
                         <div className="text-[14px] leading-[160%] text-[#49556D]">
@@ -267,7 +266,7 @@ export default function AdditionalInformation({
                 </p>
               </div>
             </div>
-            <div className="flex flex-col gap-6">
+            {/* <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
                 <div className="flex gap-2">
                   {watchIcon}
@@ -311,8 +310,8 @@ export default function AdditionalInformation({
                     </h1>
                   );
                 })}
-              </div>
-            </div>
+              </div> 
+            </div>*/}
           </div>
         )}
       </div>
@@ -360,17 +359,20 @@ export default function AdditionalInformation({
           </div>
           <div className="flex flex-col items-center gap-[30px]">
             <div className="w-full h-[180px] sm:h-[270px] rounded-2xl">
-              {/* <StaticMap location="Dhaka, Bangladesh" /> */}
               <iframe
-                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2367.469642881246!2d90.39869322734249!3d23.778121523255784!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c76925717c2d%3A0xcb33cf344a80553!2sMohakhali%20Bus%20Stop!5e0!3m2!1sen!2sbd!4v1734754290833!5m2!1sen!2sbd`}
+                src={`https://www.google.com/maps?q=${details?.package_destinations?.[0]?.destination?.latitude},${details?.package_destinations?.[0]?.destination?.longitude}&output=embed`}
                 style={{ border: 0, width: "100%", height: "100%" }}
                 allowFullScreen=""
                 loading="lazy"
               />
             </div>
-            <button className="px-[70px] sm:px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]">
+
+            <Link
+              to={`https://www.google.com/maps?q=${details?.package_destinations?.[0]?.destination?.latitude},${details?.package_destinations?.[0]?.destination?.longitude}`}
+              className="px-[70px] sm:px-[180px] py-5 text-[16px] font-medium leading-[160%] bg-[#0E457D] text-white rounded-[100px]"
+            >
               Show on map
-            </button>
+            </Link>
           </div>
         </div>
       )}
@@ -406,10 +408,12 @@ export default function AdditionalInformation({
                   <div className="pt-[30px] flex flex-col gap-5 text-[#0F1416]">
                     <div className="text-[24px] font-semibold">Trip Plan</div>
                     {trip?.package_trip_plan_details?.length <= 3
-                      ? trip?.package_trip_plan_images?.map((plan,index) => displayTripPlan(plan,index))
+                      ? trip?.package_trip_plan_details?.map((plan, index) =>
+                          displayTripPlan(plan, index)
+                        )
                       : tripPlan
                           ?.splice(0, 3)
-                          .map(((plan,index) => displayTripPlan(plan,index)))}
+                          .map((plan, index) => displayTripPlan(plan, index))}
                   </div>
                   {tripPlan?.length > 3 && (
                     <div className="text-[14px] font-medium text-orange-500">
@@ -419,7 +423,9 @@ export default function AdditionalInformation({
                 </div>
               )}
               {travelerPhotoIsOpen === 0 && (
-                <TravelerPhotos travellerPhotos={TravellerPhotos} />
+                <TravelerPhotos
+                  travellerPhotos={trip?.package_trip_plan_images}
+                />
               )}
             </div>
           ))}

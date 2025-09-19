@@ -9,7 +9,7 @@ const PackageDestinationPolicy = () => {
         <Helmet>
             <title>Around 360 - Package Destinations & Policies</title>
         </Helmet>
-        <h3 className="text-2xl font-semibold text-[#080613]">Package Destinations & Policies</h3>
+        <h3 className="text-2xl font-semibold text-[#080613] mt-5">Package Destinations & Policies</h3>
         <PackageDestination />
         <PackagePolicy />
     </div>
