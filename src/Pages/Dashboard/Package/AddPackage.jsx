@@ -16,6 +16,8 @@ import { UserServices } from "~/userServices/user.services";
 import TourDatePicker from "~/Components/DetailsComponent/TourDatePicker";
 import AddPackageDatePicker from "~/Components/Admin/AddPackageDatePicker";
 import { IoIosClose } from "react-icons/io";
+import { FaPlus } from "react-icons/fa";
+import { LuTrash2 } from "react-icons/lu";
 // import {
 //   Select,
 //   SelectContent,
@@ -91,6 +93,9 @@ const AddPackage = () => {
   const [checkInCheckOutDate, setCheckInCheckOutDate] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [availableDates, setAvailableDates] = useState([]);
+  const [additionalInformations, setAdditionalInformations] = useState([]);
+  const [information, setInformation] = useState("");
+  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
 
   const previewsRef = useRef(new Set()); // track object URLs to revoke
 
@@ -277,6 +282,11 @@ const AddPackage = () => {
     );
   };
 
+  const handleAdditionalInfo = () => {
+    setShowAdditionalInfo((prev) => !prev);
+    setInformation("");
+  };
+
   /** ----- Submit ----- */
   const onSubmit = async (data) => {
     // Validate media minimums
@@ -339,24 +349,24 @@ const AddPackage = () => {
     });
     form.append("package_images", JSON.stringify(existingPackageImages)); // [{image_url}|{video_url}]
 
-    // Trip plan: append files + JSON
-    // Attach *file* images to `trip_plans_images` and keep non-files in `trip_plans_images_json`
-    // const trip_plans_images_json = [];
-    // (tourPlan || []).forEach((plan) => {
-    //   (plan.images || []).forEach((img) => {
-    //     if (img instanceof File || img?.file instanceof File) {
-    //       form.append("trip_plans_images", img.file ? img.file : img);
-    //     } else {
-    //       // Likely existing object with image_url or id
-    //       trip_plans_images_json.push(img);
-    //     }
-    //   });
-    // });
-    // form.append("trip_plans_images", JSON.stringify(trip_plans_images_json));
-    // form.append("trip_plans", JSON.stringify(tourPlan));
-
-    // Debug (optional)
-    // for (let p of form.entries()) console.log(p[0], p[1]);
+    if(data?.min_infants){
+      form.append("min_infants",data.min_infants);
+    }
+    if(data?.max_infants){
+      form.append("max_infants",data.max_infants);
+    }
+    if(data?.min_children){
+      form.append("min_children",data.min_children);
+    }
+    if(data?.max_children){
+      form.append("max_children",data.max_children);
+    }
+    if(data?.min_adults){
+      form.append("min_adults",data.min_adults);
+    }
+    if(data?.max_adults){
+      form.append("max_adults",data.max_adults);
+    }
 
     for (let i = 0; i < tourPlan.length; i++) {
       tourPlan[i]?.images?.forEach((tour) => {
@@ -406,6 +416,14 @@ const AddPackage = () => {
       };
     });
 
+    const addInfo = additionalInformations?.map((info) => {
+      return {
+        title: info,
+      };
+    });
+
+    form.append("package_additional_info", JSON.stringify(addInfo));
+
     form.append("package_availability", JSON.stringify(availability));
 
     try {
@@ -429,7 +447,7 @@ const AddPackage = () => {
         setSelectedDestinations([]);
         setSelectedLanguages([]);
         setSelectedTravellerTypes([]);
-        setPackageType('')
+        setPackageType("");
         setServicesIds([]);
         setAvailableDates([]);
         setTourPlan([
@@ -448,7 +466,7 @@ const AddPackage = () => {
           },
         ]);
         setSelectedPickupPoints([""]);
-        selectedMeetingPoint("");
+        setSelectedMeetingPoint("");
         reset();
       } else {
         toast.error(res.data?.message || "Failed to create package");
@@ -460,17 +478,6 @@ const AddPackage = () => {
       setLoading(false);
     }
   };
-
-  /** UI image gallery (static) */
-  const imageGalleries = useMemo(
-    () => [
-      { image: image1 },
-      { image: image2 },
-      { image: image3 },
-      { image: image4 },
-    ],
-    []
-  );
 
   const handleOpenDatePicker = () => {
     setOpenDatePicker((prev) => !prev);
@@ -491,6 +498,13 @@ const AddPackage = () => {
   const hanleRemoveAvailableDate = (index) => {
     const updatedDates = availableDates.filter((date, idx) => idx != index);
     setAvailableDates(updatedDates);
+  };
+
+  const handleAdditionalInfoDelete = (id) => {
+    console.log('Deleting...')
+    setAdditionalInformations((prev) => {
+      return prev.filter((item, idx) => idx != id);
+    });
   };
 
   return (
@@ -779,6 +793,71 @@ const AddPackage = () => {
                 />
               </div>
 
+              <div className="border p-2 rounded-md space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-gray-500 text-base font-medium mb-2">
+                    Additional information
+                  </label>
+                  <button
+                    type="button"
+                    className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded hover:bg-[#d14a20] transition-colors"
+                    onClick={handleAdditionalInfo}
+                  >
+                    <FaPlus className="w-3 h-3" /> Add Additional Info.
+                  </button>
+                </div>
+                {showAdditionalInfo && (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      className="border w-full px-2 py-3 rounded-sm outline-none"
+                      placeholder="Enter additional information"
+                      value={information}
+                      onChange={(value) => setInformation(value.target?.value)}
+                    />
+                    <div className="space-x-2">
+                      <button
+                        type="button"
+                        className="border border-[#061D35] px-4 py-1 rounded-sm bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
+                        onClick={() => {
+                          setAdditionalInformations((prev) => [
+                            ...prev,
+                            { id: "", title: information },
+                          ]);
+                          setInformation("");
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="border border-[#061D35] px-4 py-1 rounded-sm text-base font-normal text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
+                        onClick={handleAdditionalInfo}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {additionalInformations && (
+                  <ul className="list-disc px-4">
+                    {additionalInformations?.map((info,idx) => (
+                      <li className="">
+                        <div className="flex items-center justify-between text-sm">
+                          <h2>{info?.title}</h2>
+                          <button
+                            type="button"
+                            onClick={() => handleAdditionalInfoDelete(idx)}
+                          >
+                            <LuTrash2 />
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
               {/* Trip plan */}
               <div className="flex flex-col gap-4">
                 <h3 className="text-2xl font-semibold text-[#080613]">
@@ -797,7 +876,7 @@ const AddPackage = () => {
               <div className="flex flex-col gap-4">
                 {/* Category */}
                 <div>
-                  <label className="block text-[#444] text-base font-medium mb-4">
+                  <label className="block text-gray-600 text-base font-medium mb-4">
                     Package/Tour Category
                   </label>
                   <select
@@ -823,7 +902,7 @@ const AddPackage = () => {
 
                 {/* Destinations */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
+                  <label className="block text-gray-600 text-base font-medium mb-4">
                     Destination{packageType === "package" ? "s" : ""}
                   </label>
                   <Select
@@ -847,7 +926,7 @@ const AddPackage = () => {
 
                 {/* Traveller Type */}
                 <div>
-                  <label className="block text-gray-500 text-base font-medium mb-4">
+                  <label className="block text-gray-600 text-base font-medium mb-4">
                     Traveller Type
                   </label>
                   <Select
@@ -864,10 +943,105 @@ const AddPackage = () => {
                   />
                 </div>
 
+                <div>
+                  {/* <label className="block text-gray-700 text-base font-medium mb-4">
+                    Traveller's
+                  </label> */}
+                  <div className="space-y-4">
+                    <div>
+                      <h2 className="text-gray-600 font-medium">
+                        Adults (Age 12 - 80)
+                      </h2>
+                      <div className="flex flex-col 2xl:flex-row gap-2 2xl:gap-4">
+                        <div className="flex-1">
+                          <label htmlFor="minAd" className="text-gray-500">
+                            Minimum
+                          </label>
+                          <input
+                            type="number"
+                            {...register('min_adults')}
+                            placeholder="Minimum adults"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label htmlFor="maxAd" className="text-gray-500">
+                            Maximum
+                          </label>
+                          <input
+                            type="number"
+                            {...register('max_adults')}
+                            placeholder="Maximum adults"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-gray-600 font-medium">
+                        Child (Age 4 - 11)
+                      </h2>
+                      <div className="flex flex-col 2xl:flex-row gap-2 2xl:gap-4">
+                        <div className="flex-1">
+                          <label htmlFor="minch" className="text-gray-500">
+                            Minimum
+                          </label>
+                          <input
+                            type="number"
+                            {...register('min_children')}
+                            placeholder="Minimum children's"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label htmlFor="maxch" className="text-gray-500">
+                            Maximum
+                          </label>
+                          <input
+                            type="number"
+                            {...register('max_children')}
+                            placeholder="Maximum children's"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-gray-600 font-medium">
+                        Infant (Age 0 - 3)
+                      </h2>
+                      <div className="flex flex-col 2xl:flex-row gap-2 2xl:gap-4">
+                        <div className="flex-1">
+                          <label htmlFor="minIn" className="text-gray-500">
+                            Minimum
+                          </label>
+                          <input
+                            type="number"
+                            {...register('min_infants')}
+                            placeholder="Maximum infant's"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label htmlFor="maxIn" className="text-gray-500">
+                            Maximum
+                          </label>
+                          <input
+                            type="number"
+                            {...register('max_infants')}
+                            placeholder="Maximum infant's"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Duration + Type */}
                 <div className="flex flex-col 2xl:flex-row gap-4">
                   <div className="flex-1">
-                    <label className="block text-[#444] text-base font-medium mb-4">
+                    <label className="block text-gray-600 text-base font-medium mb-4">
                       Package Duration
                     </label>
                     <input
@@ -887,7 +1061,7 @@ const AddPackage = () => {
                     )}
                   </div>
                   <div className="flex-1">
-                    <label className="block text-gray-500 text-base font-medium mb-4">
+                    <label className="block text-gray-600 text-base font-medium mb-4">
                       Duration Type
                     </label>
                     <select
@@ -911,7 +1085,7 @@ const AddPackage = () => {
 
                 {/* Price */}
                 <div className="space-y-2">
-                  <label className="block text-[#444] text-base font-medium">
+                  <label className="block text-gray-600 text-base font-medium">
                     Package Price ($)
                   </label>
                   <input
@@ -930,7 +1104,7 @@ const AddPackage = () => {
 
                 {/* Cancellation policy */}
                 <div>
-                  <label className="block text-[#444] text-base font-medium mb-4">
+                  <label className="block text-gray-600 text-base font-medium mb-4">
                     Cancellation Policy
                   </label>
                   <select
@@ -952,7 +1126,7 @@ const AddPackage = () => {
                     <li>
                       <details className="group">
                         <summary className="flex items-center justify-between gap-2 font-medium hover:cursor-pointer">
-                          <span className="flex gap-2 text-[#444] text-base font-medium">
+                          <span className="flex gap-2 text-gray-600 text-base font-medium">
                             Extra Service
                           </span>
                           <svg
@@ -1005,7 +1179,7 @@ const AddPackage = () => {
 
                 {/* Language */}
                 <div>
-                  <label className="block text-[#444] text-base font-medium mb-4">
+                  <label className="block text-gray-600 text-base font-medium mb-4">
                     Language
                   </label>
                   <Select
@@ -1066,3 +1240,14 @@ const AddPackage = () => {
 };
 
 export default AddPackage;
+
+
+
+{
+    "success": false,
+    "message": "
+    Invalid `this.packageService.create()` invocation in
+    C:\\Users\\bdCalling\\project\\travel-agency-backend\\src\\modules\\admin\\package\\package.controller.ts:76:22\n\n  73 ) {
+        74   try {
+           75     const user_id = req.user.userId;\n→ 76     const record = await this.packageService.create({\n           data: {\n             package_id: \"cmfs1v3rz004mwsz4z1ol4ipq\",\n             type: \"general\",\n             title: {\n               id: \"\",\n               title: \"Sit temporibus in q\"\n             },\n             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n             description: undefined,\n             is_important: false,\n             sort_order: 0\n           }\n         })\n\nArgument `title`: Invalid value provided. Expected String or Null, provided Object."
+}

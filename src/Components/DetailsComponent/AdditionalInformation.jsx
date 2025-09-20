@@ -11,6 +11,10 @@ import {
 } from "../../../public/Icons";
 import TravelerPhotos from "./TravelerPhotos";
 import { Link } from "react-router-dom";
+import Select from "react-select";
+
+
+const toOption = (id, label) => ({ value: id, label });
 
 export default function AdditionalInformation({
   details,
@@ -26,6 +30,12 @@ export default function AdditionalInformation({
   const [travelerPhotoIsOpen, setTravelerPhotoIsOpen] = useState(0);
   const [included, setIncluded] = useState([]);
   const [excluded, setExcluded] = useState([]);
+  const [meetingPoint, setMeetingPoint] = useState();
+  const [pickupPoints, setPickupPoints] = useState([]);
+  const [selectedPickupPoint,setSelectedPickupPoint] = useState('');
+  const [additionalInfoLimit,setAdditionalInfoLimit] = useState(3);
+
+  console.log("Additional information : ",additionalInformation);
 
   useEffect(() => {
     const incl = details?.package_tags?.filter(
@@ -36,6 +46,14 @@ export default function AdditionalInformation({
       (pack) => pack?.type === "excluded"
     );
     setExcluded(excl);
+    const meeting = details?.package_places?.filter(
+      (place) => place?.type === "meeting_point"
+    );
+    setMeetingPoint(meeting[0]);
+    const pickup = details?.package_places?.filter(
+      (place) => place?.type === "pickup_point"
+    );
+    setPickupPoints([...pickup]);
   }, []);
 
   const toggleIncluded = () => {
@@ -46,22 +64,18 @@ export default function AdditionalInformation({
     setIsMeetingOpen((prev) => !prev);
   };
   const handleShowMoreIncludeExclude = () => {
-    setShowMoreInclude((prev) => {
-      if (prev === 3) {
-        return Object.entries(includeExclude).filter(([_, value]) => value)
-          .length;
-      } else {
-        return 3;
+    setShowMoreExclude(prev => {
+      if(prev === 3){
+        return excluded.length;
       }
-    });
-    setShowMoreExclude((prev) => {
-      if (prev === 3) {
-        return Object.entries(includeExclude).filter(([_, value]) => !value)
-          .length;
-      } else {
-        return 3;
+      return 3;
+    })
+    setShowMoreInclude(prev => {
+      if(prev === 3){
+        return included.length;
       }
-    });
+      return 3;
+    })
   };
 
   const displayTripPlan = (plan, index) => (
@@ -138,14 +152,13 @@ export default function AdditionalInformation({
                   ))}
               </div>
             </div>
-            {included.length > 6 &&
-              included.length != showMoreExclude + showMoreInclude && (
+            {(showMoreExclude === 3 && included.length + excluded.length > 6 )&& (
                 <div className="w-full text-center">
                   <button
                     className="w-fit cursor-pointer text-orange-500 text-sm"
                     onClick={handleShowMoreIncludeExclude}
                   >
-                    Show more ( +{included?.length - 6} )
+                    Show more ( +{included.length - 3 + (excluded.length - 3)})
                   </button>
                 </div>
               )}
@@ -184,77 +197,86 @@ export default function AdditionalInformation({
             </div>
             <div className="p-4 border border-[#a6aaac33] rounded-xl">
               <div className="flex flex-col sm:flex-row justify-between gap-6">
-                <div className="flex flex-col gap-5">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex gap-1">
-                      {fullAvatarHandUp}
-                      <h4 className="text-base font-medium">Pickup points</h4>
+                {pickupPoints && (
+                  <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-1">
+                        {fullAvatarHandUp}
+                        <h4 className="text-base font-medium">Pickup points</h4>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <label htmlFor="" className="text-[#49556D] text-sm">
+                          Select a pickup point
+                        </label>
+                        <div>
+                          <Select
+                            options={pickupPoints?.map((item) => toOption(item.id, item.place?.name))}
+                            value={selectedPickupPoint}
+                            onChange={(select) =>
+                              setSelectedPickupPoint(select || "")
+                            }
+                            placeholder="Select a pickup point"
+                            className="react-select-container"
+                            classNamePrefix="react-select"
+                          />
+                        </div>
+                      </div>
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label htmlFor="" className="text-[#49556D] text-sm">
-                        Select a pickup point
-                      </label>
-                      <div className="flex justify-between items-center border border-[#D2D2D5] rounded-xl p-2 sm:p-4">
-                        <input
-                          type="text"
-                          placeholder="Type of search"
-                          className="placeholder:text-sm text-base placeholder:text-[#4A4C56] focus:outline-none"
-                        />
-                        {searchIcon}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <h3 className="text-base font-medium text-[#000]">
-                      Pickup details
-                    </h3>
-                    <div>
-                      <p className="text-sm font-normal text-[#49556D]">
-                        One person of our team will contact you to give you the
-                        time and more details of the pickup process one day
-                        before
-                      </p>
-                      <button className="flex gap-2 items-center text-base text-[#1D1F2C]">
-                        <span>Read more </span>
-                        {downArrow}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="hidden sm:flex flex-col h-full relative jusitfy-center items-center">
-                  <div className="w-[2px] h-[320px] bg-[#DFE1E7]"></div>
-                  <p className="absolute top-1/2 -translate-y-1/2 text-base text-center text-[#475467] bg-white py-3">
-                    or
-                  </p>
-                </div>
-                <div>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex gap-2 items-center">
-                      {locationIcon}
-                      <h3 className="text-[16px] font-medium text-[#0F1416] leading-[160%]">
-                        Meeting point
+                      <h3 className="text-base font-medium text-[#000]">
+                        Pickup details
                       </h3>
+                      <div>
+                        <p className="text-sm font-normal text-[#49556D]">
+                          One person of our team will contact you to give you
+                          the time and more details of the pickup process one
+                          day before the event day.
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-[30px]">
-                      <p className="text-[14px] leading-[160%] text-[#49556D]">
-                        {meetingData.meetingPointDetails}
-                      </p>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex gap-2 items-center">
-                          <Link to={`https://www.google.com/maps?q=${details?.package_destinations?.[0]?.destination?.latitude},${details?.package_destinations?.[0]?.destination?.longitude}`} className="underline cursor-pointer">
-                            Open In Google Maps
-                          </Link>
-                          <div className="-rotate-90">{downArrow}</div>
-                        </div>
-                        <div className="text-[14px] leading-[160%] text-[#49556D]">
-                          Please arrive to this meeting point it you select the
-                          option without transportation from
-                          {meetingData.travelingCity} City.
+                  </div>
+                )}
+                {pickupPoints && meetingPoint && (
+                  <div className="hidden sm:flex flex-col h-full relative jusitfy-center items-center">
+                    <div className="w-[2px] h-[320px] bg-[#DFE1E7]"></div>
+                    <p className="absolute top-1/2 -translate-y-1/2 text-base text-center text-[#475467] bg-white py-3">
+                      or
+                    </p>
+                  </div>
+                )}
+                {meetingPoint && (
+                  <div>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2 items-center">
+                        {locationIcon}
+                        <h3 className="text-[16px] font-medium text-[#0F1416] leading-[160%]">
+                          Meeting point
+                        </h3>
+                      </div>
+                      <div className="flex flex-col gap-[30px]">
+                        <p className="text-[14px] leading-[160%] text-[#49556D]">
+                          {meetingPoint?.place?.address}
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex gap-2 items-center">
+                            <Link
+                              to={`https://www.google.com/maps?q=${meetingPoint?.place?.latitude},${meetingPoint?.place?.longitude}`}
+                              className="underline cursor-pointer"
+                            >
+                              Open In Google Maps
+                            </Link>
+                            <div className="-rotate-90">{downArrow}</div>
+                          </div>
+                          <div className="text-[14px] leading-[160%] text-[#49556D]">
+                            Please arrive to this meeting point it you select
+                            the option without transportation from
+                            {meetingData.travelingCity} City.
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
               <div>
                 <div className="flex items-center gap-1">
@@ -334,26 +356,26 @@ export default function AdditionalInformation({
                     >
                       {additionalInformation
                         .filter((_, i) => i % 2 === colIndex)
-                        .slice(0, 6) // Show only first 6 items in total
+                        .slice(0, additionalInfoLimit) // Show only first 6 items in total
                         .map((item, idx) => (
                           <li
                             key={idx}
                             className="text-[16px] leading-[160%] text-[#1D1F2C]"
                           >
-                            {item}
+                            {item?.title}
                           </li>
                         ))}
                     </ul>
                   ))}
                 </div>
-                <div className="flex justify-between text-orange-500 text-xs sm:text-sm font-medium p-2">
+                {additionalInfoLimit === 3 && <div className="flex justify-between text-orange-500 text-xs sm:text-sm font-medium p-2">
                   {additionalInformation.length > 6 && (
-                    <button>
+                    <button type="button" onClick={()=>setAdditionalInfoLimit(prev => prev === 3?additionalInformation.length:3)}>
                       Show {additionalInformation.length - 6} more
                     </button>
                   )}
                   <button>Supplied by Around 360</button>
-                </div>
+                </div>}
               </div>
             </div>
           </div>
