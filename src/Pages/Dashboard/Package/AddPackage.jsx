@@ -1240,14 +1240,3 @@ const AddPackage = () => {
 };
 
 export default AddPackage;
-
-
-
-{
-    "success": false,
-    "message": "
-    Invalid `this.packageService.create()` invocation in
-    C:\\Users\\bdCalling\\project\\travel-agency-backend\\src\\modules\\admin\\package\\package.controller.ts:76:22\n\n  73 ) {
-        74   try {
-           75     const user_id = req.user.userId;\n→ 76     const record = await this.packageService.create({\n           data: {\n             package_id: \"cmfs1v3rz004mwsz4z1ol4ipq\",\n             type: \"general\",\n             title: {\n               id: \"\",\n               title: \"Sit temporibus in q\"\n             },\n             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n             description: undefined,\n             is_important: false,\n             sort_order: 0\n           }\n         })\n\nArgument `title`: Invalid value provided. Expected String or Null, provided Object."
-}
