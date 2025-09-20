@@ -12,6 +12,10 @@ import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import EditTourPlan from "../../../Components/Dashboard/Packages/EditPackage/EditTourPlan";
 import { UserServices } from "~/userServices/user.services";
+import { FaPlus } from "react-icons/fa";
+import { LuTrash2 } from "react-icons/lu";
+import AddPackageDatePicker from "~/Components/Admin/AddPackageDatePicker";
+import { IoIosClose } from "react-icons/io";
 
 const toOption = (id, label) => ({ value: id, label });
 const getSelectedOptions = (options, selectedIds) =>
@@ -51,19 +55,25 @@ const EditPackage = () => {
   const [selectedMeetingPoint, setSelectedMeetingPoint] = useState("");
   const [meetingPoints, setMeetingPoints] = useState();
   const [selectedPickupPoints, setSelectedPickupPoints] = useState([""]);
-
+  const [additionalInformations, setAdditionalInformations] = useState([]);
+  const [information, setInformation] = useState("");
+  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
+  const [checkInCheckOutDate, setCheckInCheckOutDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [availableDates, setAvailableDates] = useState([]);
+  const [openDatePicker, setOpenDatePicker] = useState(false);
   // media + tour plan
   const [images, setImages] = useState([]); // mix of {id, file_url|video_url} or {file, preview, type}
   const [tourPlan, setTourPlan] = useState([
     { id: null, day: 1, title: "", description: "", images: [] },
   ]);
+  const [selectedCategory, setSeletectedCategory] = useState("");
 
   const [loading, setLoading] = useState(false);
   const previewsRef = useRef(new Set());
 
   const fetchMeetingPlace = async () => {
     try {
-      console.clear();
       const res = await UserServices.getAllPlaces();
       setMeetingPoints(res.data);
     } catch (error) {
@@ -121,8 +131,6 @@ const EditPackage = () => {
 
         // prefill for edit
         const pkg = resPackage.data?.data;
-        console.clear();
-        console.log(pkg);
         if (pkg) {
           setValue("name", pkg.name || "");
           setValue("description", pkg.description || "");
@@ -134,11 +142,51 @@ const EditPackage = () => {
           setValue("cancellation_policy_id", pkg.cancellation_policy?.id || "");
           setValue("type", pkg.type || "");
           setPackageType(pkg.type || "tour");
-          setSelectedMeetingPoint(pkg?.package_places?.[0]?.place?.id);
+          setSelectedMeetingPoint(
+            toOption(
+              pkg?.package_places?.[0]?.place?.id,
+              pkg?.package_places?.[0]?.place?.name
+            )
+          );
+          setValue("min_infants", pkg.min_infants);
+          setValue("max_infants", pkg.max_infants);
+          setValue("min_children", pkg.min_children);
+          setValue("max_children", pkg.max_children);
+          setValue("min_adults", pkg.min_adults);
+          setValue("max_adults", pkg.max_adults);
+
+          // console.log("Place : ",pkg?.package_places?.[0]?.place?.id)
           setValue(
             "package_category",
             pkg?.package_categories?.[0]?.category.id
           );
+
+          if (pkg.package_availabilities.length && pkg.type === "package") {
+            setAvailableDates(pkg.package_availabilities);
+          }
+
+          if (pkg?.package_places?.length) {
+            const pickups = pkg?.package_places?.filter(
+              (place) => place?.type === "pickup_point"
+            );
+            const place = pickups?.map((pl) => {
+              return {
+                value: pl?.place?.id,
+                label: pl?.place?.name,
+              };
+            });
+            setSelectedPickupPoints(place);
+          }
+          if (pkg?.package_places?.length) {
+            const meeting = pkg?.package_places?.filter(
+              (place) => place?.type === "meeting_point"
+            );
+            const place = {
+              value: meeting[0]?.place?.id,
+              label: meeting[0]?.place?.name,
+            };
+            setSelectedMeetingPoint(place);
+          }
 
           // categories (assuming single category id; if array needed, adapt)
           if (pkg.package_categories?.length) {
@@ -163,6 +211,13 @@ const EditPackage = () => {
             }));
             setSelectedLanguages(langs);
             setValue("languages", langs);
+          }
+
+          if (pkg?.package_categories?.length) {
+            setSeletectedCategory({
+              value: pkg?.package_categories?.[0]?.category?.id,
+              label: pkg?.package_categories?.[0]?.category?.name,
+            });
           }
 
           // traveller types
@@ -195,6 +250,10 @@ const EditPackage = () => {
                 tripPlan: plan?.package_trip_plan_details,
               }))
             );
+          }
+
+          if (pkg?.package_additional_info?.length) {
+            setAdditionalInformations(pkg?.package_additional_info);
           }
 
           // tags
@@ -288,6 +347,11 @@ const EditPackage = () => {
     });
   };
 
+  const handleAdditionalInfo = () => {
+    setShowAdditionalInfo((prev) => !prev);
+    setInformation("");
+  };
+
   /** -------- Options (memo) -------- */
   const destinationOptions = useMemo(() => destinations, [destinations]);
   const categoryOptions = useMemo(() => categories, [categories]);
@@ -355,6 +419,30 @@ const EditPackage = () => {
     }
   };
 
+  const handleOpenDatePicker = () => {
+    setOpenDatePicker((prev) => !prev);
+  };
+
+  const handleCheckInCheckOutDate = (data) => {
+    if (data[0]) {
+      setCheckInCheckOutDate(data);
+      setAvailableDates((prev) => [
+        ...prev,
+        { start_date: data[0], end_date: data[1] },
+      ]);
+    }
+  };
+
+  const handleSelectedDate = (name, date) => {
+    console.log(selectedDate);
+    setSelectedDate((prev) => ({ ...prev, [name]: date }));
+  };
+
+  const hanleRemoveAvailableDate = (index) => {
+    const updatedDates = availableDates.filter((date, idx) => idx != index);
+    setAvailableDates(updatedDates);
+  };
+
   const handleExtraServices = (serviceId, isChecked) => {
     setServicesIds((prev) =>
       isChecked
@@ -414,6 +502,11 @@ const EditPackage = () => {
 
     form.append("package_places", JSON.stringify(package_places));
 
+    form.append(
+      "package_additional_info",
+      JSON.stringify(additionalInformations)
+    );
+
     // package media
     const existingPackageImages = [];
     images.forEach((item) => {
@@ -443,6 +536,25 @@ const EditPackage = () => {
     form.append("trip_plans_images", JSON.stringify(trip_plans_images_json));
     form.append("trip_plans", JSON.stringify(tourPlan));
 
+    if (data?.min_infants) {
+      form.append("min_infants", data.min_infants);
+    }
+    if (data?.max_infants) {
+      form.append("max_infants", data.max_infants);
+    }
+    if (data?.min_children) {
+      form.append("min_children", data.min_children);
+    }
+    if (data?.max_children) {
+      form.append("max_children", data.max_children);
+    }
+    if (data?.min_adults) {
+      form.append("min_adults", data.min_adults);
+    }
+    if (data?.max_adults) {
+      form.append("max_adults", data.max_adults);
+    }
+
     try {
       setLoading(true);
       toast.info("Updating package...");
@@ -465,16 +577,16 @@ const EditPackage = () => {
     }
   };
 
+  const handleAdditionalInfoDelete = (id) => {
+    setAdditionalInformations((prev) => {
+      return prev.filter((item, idx) => idx !== id);
+    });
+  };
+
   /** static gallery */
-  const imageGalleries = useMemo(
-    () => [
-      { image: image1 },
-      { image: image2 },
-      { image: image3 },
-      { image: image4 },
-    ],
-    []
-  );
+  useEffect(() => {
+    console.log("selected category : ", selectedCategory);
+  }, [selectedCategory]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -490,6 +602,28 @@ const EditPackage = () => {
               <h3 className="text-2xl font-semibold text-[#080613]">
                 Package Details
               </h3>
+
+              <div>
+                <label className="block text-gray-500 text-base font-medium mb-4">
+                  Package Type
+                </label>
+                <select
+                  {...register("type", { required: "Type is required" })}
+                  className="text-base text-[#333] w-full p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                  value={packageType}
+                  onChange={(e) => setPackageType(e.target.value)}
+                  aria-invalid={!!errors.type}
+                >
+                  <option value="">Select Package Type</option>
+                  <option value="tour">Tour</option>
+                  <option value="package">Package</option>
+                </select>
+                {errors.type && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.type.message}
+                  </p>
+                )}
+              </div>
 
               {/* name */}
               <div>
@@ -531,6 +665,64 @@ const EditPackage = () => {
                   </p>
                 )}
               </div>
+
+              {packageType === "package" && (
+                <div className="relative">
+                  <label className="block text-gray-500 text-base font-medium mb-2">
+                    Select Available Dates
+                  </label>
+                  <div
+                    className="w-full p-3 text-black rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                    onClick={handleOpenDatePicker}
+                  >
+                    {availableDates.length <= 0 && (
+                      <span className="text-sm text-[#999] font-semibold">
+                        Click here to add available dates.
+                      </span>
+                    )}
+                    <div className="flex flex-wrap gap-3 justify-between">
+                      {availableDates.map((date, index) => (
+                        <div
+                          key={index}
+                          className="bg-gray-200 px-4 py-2 rounded-md relative"
+                        >
+                          {new Date(date?.start_date)?.toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "2-digit",
+                            }
+                          )}
+                          {" - "}
+                          {new Date(date?.end_date)?.toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "2-digit",
+                            }
+                          )}
+                          <div
+                            className="bg-red-500 w-fit h-fit rounded-full cursor-pointer text-white absolute -top-1 -right-1"
+                            onClick={(e) => {
+                              e.stopPropagation(); // This stops the event from bubbling up
+                              hanleRemoveAvailableDate(index);
+                            }}
+                          >
+                            <IoIosClose />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {openDatePicker && (
+                    <AddPackageDatePicker
+                      handleOpenDatePicker={handleOpenDatePicker}
+                      handleSelectedDate={handleSelectedDate}
+                      handleCheckInCheckOutDate={handleCheckInCheckOutDate}
+                    />
+                  )}
+                </div>
+              )}
 
               {/* upload */}
               <div className="w-full">
@@ -680,6 +872,71 @@ const EditPackage = () => {
                 />
               </div>
 
+              <div className="border p-2 rounded-md space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="block text-gray-500 text-base font-medium mb-2">
+                    Additional information
+                  </label>
+                  <button
+                    type="button"
+                    className="px-2 py-[9px] bg-[#EB5B2A] flex items-center gap-1 text-white text-xs w-fit rounded hover:bg-[#d14a20] transition-colors"
+                    onClick={handleAdditionalInfo}
+                  >
+                    <FaPlus className="w-3 h-3" /> Add Additional Info.
+                  </button>
+                </div>
+                {showAdditionalInfo && (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      className="border w-full px-2 py-3 rounded-sm outline-none"
+                      placeholder="Enter additional information"
+                      value={information}
+                      onChange={(value) => setInformation(value.target?.value)}
+                    />
+                    <div className="space-x-2">
+                      <button
+                        type="button"
+                        className="border border-[#061D35] px-4 py-1 rounded-sm bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
+                        onClick={() => {
+                          setAdditionalInformations((prev) => [
+                            ...prev,
+                            { id: "", title: information },
+                          ]);
+                          setInformation("");
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="border border-[#061D35] px-4 py-1 rounded-sm text-base font-normal text-[#4A4C56] hover:bg-[#061D35] hover:text-white"
+                        onClick={handleAdditionalInfo}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {additionalInformations && (
+                  <ul className="list-disc px-4">
+                    {additionalInformations?.map((info, idx) => (
+                      <li className="">
+                        <div className="flex items-center justify-between text-sm">
+                          <h2>{info?.title}</h2>
+                          <button
+                            type="button"
+                            onClick={() => handleAdditionalInfoDelete(idx)}
+                          >
+                            <LuTrash2 />
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
               <div className="flex flex-col gap-4 mt-4">
                 <h3 className="text-2xl font-semibold text-[#080613]">
                   Tour Plan
@@ -697,7 +954,7 @@ const EditPackage = () => {
             <div className="p-4 bg-[#FDEFEA] rounded-2xl h-fit mt-4 md:mt-0">
               <div className="flex flex-col gap-4">
                 {/* type */}
-                <div>
+                {/* <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Package Type
                   </label>
@@ -718,14 +975,14 @@ const EditPackage = () => {
                       {errors.type.message}
                     </p>
                   )}
-                </div>
+                </div> */}
 
                 {/* category */}
                 <div>
                   <label className="block text-gray-500 text-base font-medium mb-4">
                     Package/Tour Category
                   </label>
-                  <select
+                  {/* <select
                     {...register("package_category", {
                       required: "Package/Tour category is required",
                     })}
@@ -738,7 +995,15 @@ const EditPackage = () => {
                         {cat.label}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
+                  <Select
+                    options={categoryOptions}
+                    value={selectedCategory}
+                    onChange={(select) => setSeletectedCategory(select || "")}
+                    placeholder="Select included items"
+                    className="react-select-container"
+                    classNamePrefix="react-select"
+                  />
                   {errors.package_category && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.package_category.message}
@@ -802,6 +1067,98 @@ const EditPackage = () => {
                     className="react-select-container"
                     classNamePrefix="react-select"
                   />
+                </div>
+
+                <div>
+                  <div className="space-y-4">
+                    <div>
+                      <h2 className="text-gray-600 font-medium">
+                        Adults (Age 12 - 80)
+                      </h2>
+                      <div className="flex flex-col 2xl:flex-row gap-2 2xl:gap-4">
+                        <div className="flex-1">
+                          <label htmlFor="minAd" className="text-gray-500">
+                            Minimum
+                          </label>
+                          <input
+                            type="number"
+                            {...register("min_adults")}
+                            placeholder="Minimum adults"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label htmlFor="maxAd" className="text-gray-500">
+                            Maximum
+                          </label>
+                          <input
+                            type="number"
+                            {...register("max_adults")}
+                            placeholder="Maximum adults"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-gray-600 font-medium">
+                        Child (Age 4 - 11)
+                      </h2>
+                      <div className="flex flex-col 2xl:flex-row gap-2 2xl:gap-4">
+                        <div className="flex-1">
+                          <label htmlFor="minch" className="text-gray-500">
+                            Minimum
+                          </label>
+                          <input
+                            type="number"
+                            {...register("min_children")}
+                            placeholder="Minimum children's"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label htmlFor="maxch" className="text-gray-500">
+                            Maximum
+                          </label>
+                          <input
+                            type="number"
+                            {...register("max_children")}
+                            placeholder="Maximum children's"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <h2 className="text-gray-600 font-medium">
+                        Infant (Age 0 - 3)
+                      </h2>
+                      <div className="flex flex-col 2xl:flex-row gap-2 2xl:gap-4">
+                        <div className="flex-1">
+                          <label htmlFor="minIn" className="text-gray-500">
+                            Minimum
+                          </label>
+                          <input
+                            type="number"
+                            {...register("min_infants")}
+                            placeholder="Maximum infant's"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <label htmlFor="maxIn" className="text-gray-500">
+                            Maximum
+                          </label>
+                          <input
+                            type="number"
+                            {...register("max_infants")}
+                            placeholder="Maximum infant's"
+                            className="text-base text-[#333] w-full px-3 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-600"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* price */}

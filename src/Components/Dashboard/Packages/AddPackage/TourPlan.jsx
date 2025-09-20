@@ -233,7 +233,7 @@ const TourPlan = ({ tourPlan, setTourPlan, packageType }) => {
 
                 <div>
                   <label className="block text-[#4A4C56] text-base font-medium mb-2">
-                    Time (hours)
+                    Time (minutes)
                   </label>
                   <input
                     type="number"

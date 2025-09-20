@@ -38,8 +38,7 @@ const Packages = () => {
   }
 
   useEffect(()=>{
-    const filtered = data?.data?.filter(item => item?.rejected_at === null)
-    setPakcageData(filtered);
+    setPakcageData(data?.data);
   },[data])
 
 

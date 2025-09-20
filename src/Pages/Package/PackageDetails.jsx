@@ -97,6 +97,8 @@ const PackageDetails = () => {
     if (res?.success) {
       setPackageDetails(res?.data)
       setLoading(false);
+      console.clear();
+      console.log("Response data : ",res?.data);
     }
   }
   return (

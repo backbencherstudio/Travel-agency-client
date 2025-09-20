@@ -202,6 +202,7 @@ const Details = ({
             handleSharePhoto={handleSharePhoto}
             selectedImage={selectedImage}
             handleUpdateReviewSlider={handleUpdateReviewSlider}
+            handleShowImage={handleShowImage}
           />
           <AdditionalInformation
             details={details}
