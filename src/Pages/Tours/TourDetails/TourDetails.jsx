@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import Loading from "../../../Shared/Loading";
 import { Helmet } from "react-helmet-async";
 import Chatcard from "./ChatCard";
+import { useBookingContext } from "~/Context/BookingContext/BookingContext";
 
 const TourDetails = () => {
   // const links = [

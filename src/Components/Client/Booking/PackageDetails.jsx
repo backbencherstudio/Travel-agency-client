@@ -10,30 +10,28 @@ const formatDate = isoDate => {
   })
 }
 
-const PackageDetails = ({ checkoutData }) => {
+const PackageDetails = ({ packageData }) => {
 
   // console.log("checkout", checkoutData)
   // Get average rating from backend, default to 0 if null or undefined
-  const averageRating = checkoutData?.data?.checkout?.average_rating ?? 0
-
-
-  // console.log("checkoutData", checkoutData)
+  // const averageRating = checkoutData?.data?.checkout?.average_rating ?? 0
+  console.log("checkoutData", packageData)
   return (
     <div>
       <div className='bg-[#FDEFEA] p-5 rounded-lg'>
         <div className='flex flex-col sm:flex-row items-center justify-between'>
-          <h1 className='font-bold text-[#070707] text-xl sm:text-[40px] mb-3'>
-            {checkoutData?.data?.checkout?.checkout_items?.[0]?.package?.name ||
+          <h1 className='font-bold text-[#070707] text-xl sm:text-[40px] mb-3 leading-[50px]'>
+            {packageData?.name ||
               'Not found'}
           </h1>
           <div className='flex items-center gap-2 sm:hidden'>
             <p className='text-[#4A4C56] text-[14px]'>Review</p>
             <div className='flex items-center gap-1'>
               {[...Array(5)].map((_, index) => {
-                const fullStar = Math.floor(averageRating) > index
+                const fullStar = Math.floor(packageData?.review) > index
                 const halfStar =
-                  Math.ceil(averageRating) > index &&
-                  Math.floor(averageRating) <= index
+                  Math.ceil(packageData?.review) > index &&
+                  Math.floor(packageData?.review) <= index
                 return (
                   <React.Fragment key={index}>
                     {fullStar && (
@@ -51,7 +49,7 @@ const PackageDetails = ({ checkoutData }) => {
             </div>
             {/* Numeric Average Rating */}
             <p className='text-[#4A4C56] text-[14px] font-medium'>
-              ({averageRating.toFixed(1)})
+              ({packageData?.review.toFixed(1)})
             </p>
           </div>
         </div>
@@ -60,10 +58,10 @@ const PackageDetails = ({ checkoutData }) => {
             <p className='text-[#4A4C56] text-[14px] '>Review</p>
             <div className='flex items-center gap-1'>
               {[...Array(5)].map((_, index) => {
-                const fullStar = Math.floor(averageRating) > index
+                const fullStar = Math.floor(packageData?.review) > index
                 const halfStar =
-                  Math.ceil(averageRating) > index &&
-                  Math.floor(averageRating) <= index
+                  Math.ceil(packageData?.review) > index &&
+                  Math.floor(packageData?.review) <= index
                 return (
                   <React.Fragment key={index}>
                     {fullStar && (
@@ -86,26 +84,20 @@ const PackageDetails = ({ checkoutData }) => {
           </div>
           <div className='h-14 w-[1px] bg-gray-300 hidden sm:block'></div>
           <div className=''>
-            <p className='text-[#4A4C56] text-[14px] mb-3'>Days</p>
+            <p className='text-[#4A4C56] text-[14px] mb-3'>Duration</p>
             <p className=' text-[16px] text-[#070707]'>
-              {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                ?.duration || '0'}{' '}
-              days
+              {packageData?.duration || '0'}{' '} {packageData?.duration_type}
             </p>
           </div>
           <div className='h-14 w-[1px] bg-gray-300'></div>
           <div>
             <p className='text-[#4A4C56] text-[14px] mb-3'>Location</p>
             <p className='text-[16px] text-[#070707]'>
-              {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                ?.package_destinations?.[0]?.destination?.name || 'Default Location'}
-              ,{' '}
-              {checkoutData?.data?.checkout?.checkout_items?.[0]?.package
-                ?.package_destinations?.[0]?.destination?.country?.name || 'Default Country'}
+              {packageData?.destination}
             </p>
           </div>
         </div>
-        <div className='flex gap-5 sm:gap-16 lg:justify-start lg:gap-16 mt-10'>
+        {/* <div className='flex gap-5 sm:gap-16 lg:justify-start lg:gap-16 mt-10'>
           {checkoutData?.data?.checkout?.checkout_items?.length > 0 ? (
             checkoutData.data.checkout.checkout_items.map((item, index) => {
               // Calculate days and nights
@@ -122,15 +114,12 @@ const PackageDetails = ({ checkoutData }) => {
                   // key={index}
                   className='flex gap-10 items-center w-full max-w-3xl'
                 >
-                  {/* Start Date */}
                   <div className='text-center sm:text-left'>
                     <p className='text-[16px] text-[#070707]'>
-                      {/* {formatDate(item.start_date)} */}
                       Aug 11, 2024
                     </p>
                   </div>
 
-                  {/* Duration Badge */}
                   <div className='relative flex items-center w-full max-w-xs my-2 sm:my-0'>
                     <div className='border-t border-dashed border-gray-300 w-full'></div>
                     <div className='absolute left-1/2 transform -translate-x-1/2 bg-orange-500 text-white px-4 py-[10px] rounded-full text-sm'>
@@ -138,10 +127,8 @@ const PackageDetails = ({ checkoutData }) => {
                     </div>
                   </div>
 
-                  {/* End Date */}
                   <div className='text-center sm:text-right'>
                     <p className='text-[16px] text-[#070707]'>
-                      {/* {formatDate(item.end_date)} */}
                       Aug 16, 2024
                     </p>
                   </div>
@@ -151,7 +138,7 @@ const PackageDetails = ({ checkoutData }) => {
           ) : (
             <p className='text-center'>No checkout items available.</p>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   )

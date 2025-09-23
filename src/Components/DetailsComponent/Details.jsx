@@ -176,7 +176,10 @@ const Details = ({
     // These would need to be defined in your component
     setBooking(true);
     setCancelDesc(cancelDesc);
-    // setBookNowPayLaterDesc(`until ${cancelDate.toLocaleDateString(...)}`);
+    setBookNowPayLaterDesc(`until ${cancelDate.toLocaleDateString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`);
   };
 
   const handleTravelerPhotos = (index) => {

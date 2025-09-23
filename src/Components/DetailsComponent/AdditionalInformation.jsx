@@ -12,6 +12,7 @@ import {
 import TravelerPhotos from "./TravelerPhotos";
 import { Link } from "react-router-dom";
 import Select from "react-select";
+import { useBookingContext } from "~/Context/BookingContext/BookingContext";
 
 
 const toOption = (id, label) => ({ value: id, label });
@@ -23,6 +24,7 @@ export default function AdditionalInformation({
   TravellerPhotos,
   meetingData,
 }) {
+  const {updateBooking,bookingDetails} = useBookingContext();
   const [isMeetingOpen, setIsMeetingOpen] = useState(false);
   const [isIncludedOpen, setIsIncludedOpen] = useState(false);
   const [showMoreInclude, setShowMoreInclude] = useState(3);
@@ -87,7 +89,7 @@ export default function AdditionalInformation({
       <p className="text-sm sm:text-base">{plan.description}</p>
       <div className="text-xs sm:text-sm text-[#475467]">
         <span>{plan.time} minutes </span>.
-        <span> Admission Ticket {plan.fee}</span>
+        <span className="capitalize"> Admission Ticket {plan.notes}</span>
       </div>
       <div className="absolute -left-[17px] -top-[17px] bg-[#FDEFEA] w-[30px] h-[30px] sm:w-[35px] sm:h-[35px] flex items-center justify-center rounded-full text-[#EB5B2A] text-[20px] font-medium">
         {index + 1}
@@ -95,7 +97,9 @@ export default function AdditionalInformation({
     </div>
   );
 
-  console.log("Trip : ", details);
+      useEffect(()=>{
+        console.log('bookingDetails', bookingDetails)
+    },[bookingDetails])
 
   return (
     <div className="flex flex-col gap-[30px]">
@@ -212,9 +216,7 @@ export default function AdditionalInformation({
                           <Select
                             options={pickupPoints?.map((item) => toOption(item.id, item.place?.name))}
                             value={selectedPickupPoint}
-                            onChange={(select) =>
-                              setSelectedPickupPoint(select || "")
-                            }
+                            onChange={(select) => {setSelectedPickupPoint(select || "");updateBooking("pickUpLocation" ,select)}}
                             placeholder="Select a pickup point"
                             className="react-select-container"
                             classNamePrefix="react-select"

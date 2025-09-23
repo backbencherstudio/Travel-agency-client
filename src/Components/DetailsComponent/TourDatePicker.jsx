@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react"
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
+import { useLocation } from "react-router-dom";
 
 export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDate, handleCheckInCheckOutDate }) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const path = useLocation();
   const [nextCurrentDate, setNextCurrentDate] = useState(() => {
     const today = new Date();
     const nextMonth = new Date(today);
@@ -50,6 +52,7 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
   }, [currentDate])
 
 
+  console.log("Path : ",path)
 
 
   const daysNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -130,7 +133,7 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
 
   return (
     <div className={`absolute top-[58px] right-1/2 md:right-0 translate-x-1/2 md:translate-x-0 bg-white z-[120] shadow-2xl lg:shadow-md rounded-3xl p-[10px] lg:p-[32px] w-[320px] ${location.pathname.split("/")[1] === "cruise" ? "lg:w-[1000px] xl:w-[1125px]" : "lg:w-[700px]"} md:w-[450px] flex-col gap-8 flex`}>
-      <div className="flex flex-col lg:flex-row bg-white items-center justify-between gap-2 lg:gap-0 w-full">
+      {path.pathname.includes('packages') &&<div className="flex flex-col lg:flex-row bg-white items-center justify-between gap-2 lg:gap-0 w-full">
         <div className="flex flex-col lg:gap-3">
           {location.pathname.split("/") [1] === "tours" && <div className="text-[20px] text-[#0F1416] text-center lg:text-start font-semibold">{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() + 1 : 0}`} Days</div>}
           {location.pathname.split("/") [1] === "cruise" && <div className="text-[20px] text-[#0F1416] text-center lg:text-start font-semibold">{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() + 1 : 0}`} Days/{`${checkOut?.getDate() && checkIn?.getDate() ? checkOut?.getDate() - checkIn?.getDate() : 0}`} Night</div>}
@@ -168,7 +171,7 @@ export default function TourDatePicker({ handleOpenDatePicker, handleSelectedDat
             </button>
           </div>
         </div>
-      </div>
+      </div>}
       <div className={`flex ${location.pathname.split("/")[1] === "cruise" ? "gap-20":""} bg-white`}>
         <div className="flex-1 lg:flex flex-col justify-between">
           <div className="flex items-center justify-between text-base lg:text-[22.8px]">

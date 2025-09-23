@@ -12,6 +12,8 @@ import TourDatePicker from "./TourDatePicker";
 import ReservetionConfirmation from "./ReservetaionConfirmation";
 import FreeCancellation from "./FreeCancellation";
 import {datePickerIcon,avatarIcon} from '../../../public/Icons'
+import { useLocation } from "react-router-dom";
+import { useBookingContext } from "~/Context/BookingContext/BookingContext";
 const BookCard = ({
   details,
   renderStars,
@@ -21,6 +23,7 @@ const BookCard = ({
   bookNowPayLaterDesc,
   handleBooking
 }) => {
+  const {updateBooking} = useBookingContext();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [extraServices, setExtraServices] = useState([]);
@@ -43,6 +46,7 @@ const BookCard = ({
   const [reservetionConfirmation, setReservetionConfirmation] = useState(false);
   const [reserved, setReseved] = useState(false);
   const [freeCancel, setFreeCancel] = useState(false);
+  const path = useLocation();
   // Access user from AuthContext
   const { user } = useContext(AuthContext);
 
@@ -108,14 +112,15 @@ const BookCard = ({
       return;
     }
 
-    if (!checkInCheckOutDate || totalTravelers <= 0) {
+    if (!selectedDate["start"] || totalTravelers <= 0) {
+      console.log("Date : ",selectedDate)
       toast.error("Please select both check-in date and number of travellers.");
       return;
     }
 
     const bookingData = {
       package_id: details?.id,
-      selected_date: checkInCheckOutDate[0],
+      selected_date: selectedDate["start"],
       // end_date: checkInCheckOutDate[0].toLocaleDateString("en-US", {
       //   month: "short",
       //   day: "2-digit",
@@ -133,11 +138,27 @@ const BookCard = ({
       setTimeout(async () => {
         try {
           const response = await checkAvailability(bookingData);
-          if (!response.success) {
-            handleBooking(checkInCheckOutDate[0]);
-            // navigate(`/booking/${response?.data?.id}`);
-          } else {
-            handleCheckAvailability();
+          if(response?.success){
+              handleBooking(selectedDate['start']);
+              updateBooking("totalMember",adultTravelers+childTravelers+infantTravelers)
+              updateBooking("bookingDate",new Date(selectedDate['start']))
+              updateBooking("memberType",{
+                adult: adultTravelers,
+                child: childTravelers,
+                infant: infantTravelers
+              })
+              updateBooking('package',{
+                name:details.name,
+                id:details.id,
+                review:0.0,
+                destination: `${details?.package_destinations?.[0]?.destination?.name},${details?.package_destinations?.[0]?.destination?.country?.name}`,
+                duration: details?.duration,
+                duration_type: details?.duration_type,
+                price: details?.final_price
+              })
+              updateBooking('final_price',details?.final_price);
+          }else{
+              handleCheckAvailability();
           }
         } catch (error) {
           toast.error("An error occurred while processing your booking.");
@@ -218,8 +239,10 @@ const BookCard = ({
   };
 
   const handleSelectedDate = (name, date) => {
-    console.log(selectedDate)
     setSelectedDate(prev => ({ ...prev, [name]: date }));
+    if(!path.pathname.includes('packages')){
+      handleOpenDatePicker();
+    }
   };
 
   const handleInfantTravelersAdding = () => {
@@ -262,11 +285,11 @@ const BookCard = ({
           {booking && (
             <div className="flex justify-between items-center">
               <div className="text-[18px] text-[#475467] font-medium">
-                {totalTravelers} Travelers <span className="text-sm">X</span> $
+                {adultTravelers+childTravelers+infantTravelers} Travelers <span className="text-sm">X</span> $
                 {details?.price}
               </div>
               <div className="text-[24px] font-semibold text-[#0F1416]">
-                ${details?.price * totalTravelers}
+                ${(details?.price * (adultTravelers+childTravelers+infantTravelers)).toFixed(2)}
               </div>
             </div>
           )}
@@ -289,7 +312,11 @@ const BookCard = ({
                   {datePickerIcon}
                 </div>
               )}
-              <div>
+              <button
+              disabled={booking}
+              onClick={handleOpenDatePicker}
+              className={`${booking?"":"cursor-pointer"}`}
+              >
                 {!selectedDate["start"] ? (
                   <div className="text-sm sm:text-[16px] text-[#a6aaaccc]">Check-In</div>
                 ) : (
@@ -302,7 +329,7 @@ const BookCard = ({
                     })}
                   </div>
                 )}
-              </div>
+              </button>
               {booking && (
                 <div className="text-2xl ml-2 w-fit">
                   {datePickerIcon}
@@ -329,7 +356,9 @@ const BookCard = ({
                   {datePickerIcon}
                 </div>
               )}
-              <div>
+              <div
+              onClick={handleOpenDatePicker}
+              >
                 {!selectedDate["end"] ? (
                   <div className="text-sm sm:text-[16px] text-[#a6aaaccc]">Check-Out</div>
                 ) : (
@@ -362,7 +391,7 @@ const BookCard = ({
               </div>
             )}
 
-            <div className="flex justify-between items-center w-full">
+            <button disabled={booking} className={`flex justify-between items-center w-full ${booking?"":"cursor-pointer"}`} onClick={toggleTravelerMenu}>
               {showTravelerMenu ? (
                 <div className="text-sm sm:text-[16px] cursor-pointer">
                   {totalTravelers} Travelers
@@ -394,7 +423,7 @@ const BookCard = ({
                   />
                 </svg>
               </div>
-            </div>
+            </button>
 
             {/* Travelers dropdown section */}
 
@@ -410,7 +439,7 @@ const BookCard = ({
                         Adults (Age 12-80)
                       </div>
                       <div className="text-[10px] sm:text-[14px] text-[#4A4C56]">
-                        Minimum: 1, Maximum: 10
+                        Minimum: {details?.min_adults}, Maximum: {details?.max_adults}
                       </div>
                     </div>
                     <div className="flex gap-[10px] items-center">
@@ -437,7 +466,7 @@ const BookCard = ({
                         Child (Age 4-11)
                       </div>
                       <div className="text-[10px] sm:text-[14px] text-[#4A4C56]">
-                        Minimum: 0, Maximum: 9
+                        Minimum: {details?.min_children}, Maximum: {details?.max_children}
                       </div>
                     </div>
                     <div className="flex gap-[10px] items-center">
@@ -464,7 +493,7 @@ const BookCard = ({
                         Infant (Age 0-3)
                       </div>
                       <div className="text-[10px] sm:text-[14px] text-[#4A4C56]">
-                        Minimum: 0, Maximum: 2
+                        Minimum: {details?.min_infants}, Maximum: {details?.max_infants}
                       </div>
                     </div>
                     <div className="flex gap-[10px] items-center">
@@ -538,7 +567,6 @@ const BookCard = ({
             </div> : <div className="flex flex-col gap-5">
               <Link to={`/booking/${details?.id}`}>
                 <button
-                  onClick={handleBookNow}
                   className="flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2"
                 >
                   Book Now
@@ -551,7 +579,7 @@ const BookCard = ({
                 Reserve Now & Pay Later
               </button>}
             </div>}
-            {location.pathname.split("/")[1] === "tours" && <div className="flex flex-col gap-4">
+            {/* {location.pathname.split("/")[1] === "tours" && <div className="flex flex-col gap-4">
               <h2 className="text-[#000] text-[20px] font-semibold">
                 FullTour+Leaning Tower Tickets
               </h2>
@@ -562,13 +590,13 @@ const BookCard = ({
               <div className="text-[#EB5B2A] text-[16px] bg-[#FDEFEA] w-fit px-2 py-1 rounded-lg select-none">
                 8:00 AM
               </div>
-            </div>}
+            </div>} */}
             <div></div>
           </div>
         )}
         {location.pathname.split("/")[1] === "tours" && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
           <div className="flex gap-[10px]">
-            <div className="relative w-[24px] h-[24px] text-white flex gap-[10px]">
+            {/* <div className="relative w-[24px] h-[24px] text-white flex gap-[10px]">
               <input
                 type="checkbox"
                 checked={freeCancellation}
@@ -591,7 +619,7 @@ const BookCard = ({
                   />
                 </svg>
               </div>
-            </div>
+            </div> */}
             <div>
               <p className="text-[#49556D] text-sm ">
                 <span className="text-[#0F1416] underline cursor-pointer text-nowrap font-bold text-sm leading-5" onClick={() => setFreeCancel(true)}>
@@ -599,38 +627,6 @@ const BookCard = ({
                 </span>{" "}
                 {cancelDesc}
               </p>
-            </div>
-          </div>
-          <div className="flex gap-[10px]">
-            <div className="relative w-[24px] h-[24px] text-white flex gap-[10px]">
-              <input
-                type="checkbox"
-                checked={payLater}
-                onChange={handlePayLater}
-                className="w-6 h-6 border-2 border-gray-400 rounded-full appearance-none checked:bg-[#14AE5C] checked:border-[#14AE5C] focus:outline-none"
-              />
-              <div
-                className="absolute top-0 flex items-center justify-center"
-                onClick={handlePayLater}
-              >
-                <svg
-                  className="w-full h-full"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M20.285 6.709l-11.02 11.02-5.657-5.657 1.414-1.415 4.243 4.243L18.87 5.294l1.415 1.415z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <span className="underline cursor-pointer text-[#0F1416] text-nowrap text-sm font-bold">
-                Book Now and Pay Leter
-              </span>{" "}
-              {bookNowPayLaterDesc}
             </div>
           </div>
         </div>}

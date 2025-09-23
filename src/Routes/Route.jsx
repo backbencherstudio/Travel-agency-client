@@ -9,7 +9,7 @@ import Blogs from "../Pages/blogs/Blogs";
 import SingleBlog from "../Pages/blogs/SingleBlog";
 import TourDetails from "../Pages/Tours/TourDetails/TourDetails";
 import ReviewPackage from "../Pages/ReviewPackage/ReviewPackage";
-import DashboardLayout from '../Layout/DashboardLayout'
+import DashboardLayout from "../Layout/DashboardLayout";
 import DashboardAnalysis from "../Components/Dashboard/Dashboard/DashboardAnalysis";
 import Packages from "../Pages/Dashboard/Package/Packages";
 import ChangePassword from "../Pages/Auth/ChangePassword";
@@ -55,6 +55,7 @@ import PaymentSuccess from "../Components/Client/Booking/PaymentSuccess";
 import PaymentErros from "../Components/Client/Booking/PaymentErros";
 import BookingHistoryTable from "../Pages/BookingHistory/BookingHistoryTable";
 import ReviewBooking from "../Components/ReviewBooking";
+import ContactInfo from "../Pages/ContactInfo/ContactInfo";
 if (import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY === undefined) {
   throw new Error(
     "VITE_STRIPE_PUBLISHABLE_KEY is not set in the environment variables"
@@ -107,12 +108,12 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: 'become-a-vendor',
-    element: <Signup />
+    path: "become-a-vendor",
+    element: <Signup />,
   },
   {
-    path: 'signup',
-    element: <Signup />
+    path: "signup",
+    element: <Signup />,
   },
   {
     path: "login",
@@ -127,12 +128,12 @@ export const router = createBrowserRouter([
     element: <Otp />,
   },
   {
-path:'get-started',
-element:<GetStarted/>
+    path: "get-started",
+    element: <GetStarted />,
   },
   {
-path:'scanner',
-element:<Scanning/>
+    path: "scanner",
+    element: <Scanning />,
   },
   {
     path: "/",
@@ -169,8 +170,20 @@ element:<Scanning/>
       {
         path: "/booking/:id",
         element: (
-          <Elements stripe={stripePromise}>
             <ReviewPackage />
+        ),
+      },
+      {
+        path: "/contactinfo/:id",
+        element: (
+            <ContactInfo />
+        ),
+      },
+      {
+        path: "/payment-method",
+        element: (
+          <Elements stripe={stripePromise}>
+            <PaymentMethod />
           </Elements>
         ),
       },
@@ -207,47 +220,42 @@ element:<Scanning/>
         path: "/booking-history-review/:id",
         element: <ReviewBooking />,
       },
-       //========================================================================================================================================
-        {
-    path:'/user-dashboard',
-    element:<UserDashboardLayout/>,
-    children:[
+      //========================================================================================================================================
       {
-        path:'',
-        element:<Dashboard/>
+        path: "/user-dashboard",
+        element: <UserDashboardLayout />,
+        children: [
+          {
+            path: "",
+            element: <Dashboard />,
+          },
+          {
+            path: "tour-management",
+            element: <TourManagement />,
+          },
+          {
+            path: "message",
+            element: <Message />,
+          },
+          {
+            path: "wishlist",
+            element: <Wishlist />,
+          },
+          {
+            path: "offer",
+            element: <Offer />,
+          },
+          {
+            path: "profile",
+            element: <Profile />,
+          },
+          {
+            path: "/user-dashboard/tour-management/reservation-details",
+            element: <ReservationDetail />,
+          },
+        ],
       },
-      {
-        path:'tour-management',
-        element:<TourManagement/>,
-      
-      },
-      {
-        path:'message',
-        element:< Message/>
-      },
-      {
-        path:'wishlist',
-        element:< Wishlist/>
-      },
-      {
-        path:'offer',
-        element:<Offer/>
-      },
-      {
-        path:'profile',
-        element:<Profile/>
-      },
-        {
-            path:'/user-dashboard/tour-management/reservation-details',
-            element:<ReservationDetail/>
-          }
-      
-    ]
-
-  }
-  // ===================================================================================================
-
-    
+      // ===================================================================================================
     ],
   },
   {
@@ -339,16 +347,16 @@ element:<Scanning/>
         element: <VendorDetails />,
       },
       {
-        path: 'offers-management',
-        element: <OffersManagement />
+        path: "offers-management",
+        element: <OffersManagement />,
       },
       {
-        path: 'edit-offers/:id',
-        element: <EditOffers />
+        path: "edit-offers/:id",
+        element: <EditOffers />,
       },
       {
-        path: 'view-offers/:id',
-        element: <ViewOffers />
+        path: "view-offers/:id",
+        element: <ViewOffers />,
       },
       {
         path: "payment",
@@ -477,5 +485,4 @@ element:<Scanning/>
     path: "change-password/:email/:otp",
     element: <ChangePassword />,
   },
-  
 ]);
