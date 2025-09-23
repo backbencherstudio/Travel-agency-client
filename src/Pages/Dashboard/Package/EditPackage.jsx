@@ -65,7 +65,19 @@ const EditPackage = () => {
   // media + tour plan
   const [images, setImages] = useState([]); // mix of {id, file_url|video_url} or {file, preview, type}
   const [tourPlan, setTourPlan] = useState([
-    { id: null, day: 1, title: "", description: "", images: [] },
+    {
+      id: null,
+      day: 1,
+      images: [],
+      details: [
+        {
+          title: "",
+          description: "",
+          time: 0,
+          notes: "",
+        },
+      ],
+    },
   ]);
   const [selectedCategory, setSeletectedCategory] = useState("");
 
@@ -244,10 +256,15 @@ const EditPackage = () => {
           if (pkg.package_trip_plans?.length) {
             setTourPlan(
               pkg.package_trip_plans.map((plan, idx) => ({
-                id: plan.id,
+                id: plan.id || null,
                 day: idx + 1,
                 images: plan.package_trip_plan_images?.map((img) => img) || [],
-                tripPlan: plan?.package_trip_plan_details,
+                details: plan?.package_trip_plan_details || {
+                  title: "",
+                  description: "",
+                  notes: "free",
+                  time: 0,
+                },
               }))
             );
           }
@@ -482,8 +499,8 @@ const EditPackage = () => {
     ); // [{id}]
 
     // tags
-    const inc = (includedPackages || []).map((i) => ({ id: i.value }));
-    const exc = (excludedPackages || []).map((i) => ({ id: i.value }));
+    const inc = (includedPackages || []).map((i) => ({ id: i.value || null }));
+    const exc = (excludedPackages || []).map((i) => ({ id: i.value || null }));
     form.append("included_packages", JSON.stringify(inc));
     form.append("excluded_packages", JSON.stringify(exc));
     const package_places = [];
@@ -494,7 +511,7 @@ const EditPackage = () => {
 
     const pickuppoints = selectedPickupPoints?.map((place) => {
       return {
-        place_id: place.value,
+        place_id: place.value || null,
         type: "pickup_point",
       };
     });
@@ -507,34 +524,28 @@ const EditPackage = () => {
       JSON.stringify(additionalInformations)
     );
 
-    // package media
-    const existingPackageImages = [];
     images.forEach((item) => {
       if (item.file) {
         form.append("package_files", item.file); // new uploads
-      } else if (item.id) {
-        existingPackageImages.push({ id: item.id }); // keep existing by id
       }
     });
-    form.append("package_images", JSON.stringify(existingPackageImages));
 
     // trip plans: files + existing refs
-    const trip_plans_images_json = [];
-    (tourPlan || []).forEach((plan) => {
-      (plan.images || []).forEach((img) => {
-        // img may be File, {file}, or existing row with id
-        if (img instanceof File || img?.file instanceof File) {
-          form.append("trip_plans_images", img.file ? img.file : img);
-        } else if (img?.id) {
-          trip_plans_images_json.push({ id: img.id });
-        } else {
-          // fallback for objects carrying urls only
-          trip_plans_images_json.push(img);
-        }
+
+    for (let i = 0; i < tourPlan.length; i++) {
+      tourPlan[i]?.images?.forEach((tour) => {
+        form.append(`trip_plans_${i}_images`, tour);
+        console.log("Images : ",tour);
       });
-    });
-    form.append("trip_plans_images", JSON.stringify(trip_plans_images_json));
-    form.append("trip_plans", JSON.stringify(tourPlan));
+    }
+
+    const plan = (tourPlan || []).map((pl) => ({
+      id: pl?.id || null,
+      day: pl?.day || 0,
+      details: pl.details,
+    }));
+
+    form.append("trip_plans", JSON.stringify(plan));
 
     if (data?.min_infants) {
       form.append("min_infants", data.min_infants);

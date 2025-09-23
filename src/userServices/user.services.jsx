@@ -157,4 +157,108 @@ export const UserServices = {
       throw error.response?.data || error;
     }
   },
+  createCheckout: async (data) => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.post(
+        `${baseURL}/api/checkout`,
+        data,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error creating package place:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
+  applyCoupon: async (data,id) => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.post(
+        `${baseURL}/api/checkout/${id}/coupon`,
+        data,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error creating package place:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
+  createBooking: async (data) => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.post(
+        `${baseURL}/api/booking`,
+        data,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error creating package place:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
+  makePayment: async (data) => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.post(
+        `${baseURL}/api/booking`,
+        data,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error creating package place:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
 };

@@ -69,7 +69,7 @@ const EditTourPlan = ({ tourPlan, setTourPlan, packageType }) => {
   const handlePlanChange = (dayIndex, planIndex, field, value) => {
     setTourPlan((prev) => {
       const updatedPlan = [...prev];
-      updatedPlan[dayIndex].tripPlan[planIndex][field] = value;
+      updatedPlan[dayIndex].details[planIndex][field] = value;
       return updatedPlan;
     });
   };
@@ -79,7 +79,7 @@ const EditTourPlan = ({ tourPlan, setTourPlan, packageType }) => {
       const updatedPlan = [...prev];
       updatedPlan[dayIndex].images = [
         ...(updatedPlan[dayIndex].images || []),
-        ...acceptedFiles,
+        ...acceptedFiles
       ];
       return updatedPlan;
     });
@@ -99,9 +99,9 @@ const EditTourPlan = ({ tourPlan, setTourPlan, packageType }) => {
       {
         day: prev.length + 1,
         id: null,
-        tripPlan: [{ title: "", description: "", time: 0, ticket: "free" }],
-        images: [],
-      },
+        details: [{ title: "", description: "", time: 0, notes: "free" }],
+        images: []
+      }
     ]);
   };
 
@@ -109,27 +109,26 @@ const EditTourPlan = ({ tourPlan, setTourPlan, packageType }) => {
     console.log("Adding... plan : ", tourPlan[dayIndex]);
     setTourPlan((prev) => {
       const updatedPlan = [...prev];
-      if (updatedPlan[dayIndex]?.tripPlan) {
-        updatedPlan[dayIndex].tripPlan = [
-          ...updatedPlan[dayIndex].tripPlan,
+      if (updatedPlan[dayIndex]?.details) {
+        updatedPlan[dayIndex].details = [
+          ...updatedPlan[dayIndex].details,
           {
             title: "",
             description: "",
             time: 0,
-            ticket: "free",
-          },
+            notes: "free"
+          }
         ];
       } else {
-        updatedPlan[dayIndex].tripPlan = [
+        updatedPlan[dayIndex].details = [
           {
             title: "",
             description: "",
             time: 0,
-            ticket: "free",
-          },
+            notes: "free"
+          }
         ];
       }
-      console.log("Updated plan : ", updatedPlan);
       return updatedPlan;
     });
   };
@@ -137,8 +136,8 @@ const EditTourPlan = ({ tourPlan, setTourPlan, packageType }) => {
   const deletePlan = (dayIndex, planIndex) => {
     setTourPlan((prev) => {
       const updatedPlan = [...prev];
-      if (updatedPlan[dayIndex].tripPlan.length > 1) {
-        updatedPlan[dayIndex].tripPlan.splice(planIndex, 1);
+      if (updatedPlan[dayIndex].details.length > 1) {
+        updatedPlan[dayIndex].details.splice(planIndex, 1);
       }
       return updatedPlan;
     });
@@ -178,12 +177,12 @@ const EditTourPlan = ({ tourPlan, setTourPlan, packageType }) => {
             </div>
 
             {/* Trip plan fields for each plan in the day */}
-            {dayPlan?.tripPlan?.map((plan, planIndex) => (
+            {dayPlan?.details?.map((plan, planIndex) => (
               <div
                 key={planIndex}
                 className="p-4 bg-[#F0F4F9] rounded-lg flex flex-col gap-3 relative"
               >
-                {dayPlan?.tripPlan?.length > 1 && (
+                {dayPlan?.details?.length > 1 && (
                   <button
                     onClick={() => deletePlan(dayIndex, planIndex)}
                     className="absolute top-2 right-2 text-red-600 hover:text-red-700"
@@ -234,7 +233,7 @@ const EditTourPlan = ({ tourPlan, setTourPlan, packageType }) => {
 
                 <div>
                   <label className="block text-[#4A4C56] text-base font-medium mb-2">
-                    Time (hours)
+                    Time (minutes)
                   </label>
                   <input
                     type="number"
@@ -257,12 +256,12 @@ const EditTourPlan = ({ tourPlan, setTourPlan, packageType }) => {
                     Ticket
                   </label>
                   <select
-                    value={plan.ticket}
+                    value={plan.notes}
                     onChange={(e) =>
                       handlePlanChange(
                         dayIndex,
                         planIndex,
-                        "ticket",
+                        "notes",
                         e.target.value
                       )
                     }

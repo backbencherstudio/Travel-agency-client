@@ -382,7 +382,7 @@ const AddPackage = () => {
           title: trip.title,
           description: trip.description,
           time: trip.time,
-          note: trip.ticket,
+          notes: trip.ticket,
         };
       });
       trip_plan.push({
@@ -418,7 +418,7 @@ const AddPackage = () => {
 
     const addInfo = additionalInformations?.map((info) => {
       return {
-        title: info,
+        title: info?.title,
       };
     });
 
