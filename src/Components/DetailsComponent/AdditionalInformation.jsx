@@ -14,7 +14,6 @@ import { Link } from "react-router-dom";
 import Select from "react-select";
 import { useBookingContext } from "~/Context/BookingContext/BookingContext";
 
-
 const toOption = (id, label) => ({ value: id, label });
 
 export default function AdditionalInformation({
@@ -24,7 +23,7 @@ export default function AdditionalInformation({
   TravellerPhotos,
   meetingData,
 }) {
-  const {updateBooking,bookingDetails} = useBookingContext();
+  const { updateBooking, bookingDetails } = useBookingContext();
   const [isMeetingOpen, setIsMeetingOpen] = useState(false);
   const [isIncludedOpen, setIsIncludedOpen] = useState(false);
   const [showMoreInclude, setShowMoreInclude] = useState(3);
@@ -34,10 +33,10 @@ export default function AdditionalInformation({
   const [excluded, setExcluded] = useState([]);
   const [meetingPoint, setMeetingPoint] = useState();
   const [pickupPoints, setPickupPoints] = useState([]);
-  const [selectedPickupPoint,setSelectedPickupPoint] = useState('');
-  const [additionalInfoLimit,setAdditionalInfoLimit] = useState(3);
+  const [selectedPickupPoint, setSelectedPickupPoint] = useState("");
+  const [additionalInfoLimit, setAdditionalInfoLimit] = useState(3);
 
-  console.log("Additional information : ",additionalInformation);
+  console.log("Additional information : ", additionalInformation);
 
   useEffect(() => {
     const incl = details?.package_tags?.filter(
@@ -66,18 +65,18 @@ export default function AdditionalInformation({
     setIsMeetingOpen((prev) => !prev);
   };
   const handleShowMoreIncludeExclude = () => {
-    setShowMoreExclude(prev => {
-      if(prev === 3){
+    setShowMoreExclude((prev) => {
+      if (prev === 3) {
         return excluded.length;
       }
       return 3;
-    })
-    setShowMoreInclude(prev => {
-      if(prev === 3){
+    });
+    setShowMoreInclude((prev) => {
+      if (prev === 3) {
         return included.length;
       }
       return 3;
-    })
+    });
   };
 
   const displayTripPlan = (plan, index) => (
@@ -97,9 +96,9 @@ export default function AdditionalInformation({
     </div>
   );
 
-      useEffect(()=>{
-        console.log('bookingDetails', bookingDetails)
-    },[bookingDetails])
+  useEffect(() => {
+    console.log("bookingDetails", details);
+  }, [bookingDetails]);
 
   return (
     <div className="flex flex-col gap-[30px]">
@@ -156,16 +155,16 @@ export default function AdditionalInformation({
                   ))}
               </div>
             </div>
-            {(showMoreExclude === 3 && included.length + excluded.length > 6 )&& (
-                <div className="w-full text-center">
-                  <button
-                    className="w-fit cursor-pointer text-orange-500 text-sm"
-                    onClick={handleShowMoreIncludeExclude}
-                  >
-                    Show more ( +{included.length - 3 + (excluded.length - 3)})
-                  </button>
-                </div>
-              )}
+            {showMoreExclude === 3 && included.length + excluded.length > 6 && (
+              <div className="w-full text-center">
+                <button
+                  className="w-fit cursor-pointer text-orange-500 text-sm"
+                  onClick={handleShowMoreIncludeExclude}
+                >
+                  Show more ( +{included.length - 3 + (excluded.length - 3)})
+                </button>
+              </div>
+            )}
             {included > 6 &&
               included.length === showMoreExclude + showMoreInclude && (
                 <div className="w-full text-center">
@@ -194,6 +193,7 @@ export default function AdditionalInformation({
             {downArrow}
           </div>
         </div>
+
         {isMeetingOpen && (
           <div className="flex flex-col gap-4">
             <div className="text-base text-[#0F1416]">
@@ -214,9 +214,14 @@ export default function AdditionalInformation({
                         </label>
                         <div>
                           <Select
-                            options={pickupPoints?.map((item) => toOption(item.id, item.place?.name))}
+                            options={pickupPoints?.map((item) =>
+                              toOption(item.id, item.place?.name)
+                            )}
                             value={selectedPickupPoint}
-                            onChange={(select) => {setSelectedPickupPoint(select || "");updateBooking("pickUpLocation" ,select)}}
+                            onChange={(select) => {
+                              setSelectedPickupPoint(select || "");
+                              updateBooking("pickUpLocation", select);
+                            }}
                             placeholder="Select a pickup point"
                             className="react-select-container"
                             classNamePrefix="react-select"
@@ -370,14 +375,23 @@ export default function AdditionalInformation({
                     </ul>
                   ))}
                 </div>
-                {additionalInfoLimit === 3 && <div className="flex justify-between text-orange-500 text-xs sm:text-sm font-medium p-2">
-                  {additionalInformation.length > 6 && (
-                    <button type="button" onClick={()=>setAdditionalInfoLimit(prev => prev === 3?additionalInformation.length:3)}>
-                      Show {additionalInformation.length - 6} more
-                    </button>
-                  )}
-                  <button>Supplied by Around 360</button>
-                </div>}
+                {additionalInfoLimit === 3 && (
+                  <div className="flex justify-between text-orange-500 text-xs sm:text-sm font-medium p-2">
+                    {additionalInformation.length > 6 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setAdditionalInfoLimit((prev) =>
+                            prev === 3 ? additionalInformation.length : 3
+                          )
+                        }
+                      >
+                        Show {additionalInformation.length - 6} more
+                      </button>
+                    )}
+                    <button>Supplied by Around 360</button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -400,6 +414,36 @@ export default function AdditionalInformation({
           </div>
         </div>
       )}
+
+      {details?.package_availabilities?.length >= 1 ? (
+        <div className="space-y-5">
+          <h3 className="text-[#1D1F2C] text-[24px] font-medium">
+            Package available dates
+          </h3>
+          <div className="flex items-center gap-4 justify-between flex-wrap min-h-[100px] bg-gray-300 rounded-md p-3">
+            {details?.package_availabilities
+              ?.sort((a, b) => new Date(a.start_date) - new Date(b.start_date))
+              ?.filter((date) => new Date(date.start_date) >= new Date())
+              ?.map((date, index) => (
+                <div
+                  key={index}
+                  className="flex gap-2 items-center justify-center px-4 py-2 bg-[#EB5B2A] rounded-full text-white text-base font-medium"
+                >
+                  <span>
+                    {date?.start_date?.split("T")?.[0]?.split("-")?.join("/")}
+                  </span>
+                  <span>-</span>
+                  <span>
+                    {date?.end_date?.split("T")?.[0]?.split("-")?.join("/")}
+                  </span>
+                </div>
+              ))}
+          </div>
+        </div>
+      ):(
+        div
+      )}
+
       <div className="flex flex-col gap-5">
         <div className="pb-[80px] flex flex-col gap-4">
           {details?.package_trip_plans?.map((trip) => (
