@@ -17,7 +17,7 @@ function ReviewPackage() {
   const router = useNavigate();
   const { bookingDetails, updateBooking } = useBookingContext();
   const [travellers, setTravellers] = useState([]);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
   const [travellersType, setTravellersType] = useState({});
   const [confirmationBookingPopup, setConfirmationBookingPopup] =
@@ -50,6 +50,7 @@ function ReviewPackage() {
 
   // Set travellers type when booking details change
   useEffect(() => {
+    setIsProcessing(false);
     setTravellersType(bookingDetails?.memberType);
   }, [bookingDetails]);
 
@@ -59,8 +60,8 @@ function ReviewPackage() {
       return;
     }
 
-    if(!bookingDetails?.package?.id){
-      toast.error("Selected package not found!")
+    if (!bookingDetails?.package?.id) {
+      toast.error("Selected package not found!");
     }
 
     try {
@@ -87,11 +88,11 @@ function ReviewPackage() {
     }
   };
 
-  useEffect(()=>{
-    if(bookingDetails && !bookingDetails?.package?.id){
-      router('/tours')
+  useEffect(() => {
+    if (bookingDetails && !bookingDetails?.package?.id) {
+      router("/tours");
     }
-  },[bookingDetails])
+  }, [bookingDetails]);
 
   return (
     <div className="max-w-[1216px] mx-auto my-10 px-4 xl:px-0">
@@ -110,7 +111,7 @@ function ReviewPackage() {
         </div>
       )}
       <div className="flex flex-col gap-5">
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-5">
           <h1 className="text-[#0F1416] text-[40px] font-bold">
             Review Package
           </h1>
@@ -122,28 +123,38 @@ function ReviewPackage() {
             handleTravellers={handleTravellers}
           />
 
-          {travellers.length >= 1 ? (
-            <table className="border rounded-md">
-              <thead>
-                <tr className="border border-collapse">
-                  <th className="text-start">Name</th>
-                  <th className="text-start">Age</th>
-                  <th className="text-start">Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {travellers.map((traveller, index) => (
-                  <tr key={index}>
-                    <td>{traveller?.name}</td>
-                    <td>{traveller?.age}</td>
-                    <td>{traveller?.type}</td>
+          <div className="min-h-[150px] bg-[#FDEFEA] rounded-md p-3">
+            {travellers.length >= 1 ? (
+              <table className="border rounded-md w-full bg-white">
+                <thead className="">
+                  <tr className="border border-collapse">
+                    <th className="text-start border"><div className="p-1">Name</div></th>
+                    <th className="text-start border"><div className="p-1">Age</div></th>
+                    <th className="text-start border"><div className="p-1">Type</div></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>No travellers added yet.</p>
-          )}
+                </thead>
+                <tbody>
+                  {travellers.map((traveller, index) => (
+                    <tr key={index} className="capitalize">
+                      <td className="border">
+                        <div className="p-1">{traveller?.name}</div>
+                      </td>
+                      <td className="border">
+                        <div className="p-1">{traveller?.age}</div>
+                      </td>
+                      <td className="border">
+                        <div className="p-1 flex justify-center">
+                          <span className="bg-gray-300 px-4 py-[2px] rounded-full text-gray-900">{traveller?.type}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="flex items-center justify-center h-[150px] text-xl font-medium text-gray-500">No travellers added yet.</p>
+            )}
+          </div>
         </div>
         {!isProcessing ? (
           <button
@@ -157,7 +168,9 @@ function ReviewPackage() {
           <button
             type="button"
             disabled={isProcessing}
-            className={`flex gap-2 items-center justify-center px-3 py-2 bg-[#EB5B2A] rounded-full text-white text-base font-medium ${!isProcessing?"opacity-50":""}`}
+            className={`flex gap-2 items-center justify-center px-3 py-2 bg-[#EB5B2A] rounded-full text-white text-base font-medium ${
+              !isProcessing ? "opacity-50" : ""
+            }`}
           >
             Processing...
           </button>
