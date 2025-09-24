@@ -278,12 +278,12 @@ const PaymentMethod = () => {
             }`}
             onClick={() => handleMethodChange("googlepay")}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 px-4">
               <input
                 type="radio"
                 checked={selectedMethod === "googlepay"}
                 onChange={() => handleMethodChange("googlepay")}
-                className="accent-[#EB5B2A] w-6 h-6"
+                className="accent-[#EB5B2A] w-3 h-3"
               />
               <span className="font-medium text-[18px]">Google Pay</span>
             </div>
@@ -297,12 +297,12 @@ const PaymentMethod = () => {
             }`}
             onClick={() => handleMethodChange("applepay")}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 px-4">
               <input
                 type="radio"
                 checked={selectedMethod === "applepay"}
                 onChange={() => handleMethodChange("applepay")}
-                className="accent-[#EB5B2A] w-6 h-6"
+                className="accent-[#EB5B2A] w-3 h-3"
               />
               <span className="font-medium text-[18px]">Apple Pay</span>
             </div>
@@ -314,12 +314,12 @@ const PaymentMethod = () => {
             }`}
             onClick={() => handleMethodChange("paypal")}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 px-4">
               <input
                 type="radio"
                 checked={selectedMethod === "paypal"}
                 onChange={() => handleMethodChange("paypal")}
-                className="accent-[#EB5B2A] w-6 h-6"
+                className="accent-[#EB5B2A] w-3 h-3"
               />
               <span className="font-medium text-[18px]">PayPal</span>
             </div>
