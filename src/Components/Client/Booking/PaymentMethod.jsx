@@ -59,10 +59,9 @@ const StripePaymentForm = ({
       } else if (paymentIntent.status === "succeeded") {
         toast.success("Payment successful!");
         // Handle successful payment here
-        console.log("Payment succeeded:", paymentIntent);
         setTimeout(() => {
           toast.dismiss();
-          router("/booking-history");
+          router(`/success/${paymentIntent?.id}`);
         }, 1000);
       }
     } catch (err) {

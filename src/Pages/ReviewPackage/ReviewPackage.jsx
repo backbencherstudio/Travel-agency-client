@@ -123,37 +123,50 @@ function ReviewPackage() {
             handleTravellers={handleTravellers}
           />
 
-          <div className="min-h-[150px] bg-[#FDEFEA] rounded-md p-3">
-            {travellers.length >= 1 ? (
-              <table className="border rounded-md w-full bg-white">
-                <thead className="">
-                  <tr className="border border-collapse">
-                    <th className="text-start border"><div className="p-1">Name</div></th>
-                    <th className="text-start border"><div className="p-1">Age</div></th>
-                    <th className="text-start border"><div className="p-1">Type</div></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {travellers.map((traveller, index) => (
-                    <tr key={index} className="capitalize">
-                      <td className="border">
-                        <div className="p-1">{traveller?.name}</div>
-                      </td>
-                      <td className="border">
-                        <div className="p-1">{traveller?.age}</div>
-                      </td>
-                      <td className="border">
-                        <div className="p-1 flex justify-center">
-                          <span className="bg-gray-300 px-4 py-[2px] rounded-full text-gray-900">{traveller?.type}</span>
-                        </div>
-                      </td>
+          <div>
+            <h3 className="text-xl font-medium mb-2">Travellers</h3>
+            <div className="min-h-[150px] bg-[#FDEFEA] rounded-md p-3">
+              {travellers.length >= 1 ? (
+                <table className="border rounded-md w-full bg-white">
+                  <thead className="">
+                    <tr className="border border-collapse">
+                      <th className="text-start border">
+                        <div className="p-1">Name</div>
+                      </th>
+                      <th className="text-start border">
+                        <div className="p-1">Age</div>
+                      </th>
+                      <th className="text-start border">
+                        <div className="p-1">Type</div>
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="flex items-center justify-center h-[150px] text-xl font-medium text-gray-500">No travellers added yet.</p>
-            )}
+                  </thead>
+                  <tbody>
+                    {travellers.map((traveller, index) => (
+                      <tr key={index} className="capitalize">
+                        <td className="border">
+                          <div className="p-1">{traveller?.name}</div>
+                        </td>
+                        <td className="border">
+                          <div className="p-1">{traveller?.age}</div>
+                        </td>
+                        <td className="border">
+                          <div className="p-1 flex justify-center">
+                            <span className="bg-gray-300 px-4 py-[2px] rounded-full text-gray-900">
+                              {traveller?.type}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <p className="flex items-center justify-center h-[150px] text-xl font-medium text-gray-500">
+                  No travellers added yet.
+                </p>
+              )}
+            </div>
           </div>
         </div>
         {!isProcessing ? (

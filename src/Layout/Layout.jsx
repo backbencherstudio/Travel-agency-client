@@ -21,7 +21,7 @@ const Layout = () => {
         <div className="flex-grow">
           <Outlet />
         </div>
-        <div className="bg-[#061D35]">
+        <div className="bg-[#03101e]">
           <Footer />
         </div>
       </div>

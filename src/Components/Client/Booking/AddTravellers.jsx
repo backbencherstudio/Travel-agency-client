@@ -28,8 +28,6 @@ export default function AddTravellers({ travellersType, handleTravellers }) {
   };
 
   useEffect(() => {
-    console.clear();
-    console.log("Traveller types : ", travellersType);
     setOptions((prev) => {
       const opt = [];
       if (travellersType?.adult) {
@@ -48,16 +46,12 @@ export default function AddTravellers({ travellersType, handleTravellers }) {
 
   return (
     <div>
-      {!show && options.length >=1 && (
-        <button
-          className="flex gap-2 items-center justify-center p-3 bg-[#EB5B2A] rounded-full text-white text-base font-medium w-full mt-2"
-          type="button"
-          onClick={handleToggleForm}
-        >
-          + Add Travellers
-        </button>
-      )}
-      {show && options.length >=1 && (
+      {options.length >= 1 &&<div
+        className="text-xl font-medium mb-1"
+      >
+        Add Travellers
+      </div>}
+      {options.length >= 1 && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <div className="space-y-1">
             <label htmlFor="name" className="block">
