@@ -1,87 +1,52 @@
-import React, { useState } from 'react'
-import TableWithPagination from '../../Components/userDashboard/TableWithPagination'
-import GreenMark from '../../assets/user-dashboard/icons/GreenMark'
-import UpcomingIcon from '../../assets/user-dashboard/icons/UpcomingIcon'
-import CancelCross from '../../assets/user-dashboard/icons/CancelCross'
-import DeleteIcon from '../../assets/user-dashboard/icons/DeleteIcon'
-import EditIcon from '../../assets/user-dashboard/icons/EditIcon'
-import EyeIcon from '../../assets/user-dashboard/icons/EyeIcon'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from "react";
+import TableWithPagination from "../../Components/userDashboard/TableWithPagination";
+import GreenMark from "../../assets/user-dashboard/icons/GreenMark";
+import UpcomingIcon from "../../assets/user-dashboard/icons/UpcomingIcon";
+import CancelCross from "../../assets/user-dashboard/icons/CancelCross";
+import DeleteIcon from "../../assets/user-dashboard/icons/DeleteIcon";
+import EditIcon from "../../assets/user-dashboard/icons/EditIcon";
+import EyeIcon from "../../assets/user-dashboard/icons/EyeIcon";
+import { Link } from "react-router-dom";
+import { getAllBookings } from "~/Apis/clientApi/ClientBookApi";
+import { MdOutlinePendingActions } from "react-icons/md";
 
-
-const bookings = [
-  { invoice: '#INV-001', date: '2025-06-20', bookingType: 'Online', amount: '$120', status: 'Complete' },
-  { invoice: '#INV-002', date: '2025-06-19', bookingType: 'Walk-in', amount: '$200', status: 'Upcoming' },
-  { invoice: '#INV-003', date: '2025-06-18', bookingType: 'App', amount: '$80', status: 'Cancelled' },
-  // ... more
-]
-
-const DemoData = [
-  {
-    reservationId: "#R12345",
-    packageName: "Holiday Package",
-    date: "2025-06-24",
-    bookingAmount: "$500",
-  },
-  {
-    reservationId: "#R12346",
-    packageName: "Weekend Getaway",
-    date: "2025-07-10",
-    bookingAmount: "$300",
-  },
-  {
-    reservationId: "#R12347",
-    packageName: "Business Trip",
-    date: "2025-08-05",
-    bookingAmount: "$750",
-  },
-  {
-    reservationId: "#R12347",
-    packageName: "Business Trip",
-    date: "2025-08-05",
-    bookingAmount: "$750",
-  },
-  {
-    reservationId: "#R12347",
-    packageName: "Business Trip",
-    date: "2025-08-05",
-    bookingAmount: "$750",
-  },
-  {
-    reservationId: "#R12347",
-    packageName: "Business Trip",
-    date: "2025-08-05",
-    bookingAmount: "$750",
-  },
-  {
-    reservationId: "#R12347",
-    packageName: "Business Trip",
-    date: "2025-08-05",
-    bookingAmount: "$750",
-  },
-  {
-    reservationId: "#R12347",
-    packageName: "Business Trip",
-    date: "2025-08-05",
-    bookingAmount: "$750",
-  },
-  {
-    reservationId: "#R12347",
-    packageName: "Business Trip",
-    date: "2025-08-05",
-    bookingAmount: "$750",
-  },
-  {
-    reservationId: "#R12347",
-    packageName: "Business Trip",
-    date: "2025-08-05",
-    bookingAmount: "$750",
-  },
-  // Add more demo data as needed
-];
 
 const TwoTabComponent = () => {
-  const [activeTab, setActiveTab] = useState('tab1')
+  const [activeTab, setActiveTab] = useState("tab1");
+  const [data, setData] = useState();
+  const [pagination, setPagination] = useState();
+  const [error, setError] = useState();
+  const [loading, setLoading] = useState(false);
+
+  const getBookings = async (page, limit) => {
+    try {
+      setLoading(true);
+      const response = await getAllBookings({ page, limit });
+
+      if (!response.success) {
+        throw new Error("Failed to fetch bookings");
+      }
+
+      setData(response.data);
+      setPagination(response?.pagination);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching bookings:", err);
+      setError("Failed to load booking data. Please try again later.");
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    }
+  };
+
+  useEffect(() => {
+    getBookings(1, 10);
+  }, []);
+
+  const handlePageChange=(page)=>{
+    getBookings(page,10);
+  }
 
   return (
     <div className="w-full  ">
@@ -115,36 +80,39 @@ const TwoTabComponent = () => {
           <div>
             {/* Tab One Content - Add later */}
             <TableWithPagination
-              data={bookings}
-              itemsPerPage={7}
+              data={data}
+              itemsPerPage={10}
               columns={[
-                { key: "invoice", label: "Invoice" },
-                { key: "date", label: "Date" },
-                { key: "bookingType", label: "Booking Type" },
-                { key: "amount", label: "Amount" },
+                { key: "invoice_number", label: "Invoice" },
+                { key: "booking_date_time", label: "Date" },
+                { key: "booking_type", label: "Booking Type" },
+                { key: "final_price", label: "Amount" },
                 {
                   key: "status",
                   label: "Status",
                   render: (value) => (
                     <span
-                      className={`inline-flex items-center gap-1 py-[2px] px-2 rounded-2xl text-xs font-medium ${
-                        value === "Complete"
+                      className={`inline-flex items-center gap-1 py-[2px] px-2 rounded-2xl text-xs font-medium capitalize ${
+                        value.toLowerCase() === "complete"
                           ? "bg-[#ECFDF3] text-[#067647] border border-[#ABEFC6]"
-                          : value === "Upcoming"
+                          : value.toLowerCase() === "upcoming"
                           ? "text-[#0A3159] font-bold bg-[#E7ECF2] border border-[#90A9C3]"
                           : "bg-[#FEF3F2] text-[#B42318] border border-[#FECDCA]"
                       }`}
                     >
-                      {value === "Complete" && <GreenMark />}
-                      {value === "Upcoming" && <UpcomingIcon />}
-                      {value === "Cancelled" && <CancelCross />}
+                      {value.toLowerCase() === "complete" && <GreenMark />}
+                      {value.toLowerCase() === "upcoming" && <UpcomingIcon />}
+                      {value.toLowerCase() === "cancelled" && <CancelCross />}
+                      {value.toLowerCase() === "pending" && <MdOutlinePendingActions />}
                       {value}
                     </span>
                   ),
                 },
               ]}
+              pagination={pagination}
+              handlePageChange={handlePageChange}
               actions={(row) =>
-                row.status === "Upcoming" && (
+                row?.status?.toLowerCase() === "upcoming" && (
                   <>
                     <button>
                       <DeleteIcon />
@@ -158,31 +126,34 @@ const TwoTabComponent = () => {
             />
           </div>
         )}
-        {activeTab === "tab2" && <div>
-          <TableWithPagination
-      data={DemoData}
-      itemsPerPage={7}
-      columns={[
-        { key: "reservationId", label: "Reservation ID" },
-        { key: "packageName", label: "Package Name" },
-        { key: "date", label: "Date" },
-        { key: "bookingAmount", label: "Booking Amount" },
-        {
-          key: "action",
-          label: "Action",
-          render: (row) => (
-            <Link to="/user-dashboard/tour-management/reservation-details">
-       <EyeIcon/>
-            </Link>
-          ),
-        },
-      ]}
-     
-    />
-          </div>}
+        {activeTab === "tab2" && (
+          <div>
+            <TableWithPagination
+              data={data}
+              itemsPerPage={10}
+              columns={[
+                { key: "invoice_number", label: "Invoice" },
+                { key: "booking_date_time", label: "Date" },
+                { key: "booking_type", label: "Booking Type" },
+                { key: "final_price", label: "Amount" },
+                {
+                  key: "action",
+                  label: "Action",
+                  render: (row) => (
+                    <Link to="/user-dashboard/tour-management/reservation-details">
+                      <EyeIcon />
+                    </Link>
+                  ),
+                },
+              ]}
+              pagination={pagination}
+              handlePageChange={handlePageChange}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
 
-export default TwoTabComponent
+export default TwoTabComponent;

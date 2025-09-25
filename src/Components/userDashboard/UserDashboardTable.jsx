@@ -1,33 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import GreenMark from '../../assets/user-dashboard/icons/GreenMark'
 import UpcomingIcon from '../../assets/user-dashboard/icons/UpcomingIcon'
 import CancelCross from '../../assets/user-dashboard/icons/CancelCross'
 import EditIcon from '../../assets/user-dashboard/icons/EditIcon'
 import DeleteIcon from '../../assets/user-dashboard/icons/DeleteIcon'
+import { MdOutlinePendingActions } from "react-icons/md";
 
-const bookings = [
-  {  invoice: '#INV-001', date: '2025-06-20', bookingType: 'Online', amount: '$120', status: 'Complete' },
-  {  invoice: '#INV-002', date: '2025-06-19', bookingType: 'Walk-in', amount: '$200', status: 'Upcoming' },
-  { invoice: '#INV-003', date: '2025-06-18', bookingType: 'App', amount: '$80', status: 'Cancelled' },
-  { invoice: '#INV-004', date: '2025-06-17', bookingType: 'Online', amount: '$150', status: 'Complete' },
-  {  invoice: '#INV-005', date: '2025-06-16', bookingType: 'App', amount: '$300', status: 'Upcoming' },
-  {   invoice: '#INV-006', date: '2025-06-15', bookingType: 'Walk-in', amount: '$90', status: 'Complete' },
-  {  invoice: '#INV-007', date: '2025-06-14', bookingType: 'Online', amount: '$50', status: 'Cancelled' },
-  {  invoice: '#INV-008', date: '2025-06-13', bookingType: 'App', amount: '$70', status: 'Complete' },
-  {  invoice: '#INV-009', date: '2025-06-12', bookingType: 'Walk-in', amount: '$100', status: 'Upcoming' },
-  {   invoice: '#INV-010', date: '2025-06-11', bookingType: 'Online', amount: '$60', status: 'Complete' },
-]
 
-const itemsPerPage = 7
-
-export default function UserDashboardTable() {
+export default function UserDashboardTable({bookingData,pagination,handleFetchData}) {
   const [currentPage, setCurrentPage] = useState(1)
-  const totalPages = Math.ceil(bookings.length / itemsPerPage)
 
-  const paginatedData = bookings.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  )
+  const handlePageChange=(page)=>{
+    setCurrentPage(page);
+    handleFetchData(page);
+  }
 
   return (
     <div className="  mt-6  border border-[#EAECF0] rounded-lg">
@@ -44,40 +30,37 @@ export default function UserDashboardTable() {
               <th className="px-4 py-3">Action</th>
             </tr>
           </thead>
-
-            
           <tbody>
-            {paginatedData.map((item, index) => (
+            {bookingData?.map((item, index) => (
               <tr key={index} className="  hover:bg-gray-50 border-b border-[#EAECF0">
                 <td className="px-6 py-4 text-[#101828] text-sm font-medium">
-                  {item.invoice}
+                  #{item?.invoice_number}
                 </td>
-                <td className="px-6 py-4 text-[#475467] text-sm ">
-                  {item.date}
-                </td>
-                <td className="px-6 py-4 text-[#475467] text-sm">
-                  {item.bookingType}
+                <td className="px-6 py-4 text-[#475467] text-sm text-nowrap">
+                  {item?.booking_date_time?.split('T')?.[0]}
                 </td>
                 <td className="px-6 py-4 text-[#475467] text-sm">
-                  {item.amount}
+                  {item?.booking_type}
+                </td>
+                <td className="px-6 py-4 text-[#475467] text-sm">
+                  {item?.total_amount}
                 </td>
                 <td className="px-6 py-4 flex items-center">
-                  
                   <span
-                    className={`py-[2px] px-2 rounded-2xl   text-xs font-medium flex items-center gap-1 ${
-                      item.status === "Complete"
+                    className={`py-[2px] px-2 rounded-2xl   text-xs font-medium flex items-center gap-1 capitalize ${
+                      item.status.toLowerCase() === "complete"
                         ? "bg-[#ECFDF3] text-[#067647] border border-[#ABEFC6]"
-                        : item.status === "Upcoming"
+                        : item.status === "upcoming"
                         ? "text-[#0A3159] text-xs font-bold bg-[#E7ECF2] border border-[#90A9C3]  "
                         : "bg-[#FEF3F2] text-[#B42318] border border-[#FECDCA]"
                     }`}
                   >
-                    {item.status ==='Complete'?<GreenMark/> :item.status==='Upcoming'?<UpcomingIcon/>:<CancelCross/>}
+                    {item.status.toLowerCase() ==='complete'?<GreenMark/> :item.status.toLowerCase() ==='upcoming'?<UpcomingIcon/>:item?.status?.toLowerCase() === 'pending'? <MdOutlinePendingActions />:<CancelCross/>}
                     {item.status}
                   </span>
                 </td>
                 {
-                  item.status ==='Upcoming' &&
+                  item.status.toLowerCase() ==='upcoming' &&
                 <td className="px-4 py-3 space-x-2">
 
                   <button className=" ">
@@ -99,7 +82,7 @@ export default function UserDashboardTable() {
       {/* Prev & Next Justified */}
       <div className="flex justify-between mt-3 px-6 pb-4">
         <button
-          onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+          onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
           className={`px-3 py-2 border border-[#D0D5DD]  rounded-lg text-sm font-semibold ${
             currentPage === 1
@@ -111,10 +94,10 @@ export default function UserDashboardTable() {
         </button>
 
         <div className="flex justify-center  ">
-          {Array.from({ length: totalPages }).map((_, index) => (
+          {Array.from({ length: pagination?.totalPages }).map((_, index) => (
             <button
               key={index}
-              onClick={() => setCurrentPage(index + 1)}
+              onClick={() => handlePageChange(index + 1)}
               className={` size-10  rounded   ${
                 currentPage === index + 1
                   ? "bg-[#F9FAFB] text-[#182230]"
@@ -128,11 +111,11 @@ export default function UserDashboardTable() {
 
         <button
           onClick={() =>
-            setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+            handlePageChange(Math.min(pagination?.totalPages, currentPage + 1))
           }
-          disabled={currentPage === totalPages}
+          disabled={currentPage === pagination?.totalPages}
           className={`px-3 py-2 border border-[#D0D5DD] rounded-lg text-sm font-semibold ${
-            currentPage === totalPages
+            currentPage === pagination?.totalPages
               ? "text-gray-400 cursor-not-allowed"
               : "text-[#344054"
           }`}

@@ -33,6 +33,7 @@ const ReviewBooking = () => {
       setLoading(true)
       const data = await getBookingById(id)
       setBookingData(data)
+      console.log("Booking data details : ",data);
       setReviews(data.reviews || [])
     } catch (err) {
       console.error('Error fetching booking data:', err)
@@ -266,7 +267,7 @@ const ReviewBooking = () => {
                     })()}
                   </p>
                   <p className='text-orange-500'>
-                    {bookingData?.data?.booking_items?.[0]?.average_rating ?? 0}
+                    {bookingData?.data?.booking_items?.[0]?.package?.average_rating ?? 0}
                     <span>/5</span>
                     <span className='text-sm text-gray-500'>
                       ({' '}
@@ -288,7 +289,7 @@ const ReviewBooking = () => {
                     </p>
                     <p className=' text-gray-500 capitalize'>
                       {bookingData?.data?.booking_items?.[0]?.package?.duration}{' '}
-                      Days
+                      {bookingData?.data?.booking_items?.[0]?.package?.type === 'tour'?"Hours":"Days"}
                     </p>
                     {/* <p className=' text-gray-500 capitalize'>
                       {bookingData?.data?.booking_items?.[0]?.start_date &&
@@ -316,7 +317,7 @@ const ReviewBooking = () => {
                       Package type
                     </p>
                     <p className=' text-gray-500 capitalize'>
-                      {bookingData?.data?.type}
+                      {bookingData?.data?.booking_items?.[0]?.package?.type}
                     </p>
                   </div>
                 </div>
@@ -337,7 +338,7 @@ const ReviewBooking = () => {
             <img
               className='w-full rounded-lg'
               src={
-                bookingData?.booking_items?.[0]?.package?.package_files?.[0]
+                bookingData?.data?.booking_items?.[0]?.package?.package_files?.[0]
                   ?.image_url ||
                 'https://img.freepik.com/free-photo/tourist-with-map-sunny-sky-background_23-2147828103.jpg'
               }
@@ -456,13 +457,13 @@ const ReviewBooking = () => {
                   </h2>
                   <span
                     className={`text-white text-sm px-2 py-1 rounded-md capitalize ${
-                      bookingData?.data?.payment_transactions?.[0]?.status ===
+                      bookingData?.data?.payment_status ===
                       'succeeded'
                         ? 'bg-green-500'
                         : 'bg-orange-500'
                     }`}
                   >
-                    {bookingData?.data?.payment_transactions?.[0]?.status}
+                    {bookingData?.data?.payment_status}
                   </span>
                 </div>
                 <div className='text-center'>
@@ -470,7 +471,7 @@ const ReviewBooking = () => {
                     ${bookingData?.data?.total_amount}
                   </p>
                   <p className='text-gray-600 text-sm mt-1'>
-                    {bookingData?.data?.payment_transactions?.[0]?.status ===
+                    {bookingData?.data?.payment_status ===
                     'succeeded'
                       ? 'Thank you for your payment!'
                       : 'Your payment is pending. Please complete it at your earliest convenience.'}

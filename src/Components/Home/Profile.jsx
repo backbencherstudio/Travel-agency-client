@@ -102,7 +102,7 @@ const UserProfile = () => {
   // console.log('NewEmail', newEmail)
 
   return (
-    <div className="max-w-[1216px] mx-auto my-24 p-8 bg-[#fffdfd] rounded-3xl border-2 border-[#eaedf1]">
+    <div className="max-w-[1216px] mx-auto my-4 lg:my-24 p-8 bg-[#fffdfd] rounded-3xl border-2 border-[#eaedf1]">
        <Helmet>
         <title>Around 360 - Profile</title>
       </Helmet>
@@ -118,7 +118,7 @@ const UserProfile = () => {
                   <img
                     src={avatar || "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"} // Placeholder for default image
                     alt="User Avatar"
-                    className="w-52 h-52 md:h-28 lg:h-36 xl:h-44 rounded-full object-cover mb-4"
+                    className="w-52 h-52 md:h-28 lg:h-auto xl:h-44 rounded-full object-cover mb-4"
                   />
                 </label>
                 <input
@@ -132,7 +132,7 @@ const UserProfile = () => {
               <input
                 id="name"
                 {...register('name', { required: "Name is required" })}
-                className="w-full text-sm font-medium text-center mb-[3px] focus:outline-none bg-transparent" disabled
+                className="w-full text-sm font-medium text-center mb-[3px] focus:outline-none bg-transparent capitalize" disabled
               />
               {/* <h1 className="text-xl font-medium text-center mb-[3px]">Ralph Edwards</h1> */}
               {/* <div className="rating flex justify-center mb-1">
