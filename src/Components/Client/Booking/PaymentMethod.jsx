@@ -62,7 +62,7 @@ const StripePaymentForm = ({
         console.log("Payment succeeded:", paymentIntent);
         setTimeout(() => {
           toast.dismiss();
-          router("/user-dashboard/tour-management");
+          router("/booking-history");
         }, 1000);
       }
     } catch (err) {

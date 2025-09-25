@@ -441,7 +441,9 @@ export default function AdditionalInformation({
           </div>
         </div>
       ):(
-        div
+        details?.type !== 'tour' &&<div>
+          No available date found!
+        </div>
       )}
 
       <div className="flex flex-col gap-5">

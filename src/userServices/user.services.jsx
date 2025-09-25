@@ -261,4 +261,26 @@ export const UserServices = {
       throw error.response?.data || error;
     }
   },
+  getBookingState: async () => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.get(`${baseURL}/api/user/dashboard/stats`, config);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching places:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
 };

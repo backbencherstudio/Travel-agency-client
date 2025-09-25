@@ -7,9 +7,13 @@ import WishlistIcon from '../../assets/user-dashboard/icons/WishlishtIcon';
 import OfferIcon from '../../assets/user-dashboard/icons/OfferIcon';
 import ProfileIcon from '../../assets/user-dashboard/icons/ProfileIcon';
 import LogoutIcon from '../../assets/user-dashboard/icons/LogoutIcon';
+import { AuthContext } from '~/Context/AuthProvider/AuthProvider';
+import { useContext } from 'react';
+
 
 const UserDashboardSidebar = () => {
   const location = useLocation();
+    const { user, loading, fetchUserInfo } = useContext(AuthContext);
 
   // Central active checker function
   const getActive = (path) => {
@@ -53,16 +57,28 @@ const UserDashboardSidebar = () => {
     },
   ];
 
+  //   useEffect(() => {
+  //   if (user) {
+  //     setValue('name', user?.name);
+  //     setValue('email', user?.email);
+  //     setValue('phone_number', user?.phone_number);
+  //     setValue('address', user?.address);
+  //     setValue('gender', user?.gender);
+  //     setValue('date_of_birth', moment(user?.date_of_birth).format('YYYY-MM-DD'));
+  //     setAvatar(user?.avatar_url);
+  //   }
+  // }, [user])
+
   return (
     <div>
       <div className="pt-12 pb-6 bg-white rounded-xl">
         {/* Profile Section */}
         <div className="flex flex-col items-center">
-          <img src={profileImg} alt="Profile" />
+          <img src={user?.avatar_url} alt="Profile" className='rounded-full'/>
         </div>
         <div className="text-center my-4">
-          <h2 className="text-[#101828] text-2xl font-semibold">Olivia Rhye</h2>
-          <p className="text-base text-[#475467]">olivia@untitledui.com</p>
+          <h2 className="text-[#101828] text-2xl font-semibold capitalize">{user?.name}</h2>
+          <p className="text-base text-[#475467]">{user?.email}</p>
         </div>
 
         {/* Navigation Items */}

@@ -1,50 +1,50 @@
-import { useContext, useEffect, useRef, useState } from 'react'
-import logo from '../assets/img/Logo_new.png'
-import languageLogo from '../assets/img/Language.svg'
-import './nav.css'
-import { Link, NavLink, useNavigate } from 'react-router-dom'
-import avatar from '../assets/img/avatar/avatar-1.jpg'
-import { AuthContext } from '../Context/AuthProvider/AuthProvider'
-import ProfileNameImg from './ProfileNameImg'
+import { useContext, useEffect, useRef, useState } from "react";
+import logo from "../assets/img/Logo_new.png";
+import languageLogo from "../assets/img/Language.svg";
+import "./nav.css";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import avatar from "../assets/img/avatar/avatar-1.jpg";
+import { AuthContext } from "../Context/AuthProvider/AuthProvider";
+import ProfileNameImg from "./ProfileNameImg";
 
 const Navbar = () => {
-  const [contactDropDown, setContactDropDown] = useState(false)
-  const [languageDropDown, setLanguageDropDown] = useState(false)
-  const [userDropDown, setUserDropDown] = useState(false)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isloginOpen, setLoginOpen] = useState(false)
-  const [token, setToken] = useState('')
-  const { user } = useContext(AuthContext)
-  const menuRef = useRef()
-  const buttonRef = useRef()
-  const ProfileRef = useRef()
-  const { logout } = useContext(AuthContext)
-  const navigate = useNavigate()
+  const [contactDropDown, setContactDropDown] = useState(false);
+  const [languageDropDown, setLanguageDropDown] = useState(false);
+  const [userDropDown, setUserDropDown] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isloginOpen, setLoginOpen] = useState(false);
+  const [token, setToken] = useState("");
+  const { user } = useContext(AuthContext);
+  const menuRef = useRef();
+  const buttonRef = useRef();
+  const ProfileRef = useRef();
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const getToken = localStorage.getItem('token')
-    setToken(getToken)
-  }, [token])
+    const getToken = localStorage.getItem("token");
+    setToken(getToken);
+  }, [token]);
 
   const toggloginOpen = () => {
-    setLoginOpen(!isloginOpen)
-  }
+    setLoginOpen(!isloginOpen);
+  };
 
   useEffect(() => {
     const handleClickOutside = () => {
-      setContactDropDown(false)
-      setLanguageDropDown(false)
-      setUserDropDown(false)
-    }
-    document.addEventListener('click', handleClickOutside)
+      setContactDropDown(false);
+      setLanguageDropDown(false);
+      setUserDropDown(false);
+    };
+    document.addEventListener("click", handleClickOutside);
 
     return () => {
-      document.removeEventListener('click', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
-    const handleClickOutside = event => {
+    const handleClickOutside = (event) => {
       if (
         menuRef.current &&
         !menuRef.current.contains(event.target) &&
@@ -53,73 +53,76 @@ const Navbar = () => {
         ProfileRef.current &&
         !ProfileRef.current.contains(event.target)
       ) {
-        setIsMenuOpen(false)
-        setLoginOpen(false)
+        setIsMenuOpen(false);
+        setLoginOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflowY = 'hidden'
+      document.body.style.overflowY = "hidden";
     } else {
-      document.body.style.overflowY = 'auto'
+      document.body.style.overflowY = "auto";
     }
-  }, [isMenuOpen])
+  }, [isMenuOpen]);
 
-  const handleDropdownToggle = dropdownType => e => {
-    e.stopPropagation()
-    if (dropdownType === 'contact') {
-      setContactDropDown(!contactDropDown)
-      setLanguageDropDown(false)
-      setUserDropDown(false)
-    } else if (dropdownType === 'language') {
-      setLanguageDropDown(!languageDropDown)
-      setContactDropDown(false)
-      setUserDropDown(false)
-    } else if (dropdownType === 'user') {
-      setUserDropDown(!userDropDown)
-      setLanguageDropDown(false)
-      setContactDropDown(false)
+  const handleDropdownToggle = (dropdownType) => (e) => {
+    e.stopPropagation();
+    if (dropdownType === "contact") {
+      setContactDropDown(!contactDropDown);
+      setLanguageDropDown(false);
+      setUserDropDown(false);
+    } else if (dropdownType === "language") {
+      setLanguageDropDown(!languageDropDown);
+      setContactDropDown(false);
+      setUserDropDown(false);
+    } else if (dropdownType === "user") {
+      setUserDropDown(!userDropDown);
+      setLanguageDropDown(false);
+      setContactDropDown(false);
     }
-  }
+  };
 
   const handleLogout = () => {
-    logout()
-    setToken('')
+    logout();
+    setToken("");
     if (!token) {
-      navigate('/')
+      navigate("/");
     }
-  }
+  };
 
   const handleLanguageChange = (lang) => {
-    console.log(lang)
+    console.log(lang);
     // Map our language names to Google Translate codes
     const languageMap = {
-      'English': 'en',
-      'Spanish': 'es',
-      'French': 'fr',
-      'German': 'de',
-      'Bangla': 'bn'
+      English: "en",
+      Spanish: "es",
+      French: "fr",
+      German: "de",
+      Bangla: "bn",
     };
-    
+
     const langCode = languageMap[lang];
     if (langCode) {
       // Get the Google Translate element
-      const googleTranslateElement = document.querySelector('#google_translate_element');
+      const googleTranslateElement = document.querySelector(
+        "#google_translate_element"
+      );
       if (googleTranslateElement) {
         // Find the select element within any iframes
-        const selectElement = googleTranslateElement.querySelector('select.goog-te-combo') || 
-                            document.querySelector('.goog-te-combo');
-        
+        const selectElement =
+          googleTranslateElement.querySelector("select.goog-te-combo") ||
+          document.querySelector(".goog-te-combo");
+
         if (selectElement) {
           // Change the value and trigger the change event
           selectElement.value = langCode;
-          selectElement.dispatchEvent(new Event('change'));
+          selectElement.dispatchEvent(new Event("change"));
         } else {
-          console.log('Translation dropdown not found');
+          console.log("Translation dropdown not found");
         }
       }
     }
@@ -127,44 +130,48 @@ const Navbar = () => {
   };
 
   return (
-    <header className='bg-white nav-style sticky top-0 z-50 py-2'>
-      <div className='mx-auto max-w-[1216px] px-4 xl:px-0 '>
-        <div className='flex lg:gap-6 h-16 items-center justify-between'>
-          <div className='md:flex md:items-center md:gap-12'>
-            <Link className='block text-teal-600' to='/'>
-              <span className='sr-only'>Home</span>
-              <img src={logo} alt='' className='w-24 sm:w-44' />
+    <header className="bg-white nav-style sticky top-0 z-50 py-2">
+      <div className="mx-auto max-w-[1216px] px-4 xl:px-0 ">
+        <div className="flex lg:gap-6 h-16 items-center justify-between">
+          <div className="md:flex md:items-center md:gap-12">
+            <Link className="block text-teal-600" to="/">
+              <span className="sr-only">Home</span>
+              <img src={logo} alt="" className="w-24 sm:w-44" />
             </Link>
           </div>
 
-          <div className='hidden lg:block'>
-            <nav aria-label='Global'>
-              <ul className='flex items-center gap-6 text-base'>
+          <div className="hidden lg:block">
+            <nav aria-label="Global">
+              <ul className="flex items-center gap-6 text-base">
                 <li>
                   <NavLink
-                    to='/'
+                    to="/"
                     className={({ isActive }) =>
-                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
+                      isActive
+                        ? "active !font-bold !bg-transparent"
+                        : "text-[#475467]"
                     }
                   >
-                    {' '}
-                    Home{' '}
+                    {" "}
+                    Home{" "}
                   </NavLink>
                 </li>
 
                 <li>
                   <NavLink
-                    to='/tours'
+                    to="/tours"
                     className={({ isActive }) =>
-                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
+                      isActive
+                        ? "active !font-bold !bg-transparent"
+                        : "text-[#475467]"
                     }
                   >
-                    {' '}
-                    Tours{' '}
+                    {" "}
+                    Tours{" "}
                   </NavLink>
                 </li>
 
-{/*                 <li>
+                {/*                 <li>
                   <NavLink
                     to='/cruises'
                     className={({ isActive }) =>
@@ -178,13 +185,15 @@ const Navbar = () => {
 
                 <li>
                   <NavLink
-                    to='/packages'
+                    to="/packages"
                     className={({ isActive }) =>
-                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
+                      isActive
+                        ? "active !font-bold !bg-transparent"
+                        : "text-[#475467]"
                     }
                   >
-                    {' '}
-                    Packages{' '}
+                    {" "}
+                    Packages{" "}
                   </NavLink>
                 </li>
 
@@ -202,24 +211,28 @@ const Navbar = () => {
 
                 <li>
                   <NavLink
-                    to='/blogs'
+                    to="/blogs"
                     className={({ isActive }) =>
-                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
+                      isActive
+                        ? "active !font-bold !bg-transparent"
+                        : "text-[#475467]"
                     }
                   >
-                    {' '}
-                    Blogs{' '}
+                    {" "}
+                    Blogs{" "}
                   </NavLink>
                 </li>
 
                 <li>
-                  <div className='relative inline-block text-left'>
+                  <div className="relative inline-block text-left">
                     <NavLink
-                      to='/contacts'
-                      className= {({ isActive }) =>
-                      isActive ? 'active !font-bold !bg-transparent' : 'text-[#475467]'
-                    }
-                      onClick={handleDropdownToggle('contact')}
+                      to="/contacts"
+                      className={({ isActive }) =>
+                        isActive
+                          ? "active !font-bold !bg-transparent"
+                          : "text-[#475467]"
+                      }
+                      onClick={handleDropdownToggle("contact")}
                     >
                       Contact us
                     </NavLink>
@@ -229,89 +242,88 @@ const Navbar = () => {
             </nav>
           </div>
 
-          <div className='flex items-center gap-4'>
-            <div className='flex gap-4 items-center'>
+          <div className="flex items-center gap-4">
+            <div className="flex gap-4 items-center">
               {/* Language Dropdown */}
-              <div className='relative inline-block text-left'>
+              <div className="relative inline-block text-left">
                 <button
-                  className='inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white text-sm font-semibold text-gray-900 mt-2'
-                  onClick={handleDropdownToggle('language')}
+                  className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white text-sm font-semibold text-gray-900 mt-2"
+                  onClick={handleDropdownToggle("language")}
                 >
-                  <img src={languageLogo} alt='Language' className='w-6 h-6' />
+                  <img src={languageLogo} alt="Language" className="w-6 h-6" />
                   <svg
-                    className='-mr-1 size-5 w-6 h-6 text-[#475467]'
-                    viewBox='0 0 20 20'
-                    fill='currentColor'
+                    className="-mr-1 size-5 w-6 h-6 text-[#475467]"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
                   >
                     <path
-                      fillRule='evenodd'
-                      d='M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z'
-                      clipRule='evenodd'
+                      fillRule="evenodd"
+                      d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
+                      clipRule="evenodd"
                     />
                   </svg>
                 </button>
                 {languageDropDown && (
-                  <div className='absolute right-0 z-10 mt-2 w-36 rounded-md bg-white shadow-lg ring-1 ring-black/5'>
-                    <div className='py-1'>
+                  <div className="absolute right-0 z-10 mt-2 w-36 rounded-md bg-white shadow-lg ring-1 ring-black/5">
+                    <div className="py-1">
                       <button
-                        onClick={() => handleLanguageChange('English')}
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full'
+                        onClick={() => handleLanguageChange("English")}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
                       >
                         English
                       </button>
                       <button
-                        onClick={() => handleLanguageChange('Spanish')}
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full'
+                        onClick={() => handleLanguageChange("Spanish")}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
                       >
                         Spanish
                       </button>
                       <button
-                        onClick={() => handleLanguageChange('French')}
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full'
+                        onClick={() => handleLanguageChange("French")}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
                       >
                         French
                       </button>
                       <button
-                        onClick={() => handleLanguageChange('German')}
-                        className='block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full'
+                        onClick={() => handleLanguageChange("German")}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
                       >
                         German
                       </button>
-                      
                     </div>
                   </div>
                 )}
               </div>
-              <div className='hidden lg:block'>
+              <div className="hidden lg:block">
                 {token ? (
-                  <div className='relative'>
-                    <div className='flex items-center'>
+                  <div className="relative">
+                    <div className="flex items-center">
                       <button
-                        onClick={handleDropdownToggle('user')}
-                        className='w-10 h-10 text-lg bg-[#EB5B2A] flex justify-center items-center rounded-full'
+                        onClick={handleDropdownToggle("user")}
+                        className="w-10 h-10 text-lg bg-[#EB5B2A] flex justify-center items-center rounded-full"
                       >
                         {user?.avatar ? (
                           <img
                             src={avatar}
-                            alt='Avatar'
-                            className='w-full h-full object-cover rounded-full'
+                            alt="Avatar"
+                            className="w-full h-full object-cover rounded-full"
                           />
                         ) : (
-                          <span className='text-white font-bold'>
+                          <span className="text-white font-bold">
                             <ProfileNameImg name={user?.name} />
                           </span>
                         )}
                       </button>
                       <div>
                         <svg
-                          className='-mr-1 size-5 w-6 h-6 text-[#475467]'
-                          viewBox='0 0 20 20'
-                          fill='currentColor'
+                          className="-mr-1 size-5 w-6 h-6 text-[#475467]"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
                         >
                           <path
-                            fillRule='evenodd'
-                            d='M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z'
-                            clipRule='evenodd'
+                            fillRule="evenodd"
+                            d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 011.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z"
+                            clipRule="evenodd"
                           />
                         </svg>
                       </div>
@@ -320,39 +332,40 @@ const Navbar = () => {
                       <div
                         className={`bg-white p-6 absolute z-50 flex flex-col top-full -right-6 mt-3 gap-5 border rounded-lg shadow popup w-60`}
                       >
-                        <div className='w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block'></div>
-                        {(user?.type === 'admin' || user?.type === 'vendor' ) && (
+                        <div className="w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block"></div>
+                        {(user?.type === "admin" ||
+                          user?.type === "vendor") && (
                           <Link
-                            to='/dashboard'
-                            className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
+                            to="/dashboard"
+                            className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
                           >
                             Dashboard
                           </Link>
                         )}
-                        {user?.type === 'user' && (
+                        {user?.type === "user" && (
                           <Link
-                            to='/booking-history'
-                            className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
-                        >
+                            to="/booking-history"
+                            className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
+                          >
                             Booking History
                           </Link>
                         )}
                         <Link
-                          to='/profile'
-                          className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
+                          to="/profile"
+                          className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
                         >
                           My Profile
                         </Link>
                         <Link
-                          to='/user-dashboard'
-                          className='text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300'
+                          to="/user-dashboard"
+                          className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
                         >
-                         Dashboard
+                          Dashboard
                         </Link>
 
                         <Link
                           onClick={handleLogout}
-                          className='text-base xl:text-xl text-red-400 hover:text-[#b24b7d] duration-300'
+                          className="text-base xl:text-xl text-red-400 hover:text-[#b24b7d] duration-300"
                         >
                           Logout
                         </Link>
@@ -360,18 +373,18 @@ const Navbar = () => {
                     )}
                   </div>
                 ) : (
-                  <div className='flex xl:gap-4'>
+                  <div className="flex xl:gap-4">
                     <Link
-                      className='p-5 xl:px-4 xl:py-[10px] text-base font-medium text-gray-500'
-                      to='/login'
+                      className="p-5 xl:px-4 xl:py-[10px] text-base font-medium text-gray-500"
+                      to="/login"
                     >
                       Login
                     </Link>
 
-                    <div className='hidden lg:flex items-center justify-center'>
+                    <div className="hidden lg:flex items-center justify-center">
                       <Link
-                        className='rounded-3xl bg-orange-500 px-2 pt-2 pb-3 xl:px-4 xl:pt-2.5 xl:pb-3 text-xs xl:text-base font-medium text-white'
-                        to='/signup'
+                        className="rounded-3xl bg-orange-500 px-2 pt-2 pb-3 xl:px-4 xl:pt-2.5 xl:pb-3 text-xs xl:text-base font-medium text-white"
+                        to="/signup"
                       >
                         Sign Up
                       </Link>
@@ -380,24 +393,24 @@ const Navbar = () => {
                 )}
               </div>
 
-              <div className='block lg:hidden'>
+              <div className="block lg:hidden">
                 <button
-                  className='rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75'
+                  className="rounded bg-gray-100 p-2 text-gray-600 transition hover:text-gray-600/75"
                   ref={buttonRef}
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
                   <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    className='size-5'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    strokeWidth='2'
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="size-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
                   >
                     <path
-                      strokeLinecap='round'
-                      strokeLinejoin='round'
-                      d='M4 6h16M4 12h16M4 18h16'
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4 6h16M4 12h16M4 18h16"
                     />
                   </svg>
                 </button>
@@ -409,13 +422,13 @@ const Navbar = () => {
         {/* Mobile Menu with Modern Design */}
         <div
           className={`fixed inset-0 z-50 lg:hidden transition-all duration-300 ${
-            isMenuOpen ? 'visible' : 'invisible'
+            isMenuOpen ? "visible" : "invisible"
           }`}
         >
           {/* Semi-transparent overlay */}
           <div
             className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${
-              isMenuOpen ? 'opacity-100' : 'opacity-0'
+              isMenuOpen ? "opacity-100" : "opacity-0"
             }`}
             onClick={() => setIsMenuOpen(false)}
           />
@@ -424,86 +437,105 @@ const Navbar = () => {
           <div
             ref={menuRef}
             className={`absolute top-0 left-0 w-4/5 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-              isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+              isMenuOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
-            <div className='flex items-center justify-between p-4 border-b'>
-              <span className='text-lg font-bold text-gray-800'>Menu</span>
+            <div className="flex items-center justify-between p-4 border-b">
+              <span className="text-lg font-bold text-gray-800">Menu</span>
               <button
                 onClick={() => setIsMenuOpen(false)}
-                className='p-2 text-gray-600 rounded-full hover:bg-gray-100'
+                className="p-2 text-gray-600 rounded-full hover:bg-gray-100"
               >
                 <svg
-                  className='w-6 h-6'
-                  fill='none'
-                  stroke='currentColor'
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
                   strokeWidth={2}
-                  viewBox='0 0 24 24'
-                  xmlns='http://www.w3.org/2000/svg'
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    d='M6 18L18 6M6 6l12 12'
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
               </button>
             </div>
-            <nav className='flex flex-col p-4 space-y-6'>
-              <ul className='text-lg'>
+            <nav className="flex flex-col p-4 space-y-6">
+              <ul className="text-lg">
                 {[
-                  { name: 'Home', to: '/' },
-                  { name: 'Tours', to: '/tours' },
+                  { name: "Home", to: "/" },
+                  { name: "Tours", to: "/tours" },
                   // { name: 'Cruises', to: '/cruises' },
-                  { name: 'Packages', to: '/packages' },
-                  { name: 'Bookings', to: '/booking-history' },
+                  { name: "Packages", to: "/packages" },
+                  { name: "Bookings", to: "/booking-history" },
                   // { name: 'Reservations', to: '/reservations' },
-                  { name: 'Blogs', to: '/blogs' }
-                ].filter(item => item.name !== 'Bookings' || user?.type === 'user').map((item, index) => (
-                  <li key={index}>
-                    <NavLink
-                      to={item.to}
-                      className='block px-4 py-2 rounded-md text-gray-800 hover:bg-gray-100 hover:text-gray-600'
-                    >
-                      {item.name}
-                    </NavLink>
-                  </li>
-                ))}
+                  { name: "Blogs", to: "/blogs" },
+                ]
+                  .filter(
+                    (item) => item.name !== "Bookings" || user?.type === "user"
+                  )
+                  .map((item, index) => (
+                    <li key={index}>
+                      <NavLink
+                        to={item.to}
+                        className="block px-4 py-2 rounded-md text-gray-800 hover:bg-gray-100 hover:text-gray-600"
+                      >
+                        {item.name}
+                      </NavLink>
+                    </li>
+                  ))}
                 <li>
-                  <div className='relative'>
+                  <div className="relative">
                     <Link
-                      to='/contacts'
-                      className='flex items-center justify-between w-full px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 hover:text-gray-600'
+                      to="/contacts"
+                      className="flex items-center justify-between w-full px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 hover:text-gray-600"
                     >
                       Contact us
                     </Link>
                   </div>
                 </li>
               </ul>
-              <div className='flex flex-col gap-4 mt-6'>
+              <div className="flex flex-col gap-4 mt-6">
                 {token ? (
                   <>
-                    <div className='block px-6 py-3 text-center text-gray-800'>
+                    <div className="block px-6 py-3 text-center text-gray-800">
                       {user?.name}
                     </div>
-                    {(user?.type === 'admin' || user?.type === 'vendor') && (
+                    {(user?.type === "admin" || user?.type === "vendor") && (
                       <Link
-                        to='/dashboard'
-                        className='block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md'
+                        to="/dashboard"
+                        className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
                       >
-                        Dashboard
+                        Admin Dashboard
                       </Link>
                     )}
 
+                    {user?.type === "user" && (
+                          <Link
+                            to="/booking-history"
+                            className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
+                          >
+                            Booking History
+                          </Link>
+                        )}
+
                     <Link
-                      to='/profile'
-                      className='block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md'
+                      to="/profile"
+                      className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
                     >
                       My Profile
                     </Link>
+                    <Link
+                      to="/user-dashboard"
+                      className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
+                    >
+                      Dashboard
+                    </Link>
                     <button
                       onClick={handleLogout}
-                      className='block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600'
+                      className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
                     >
                       Log out
                     </button>
@@ -511,14 +543,14 @@ const Navbar = () => {
                 ) : (
                   <>
                     <Link
-                      to='login'
-                      className='block px-6 py-3 text-center text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300'
+                      to="login"
+                      className="block px-6 py-3 text-center text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
                     >
                       Login
                     </Link>
                     <Link
-                      to='/signup'
-                      className='block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600'
+                      to="/signup"
+                      className="block px-6 py-3 text-center text-white bg-orange-500 rounded-md hover:bg-orange-600"
                     >
                       Sign Up
                     </Link>
@@ -530,7 +562,7 @@ const Navbar = () => {
         </div>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

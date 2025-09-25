@@ -145,9 +145,9 @@ export const getBookingDetails = async bookingId => {
 }
 
 // Function to get all booking data
-export const getAllBookings = async () => {
+export const getAllBookings = async ({page=1,limit=10}) => {
   try {
-    const response = await axiosClient.get('/api/booking')
+    const response = await axiosClient.get(`/api/booking?page=${page}&&limit=${limit}`)
     return response.data // Return the response data from the API
   } catch (error) {
     if (error.response) {
