@@ -5,7 +5,7 @@ import TourDetails from '../Tours/TourDetails/TourDetails'
 const Wishlist = () => {
   return (
     <div>
-      wishlist 
+       
     </div>
   )
 }

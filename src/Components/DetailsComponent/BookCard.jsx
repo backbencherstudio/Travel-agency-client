@@ -34,9 +34,9 @@ const BookCard = ({
   const navigate = useNavigate();
   const [freeCancellation, setFreeCancellation] = useState(false);
   const [payLater, setPayLater] = useState(false);
-  const [adultTravelers, setAdultTravelers] = useState(1);
-  const [childTravelers, setChildTravelers] = useState(0);
-  const [infantTravelers, setInfantTravelers] = useState(0);
+  const [adultTravelers, setAdultTravelers] = useState(details?.min_adults || 0);
+  const [childTravelers, setChildTravelers] = useState(details?.min_children || 0);
+  const [infantTravelers, setInfantTravelers] = useState(details?.min_infants || 0);
   const [totalTravelers, setTotalTravelers] = useState(0);
   const [showTravelerMenu, setShowTravelerMenu] = useState(false);
   const [openDatePicker, setOpenDatePicker] = useState(false);
@@ -208,7 +208,7 @@ const BookCard = ({
       if (prevTotal < 10) {
         const newTotal = prevTotal + 1;
         setAdultTravelers((prevAdult) => {
-          if (prevAdult < 10) {
+          if (prevAdult < details?.max_adults) {
             return prevAdult + 1;
           }
           return prevAdult;
@@ -219,20 +219,20 @@ const BookCard = ({
     });
   };
   const handleAdultTravelersRemove = () => {
-    if (adultTravelers > 1) {
+    if (adultTravelers > details?.min_adults) {
       setAdultTravelers((prev) => prev - 1);
       setTotalTravelers((prev) => prev - 1);
     }
   };
 
   const handleChildTravelersAdding = () => {
-    if (totalTravelers < 10) {
+    if (childTravelers < details?.max_children) {
       setTotalTravelers((prev) => prev + 1);
       setChildTravelers((prev) => prev + 1);
     }
   };
   const handleChildTravelersRemove = () => {
-    if (childTravelers > 0) {
+    if (childTravelers > details?.min_children) {
       setChildTravelers((prev) => prev - 1);
       setTotalTravelers((prev) => prev - 1);
     }
@@ -246,13 +246,13 @@ const BookCard = ({
   };
 
   const handleInfantTravelersAdding = () => {
-    if (totalTravelers < 10 && infantTravelers < 2) {
+    if (infantTravelers < details?.max_infants) {
       setTotalTravelers((prev) => prev + 1);
       setInfantTravelers((prev) => prev + 1);
     }
   };
   const handleInfantTravelersRemove = () => {
-    if (infantTravelers > 0) {
+    if (infantTravelers > details?.min_infants) {
       setInfantTravelers((prev) => prev - 1);
       setTotalTravelers((prev) => prev - 1);
     }
@@ -594,7 +594,7 @@ const BookCard = ({
             <div></div>
           </div>
         )}
-        {location.pathname.split("/")[1] === "tours" && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
+        {location.pathname.split("/")[1] === "tours" && booking && <div className="flex flex-col gap-4 text-[#49556D] bg-[#FDEFEAB2] p-4 rounded-xl">
           <div className="flex gap-[10px]">
             {/* <div className="relative w-[24px] h-[24px] text-white flex gap-[10px]">
               <input

@@ -302,9 +302,9 @@ const Navbar = () => {
                         onClick={handleDropdownToggle("user")}
                         className="w-10 h-10 text-lg bg-[#EB5B2A] flex justify-center items-center rounded-full"
                       >
-                        {user?.avatar ? (
+                        {user?.avatar_url ? (
                           <img
-                            src={avatar}
+                            src={user?.avatar_url || avatar}
                             alt="Avatar"
                             className="w-full h-full object-cover rounded-full"
                           />
