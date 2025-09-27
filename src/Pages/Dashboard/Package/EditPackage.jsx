@@ -535,14 +535,14 @@ const EditPackage = () => {
     for (let i = 0; i < tourPlan.length; i++) {
       tourPlan[i]?.images?.forEach((tour) => {
         form.append(`trip_plans_${i}_images`, tour);
-        console.log("Images : ",tour);
+        console.log("Images : ", tour);
       });
     }
 
     const plan = (tourPlan || []).map((pl) => ({
-      id: pl?.id || null,
-      day: pl?.day || 0,
-      details: pl.details,
+      id: pl?.id ?? "",
+      day: pl?.day ?? 0,
+      details: pl?.details ?? "",
     }));
 
     form.append("trip_plans", JSON.stringify(plan));

@@ -9,6 +9,8 @@ import ProfileIcon from '../../assets/user-dashboard/icons/ProfileIcon';
 import LogoutIcon from '../../assets/user-dashboard/icons/LogoutIcon';
 import { AuthContext } from '~/Context/AuthProvider/AuthProvider';
 import { useContext } from 'react';
+import { FaChevronRight } from "react-icons/fa";
+import { useEffect } from 'react';
 
 
 const UserDashboardSidebar = () => {
@@ -70,8 +72,8 @@ const UserDashboardSidebar = () => {
   // }, [user])
 
   return (
-    <div>
-      <div className="pt-12 pb-6 bg-white rounded-xl">
+    <div className='h-full w-[214px]'>
+      <div className="pt-12 pb-6 bg-white rounded-xl h-full w-full px-2">
         {/* Profile Section */}
         <div className="flex flex-col items-center">
           <img src={user?.avatar_url} alt="Profile" className='rounded-full'/>
@@ -82,7 +84,7 @@ const UserDashboardSidebar = () => {
         </div>
 
         {/* Navigation Items */}
-        <div>
+        <div h-full>
           {navItems.map((item, index) => {
             const active = getActive(item.path);
 
@@ -103,7 +105,7 @@ const UserDashboardSidebar = () => {
                   <h2
                     className={`text-sm font-medium ${
                       active ? 'text-[#EB5B2A]' : 'text-[#101828]'
-                    }`}
+                    } text-nowrap`}
                   >
                     {item.label}
                   </h2>

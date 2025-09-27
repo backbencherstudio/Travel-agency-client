@@ -331,4 +331,122 @@ export const UserServices = {
       throw error.response?.data || error;
     }
   },
+  getGiftcards: async () => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.get(`${baseURL}/api/gift-card`, config);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching places:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
+  getWishList: async () => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.get(`${baseURL}/api/wishlist`, config);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching places:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
+  addToWishList: async (data) => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.post(
+        `${baseURL}/api/wishlist`,
+        data,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error creating package place:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
+  removeFromWishList: async (id) => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.delete(
+        `${baseURL}/api/wishlist/${id}`,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error updating package place:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
+  getAllGiftCards: async () => {
+    try {
+      const userToken = localStorage.getItem("token");
+      if (!userToken) throw new Error("User token not found. Please login.");
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      const response = await axios.get(`${baseURL}/api/admin/gift-card
+        `, config);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error fetching places:",
+        error.response?.data || error.message
+      );
+      throw error.response?.data || error;
+    }
+  },
 };

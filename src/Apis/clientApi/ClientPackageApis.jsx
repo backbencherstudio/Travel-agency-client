@@ -2,7 +2,7 @@ import axiosClient from "../../axiosClient";
 
 const ClientPackageApis = {};
 
-ClientPackageApis.all = async (type, filterParams = {}) => {
+ClientPackageApis.all = async (type, filterParams = {},id) => {
   try {
     // Build query parameters
     const queryParams = new URLSearchParams();
@@ -71,7 +71,7 @@ ClientPackageApis.all = async (type, filterParams = {}) => {
       );
     }
 
-    const url = `/api/package?${queryParams.toString()}`;
+    const url = `/api/package?user_id=${id}&${queryParams.toString()}`;
 
     const res = await axiosClient
       .get(url)

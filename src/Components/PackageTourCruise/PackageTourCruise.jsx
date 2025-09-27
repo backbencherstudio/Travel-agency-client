@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { debounce } from "lodash";
 
@@ -14,6 +14,8 @@ import ResidenceTypeFilter from "./Filters/ResidenceTypeFilter";
 import MealPlanFilter from "./Filters/MealPlanFilter";
 import PopularAreaFilter from "./Filters/PopularAreaFilter";
 import LanguageFilter from "./Filters/LanguageFilter";
+import User from "../Dashboard/chat/Components/User";
+import { AuthContext } from "~/Context/AuthProvider/AuthProvider";
 
 // Display Components
 import TourList from "./TourList";
@@ -24,10 +26,12 @@ import Loading from "../../Shared/Loading";
 import { useTravelData } from "../../Context/TravelDataContext/TravelDataContext";
 import ClientPackageApis from "../../Apis/clientApi/ClientPackageApis";
 import ClientLanguageApis from "../../Apis/clientApi/ClientLanguageApis";
+import { UserServices } from "~/userServices/user.services";
 
 function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
   const location = useLocation();
   const navigate = useNavigate();
+    const { user, fetchUserInfo } = useContext(AuthContext);
   const { destinations, cancellationPolicies } = useTravelData();
 
   // ------------------- Filters state -------------------
@@ -89,6 +93,7 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
   // ------------------- Apply filters -------------------
   useEffect(() => {
     applyFilters();
+    fetchWishList();
   }, [
     startDate,
     endDate,
@@ -118,9 +123,15 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
   const handlePriceChange = (type, value) => {
     const numValue = Number(value);
     if (type === "min") {
-      debouncedSetPriceRange({ ...priceRange, min: Math.min(numValue, priceRange.max - 100) });
+      debouncedSetPriceRange({
+        ...priceRange,
+        min: Math.min(numValue, priceRange.max - 100),
+      });
     } else {
-      debouncedSetPriceRange({ ...priceRange, max: Math.max(numValue, priceRange.min + 100) });
+      debouncedSetPriceRange({
+        ...priceRange,
+        max: Math.max(numValue, priceRange.min + 100),
+      });
     }
   };
 
@@ -140,8 +151,33 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
     setSelectedPopularArea(selectedPopularArea === area ? null : area);
   };
 
-  const handleLovedPackages = (packageId, value) => {
-    setLovedPackages((prev) => ({ ...prev, [packageId]: value }));
+  const handleLovedPackages = async (packageId) => {
+    try {
+       const res = await UserServices?.addToWishList({
+          package_id: packageId,
+        });
+      if (res?.success) {
+        applyFilters();
+        fetchWishList();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchWishList = async () => {
+    try {
+      const res = await UserServices?.getWishList();
+      if (res?.success) {
+        const lovedMap = {};
+        res?.data?.forEach((item) => {
+          lovedMap[item?.package?.id] = true;
+        });
+        setLovedPackages(lovedMap);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // ------------------- Apply filters function -------------------
@@ -152,6 +188,7 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
       const formattedEndDate = endDate?.toISOString().split("T")[0] || "";
 
       const filterParams = {
+        user_id:user?.id,
         q: queryParam || "",
         duration_start: formattedStartDate,
         duration_end: formattedEndDate,
@@ -160,7 +197,9 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
         ...(selectedRating !== null && { rating: selectedRating }),
         ...(selectedResidence !== null && { residences: [selectedResidence] }),
         ...(selectedMealPlan !== null && { mealPlans: [selectedMealPlan] }),
-        ...(selectedPopularArea !== null && { popularAreas: [selectedPopularArea] }),
+        ...(selectedPopularArea !== null && {
+          popularAreas: [selectedPopularArea],
+        }),
         policies: Object.fromEntries(
           Object.entries(isFreeCancellation).map(([policyId, value]) => {
             const policy = cancellationPolicies.find((p) => p.id === policyId);
@@ -179,7 +218,8 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
         if (Array.isArray(value)) {
           if (value.length > 0) params.set(key, value.join(","));
           else params.delete(key);
-        } else if (value !== null && value !== undefined) params.set(key, value.toString());
+        } else if (value !== null && value !== undefined)
+          params.set(key, value.toString());
         else params.delete(key);
       });
 
@@ -189,16 +229,16 @@ function PackageTourCruise({ getPackagesData, pageLoading, currentPage }) {
         isCruiseRoute
           ? "cruise"
           : isPackageRoute
-            ? "package"
-            : isSearchResultsRoute
-              ? ""
-              : "tour",
-        filterParams
+          ? "package"
+          : isSearchResultsRoute
+          ? ""
+          : "tour",
+        filterParams,
+        user?.id
       );
 
       if (res.success) {
         setPackages(res?.data);
-        console.log("Packages : ",res?.data);
         getPackagesData(res);
       }
     } catch (err) {

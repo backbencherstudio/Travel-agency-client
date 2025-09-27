@@ -7,9 +7,9 @@ export default function TablePagination({
   handlePreviousPage,
   page,
   filteredData,
-  rowsPerPage
+  rowsPerPage,
+  totalPages
 }) {
-  const totalPages = Math.ceil(filteredData?.length / rowsPerPage) || 0;
   const showEllipsis = totalPages > 6;
   const lastPagesStart = Math.max(0, totalPages - 6);
 

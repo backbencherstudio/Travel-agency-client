@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { Delete } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 function TourCard({
+  wishListId,
   tour,
   isPackageRoute,
   lovedPackages,
@@ -15,9 +17,10 @@ function TourCard({
 }) {
   // console.log("Rating : ", tour);
   const navigate = useNavigate();
+  const location = useLocation();
   // console.log("Tour Data : ", tour);
   // console.log("Tour id : ", tour.id);
-  const [isFavourite, setIsFavourite] = useState(false)
+  // const [isFavourite, setIsFavourite] = useState(false)
   // console.log("isPackageRoute", isPackageRoute)
   // Function to render stars based on rating
   const renderStars = (rating) => {
@@ -63,18 +66,25 @@ function TourCard({
   return (
     <div
       key={tour?.id}
-      className={`relative flex ${location.pathname === "/cruise" ? "flex-row" : "flex-col"} bg-white shadow-md border border-slate-200 rounded-[10px]`}
+      className={`relative flex ${
+        location.pathname === "/cruise" ? "flex-row" : "flex-col"
+      } bg-white shadow-md border border-slate-200 rounded-[10px]`}
     >
-      <div className={`relative ${location.pathname === "/cruise" ? "w-[363px] h-full pl-4" : "h-[350px] lg:h-56"} flex items-center justify-center overflow-hidden text-white rounded-t-[10px]`}>
+      <div
+        className={`relative ${
+          location.pathname === "/cruise"
+            ? "w-[363px] h-full pl-4"
+            : "flex-1 w-full aspect-square lg:h-56"
+        } flex items-stretch justify-center overflow-hidden text-white rounded-t-[10px]`}
+      >
         <LazyLoadImage
           src={tour?.package_files?.[0]?.file_url || ""}
           alt={tour?.package_files?.[0]?.file_url || "Tour image"}
           effect="blur"
-          className="w-full h-full object-cover"
+          className="w-[100%] h-full object-cover"
         />
-        {/* Special Offer Badge */}
-        {/* {tour?.is_special_offer && ( */}
       </div>
+
       <div className="flex-1 flex flex-col justify-between">
         <div className="p-4">
           <div className="flex items-center gap-1">
@@ -91,10 +101,10 @@ function TourCard({
                   fill="white"
                 />
               </svg>
-              {tour?.package_destinations[0]?.destination?.name}
-              {tour?.package_destinations[1] &&
-                `, ${tour?.package_destinations[1]?.destination?.name}`}
-              , {tour?.package_destinations[0]?.destination?.country?.name}
+              {tour?.package_destinations?.[0]?.destination?.name}
+              {tour?.package_destinations?.[1] &&
+                `, ${tour?.package_destinations?.[1]?.destination?.name}`}
+              , {tour?.package_destinations?.[0]?.destination?.country?.name}
             </div>
             <div className="mb-5 bg-[#0E457D] text-white text-xs font-medium me-2 px-2.5 py-[5px] rounded-full border border-[#90A9C3] dark:bg-gray-700 dark:text-gray-300">
               Hotel + All inclusive
@@ -116,41 +126,43 @@ function TourCard({
           </p>
           <div className="flex items-center gap-2 mt-3">
             <p className=" text-sm text-[#1D1F2C]">
-              {tour?.average_rating
-                ? `${tour.average_rating}`
-                : "0.0"}
+              {tour?.average_rating ? `${tour.average_rating}` : "0.0"}
             </p>
             <div className="flex gap-1 items-center">
               {renderStars(tour?.average_rating)}
             </div>
-            {!location.pathname === "/cruise" &&<div className="flex items-center">
-              <div className="ms-1 text-sm font-medium text-gray-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 14 14"
-                  fill="none"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M6.99984 1.16699C3.77809 1.16699 1.1665 3.77858 1.1665 7.00033C1.1665 10.2221 3.77809 12.8337 6.99984 12.8337C10.2216 12.8337 12.8332 10.2221 12.8332 7.00033C12.8332 3.77858 10.2216 1.16699 6.99984 1.16699ZM9.05902 9.05951C8.97385 9.14468 8.86184 9.18783 8.74984 9.18783C8.63784 9.18783 8.52582 9.14526 8.44065 9.05951L6.69065 7.30951C6.6084 7.22726 6.56234 7.11583 6.56234 7.00033V4.08366C6.56234 3.84216 6.75834 3.64616 6.99984 3.64616C7.24134 3.64616 7.43734 3.84216 7.43734 4.08366V6.81889L9.05902 8.44057C9.22994 8.61207 9.22994 8.88859 9.05902 9.05951Z"
-                    fill="#4A4C56"
-                  />
-                </svg>
+            {!location.pathname === "/cruise" && (
+              <div className="flex items-center">
+                <div className="ms-1 text-sm font-medium text-gray-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M6.99984 1.16699C3.77809 1.16699 1.1665 3.77858 1.1665 7.00033C1.1665 10.2221 3.77809 12.8337 6.99984 12.8337C10.2216 12.8337 12.8332 10.2221 12.8332 7.00033C12.8332 3.77858 10.2216 1.16699 6.99984 1.16699ZM9.05902 9.05951C8.97385 9.14468 8.86184 9.18783 8.74984 9.18783C8.63784 9.18783 8.52582 9.14526 8.44065 9.05951L6.69065 7.30951C6.6084 7.22726 6.56234 7.11583 6.56234 7.00033V4.08366C6.56234 3.84216 6.75834 3.64616 6.99984 3.64616C7.24134 3.64616 7.43734 3.84216 7.43734 4.08366V6.81889L9.05902 8.44057C9.22994 8.61207 9.22994 8.88859 9.05902 9.05951Z"
+                      fill="#4A4C56"
+                    />
+                  </svg>
+                </div>
+                <p className="ms-1 text-[14px] leading-[160%]  text-[#1D1F2C] dark:text-[#1D1F2C]">
+                  {tour?.duration} days
+                </p>
               </div>
-               <p className="ms-1 text-[14px] leading-[160%]  text-[#1D1F2C] dark:text-[#1D1F2C]">
-                {tour?.duration} days
-              </p>
-            </div>}
+            )}
           </div>
-          {!location.pathname === "/cruise" && <div className="text-sm mt-1 text-[#EB5B2A]">
-            Cancellation Policy{" "}
-            <span className="text-xs text-[#49556D]">
-              ({tour?.cancellation_policy?.policy})
-            </span>
-          </div>}
+          {!location.pathname === "/cruise" && (
+            <div className="text-sm mt-1 text-[#EB5B2A]">
+              Cancellation Policy{" "}
+              <span className="text-xs text-[#49556D]">
+                ({tour?.cancellation_policy?.policy})
+              </span>
+            </div>
+          )}
         </div>
         <div>
           <div className="px-4">
@@ -159,12 +171,12 @@ function TourCard({
           <div className="flex items-center justify-between p-4">
             <div className="">
               <div className="text-xs leading-4">Starting From</div>
-              {!specialOffer[tour.id] && (
+              {!specialOffer[tour?.id] && (
                 <div className="text-xl text-[#0E457D] font-bold">
                   ${tour?.price}
                 </div>
               )}
-              {specialOffer[tour.id] && (
+              {specialOffer[tour?.id] && (
                 <div>
                   <span className="text-[20px] font-bold text-orange-500 pr-1">
                     ${specialPrice}
@@ -179,8 +191,12 @@ function TourCard({
               onClick={handleBookNow}
               className="flex justify-between items-center gap-1 px-4 py-[10px] border border-[#0E457D] hover:bg-[#7aa6d3] hover:border-none rounded-full shadow-md text-[#0E457D] hover:text-white"
             >
-              <Link to={`/tours/${tour.id}`}>
-                {!location.pathname === "/cruise" ? <div className="text-sm ">Book Now</div>:<div className="text-sm ">View Details</div>}
+              <Link to={`/tours/${tour?.id}`}>
+                {!location.pathname === "/cruise" ? (
+                  <div className="text-sm ">Book Now</div>
+                ) : (
+                  <div className="text-sm ">View Details</div>
+                )}
               </Link>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -208,17 +224,20 @@ function TourCard({
           </div>
         </div>
       </div>
-      {specialOffer[tour.id] && <div className='absolute top-4 left-4 bg-orange-500 text-white px-3 py-[6px] rounded text-sm font-medium'>
-        Special Offer
-      </div>}
+      {specialOffer[tour?.id] && (
+        <div className="absolute top-4 left-4 bg-orange-500 text-white px-3 py-[6px] rounded text-sm font-medium">
+          Special Offer
+        </div>
+      )}
       {/* // )} */}
       {/* Favourite Button */}
       <button
-        className='absolute top-4 right-4 transition-colors duration-300'
+        className="absolute top-4 right-4 transition-colors duration-300"
         onClick={(e) => {
           e.preventDefault();
-          // Add your favourite logic here
-          setIsFavourite(!isFavourite)
+          location?.pathname?.split("?")?.[0] === "/tours"
+            ? handleLovedPackages(wishListId)
+            : handleLovedPackages(wishListId);
         }}
       >
         <svg
@@ -226,7 +245,13 @@ function TourCard({
           width="20"
           height="20"
           viewBox="0 0 24 24"
-          fill={`${isFavourite ? 'currentColor' : 'none'}`}
+          fill={`${
+            tour?.is_wishlist
+              ? "currentColor"
+              : location?.pathname?.split("/")?.includes("wishlist")
+              ? "currentColor"
+              : "none"
+          }`}
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"

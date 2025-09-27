@@ -1,39 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ChatToggle from "../../Shared/ChatToggle";
 import { useTravelData } from "../../Context/TravelDataContext/TravelDataContext";
 import gift from "../../assets/img/gift/gift-icon.svg";
 import bgImage from "../../assets/img/gift/bg-icon.png";
 import moment from "moment";
+import { UserServices } from "~/userServices/user.services";
 
 const Gift = () => {
     // const { homeData } = useTravelData();
     // console.log('homeData', homeData);
-    const giftCards = [
-        {
-            id: 1,
-            card_name: "Virtual Gift Card",
-            gift_value: 100,
-            valid_for: "Any Tour or Package",
-            gift_code: "GIFT 2025",
-            valid_until: "2025-12-31",
-        },
-        {
-            id: 2,
-            card_name: "Virtual Gift Card",
-            gift_value: 150,
-            valid_for: "Any Tour or Package",
-            gift_code: "GIFT 2025",
-            valid_until: "2025-12-31",
-        },
-        {
-            id: 3,
-            card_name: "Virtual Gift Card",
-            gift_value: 200,
-            valid_for: "Any Tour or Package",
-            gift_code: "GIFT 2025",
-            valid_until: "2025-12-31",
-        },
-    ];
+    const [giftCards,setGiftCards] = useState([]);
+    // const giftCards = [
+    //     {
+    //         id: 1,
+    //         card_name: "Virtual Gift Card",
+    //         gift_value: 100,
+    //         valid_for: "Any Tour or Package",
+    //         gift_code: "GIFT 2025",
+    //         valid_until: "2025-12-31",
+    //     },
+    //     {
+    //         id: 2,
+    //         card_name: "Virtual Gift Card",
+    //         gift_value: 150,
+    //         valid_for: "Any Tour or Package",
+    //         gift_code: "GIFT 2025",
+    //         valid_until: "2025-12-31",
+    //     },
+    //     {
+    //         id: 3,
+    //         card_name: "Virtual Gift Card",
+    //         gift_value: 200,
+    //         valid_for: "Any Tour or Package",
+    //         gift_code: "GIFT 2025",
+    //         valid_until: "2025-12-31",
+    //     },
+    // ];
+
+    const fetchGiftCards= async()=>{
+        try{
+            const res = await UserServices?.getAllGiftCards();
+            console.log(res);
+        }catch(err){
+            console.log(err);
+        }
+    }
+
+    useEffect(()=>{
+        fetchGiftCards();
+    },[])
 
     return (
         <>
