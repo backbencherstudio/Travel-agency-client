@@ -92,7 +92,7 @@ const UserDashboard = () => {
           Welcome back, Olivia
         </h2>
         <p className=" text-[#475467] text-base">Track, manage your tour.</p>
-        <div className=" flex my-8 gap-6">
+        <div className=" flex flex-col sm:flex-row my-8 gap-6">
           {Object.entries(states)?.map((item, index) => (
             <div
               className=" space-y-6 border border-[#EAECF0] p-6 flex-1 rounded-xl  "
@@ -107,7 +107,7 @@ const UserDashboard = () => {
             </div>
           ))}
         </div>
-        <div className=" flex justify-between items-center">
+        <div className="space-y-3 sm:flex justify-between items-center hidden">
           <div className=" flex gap-3">
             <div className=" flex items-center gap-1   border border-[#D0D5DD] py-[10px] px-[14px] rounded-lg ">
               <p className=" text-[#344054] font-semibold text-sm">All</p>
