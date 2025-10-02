@@ -261,11 +261,11 @@ const Footer = () => {
           {/* Become a vendor */}
           <Link
             to="/become-a-vendor"
-            className="w-fit flex gap-2 items-center text-sm text-white bg-orange-500 px-4 py-2 rounded-md"
+            className="w-fit flex lg:flex-col gap-2 items-center lg:items-start text-sm text-white bg-orange-500 px-4 py-2 rounded-md"
           >
             <img src={becomeVendor} alt="Become a vendor" className="w-6 h-6" />
             <div className="flex flex-col">
-              <p className="text-white text-sm font-bold">
+              <p className="text-white text-sm font-bold text-nowrap">
                 Become a vendor
               </p>
             </div>
