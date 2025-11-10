@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import logo from "../assets/img/Logo_new.png";
+import logo from "../assets/img/logo.png";
 import languageLogo from "../assets/img/Language.svg";
 import "./nav.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";

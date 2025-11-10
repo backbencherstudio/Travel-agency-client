@@ -155,10 +155,28 @@ export default function PackagePlaces() {
     e.preventDefault();
     try {
       if (editServiceId) {
-        await UserServices.updatePackagePlaces(editServiceId, formData);
+        await UserServices.updatePackagePlaces(editServiceId, {
+          latitude: Number(formData?.latitude),
+          longitude: Number(formData?.longitude),
+          type: formData?.type,
+          name: formData?.name,
+          description: formData?.description,
+          country: formData?.country,
+          city: formData?.city,
+          address: formData?.address
+        });
         Swal.fire("Success", "Place updated successfully", "success");
       } else {
-        await UserServices.createPackagePlaces(formData);
+        await UserServices.createPackagePlaces({
+          latitude: Number(formData?.latitude),
+          longitude: Number(formData?.longitude),
+          type: formData?.type,
+          name: formData?.name,
+          description: formData?.description,
+          country: formData?.country,
+          city: formData?.city,
+          address: formData?.address
+        });
         Swal.fire("Success", "Place created successfully", "success");
       }
 
@@ -336,8 +354,8 @@ export default function PackagePlaces() {
                       !formData.country
                         ? "Select country first"
                         : cities.length === 0
-                        ? "No cities available"
-                        : "Select City"
+                          ? "No cities available"
+                          : "Select City"
                     }
                   />
                 </SelectTrigger>
@@ -478,7 +496,7 @@ export default function PackagePlaces() {
                 <TableBody>
                   {services
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((service,index) => (
+                    .map((service, index) => (
                       <TableRow key={service.id}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>{service.name}</TableCell>
@@ -494,8 +512,8 @@ export default function PackagePlaces() {
                         <TableCell>
                           {service.latitude && service.longitude
                             ? `${parseFloat(service.latitude).toFixed(
-                                4
-                              )}, ${parseFloat(service.longitude).toFixed(4)}`
+                              4
+                            )}, ${parseFloat(service.longitude).toFixed(4)}`
                             : "N/A"}
                         </TableCell>
                         <TableCell>

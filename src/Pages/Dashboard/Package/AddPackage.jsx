@@ -349,23 +349,23 @@ const AddPackage = () => {
     });
     form.append("package_images", JSON.stringify(existingPackageImages)); // [{image_url}|{video_url}]
 
-    if(data?.min_infants){
-      form.append("min_infants",data.min_infants);
+    if (data?.min_infants) {
+      form.append("min_infants", data.min_infants);
     }
-    if(data?.max_infants){
-      form.append("max_infants",data.max_infants);
+    if (data?.max_infants) {
+      form.append("max_infants", data.max_infants);
     }
-    if(data?.min_children){
-      form.append("min_children",data.min_children);
+    if (data?.min_children) {
+      form.append("min_children", data.min_children);
     }
-    if(data?.max_children){
-      form.append("max_children",data.max_children);
+    if (data?.max_children) {
+      form.append("max_children", data.max_children);
     }
-    if(data?.min_adults){
-      form.append("min_adults",data.min_adults);
+    if (data?.min_adults) {
+      form.append("min_adults", data.min_adults);
     }
-    if(data?.max_adults){
-      form.append("max_adults",data.max_adults);
+    if (data?.max_adults) {
+      form.append("max_adults", data.max_adults);
     }
 
     for (let i = 0; i < tourPlan.length; i++) {
@@ -651,11 +651,10 @@ const AddPackage = () => {
                 </h2>
                 <div
                   {...getRootProps()}
-                  className={`border border-dashed flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${
-                    isDragging
+                  className={`border border-dashed flex flex-col items-center rounded-lg py-8 cursor-pointer transition ${isDragging
                       ? "bg-purple-900/5 border-purple-600"
                       : "border-gray-200"
-                  }`}
+                    }`}
                 >
                   <img
                     src={uploadIcon}
@@ -767,7 +766,7 @@ const AddPackage = () => {
                 </label>
                 <Select
                   options={meetingPoints
-                    ?.filter((point) => point.type === "meetingPoint")
+                    ?.filter((point) => point.type === "Meeting Point")
                     .map((item) => toOption(item.id, item.name))}
                   value={selectedMeetingPoint}
                   onChange={(select) => setSelectedMeetingPoint(select || "")}
@@ -820,10 +819,12 @@ const AddPackage = () => {
                         type="button"
                         className="border border-[#061D35] px-4 py-1 rounded-sm bg-[#061D35] text-base font-semibold text-white hover:bg-white hover:text-[#061D35]"
                         onClick={() => {
-                          setAdditionalInformations((prev) => [
-                            ...prev,
-                            { id: "", title: information },
-                          ]);
+                          if (information) {
+                            setAdditionalInformations((prev) => [
+                              ...prev,
+                              { id: "", title: information },
+                            ]);
+                          }
                           setInformation("");
                         }}
                       >
@@ -841,7 +842,7 @@ const AddPackage = () => {
                 )}
                 {additionalInformations && (
                   <ul className="list-disc px-4">
-                    {additionalInformations?.map((info,idx) => (
+                    {additionalInformations?.map((info, idx) => (
                       <li className="">
                         <div className="flex items-center justify-between text-sm">
                           <h2>{info?.title}</h2>
