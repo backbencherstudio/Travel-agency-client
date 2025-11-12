@@ -94,6 +94,14 @@ const Navbar = () => {
     }
   };
 
+
+  const handleNavigation = (path) => {
+    console.log("Path : ", path);
+    navigate(path);
+    setIsMenuOpen(false);
+  }
+
+
   const handleLanguageChange = (lang) => {
     console.log(lang);
     // Map our language names to Google Translate codes
@@ -335,13 +343,13 @@ const Navbar = () => {
                         <div className="w-4 h-4 bg-white border-t border-l rotate-45 absolute -top-[7px] right-[54px] hidden xl:block"></div>
                         {(user?.type === "admin" ||
                           user?.type === "vendor") && (
-                          <Link
-                            to="/dashboard"
-                            className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
-                          >
-                            Dashboard
-                          </Link>
-                        )}
+                            <Link
+                              to="/dashboard"
+                              className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
+                            >
+                              Dashboard
+                            </Link>
+                          )}
                         {user?.type === "user" && (
                           <Link
                             to="/booking-history"
@@ -421,24 +429,21 @@ const Navbar = () => {
 
         {/* Mobile Menu with Modern Design */}
         <div
-          className={`fixed inset-0 z-50 lg:hidden transition-all duration-300 ${
-            isMenuOpen ? "visible" : "invisible"
-          }`}
+          className={`fixed inset-0 z-50 lg:hidden transition-all duration-300 ${isMenuOpen ? "visible" : "invisible"
+            }`}
         >
           {/* Semi-transparent overlay */}
           <div
-            className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${
-              isMenuOpen ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 bg-black/60 transition-opacity duration-300 ${isMenuOpen ? "opacity-100" : "opacity-0"
+              }`}
             onClick={() => setIsMenuOpen(false)}
           />
 
           {/* Menu content */}
           <div
             ref={menuRef}
-            className={`absolute top-0 left-0 w-4/5 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
-              isMenuOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+            className={`absolute top-0 left-0 w-4/5 h-full bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
           >
             <div className="flex items-center justify-between p-4 border-b">
               <span className="text-lg font-bold text-gray-800">Menu</span>
@@ -478,22 +483,24 @@ const Navbar = () => {
                   )
                   .map((item, index) => (
                     <li key={index}>
-                      <NavLink
-                        to={item.to}
-                        className="block px-4 py-2 rounded-md text-gray-800 hover:bg-gray-100 hover:text-gray-600"
+                      <button
+                        type="button"
+                        onClick={() => handleNavigation(item?.to)}
+                        className="block px-4 py-2 w-full text-start rounded-md text-gray-800 hover:bg-gray-100 hover:text-gray-600"
                       >
                         {item.name}
-                      </NavLink>
+                      </button>
                     </li>
                   ))}
                 <li>
                   <div className="relative">
-                    <Link
-                      to="/contacts"
+                    <button
+                      type="button"
+                      onClick={() => handleNavigation('/contacts')}
                       className="flex items-center justify-between w-full px-4 py-2 text-gray-800 rounded-md hover:bg-gray-100 hover:text-gray-600"
                     >
                       Contact us
-                    </Link>
+                    </button>
                   </div>
                 </li>
               </ul>
@@ -513,13 +520,13 @@ const Navbar = () => {
                     )}
 
                     {user?.type === "user" && (
-                          <Link
-                            to="/booking-history"
-                            className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
-                          >
-                            Booking History
-                          </Link>
-                        )}
+                      <Link
+                        to="/booking-history"
+                        className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
+                      >
+                        Booking History
+                      </Link>
+                    )}
 
                     <Link
                       to="/profile"
