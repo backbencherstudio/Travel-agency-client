@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import image from "../../assets/img/form-img/signup-img.png";
-import logo from '../../assets/img/form-img/logo.png';
+import logo from '../../assets/img/logo.png';
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthApis from "../../Apis/AuthApis";
 import { toast } from "react-toastify";
@@ -41,7 +41,7 @@ const Signup = () => {
         </div>
         <div className="w-full xl:w-1/2 h-full p-6 md:p-0">
           <div className="max-w-xl mx-auto ">
-            <img src={logo} className="w-[89px] h-12" alt="" />
+            <img src={logo} className="w-[200px]" alt="" />
           </div>
           <div className="w-full max-w-xl mx-auto  flex flex-col gap-8">
             <div className="flex flex-col gap-3 mt-8">

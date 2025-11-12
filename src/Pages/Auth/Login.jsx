@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import image from '../../assets/img/form-img/login-img.png'
-import logo from '../../assets/img/form-img/logo.png'
+import logo from '../../assets/img/logo.png'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthApis from '../../Apis/AuthApis'
 import { toast } from 'react-toastify'
@@ -77,7 +77,7 @@ const Login = () => {
         <div className='w-full xl:w-1/2 h-full p-6 md:p-0'>
           <div className='max-w-xl mx-auto '>
             <Link to='/'>
-              <img src={logo} className='w-[89px] h-12' alt='' />
+              <img src={logo} className='w-[200px]' alt='' />
             </Link>
           </div>
           <div className='w-full max-w-xl mx-auto  flex flex-col gap-8'>
