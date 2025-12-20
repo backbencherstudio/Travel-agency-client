@@ -2,9 +2,8 @@ import axiosClient from "../axiosClient";
 
 const PaymentApi = {};
 
-// Get all offers (coupons)
 PaymentApi.get = async () => {
-    const url = `/api/admin/payment-transaction/dashboard`;  // Added search and status to the query
+    const url = `/api/payment/dashboard`; 
     try {
         const response = await axiosClient.get(url);
         return response.data;

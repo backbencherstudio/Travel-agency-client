@@ -4,7 +4,7 @@ const TransactionApis = {};
 
 // Get all transactions
 TransactionApis.getAllTransactions = async () => {
-  const url = "/api/admin/payment-transaction";
+  const url = "/api/payment/dashboard";
   // console.log(url);
 
   
