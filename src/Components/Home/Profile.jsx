@@ -87,12 +87,9 @@ const UserProfile = () => {
           fetchUserInfo();
           Swal.fire({
             title: 'Success',
-            text: 'Your account has been converted to vendor',
+            text: 'Your request has been send to admin for approval',
             icon: 'success'
           })
-          setTimeout(() => {
-            navigate('/dashboard')
-          }, 500)
         }
       }
     })
@@ -245,7 +242,7 @@ const UserProfile = () => {
                   {apiLoading ? 'apiLoading...' : 'Update Profile'}
                 </button>
               </div>
-              {user?.type !== 'vendor' && (
+              {user?.type === 'user' && (
                 <div className='flex flex-col justify-center items-center gap-2 mt-8'>
                   <p>Do you want to be a vendor?</p>
                   <button onClick={handleVendorConvert} className='flex flex-row items-center gap-2 text-sm font-normal bg-orange-500 text-white px-4 py-2 rounded-md'>

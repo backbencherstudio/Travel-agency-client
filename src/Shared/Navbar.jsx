@@ -522,6 +522,7 @@ const Navbar = () => {
                     {user?.type === "user" && (
                       <Link
                         to="/booking-history"
+                        onClick={()=>setIsMenuOpen(prev => !prev)}
                         className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
                       >
                         Booking History
@@ -530,12 +531,14 @@ const Navbar = () => {
 
                     <Link
                       to="/profile"
+                      onClick={()=>setIsMenuOpen(prev => !prev)}
                       className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
                     >
                       My Profile
                     </Link>
                     <Link
                       to="/user-dashboard"
+                      onClick={()=>setIsMenuOpen(prev => !prev)}
                       className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
                     >
                       Dashboard

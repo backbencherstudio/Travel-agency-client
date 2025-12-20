@@ -3,7 +3,7 @@ import axiosClient from "../../axiosClient";
 const AccountConvertApis = {};
 
 AccountConvertApis.convertToVendor = async () => {
-  const url = '/api/auth/convert-to-vendor';
+  const url = '/api/auth/vendor-request';
   try {
     const response = await axiosClient.post(url);
     return response.data;

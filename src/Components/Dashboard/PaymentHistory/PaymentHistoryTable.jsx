@@ -41,9 +41,9 @@ const BookingTable = ({ title }) => {
     try {
       setLoading(true)
       const response = await TransactionApis.getAllTransactions()
-      if (response.success && response.data?.data) {
-        setTransactions(response.data.data)
-        setFilteredData(response.data.data)
+      if (response.success) {
+        setTransactions(response.data?.data?.bookings || [])
+        setFilteredData(response.data?.data?.bookings || [])
       } else {
         setTransactions([])
         setFilteredData([])
@@ -112,9 +112,9 @@ const BookingTable = ({ title }) => {
     [transactions]
   )
 
-  useEffect(() => {
-    debouncedSearch(searchQuery, selectedStatus)
-  }, [searchQuery, selectedStatus, debouncedSearch])
+  // useEffect(() => {
+  //   debouncedSearch(searchQuery, selectedStatus)
+  // }, [searchQuery, selectedStatus, debouncedSearch])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -187,7 +187,6 @@ const BookingTable = ({ title }) => {
     return format(new Date(dateString), 'MMM dd, yyyy')
   }
 
-
   console.log(filteredData)
 
   return (
@@ -208,7 +207,7 @@ const BookingTable = ({ title }) => {
               <path fill-rule="evenodd" clip-rule="evenodd" d="M10.6089 10.6089C10.8042 10.4137 11.1208 10.4137 11.3161 10.6089L14.3536 13.6464C14.5488 13.8417 14.5488 14.1583 14.3536 14.3536C14.1583 14.5488 13.8417 14.5488 13.6464 14.3536L10.6089 11.3161C10.4137 11.1208 10.4137 10.8042 10.6089 10.6089Z" fill="#757D83" />
             </svg>
           </div>
-          <div className='flex justify-center' ref={dropdownRef}>
+          {/* <div className='flex justify-center' ref={dropdownRef}>
             <div className='relative inline-block text-left'>
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -236,7 +235,7 @@ const BookingTable = ({ title }) => {
                 </div>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <div className='bg-white p-4 rounded-lg space-y-4'>
@@ -245,7 +244,6 @@ const BookingTable = ({ title }) => {
             <thead>
               <tr className='text-[#475467] text-[12px] bg-[#F9FAFB]'>
                 <th className='font-medium p-6 rounded-lg'>
-
                   <div className='flex items-center gap-1'>
                     <span>Booking ID</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -304,14 +302,14 @@ const BookingTable = ({ title }) => {
                     </p>
                   </td>
                 </tr>
-              ) : filteredData.length > 0 ? (
+              ) : filteredData?.length > 0 ? (
                 filteredData
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map(item => (
                     <tr key={item.id}>
                       <td className='p-6'>
                         <p className='text-[#475467] text-[12px]'>
-                          #{item?.booking?.invoice_number}
+                          #{item?.invoice_number}
                         </p>
                       </td>
                       <td className='p-6'>
@@ -329,14 +327,14 @@ const BookingTable = ({ title }) => {
                       </td>
                       <td className='p-6'>
                         <p className='truncate text-[#475467]'>
-                          ${item?.paid_amount || 0}
+                          ${item?.payment?.amount || 0}
                         </p>
                       </td>
                       <td className='p-6'>
                         <span
                           className={`py-1 rounded-full text-[#475467]`}
                         >
-                          {new Date(item.created_at).toLocaleDateString('en-US', {
+                          {new Date(item.payment?.date).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric'
@@ -364,13 +362,12 @@ const BookingTable = ({ title }) => {
                               <path d="M12.6722 9.9974C12.6722 11.3781 11.5529 12.4974 10.1722 12.4974C8.79149 12.4974 7.6722 11.3781 7.6722 9.9974C7.6722 8.61668 8.79149 7.4974 10.1722 7.4974C11.5529 7.4974 12.6722 8.61668 12.6722 9.9974Z" stroke="#475467" stroke-width="1.5" />
                             </svg>
                           </button>
-                          <button
+                          {/* <button
                             onClick={() => handleDelete(item.id)}
                             className='text-[#475467] hover:text-red-700 transform duration-300'
                           >
                             <LuTrash2 className='text-lg' />
-                          </button>
-
+                          </button> */}
                         </div>
                       </td>
                     </tr>
@@ -421,11 +418,11 @@ const BookingTable = ({ title }) => {
                 <div className='flex items-center space-x-2'>
                   <Receipt className='h-6 w-6' />
                   <span className='text-lg font-semibold'>
-                    Invoice #{selectedTransaction?.booking?.invoice_number}
+                    Invoice #{selectedTransaction?.invoice_number}
                   </span>
                 </div>
                 <span className='px-3 py-1 bg-[#d44718] rounded-full text-sm font-medium capitalize'>
-                  {selectedTransaction?.status}
+                  {selectedTransaction?.payment?.status}
                 </span>
               </div>
             </div>
@@ -433,8 +430,8 @@ const BookingTable = ({ title }) => {
               <div className='text-center'>
                 <div className='text-3xl font-bold text-black'>
                   {formatCurrency(
-                    selectedTransaction?.amount,
-                    selectedTransaction?.currency
+                    selectedTransaction?.payment?.amount,
+                    selectedTransaction?.payment?.currency
                   )}
                 </div>
                 <div className='text-sm text-gray-600 mt-1'>Total Amount</div>
@@ -446,8 +443,7 @@ const BookingTable = ({ title }) => {
                     <div className='text-sm text-gray-600'>Package</div>
                     <div className='text-black font-medium'>
                       {
-                        selectedTransaction?.booking?.booking_items[0]?.package
-                          ?.name
+                        selectedTransaction?.package_name
                       }
                     </div>
                   </div>
@@ -467,26 +463,28 @@ const BookingTable = ({ title }) => {
                     <div className='text-sm text-gray-600'>Date Issued</div>
                     <div className='text-black font-medium'>
                       {selectedTransaction?.created_at &&
-                        formatDate(selectedTransaction.created_at)}
+                        formatDate(selectedTransaction.payment?.date)}
                     </div>
                   </div>
                 </div>
-                <div className='flex items-center space-x-3'>
-                  <CreditCard className='h-5 w-5 text-[#EB5B2A]' />
-                  <div>
-                    <div className='text-sm text-gray-600'>Reference</div>
-                    <div className='text-black font-medium font-mono text-sm'>
-                      {selectedTransaction?.reference_number}
+                {selectedTransaction?.reference &&
+                  <div className='flex items-center space-x-3'>
+                    <CreditCard className='h-5 w-5 text-[#EB5B2A]' />
+                    <div>
+                      <div className='text-sm text-gray-600'>Reference</div>
+                      <div className='text-black font-medium font-mono text-sm'>
+                        {selectedTransaction?.reference_number}
+                      </div>
                     </div>
                   </div>
-                </div>
+                }
               </div>
             </div>
             <div className='border-t border-gray-100 p-6 bg-gray-50'>
               <div className='flex justify-between items-center text-sm'>
                 <span className='text-gray-600'>Payment Status</span>
                 <span className='text-[#EB5B2A] font-medium capitalize'>
-                  {selectedTransaction?.status}
+                  {selectedTransaction?.payment?.status}
                 </span>
               </div>
             </div>
