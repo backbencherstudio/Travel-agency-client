@@ -86,7 +86,7 @@ const AdminLayout = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setNotification(null); // Dismiss notification
+                      setNotification(null);
                     }}
                     className="text-gray-400 hover:text-gray-600 p-1"
                   >

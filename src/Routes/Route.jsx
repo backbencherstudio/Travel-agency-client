@@ -411,10 +411,10 @@ export const router = createBrowserRouter([
     path: "login",
     element: <Login />,
   },
-  {
-    path: "admin-login",
-    element: <AdminLogin />,
-  },
+  // {
+  //   path: "admin-login",
+  //   element: <AdminLogin />,
+  // },
   {
     path: "forget-password",
     element: <ForgetPassword />,

@@ -120,7 +120,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
     logout();
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/admin-login');
+      navigate('/login');
     }
   }
 
@@ -139,7 +139,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
         <a href='/' className='w-full h-8 mt-3 flex items-center justify-center'>
           <img src={logo} alt='' className='w-full mt-3' />
         </a>
-        <nav className='flex flex-col justify-between text-white my-11 flex-1' style={{ fontFamily: "Inter,sans-serif" }}>
+        <nav className='flex flex-col justify-between text-white my-11 flex-1 gap-4' style={{ fontFamily: "Inter,sans-serif" }}>
           <div className='flex flex-col gap-4'>
             <button
               onClick={() => handleNavigation('Dashboard', '')}
