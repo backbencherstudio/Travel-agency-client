@@ -14,7 +14,7 @@ import { statusData } from "../../../data/data";
 import DashboardApis from "../../../Apis/DashboardApis";
 import { Helmet } from "react-helmet-async";
 import { AuthContext } from "../../../Context/AuthProvider/AuthProvider";
-
+import LoadingSpinner from "../../../Shared/LoadingSpinner";
 
 const DashboardAnalysis = () => {
   const [chartType, setChartType] = useState("Total Booking");
@@ -127,6 +127,12 @@ const DashboardAnalysis = () => {
       profitData: stats.revenue_per_month,
     },
   ];
+
+  if(loading){
+    return(
+      <LoadingSpinner />
+    )
+  }
 
   return (
     <div className="w-full space-y-5">
