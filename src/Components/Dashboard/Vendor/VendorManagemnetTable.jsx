@@ -24,7 +24,7 @@ import VendorRequestTable from './VendorRequestTable';
 import { Activity } from 'react';
 import { getVendorsRequests } from '~/Apis/CreateNewUser'
 
-const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
+const VendorManagemnetTable = ({ tableType = '', title, data, columns,pagination,handlePageChange }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
   const navigate = useNavigate()
@@ -47,53 +47,53 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
 
 
   // Debounced filter function
-  const debouncedFilter = useCallback(
-    debounce((query, status, data) => {
-      let filtered = data.filter(item =>
-        item.name.toLowerCase().includes(query.toLowerCase())
-      )
+  // const debouncedFilter = useCallback(
+  //   debounce((query, status, data) => {
+  //     let filtered = data.filter(item =>
+  //       item.name.toLowerCase().includes(query.toLowerCase())
+  //     )
 
-      // Filter by status
-      if (status !== 'All Vendor') {
-        filtered = filtered.filter(item => {
-          if (status === 'Vendor Requests') return item.approved_at !== null
-          if (status === 'Previously Removed') return item.approved_at === null
-          return true
-        })
-      }
+  //     // Filter by status
+  //     if (status !== 'All Vendor') {
+  //       filtered = filtered.filter(item => {
+  //         if (status === 'Vendor Requests') return item.approved_at !== null
+  //         if (status === 'Previously Removed') return item.approved_at === null
+  //         return true
+  //       })
+  //     }
 
-      setFilteredData(filtered)
+  //     setFilteredData(filtered)
 
-      // Update URL with search query and status
-      const params = new URLSearchParams(window.location.search)
-      if (query) params.set('search', query)
-      else params.delete('search')
-      if (status !== 'All Vendor') params.set('status', status)
-      else params.delete('status')
+  //     // Update URL with search query and status
+  //     const params = new URLSearchParams(window.location.search)
+  //     if (query) params.set('search', query)
+  //     else params.delete('search')
+  //     if (status !== 'All Vendor') params.set('status', status)
+  //     else params.delete('status')
 
-      const newUrl = `${window.location.pathname}?${params.toString()}`
-      window.history.pushState({}, '', newUrl)
-    }, 500),
-    []
-  )
+  //     const newUrl = `${window.location.pathname}?${params.toString()}`
+  //     window.history.pushState({}, '', newUrl)
+  //   }, 500),
+  //   []
+  // )
 
-  useEffect(() => {
-    debouncedFilter(searchQuery, selectedStatus, data)
-    return () => {
-      debouncedFilter.cancel()
-    }
-  }, [searchQuery, selectedStatus, data, debouncedFilter])
+  // useEffect(() => {
+  //   debouncedFilter(searchQuery, selectedStatus, data)
+  //   return () => {
+  //     debouncedFilter.cancel()
+  //   }
+  // }, [searchQuery, selectedStatus, data, debouncedFilter])
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage)
+  // }
 
   const handleNextPage = (event) => {
-    setPage(prev => prev + 1)
+    handlePageChange(pagination.page + 1);
   };
 
   const handlePreviousPage = () => {
-    setPage(prev => Math.max(0, prev - 1))
+    handlePageChange(Math.max(1, pagination.page - 1));
   }
 
   const handleChangeRowsPerPage = event => {
@@ -322,9 +322,7 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
 
               <tbody className='text-nowrap'>
                 {filteredData?.length > 0 ? (
-                  filteredData
-                    ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    ?.map(item => (
+                  filteredData?.map(item => (
                       <tr
                         className={`text-[#1D1F2C] border-b border-[#EDEDED] ${(tableType === 'user' || tableType === 'blog') &&
                           'cursor-pointer hover:bg-[#fdf0ea]'
@@ -482,7 +480,7 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns }) => {
               </tbody>
             </table>
           </div>
-          <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
+          <TablePagination handleChangePage={handlePageChange} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={pagination?.page} filteredData={filteredData} rowsPerPage={pagination?.limit} totalPages={pagination?.totalPages} pagination={pagination}/>
         </div>
         :
         <div className='bg-white rounded-lg rounded-tl-none p-4 space-y-4'>

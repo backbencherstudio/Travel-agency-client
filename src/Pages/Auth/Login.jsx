@@ -42,12 +42,13 @@ const Login = () => {
         password: data.password
       })
       const role = localStorage.getItem('role')
+      console.log('role', role)
       setTimeout(() => {
         setIsLoading(false)
-        if (role === 'user') {
-          navigate('/')
-        } else if(role === 'admin') {
+        if (role === 'admin') {
           navigate('/dashboard')
+        } else {
+          navigate('/')
         }
       }, 500)
     } catch (error) {
