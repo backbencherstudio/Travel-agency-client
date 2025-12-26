@@ -69,7 +69,6 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
     // setSearchQuery(searchFromQuery)
     // setSelectedStatus(statusFromQuery)
     fetchSearchResults(searchFromQuery, statusFromQuery)
-
     // Close dropdown when clicking outside
     document.addEventListener('mousedown', handleClickOutside)
     return () => {

@@ -8,8 +8,11 @@ export default function TablePagination({
   page,
   filteredData,
   rowsPerPage,
-  totalPages
+  totalPages,
+  pagination
 }) {
+
+  console.log('Pagination props:', { page, filteredData, rowsPerPage, totalPages, pagination });
   const showEllipsis = totalPages > 6;
   const lastPagesStart = Math.max(0, totalPages - 6);
 
@@ -84,7 +87,7 @@ export default function TablePagination({
         {/* Previous Button */}
         <PaginationButton
           onClick={handlePreviousPage}
-          disabled={page === 0}
+          disabled={pagination?.hasPreviousPage === false}
           direction="previous"
         />
 
@@ -98,7 +101,7 @@ export default function TablePagination({
         {/* Next Button */}
         <PaginationButton
           onClick={handleNextPage}
-          disabled={(page + 1) * rowsPerPage >= filteredData?.length}
+          disabled={pagination?.hasNextPage === false}
           direction="next"
         />
       </div>
