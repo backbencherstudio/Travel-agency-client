@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration, useLocation } from "react-router-dom";
 import UserDashboardSidebar from "./UserDashboardSidebar";
 import Footer from "../../Shared/Footer";
 import Navbar from "../../Shared/Navbar";
 import bgImg from "../../assets/user-dashboard/images/dashboardbg.png";
 import { FaBars } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
 
 const UserDashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pageTitle,setPageTitle] = useState('');
   const path = useLocation();
+
+  // Ensure body scroll is enabled when the user dashboard mounts
+  useEffect(() => {
+    document.body.style.overflow = "auto";
+    document.body.style.overflowY = "auto";
+  }, []);
 
   useEffect(()=>{
     console.log(path);
@@ -26,6 +31,7 @@ const UserDashboardLayout = () => {
         className="bg-cover bg-no-repeat bg-center pt-32 pb-44"
         style={{ backgroundImage: `url(${bgImg})` }}
       >
+        <ScrollRestoration />
         <div className="max-w-[1200px] mx-auto flex flex-col items-center justify-center">
           <h2 className="font-bold text-white text-6xl">Dashboard</h2>
           <p className="max-w-[500px] text-center text-white text-lg mt-2">

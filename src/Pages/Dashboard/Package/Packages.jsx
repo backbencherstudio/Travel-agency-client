@@ -3,7 +3,8 @@ import PackageTable from '../../../Components/Dashboard/Packages/PackageTable'
 import axiosClient from '../../../axiosClient'
 import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import Loading from '~/Shared/Loading'
 
 const Packages = () => {
   const [tourDateFilter, setTourDateFilter] = useState('all');
@@ -48,7 +49,9 @@ const Packages = () => {
         <title>Around 360 - Packages</title>
       </Helmet>
       {isLoading ? (
-        <div>Loading...</div>
+        <div>
+          <Loading />
+        </div>
       ) : (
         <div className='space-y-4 py-5'>
           <div className='flex flex-col sm:flex-row justify-between items-center'>

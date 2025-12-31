@@ -2,6 +2,20 @@ import axiosClient from "../axiosClient";
 
 const OfferManagementApis = {};
 
+// Create offers (coupons)
+OfferManagementApis.post = async (data) => {
+    const url = `/api/admin/coupon`;
+    try {
+        const response = await axiosClient.post(url, {...data});
+        return response.data;
+    } catch (error) {
+        return {
+            errors: error.response?.data?.errors || null,
+            message: error.response?.data?.message || 'An error occurred while updating the offer status.'
+        };
+    }
+};
+
 // Get all offers (coupons)
 OfferManagementApis.get = async (searchQuery = '', status = '') => {
     const url = `/api/admin/coupon/${searchQuery}`;  // Added search and status to the query

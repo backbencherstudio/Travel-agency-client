@@ -128,25 +128,6 @@ const Footer = () => {
               </svg>
               <p className="text-base">hello@around360.com</p>
             </div>
-            <div className="flex gap-[10px] items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="21"
-                height="20"
-                viewBox="0 0 21 20"
-                fill="none"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M10.6672 1.66699C6.98526 1.66699 4.00049 5.00248 4.00049 8.75033C4.00049 12.4688 6.12826 16.5107 9.44804 18.0624C10.2219 18.4241 11.1124 18.4241 11.8863 18.0624C15.2061 16.5107 17.3338 12.4688 17.3338 8.75033C17.3338 5.00248 14.3491 1.66699 10.6672 1.66699ZM10.6672 10.0003C11.5876 10.0003 12.3338 9.25413 12.3338 8.33366C12.3338 7.41318 11.5876 6.66699 10.6672 6.66699C9.74668 6.66699 9.00049 7.41318 9.00049 8.33366C9.00049 9.25413 9.74668 10.0003 10.6672 10.0003Z"
-                  fill="white"
-                />
-              </svg>
-              <p className="text-base">
-                8 12 Victoria Road Barnsley, South Yorkshire S70 2BB
-              </p>
-            </div>
           </div>
         </div>
 
@@ -155,7 +136,6 @@ const Footer = () => {
           <div className="text-base font-bold">Follow Us on</div>
           <div className="flex flex-row flex-wrap gap-3">
             {/* ===============================*/}
-
             {links.map((link) => (
               <Link
                 key={link.name}
@@ -192,7 +172,7 @@ const Footer = () => {
                 )}
 
                 {/* "twitter" */}
-                {link.name.toLowerCase() === "twitter" && (
+                {link.name.toLowerCase() === "x" && (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"

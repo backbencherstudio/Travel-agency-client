@@ -1,7 +1,7 @@
-import { FaSearch, FaCheckCircle, FaEdit } from 'react-icons/fa'
-import { useState, useEffect, useRef } from 'react'
-import TablePagination from '../../../Shared/TablePagination'
-import img1 from '../../../assets/img/tour-details/image-5.png'
+import { FaSearch, FaCheckCircle, FaEdit } from "react-icons/fa";
+import { useState, useEffect, useRef } from "react";
+import TablePagination from "../../../Shared/TablePagination";
+import img1 from "../../../assets/img/tour-details/image-5.png";
 // import {
 //   Table,
 //   TableBody,
@@ -12,6 +12,7 @@ import img1 from '../../../assets/img/tour-details/image-5.png'
 //   Paper,
 //   TablePagination
 // } from '@mui/material'
+<<<<<<< HEAD
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
 import { LuTrash2 } from 'react-icons/lu'
@@ -22,317 +23,296 @@ import useDebounce from '../../../Shared/debounce'
 import { BsThreeDots } from 'react-icons/bs'
 import { RxCross2 } from 'react-icons/rx'
 import DropdownPortal from '../../../Shared/DropdownPortal'
+import { Link } from 'react-router-dom';
+import Loading from '~/Shared/Loading'
+=======
+import { useNavigate, useLocation } from "react-router-dom";
+import { MdKeyboardArrowDown } from "react-icons/md";
+import { LuTrash2 } from "react-icons/lu";
+import { FaRegSquarePlus } from "react-icons/fa6";
+import BlogApis from "../../../Apis/BlogApi";
+import Swal from "sweetalert2";
+import useDebounce from "../../../Shared/debounce";
+import { BsThreeDots } from "react-icons/bs";
+import { RxCross2 } from "react-icons/rx";
+import DropdownPortal from "../../../Shared/DropdownPortal";
+import LoadingSpinner from "~/Shared/LoadingSpinner";
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
 
-const BlogsTable = ({ tableType = '', title, data, columns }) => {
-  const [searchQuery, setSearchQuery] = useState('')
+const BlogsTable = ({ tableType = "", title, data, columns }) => {
+  const [searchQuery, setSearchQuery] = useState("");
   // const [filteredData, setFilteredData] = useState(data)
-  const [filteredData, setFilteredData] = useState([])
-  const [isOpen, setIsOpen] = useState(false)
-  const [selectedStatus, setSelectedStatus] = useState('All Status')
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
-  const location = useLocation()
-  const dropdownRef = useRef(null)
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(5)
-  const [isOpenAction, setIsOpenAction] = useState(null)
-  const actionRefs = useRef(new Map())
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
+  const [filteredData, setFilteredData] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("All Status");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dropdownRef = useRef(null);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [isOpenAction, setIsOpenAction] = useState(null);
+  const actionRefs = useRef(new Map());
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
   // drop down
   const handleThreeDotsClick = (e, id) => {
-    e.stopPropagation()
-    const rect = e.currentTarget.getBoundingClientRect()
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
     setDropdownPosition({
       top: rect.bottom + window.scrollY,
-      left: rect.left + window.scrollX
-    })
-    setIsOpenAction(isOpenAction === id ? null : id)
-  }
+      left: rect.left + window.scrollX,
+    });
+    setIsOpenAction(isOpenAction === id ? null : id);
+  };
 
-  const handleClickOutside = event => {
+  const handleClickOutside = (event) => {
     if (
       dropdownRef.current &&
       !dropdownRef.current.contains(event.target) &&
-      !Array.from(actionRefs.current.values()).some(ref =>
+      !Array.from(actionRefs.current.values()).some((ref) =>
         ref?.contains(event.target)
       )
     ) {
-      setIsOpenAction(null)
+      setIsOpenAction(null);
     }
-  }
+  };
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search)
-    const searchFromQuery = queryParams.get('search') || ''
-    const statusFromQuery = queryParams.get('status') || 'All Status'
+    const queryParams = new URLSearchParams(location.search);
+    const searchFromQuery = queryParams.get("search") || "";
+    const statusFromQuery = queryParams.get("status") || "All Status";
     // setSearchQuery(searchFromQuery)
     // setSelectedStatus(statusFromQuery)
-    fetchSearchResults(searchFromQuery, statusFromQuery)
-
+    fetchSearchResults(searchFromQuery, statusFromQuery);
     // Close dropdown when clicking outside
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Debounced function
-  const fetchSearchResults = async (query = '', status = 'All Status') => {
-    setIsLoading(true)
+  const fetchSearchResults = async (query = "", status = "All Status") => {
+    setIsLoading(true);
 
     try {
-      let apiStatus = ''
-      if (status === 'Active') apiStatus = '1'
-      if (status === 'Deactivated') apiStatus = '0'
+      let apiStatus = "";
+      if (status === "Active") apiStatus = "1";
+      if (status === "Deactivated") apiStatus = "0";
 
-      const response = await BlogApis.searchBlogs(query, apiStatus)
+      const response = await BlogApis.searchBlogs(query, apiStatus);
       if (!response.errors && Array.isArray(response.data)) {
-        setFilteredData(response.data)
+        setFilteredData(response.data);
       } else {
-        setFilteredData([]) // Set to empty array to prevent undefined error
+        setFilteredData([]); // Set to empty array to prevent undefined error
       }
     } catch (error) {
-      console.error('Search error:', error)
-      setFilteredData([]) // Prevents crashes due to undefined data
+      console.error("Search error:", error);
+      setFilteredData([]); // Prevents crashes due to undefined data
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Apply the debounce hook
   // Increase debounce delay to 1 second
-  const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300) // 1000ms delay
+  const debouncedFetchSearchResults = useDebounce(fetchSearchResults, 300); // 1000ms delay
 
   // Handle search input change and use debounce
-  const handleSearchChange = e => {
-    const value = e.target.value
-    setSearchQuery(value)
-    debouncedFetchSearchResults(value, selectedStatus)
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    debouncedFetchSearchResults(value, selectedStatus);
     navigate({
       pathname: location.pathname,
-      search: `?search=${value}&status=${selectedStatus}`
-    })
-  }
+      search: `?search=${value}&status=${selectedStatus}`,
+    });
+  };
 
   // Handle status change from the dropdown
-  const handleStatusChange = status => {
-    setSelectedStatus(status)
-    setIsOpen(false)
-    fetchSearchResults(searchQuery, status)
+  const handleStatusChange = (status) => {
+    setSelectedStatus(status);
+    setIsOpen(false);
+    fetchSearchResults(searchQuery, status);
     navigate({
       pathname: location.pathname,
-      search: `?search=${searchQuery}&status=${status}`
-    })
-  }
+      search: `?search=${searchQuery}&status=${status}`,
+    });
+  };
 
   // Other handlers remain the same
   const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleNextPage = (event) => {
-    setPage(prev => prev + 1)
+    setPage((prev) => prev + 1);
   };
 
   const handlePreviousPage = () => {
-    setPage(prev => Math.max(0, prev - 1))
-  }
+    setPage((prev) => Math.max(0, prev - 1));
+  };
 
-  const handleChangeRowsPerPage = event => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
-  const handleRowClick = id => {
-    if (tableType === 'user' || tableType === 'blog') {
-      navigate(`${id}`)
+  const handleRowClick = (id) => {
+    if (tableType === "user" || tableType === "blog") {
+      navigate(`${id}`);
     }
-  }
+  };
 
   // Update filtered data when the status changes
   useEffect(() => {
-    if (!data) return // Ensure `data` is not undefined
+    if (!data) return; // Ensure `data` is not undefined
 
-    let filtered = data
-    if (selectedStatus !== 'All Status') {
-      filtered = filtered.filter(item =>
-        selectedStatus === 'Active' ? item.status === 1 : item.status === 0
-      )
+    let filtered = data;
+    if (selectedStatus !== "All Status") {
+      filtered = filtered.filter((item) =>
+        selectedStatus === "Active" ? item.status === 1 : item.status === 0
+      );
     }
-    setFilteredData(filtered)
-  }, [selectedStatus, data])
+    setFilteredData(filtered);
+  }, [selectedStatus, data]);
 
   const handleAddBlogClick = () => {
-    navigate('/dashboard/add-blog')
-  }
+    navigate("/dashboard/add-blog");
+  };
 
-  const handleEditClick = id => {
-    navigate(`/dashboard/add-blog/${id}`)
-  }
+  const handleEditClick = (id) => {
+    navigate(`/dashboard/add-blog/${id}`);
+  };
 
-  const handleDeleteClick = async id => {
+  const handleDeleteClick = async (id) => {
     const result = await Swal.fire({
-      title: 'Are you sure?',
-      text: 'You wont be able to undo this action!',
-      icon: 'warning',
+      title: "Are you sure?",
+      text: "You wont be able to undo this action!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
-    })
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
 
     if (result.isConfirmed) {
       try {
-        const response = await BlogApis.deleteBlogPost(id)
+        const response = await BlogApis.deleteBlogPost(id);
         if (response.errors) {
-          await Swal.fire('Error', response.message, 'error')
+          await Swal.fire("Error", response.message, "error");
         } else {
-          await Swal.fire('Deleted!', 'Your blog has been deleted.', 'success')
-          setFilteredData(prevData => prevData.filter(item => item.id !== id))
+          await Swal.fire("Deleted!", "Your blog has been deleted.", "success");
+          setFilteredData((prevData) =>
+            prevData.filter((item) => item.id !== id)
+          );
         }
       } catch (error) {
-        await Swal.fire('Error', 'An unexpected error occurred.', 'error')
-        console.error(error)
+        await Swal.fire("Error", "An unexpected error occurred.", "error");
+        console.error(error);
       }
     }
-  }
+  };
   // ====================== handle status update
   // Function to update status (0: Deactive, 1: Active)
   const handleStatusUpdate = async (id, status) => {
     try {
-      const newStatus = status === 'Active' ? 1 : 0
-      const response = await BlogApis.updateBlogStatus(id, newStatus)
+      const newStatus = status === "Active" ? 1 : 0;
+      const response = await BlogApis.updateBlogStatus(id, newStatus);
       if (response.errors) {
-        await Swal.fire('Error', response.message, 'error')
+        await Swal.fire("Error", response.message, "error");
       } else {
         await Swal.fire(
-          'Updated!',
+          "Updated!",
           `Blog status has been updated to ${status}.`,
-          'success'
-        )
-        setFilteredData(prevData =>
-          prevData.map(item =>
+          "success"
+        );
+        setFilteredData((prevData) =>
+          prevData.map((item) =>
             item.id === id ? { ...item, status: newStatus } : item
           )
-        )
+        );
       }
     } catch (error) {
-      await Swal.fire('Error', 'An unexpected error occurred.', 'error')
-      console.error(error)
+      await Swal.fire("Error", "An unexpected error occurred.", "error");
+      console.error(error);
     }
-  }
+  };
 
   // Approval and reject
-  const handleApproveClick = async id => {
+  const handleApproveClick = async (id) => {
     const result = await Swal.fire({
-      title: 'Approve this blog?',
-      text: 'Are you sure you want to approve this blog?',
-      icon: 'question',
+      title: "Approve this blog?",
+      text: "Are you sure you want to approve this blog?",
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Yes, approve',
-      cancelButtonText: 'Cancel'
-    })
+      confirmButtonText: "Yes, approve",
+      cancelButtonText: "Cancel",
+    });
 
     if (result.isConfirmed) {
-      const response = await BlogApis.approveBlogPost(id)
+      const response = await BlogApis.approveBlogPost(id);
       if (response.errors) {
-        await Swal.fire('Error', response.message, 'error')
+        await Swal.fire("Error", response.message, "error");
       } else {
-        await Swal.fire('Approved!', 'The blog has been approved.', 'success')
-        setFilteredData(prevData =>
-          prevData.map(item =>
+        await Swal.fire("Approved!", "The blog has been approved.", "success");
+        setFilteredData((prevData) =>
+          prevData.map((item) =>
             item.id === id
               ? { ...item, approved_at: new Date().toISOString() }
               : item
           )
-        )
+        );
       }
     }
-  }
+  };
 
-  const handleRejectClick = async id => {
+  const handleRejectClick = async (id) => {
     const result = await Swal.fire({
-      title: 'Reject this blog?',
-      text: 'Are you sure you want to reject this blog?',
-      icon: 'warning',
+      title: "Reject this blog?",
+      text: "Are you sure you want to reject this blog?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Yes, reject',
-      cancelButtonText: 'Cancel'
-    })
+      confirmButtonText: "Yes, reject",
+      cancelButtonText: "Cancel",
+    });
 
     if (result.isConfirmed) {
-      const response = await BlogApis.rejectBlogPost(id)
+      const response = await BlogApis.rejectBlogPost(id);
       if (response.errors) {
-        await Swal.fire('Error', response.message, 'error')
+        await Swal.fire("Error", response.message, "error");
       } else {
-        await Swal.fire('Rejected!', 'The blog has been rejected.', 'success')
-        setFilteredData(prevData =>
-          prevData.map(item =>
+        await Swal.fire("Rejected!", "The blog has been rejected.", "success");
+        setFilteredData((prevData) =>
+          prevData.map((item) =>
             item.id === id ? { ...item, approved_at: null } : item
           )
-        )
+        );
       }
     }
-  }
+  };
 
   if (isLoading) {
-    return <div>Loading...</div>
+<<<<<<< HEAD
+    return <div>
+      <Loading />
+    </div>
+=======
+    return (
+      <LoadingSpinner />
+    );
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
   }
 
-  console.log(filteredData)
+  console.log(filteredData);
 
   return (
     <>
-      <div className='flex flex-col sm:flex-row justify-between items-center py-5'>
+<<<<<<< HEAD
+      <div className='flex justify-between items-center py-5'>
         <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
-        <div className='flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl'>
-          <div className='relative md:col-span-1'>
-            <input
-              type='text'
-              placeholder='Search...'
-              className='py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-            <FaSearch className='absolute top-3 left-3 text-zinc-400' />
-          </div>
-
-          <div className='flex justify-center' ref={dropdownRef}>
-            <div className='relative inline-block text-left'>
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className='inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
-              >
-                {selectedStatus}
-                <span>
-                  <MdKeyboardArrowDown className='text-xl' />
-                </span>
-              </button>
-
-              {isOpen && (
-                <div className='absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0'>
-                  <div className='absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45'></div>
-
-                  <div className='bg-white rounded-md'>
-                    {['All Status', 'Active', 'Deactivated'].map(status => (
-                      <button
-                        key={status}
-                        onClick={() => handleStatusChange(status)}
-                        className={`block w-full px-5 py-5 text-left text-sm text-gray-700 hover:bg-gray-200 ${selectedStatus === status
-                          ? 'font-bold bg-gray-100'
-                          : ''
-                          }`}
-                      >
-                        {status}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <Link to="/dashboard/add-blog" className='capitalize bg-[#EB5B2A] hover:bg-[#eb5a2ae0] text-white px-4 py-2 rounded-lg cursor-pointer'>+ Add blogs</Link>
       </div>
 
       <div className='bg-white space-y-4' style={{ borderRadius: '10px' }}>
@@ -346,42 +326,161 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
           </button>
         </div> */}
 
-        <div className='w-full overflow-x-auto p-4'>
+        <div className='flex gap-3 my-2 rounded-t-xl pt-4 px-4 justify-end'>
+          <div className='relative md:col-span-1 rounded-md'>
+            <input
+              type='text'
+              placeholder='Search...'
+              className='py-1.5 pl-10 rounded-md focus:outline-none border focus:border-orange-400 w-full lg:w-[100%] '
+=======
+      <div className="flex flex-col sm:flex-row justify-between items-center py-5">
+        <h1 className="text-[#0D0E0D] text-[20px]">{title}</h1>
+        <div className="flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl">
+          <div className="relative md:col-span-1">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]"
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+            <FaSearch className="absolute top-3 left-3 text-zinc-400" />
+          </div>
+
+          <div className="flex justify-center" ref={dropdownRef}>
+            <div className="relative inline-block text-left">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200"
+              >
+                {selectedStatus}
+                <span>
+                  <MdKeyboardArrowDown className="text-xl" />
+                </span>
+              </button>
+
+              {isOpen && (
+                <div className="absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0">
+                  <div className="absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45"></div>
+
+                  <div className="bg-white rounded-md">
+                    {["All Status", "Active", "Deactivated"].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => handleStatusChange(status)}
+                        className={`block w-full px-5 py-5 text-left text-sm text-gray-700 hover:bg-gray-200 ${
+                          selectedStatus === status
+                            ? "font-bold bg-gray-100"
+                            : ""
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+<<<<<<< HEAD
+=======
+      </div>
+
+      <div className="bg-white space-y-4" style={{ borderRadius: "10px" }}>
+        {/* <div className='flex justify-end p-5'>
+          <button
+            onClick={handleAddBlogClick}
+            className='flex text-[14px] items-center gap-1 bg-[#EB5B2A] hover:bg-[#eb5a2ae0] transform duration-300 text-white px-3 py-2 rounded-lg whitespace-nowrap'
+          >
+            <FaRegSquarePlus className='text-white text-xl' />
+            Create Blog
+          </button>
+        </div> */}
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
+
+        <div className="w-full overflow-x-auto p-4">
           <table className="w-full table-auto min-w-[768px]">
-            <thead className='bg-[#F9FAFB] text-[#475467] text-[12px]'>
+            <thead className="bg-[#F9FAFB] text-[#475467] text-[12px]">
               <tr>
                 {columns?.title && (
-                  <th className='p-6 rounded-lg font-medium'>
-
-                    <div className='flex items-center gap-1'>
+                  <th className="p-6 rounded-lg font-medium">
+                    <div className="flex items-center gap-1">
                       <span>Title</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z"
+                          fill="#757D83"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z"
+                          fill="#757D83"
+                        />
                       </svg>
                     </div>
                   </th>
                 )}
                 {columns?.user && (
-                  <th className='p-6 rounded-lg font-medium'>
-
-                    <div className='flex items-center gap-1'>
+                  <th className="p-6 rounded-lg font-medium">
+                    <div className="flex items-center gap-1">
                       <span>Author</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z"
+                          fill="#757D83"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z"
+                          fill="#757D83"
+                        />
                       </svg>
                     </div>
                   </th>
                 )}
                 {columns?.status && (
-                  <th className='p-6 rounded-lg font-medium'>
-
-                    <div className='flex items-center gap-1'>
+                  <th className="p-6 rounded-lg font-medium">
+                    <div className="flex items-center gap-1">
                       <span>Status</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z"
+                          fill="#757D83"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z"
+                          fill="#757D83"
+                        />
                       </svg>
                     </div>
                   </th>
@@ -399,85 +498,125 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                   </th>
                 )} */}
                 {columns?.created_at && (
-                  <th className='p-6 rounded-lg font-medium'>
-                    <div className='flex items-center gap-1'>
+                  <th className="p-6 rounded-lg font-medium">
+                    <div className="flex items-center gap-1">
                       <span>Published Date</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z"
+                          fill="#757D83"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z"
+                          fill="#757D83"
+                        />
                       </svg>
                     </div>
                   </th>
                 )}
                 {columns?.updated_at && (
-                  <th className='p-6 rounded-lg font-medium' >
-
-                    <div className='flex items-center gap-1'>
+                  <th className="p-6 rounded-lg font-medium">
+                    <div className="flex items-center gap-1">
                       <span>Modified Date</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
-                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z"
+                          fill="#757D83"
+                        />
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z"
+                          fill="#757D83"
+                        />
                       </svg>
                     </div>
                   </th>
                 )}
-                <th className='p-6 rounded-lg font-medium'>
-                  Action
-                </th>
+                <th className="p-6 rounded-lg font-medium">Action</th>
               </tr>
             </thead>
 
-            <tbody className='text-nowrap'>
+            <tbody className="text-nowrap">
               {filteredData?.length > 0 ? (
                 filteredData
                   ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  ?.map(item => (
-                    <tr
-                      key={item?.id}
-                      onClick={() => handleRowClick(item.id)}
-                    >
+                  ?.map((item) => (
+                    <tr key={item?.id} onClick={() => handleRowClick(item.id)}>
                       {columns?.title && (
-                        <td className='px-6 py-4'>
-                          <div className='flex items-center gap-3 w-[300px]'>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3 w-[300px]">
                             <img
-                              className='rounded-lg'
+                              className="rounded-lg"
                               // alt={item.title}
-                              alt='blog image'
-                              style={{ width: '72px', height: '72px' }}
+                              alt="blog image"
+                              style={{ width: "72px", height: "72px" }}
                               src={item?.blog_images[0]?.image_url}
                             />
-                            <span className='text-wrap text-[#1D1F2C] text-[12px] font-medium'>
+                            <span className="text-wrap text-[#1D1F2C] text-[12px] font-medium">
                               {item.title}
                             </span>
                           </div>
                         </td>
                       )}
                       {columns?.user && (
-                        <td className='px-6 py-4'>
-                          <p className='truncate text-[#475467] text-[12px]'>
+                        <td className="px-6 py-4">
+                          <p className="truncate text-[#475467] text-[12px]">
                             {item?.user?.type}
                           </p>
                         </td>
                       )}
                       {columns?.status && (
-                        <td className='px-6 py-4'>
+                        <td className="px-6 py-4">
                           {item.status === 1 ? (
-                            <div className='flex  items-center gap-1 border border-[#ABEFC6] rounded-full py-1 px-3 text-[12px] text-[#067647] justify-center bg-[#ECFDF3]'>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
-                                <path d="M10.5 3L5 8.5L2.5 6" stroke="#17B26A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            <div className="flex  items-center gap-1 border border-[#ABEFC6] rounded-full py-1 px-3 text-[12px] text-[#067647] justify-center bg-[#ECFDF3]">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="13"
+                                height="12"
+                                viewBox="0 0 13 12"
+                                fill="none"
+                              >
+                                <path
+                                  d="M10.5 3L5 8.5L2.5 6"
+                                  stroke="#17B26A"
+                                  stroke-width="1.5"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                />
                               </svg>
-                              <span className=''>
-                                Published
-                              </span>
+                              <span className="">Published</span>
                             </div>
                           ) : item.status === 0 ? (
-                            <div className='flex  items-center gap-1 border border-[#90A9C3] rounded-full py-1 px-3 text-[12px] text-[#0A3159] justify-center bg-[#E7ECF2]'>
-                              <svg xmlns="http://www.w3.org/2000/svg" width="7" height="6" viewBox="0 0 7 6" fill="none">
+                            <div className="flex  items-center gap-1 border border-[#90A9C3] rounded-full py-1 px-3 text-[12px] text-[#0A3159] justify-center bg-[#E7ECF2]">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="7"
+                                height="6"
+                                viewBox="0 0 7 6"
+                                fill="none"
+                              >
                                 <circle cx="3.5" cy="3" r="3" fill="#0E457D" />
                               </svg>
-                              <span className=''>
-                                Hold
-                              </span>
+                              <span className="">Hold</span>
                             </div>
                           ) : null}
                         </td>
@@ -556,46 +695,46 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                         </td>
                       )} */}
                       {columns?.created_at && (
-                        <td className='px-6 py-4'>
-                          <p className='text-[#475467] text-[12px]'>
+                        <td className="px-6 py-4">
+                          <p className="text-[#475467] text-[12px]">
                             {item.created_at
                               ? new Date(item.created_at).toLocaleString(
-                                'en-US',
-                                {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                  hour: 'numeric',
-                                  minute: 'numeric',
-                                  hour12: true
-                                }
-                              )
-                              : ''}
+                                  "en-US",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                    hour: "numeric",
+                                    minute: "numeric",
+                                    hour12: true,
+                                  }
+                                )
+                              : ""}
                           </p>
                         </td>
                       )}
                       {columns?.updated_at && (
-                        <td className='px-6 py-4'>
-                          <p className='text-[#475467] text-[12px]'>
+                        <td className="px-6 py-4">
+                          <p className="text-[#475467] text-[12px]">
                             {item.created_at
                               ? new Date(item.updated_at).toLocaleString(
-                                'en-US',
-                                {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                  hour: 'numeric',
-                                  minute: 'numeric',
-                                  hour12: true
-                                }
-                              )
-                              : ''}
+                                  "en-US",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                    hour: "numeric",
+                                    minute: "numeric",
+                                    hour12: true,
+                                  }
+                                )
+                              : ""}
                           </p>
                         </td>
                       )}
-                      <td className='px-6 py-4'>
-                        <div className='relative flex items-center justify-center gap-4'>
-                          <div className='relative flex justify-center'>
+                      <td className="px-6 py-4">
+                        <div className="relative flex items-center justify-center gap-4">
+                          <div className="relative flex justify-center">
                             {/* <button
                               onClick={e => handleThreeDotsClick(e, item.id)}
                               className='text-blue-600 transition-all duration-500 ease-in-out'
@@ -686,23 +825,35 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                             )} */}
                           </div>
                           <button
-                            onClick={e => {
-                              e.stopPropagation()
-                              handleDeleteClick(item.id)
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteClick(item.id);
                             }}
-                            className='text-red-600 hover:text-red-700 transform duration-300'
+                            className="text-red-600 hover:text-red-700 transform duration-300"
                           >
-                            <LuTrash2 className='text-lg text-[#475467]' />
+                            <LuTrash2 className="text-lg text-[#475467]" />
                           </button>
                           <button
-                            onClick={e => {
-                              e.stopPropagation()
-                              handleEditClick(item.id)
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditClick(item.id);
                             }}
-                            className='text-blue-500 hover:text-blue-600 transform duration-300'
+                            className="text-blue-500 hover:text-blue-600 transform duration-300"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="16" viewBox="0 0 17 16" fill="none">
-                              <path d="M2.41769 12.0766C2.44831 11.801 2.46363 11.6632 2.50533 11.5343C2.54234 11.42 2.59461 11.3113 2.66075 11.211C2.7353 11.0979 2.83336 10.9999 3.02948 10.8037L11.8337 1.99955C12.5701 1.26317 13.764 1.26317 14.5003 1.99955C15.2367 2.73593 15.2367 3.92984 14.5003 4.66622L5.69614 13.4704C5.50002 13.6665 5.40196 13.7646 5.28892 13.8391C5.18862 13.9053 5.07985 13.9575 4.96556 13.9945C4.83673 14.0362 4.6989 14.0516 4.42324 14.0822L2.16699 14.3329L2.41769 12.0766Z" stroke="#475467" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round" />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="17"
+                              height="16"
+                              viewBox="0 0 17 16"
+                              fill="none"
+                            >
+                              <path
+                                d="M2.41769 12.0766C2.44831 11.801 2.46363 11.6632 2.50533 11.5343C2.54234 11.42 2.59461 11.3113 2.66075 11.211C2.7353 11.0979 2.83336 10.9999 3.02948 10.8037L11.8337 1.99955C12.5701 1.26317 13.764 1.26317 14.5003 1.99955C15.2367 2.73593 15.2367 3.92984 14.5003 4.66622L5.69614 13.4704C5.50002 13.6665 5.40196 13.7646 5.28892 13.8391C5.18862 13.9053 5.07985 13.9575 4.96556 13.9945C4.83673 14.0362 4.6989 14.0516 4.42324 14.0822L2.16699 14.3329L2.41769 12.0766Z"
+                                stroke="#475467"
+                                stroke-width="1.33333"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -713,9 +864,9 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
                 <tr>
                   <td
                     colSpan={columns ? Object.keys(columns).length + 1 : 1}
-                    align='center'
+                    align="center"
                   >
-                    <p className='text-[#475467] font-medium py-6'>
+                    <p className="text-[#475467] font-medium py-6">
                       No data found
                     </p>
                   </td>
@@ -734,10 +885,17 @@ const BlogsTable = ({ tableType = '', title, data, columns }) => {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
         /> */}
-        <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
+        <TablePagination
+          handleChangePage={handleChangePage}
+          handleNextPage={handleNextPage}
+          handlePreviousPage={handlePreviousPage}
+          page={page}
+          filteredData={filteredData}
+          rowsPerPage={rowsPerPage}
+        />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default BlogsTable
+export default BlogsTable;

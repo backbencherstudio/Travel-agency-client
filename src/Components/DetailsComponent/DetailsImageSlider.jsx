@@ -1,7 +1,7 @@
 import { shareIcon, loveIcon } from "../../../public/Icons";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
-import Slider from "react-slick";
 import { useEffect, useState } from "react";
+import Tooltip from "@mui/material/Tooltip";
 import ImageModal from "./ImageModal";
 import {
   Carousel,
@@ -25,7 +25,7 @@ const renderStars = (rating) => {
   return stars;
 };
 
-export default function DetailsImageSlider({
+export default function ({
   details,
   handleSharePhoto,
   selectedImage,

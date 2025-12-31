@@ -1,4 +1,5 @@
 import TablePagination from "~/Shared/TablePagination";
+import Loading from "~/Shared/Loading";
 
 export default function CouponTable({
   isLoading,
@@ -15,12 +16,13 @@ export default function CouponTable({
   totalPages
 }) {
   return (
-    <div className="p-4 bg-white rounded-lg">
+    <div className="p-4 bg-white rounded-lg space-y-4">
       <div className="w-full overflow-x-auto">
         <table className="w-full table-auto min-w-[768px]">
           <thead className="bg-[#F9FAFB] text-[#475467] text-[12px]">
             <tr className="text-nowrap">
               <th className="p-6 rounded-l-lg font-medium">Code name</th>
+              <th className="p-6 rounded-l-lg font-medium">Discount code</th>
               <th className="p-6 font-medium">Discount type</th>
               <th className="p-6 font-medium">Creation date</th>
               <th className="p-6 font-medium">Expiration date</th>
@@ -33,7 +35,7 @@ export default function CouponTable({
             {isLoading ? (
               <tr>
                 <td colSpan="7" className="text-center">
-                  Loading...
+                  <Loading />
                 </td>
               </tr>
             ) : error ? (
@@ -48,7 +50,10 @@ export default function CouponTable({
                   className="border-b border-[#EDEDED] text-nowrap text-[#475467] text-[12px] capitalize"
                   key={item.id}
                 >
-                  <td className="p-6">#{item.id}</td>
+                  <td className="p-6">{item.name}</td>
+                  <td className="p-6 text-sm text-[#1D1F2C]">
+                    {item.code}
+                  </td>
                   <td className="p-6 text-sm text-[#1D1F2C]">
                     {item.amount_type}
                   </td>

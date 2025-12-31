@@ -1,5 +1,5 @@
-import { useContext, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { useContext, useEffect, useState } from 'react';
+import { Outlet, ScrollRestoration, useNavigate } from 'react-router-dom';
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
 import { AuthContext } from '../../Context/AuthProvider/AuthProvider';
@@ -12,6 +12,12 @@ const AdminLayout = () => {
   const [notification, setNotification] = useState(null); // Single notification state
   const { loading } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  // Make sure the dashboard always leaves body scroll enabled on first render
+  useEffect(() => {
+    document.body.style.overflow = 'auto';
+    document.body.style.overflowY = 'auto';
+  }, []);
 
   // Handle a new notification (simulated or manually set)
   const handleNewNotification = (notification) => {
@@ -51,6 +57,7 @@ const AdminLayout = () => {
         <Loading />
       ) : (
         <div className="animate-from-middle">
+          <ScrollRestoration />
           <AdminHeader
             showSidebar={showSidebar}
             setShowSidebar={setShowSidebar}

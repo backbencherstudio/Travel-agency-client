@@ -18,14 +18,30 @@ const Vendor = () => {
   const [vendorData, setVendorData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [pagination,setPagination] = useState({
+    page:1,
+    totalPages:1,
+    limit:10,
+    total:0,
+    hasPreviousPage:false,
+    hasNextPage:false,
+  });
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await getUsers();
-        // Filter only vendor type users
-        const vendorUsers = response?.data?.filter(user => user.type === 'vendor') || [];
-        setVendorData(vendorUsers);
+        const response = await getUsers({
+          role: 'vendor',
+          page: currentPage,
+          limit: 10,
+        });
+        if(response?.success){
+          setVendorData(response?.data || []);
+          setPagination(response?.pagination || {});
+        }else{
+          setVendorData([]);
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -33,7 +49,11 @@ const Vendor = () => {
       }
     };
     fetchUsers();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  }
 
   if (loading) return <p>Loading vendors...</p>;
   if (error) return <p>Error loading vendors: {error}</p>;
@@ -47,6 +67,8 @@ const Vendor = () => {
         title={'Vendor Management'}
         data={vendorData}
         columns={columns}
+        pagination={pagination}
+        handlePageChange={handlePageChange}
       />
     </div>
   );

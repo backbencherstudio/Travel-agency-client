@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import OfferManagementApis from "~/Apis/OfferManagementApis";
+import Loading from "~/Shared/Loading";
 
 export default function EditOffers() {
     const navigate = useNavigate();
@@ -73,7 +74,9 @@ export default function EditOffers() {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return <div>
+        <Loading />
+    </div>;
 
     return (
         <div className="overflow-hidden py-5" style={{ minHeight: "calc(100vh - 100px)" }}>

@@ -543,7 +543,7 @@ const PackageTable = ({
                     {columns?.action && showAction && (
                       <td className="px-3">
                         <div className="relative flex items-center w-fit">
-                          {item?.approved_at && (
+                          {(item?.approved_at || user?.type === "vendor") && (
                             <Link
                               to={`/dashboard/edit-package/${item?.id}`}
                               className={`flex bg-[#EB5B2A] w-fit gap-3 p-3 rounded-md font-medium text-white`}
@@ -566,7 +566,7 @@ const PackageTable = ({
                               </svg>
                             </Link>
                           )}
-                          {!item?.approved_at && (
+                          {(!item?.approved_at && user?.type === "admin") && (
                             <div
                               onClick={(e) => handleApproveClick(item.id)}
                               className={`flex w-fit gap-3 p-2 text-3xl rounded-md font-medium text-[#4A4C56]`}
@@ -574,7 +574,7 @@ const PackageTable = ({
                               <FcApproval className="cursor-pointer"/>
                             </div>
                           )}
-                          {!item?.approved_at && (
+                          {(!item?.approved_at && user?.type === "admin") && (
                             <div
                               onClick={(e) => handleRejectClick(item.id)}
                               className={`flex w-fit gap-3 p-2 text-3xl rounded-md font-medium text-[#4A4C56]`}
