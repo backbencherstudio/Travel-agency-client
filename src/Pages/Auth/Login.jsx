@@ -43,7 +43,10 @@ const Login = () => {
       })
       const role = localStorage.getItem('role')
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
       console.log('role', role)
       setTimeout(() => {
 >>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
@@ -51,7 +54,11 @@ const Login = () => {
         if (role === 'admin') {
           navigate('/dashboard')
 <<<<<<< HEAD
+<<<<<<< HEAD
         }else{
+=======
+        } else {
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
 =======
         } else {
 >>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
