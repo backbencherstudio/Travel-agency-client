@@ -5,6 +5,7 @@ import TablePagination from "../../../Shared/TablePagination";
 import OfferManagementApis from "~/Apis/OfferManagementApis";
 import CouponTable from "./CouponTable";
 import GiftCardTable from "./GiftCardTable";
+import { Link } from "react-router-dom";
 
 export default function OffersManagement() {
   const title = "Promotional code and offers management";
@@ -83,13 +84,13 @@ export default function OffersManagement() {
 
     if (result.isConfirmed) {
       // Uncomment to perform deletion API call
-      // const response = await OfferManagementApis.delete(id);
-      // if (response.errors) {
-      //     Swal.fire('Error', response.message, 'error');
-      // } else {
-      //     Swal.fire('Deleted!', 'The offer has been deleted.', 'success');
-      //     setFilteredData(prevData => prevData.filter(item => item.id !== id));
-      // }
+      const response = await OfferManagementApis.delete(id);
+      if (response.errors) {
+          Swal.fire('Error', response.message, 'error');
+      } else {
+          Swal.fire('Deleted!', 'The offer has been deleted.', 'success');
+          setFilteredData(prevData => prevData.filter(item => item.id !== id));
+      }
     }
   };
 
@@ -107,6 +108,9 @@ export default function OffersManagement() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-center py-5">
         <h1 className="text-[#0D0E0D] text-[20px]">{title}</h1>
+        <Link to="/dashboard/add-offers" className='capitalize bg-[#EB5B2A] hover:bg-[#eb5a2ae0] text-white px-4 py-2 rounded-lg cursor-pointer'>
+          + Add Offer
+        </Link>
       </div>
       <div className="bg-white px-4 rounded-lg">
         <div className="flex items-center justify-between">

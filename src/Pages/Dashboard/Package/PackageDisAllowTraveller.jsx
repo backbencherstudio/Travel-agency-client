@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query';
+import Swal from "sweetalert2";
 import {
   Table,
   TableBody,
@@ -96,13 +97,27 @@ const PackageDisAllowTraveller = () => {
     setValue('type', travellerType.type) // Populate the form with selected disallow traveller data
   }
 
-  const handleDelete = id => {
-    if (
-      window.confirm('Are you sure you want to delete this disallow traveller?')
-    ) {
-      deleteMutation.mutate(id)
-    }
-  }
+
+  const handleDelete = async (id) => {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to undo this action!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      });
+  
+      if (!result.isConfirmed) return;
+  
+      try {
+        deleteMutation.mutate(id)
+        Swal.fire("Deleted", "Place has been deleted", "success");
+      } catch (err) {
+        await Swal.fire("Error", err.message, "error");
+      }
+    };
 
   const handleCancelEdit = () => {
     setEditDisallowTravellerId(null)

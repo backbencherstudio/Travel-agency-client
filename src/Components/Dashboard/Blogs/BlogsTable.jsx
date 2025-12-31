@@ -12,6 +12,23 @@ import img1 from "../../../assets/img/tour-details/image-5.png";
 //   Paper,
 //   TablePagination
 // } from '@mui/material'
+<<<<<<< HEAD
+<<<<<<< HEAD
+import { useNavigate, useLocation } from 'react-router-dom'
+import { MdKeyboardArrowDown } from 'react-icons/md'
+import { LuTrash2 } from 'react-icons/lu'
+import { FaRegSquarePlus } from 'react-icons/fa6'
+import BlogApis from '../../../Apis/BlogApi'
+import Swal from 'sweetalert2'
+import useDebounce from '../../../Shared/debounce'
+import { BsThreeDots } from 'react-icons/bs'
+import { RxCross2 } from 'react-icons/rx'
+import DropdownPortal from '../../../Shared/DropdownPortal'
+import { Link } from 'react-router-dom';
+import Loading from '~/Shared/Loading'
+=======
+=======
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
 import { useNavigate, useLocation } from "react-router-dom";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { LuTrash2 } from "react-icons/lu";
@@ -23,6 +40,10 @@ import { BsThreeDots } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import DropdownPortal from "../../../Shared/DropdownPortal";
 import LoadingSpinner from "~/Shared/LoadingSpinner";
+<<<<<<< HEAD
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
+=======
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
 
 const BlogsTable = ({ tableType = "", title, data, columns }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -279,15 +300,33 @@ const BlogsTable = ({ tableType = "", title, data, columns }) => {
   };
 
   if (isLoading) {
+<<<<<<< HEAD
+<<<<<<< HEAD
+    return <div>
+      <Loading />
+    </div>
+=======
     return (
       <LoadingSpinner />
     );
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
+=======
+    return (
+      <LoadingSpinner />
+    );
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
   }
 
   console.log(filteredData);
 
   return (
     <>
+<<<<<<< HEAD
+<<<<<<< HEAD
+      <div className='flex justify-between items-center py-5'>
+        <h1 className='text-[#0D0E0D] text-[20px]'>{title}</h1>
+        <Link to="/dashboard/add-blog" className='capitalize bg-[#EB5B2A] hover:bg-[#eb5a2ae0] text-white px-4 py-2 rounded-lg cursor-pointer'>+ Add blogs</Link>
+=======
       <div className="flex flex-col sm:flex-row justify-between items-center py-5">
         <h1 className="text-[#0D0E0D] text-[20px]">{title}</h1>
         <div className="flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl">
@@ -338,6 +377,7 @@ const BlogsTable = ({ tableType = "", title, data, columns }) => {
             </div>
           </div>
         </div>
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
       </div>
 
       <div className="bg-white space-y-4" style={{ borderRadius: "10px" }}>
@@ -351,6 +391,83 @@ const BlogsTable = ({ tableType = "", title, data, columns }) => {
           </button>
         </div> */}
 
+<<<<<<< HEAD
+        <div className='flex gap-3 my-2 rounded-t-xl pt-4 px-4 justify-end'>
+          <div className='relative md:col-span-1 rounded-md'>
+            <input
+              type='text'
+              placeholder='Search...'
+              className='py-1.5 pl-10 rounded-md focus:outline-none border focus:border-orange-400 w-full lg:w-[100%] '
+=======
+      <div className="flex flex-col sm:flex-row justify-between items-center py-5">
+        <h1 className="text-[#0D0E0D] text-[20px]">{title}</h1>
+        <div className="flex flex-col items-center sm:flex-row gap-3 my-2 rounded-t-xl">
+          <div className="relative md:col-span-1">
+            <input
+              type="text"
+              placeholder="Search..."
+              className="py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]"
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+            <FaSearch className="absolute top-3 left-3 text-zinc-400" />
+          </div>
+
+          <div className="flex justify-center" ref={dropdownRef}>
+            <div className="relative inline-block text-left">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200"
+              >
+                {selectedStatus}
+                <span>
+                  <MdKeyboardArrowDown className="text-xl" />
+                </span>
+              </button>
+
+              {isOpen && (
+                <div className="absolute mt-5 w-56 lg:w-72 py-5 rounded-2xl bg-white border border-gray-200 shadow-lg z-10 right-0">
+                  <div className="absolute top-[-10px] right-10 w-4 h-4 bg-white border-l border-t border-gray-200 rotate-45"></div>
+
+                  <div className="bg-white rounded-md">
+                    {["All Status", "Active", "Deactivated"].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => handleStatusChange(status)}
+                        className={`block w-full px-5 py-5 text-left text-sm text-gray-700 hover:bg-gray-200 ${
+                          selectedStatus === status
+                            ? "font-bold bg-gray-100"
+                            : ""
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+<<<<<<< HEAD
+=======
+      </div>
+
+      <div className="bg-white space-y-4" style={{ borderRadius: "10px" }}>
+        {/* <div className='flex justify-end p-5'>
+          <button
+            onClick={handleAddBlogClick}
+            className='flex text-[14px] items-center gap-1 bg-[#EB5B2A] hover:bg-[#eb5a2ae0] transform duration-300 text-white px-3 py-2 rounded-lg whitespace-nowrap'
+          >
+            <FaRegSquarePlus className='text-white text-xl' />
+            Create Blog
+          </button>
+        </div> */}
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
+
+=======
+>>>>>>> da1f4062b05c777b7954f86eaff4ae45f0239c3a
         <div className="w-full overflow-x-auto p-4">
           <table className="w-full table-auto min-w-[768px]">
             <thead className="bg-[#F9FAFB] text-[#475467] text-[12px]">

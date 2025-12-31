@@ -113,6 +113,7 @@ const AdminSidebar = ({ showSidebar, setShowSidebar }) => {
     }
     setSelectedTab(tab)
     navigate(path)
+    setShowSidebar(false)
   }
 
   const handleLogOut = (e) => {

@@ -32,6 +32,7 @@ import VendorAddPackage from "../Pages/VendorDashboard/AddPackages/VendorAddPack
 import VendorPackages from "../Components/VendorDashboard/Packages/VendorPackgaesTable";
 import Payments from "../Pages/Dashboard/Payment/Payments";
 import BlogsPost from "../Pages/Dashboard/Blogs/BlogsPost";
+import CreateOffers from "~/Pages/Dashboard/OffersManagement/CreateOffers";
 import Settings from "../Pages/Dashboard/Settings/Settings";
 import PackageExtraService from "../Pages/Dashboard/Package/PackageExtraService";
 import AddBlog from "../Pages/Dashboard/Blogs/AddBlog";
@@ -349,6 +350,10 @@ export const router = createBrowserRouter([
       {
         path: "offers-management",
         element: <OffersManagement />,
+      },
+      {
+        path: "add-offers",
+        element: <CreateOffers />,
       },
       {
         path: "edit-offers/:id",
