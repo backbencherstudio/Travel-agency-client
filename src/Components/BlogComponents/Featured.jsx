@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import moment from "moment";
-import Nature from "../../assets/img/blogs/nature.jpg"
+import Nature from "../../assets/img/blogs/nature.jpg";
+import { Link } from "react-router-dom";
 
 const Featured = ({ blogs }) => {
     // console.log('blogs', blogs)
@@ -13,7 +14,7 @@ const Featured = ({ blogs }) => {
                     <h2>{moment(blogs[0]?.created_at).format('DD MMM YYYY')}</h2>
                 </div>
 
-                <h2 className="text-black text-[26px] font-bold leading-[100%] tracking-[0.12px] font-open-sans mt-6 mb-4">{blogs[0]?.title}</h2>
+                <Link to={`/blogDetails/${blogs[0]?.id}`} className="text-black block text-[26px] font-bold leading-[100%] tracking-[0.12px] font-open-sans mt-6 mb-4 hover:text-blue-400 duration-300">{blogs[0]?.title}</Link>
 
                 <p>{blogs[0]?.description}</p>
             </div>

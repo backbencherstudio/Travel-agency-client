@@ -6,11 +6,15 @@ import { AuthContext } from '../../Context/AuthProvider/AuthProvider';
 import Loading from '../../Shared/Loading';
 import { Alert } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
+import AccountConvertApis from '~/Apis/clientApi/AccountConvertApis';
+import { Link } from 'react-router-dom';
+
 
 const AdminLayout = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [notification, setNotification] = useState(null); // Single notification state
-  const { loading } = useContext(AuthContext);
+  const { loading, user } = useContext(AuthContext);
+  const [vendorStatus, setVendorStatus] = useState(null);
   const navigate = useNavigate();
 
   // Make sure the dashboard always leaves body scroll enabled on first render
@@ -48,12 +52,30 @@ const AdminLayout = () => {
     navigate(`/admin/notifications/${entityId}`);
   };
 
+  useEffect(() => {
+    const getOnboardingStatus = async () => {
+      try {
+        const response = await AccountConvertApis.getOnboardingStatus();
+        if (response.success) {
+          setVendorStatus(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching onboarding status:', error);
+      }
+    }
+    if (user?.type === 'vendor') {
+      getOnboardingStatus();
+    }
+  }, [user?.type])
+
+
   return (
     <div className="w-full h-screen bg-[#e9f0f9]">
-       <Helmet>
+      <Helmet>
         <title>Around 360 - Admin Dashboard</title>
       </Helmet>
-      {loading ? (
+
+      {(loading || typeof (vendorStatus) !== 'object') ? (
         <Loading />
       ) : (
         <div className="animate-from-middle">
@@ -105,6 +127,18 @@ const AdminLayout = () => {
           )}
 
           <div className="ml-0 lg:ml-[275px] pt-[75px] p-5">
+            {vendorStatus?.onboarding_required && (
+              <div className='fixed inset-0 h-screen bg-[#0003] grid items-center justify-center backdrop-blur-sm' style={{ zIndex: 9 }}>
+                <div className='bg-white p-4 rounded-md w-full max-w-[350px] space-y-5' onClick={(e)=>e.stopPropagation()}>
+                  <h2 className='text-3xl font-semibold mb-2 text-center text-[#061d35]'>Welcome onboard</h2>
+                  <p className='mb-4 text-center text-sm'>To start receiving payments, please complete your onboarding process.</p>
+                  <div className='flex items-center justify-between'>
+                    <Link to="/" type="button" className="bg-[#061d35] text-white px-4 py-1 rounded cursor-pointer hover:bg-[#050e18]">Back to home</Link>
+                    <Link to={vendorStatus?.onboarding_url} type="button" className='bg-[#eb5b2a] text-white px-4 py-1 rounded cursor-pointer hover:bg-[#d94e22] '>Continue</Link>
+                  </div>
+                </div>
+              </div>
+            )}
             <Outlet />
           </div>
         </div>

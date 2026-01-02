@@ -64,7 +64,7 @@ const VendorDetails = () => {
             <div className='first col-span-12 md:col-span-4 2xl:col-span-2 flex flex-col items-center'>
               {userData?.data?.avatar ? (
                 <img
-                  src={userData.data.avatar}
+                  src={userData.data.avatar_url}
                   alt={userData?.data?.name}
                   className='w-[200px] h-[200px] rounded-full object-cover mb-4'
                 />

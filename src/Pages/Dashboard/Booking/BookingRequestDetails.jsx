@@ -18,7 +18,7 @@ const BookingRequestDetails = () => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['booking-request-details'],
     queryFn: () => BookManageApis.getOne(id)
-  }); 
+  });
 
   useEffect(() => {
     if (data?.data?.status) {
@@ -31,7 +31,7 @@ const BookingRequestDetails = () => {
     setLoading(true);
     if (!status) return;
     const res = await BookManageApis.update(id, { status })
-    if(res.success){
+    if (res.success) {
       toast.success(res.message);
       navigate(-1);
       setLoading(false);
@@ -52,8 +52,8 @@ const BookingRequestDetails = () => {
   }
 
   return (
-    <div className='p-8 bg-white rounded-lg w-full'>
-       <Helmet>
+    <div className='mt-10 p-8 bg-white rounded-lg w-full'>
+      <Helmet>
         <title>Around 360 - Booking Request Details</title>
       </Helmet>
       <h2 className='text-2xl font-semibold mb-8 text-center'>
@@ -172,21 +172,32 @@ const BookingRequestDetails = () => {
 
       {/* Action Buttons */}
       <div className='mt-8 flex flex-col-reverse md:flex-row justify-center gap-6 md:gap-6'>
-        
-        <div className='flex gap-4 justify-between'>
-          <button onClick={()=>{setSelectedStatus("confirmed");handleUpdateStatus("confirmed")}} className='bg-[#4CAF50] text-white px-4 rounded cursor-pointer'>Approve</button>
-          <button 
-            onClick={()=>handleUpdateStatus("cancelled")} 
-            className='bg-[#FF5252] px-4 text-white rounded cursor-pointer font-medium'
-          >
-            Reject
-          </button>
+
+        <div className='flex items-center gap-4'>
           <button
-          className='bg-[#E7ECF2] text-[14px] text-[#3B82F6] transform duration-300 font-medium py-[7px] px-6 rounded shadow'
-          onClick={() => navigate(-1)}
-        >
-          Back
-        </button>
+            className='bg-[#E7ECF2] text-[14px] text-[#3B82F6] transform duration-300 font-medium py-[7px] px-6 rounded shadow'
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </button>
+          {data?.data?.status === "pending" && <div className='flex gap-4 justify-between'>
+            <button onClick={() => { setSelectedStatus("confirmed"); handleUpdateStatus("confirmed") }} className='bg-[#4CAF50] text-white rounded cursor-pointer font-medium py-[7px] px-6'>Approve</button>
+            <button
+              onClick={() => handleUpdateStatus("cancelled")}
+              className='bg-[#FF5252] text-white rounded cursor-pointer font-medium py-[7px] px-6'
+            >
+              Reject
+            </button>
+          </div>}
+          {data?.data?.status === "confirmed" && <div className='flex gap-4 justify-between'>
+            <button onClick={() => { setSelectedStatus("confirmed"); handleUpdateStatus("confirmed") }} className='bg-[#4CAF50] text-white px-4 rounded cursor-pointer'>Request completion</button>
+            <button
+              onClick={() => handleUpdateStatus("cancel")}
+              className='bg-[#FF5252] text-white rounded cursor-pointer font-medium py-[7px] px-6'
+            >
+              Cancel
+            </button>
+          </div>}
         </div>
       </div>
     </div>

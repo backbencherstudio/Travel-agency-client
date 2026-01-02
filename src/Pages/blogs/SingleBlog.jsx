@@ -263,9 +263,8 @@ const SingleBlog = () => {
         pageName2='Blog'
         description='Explore our blog for the latest travel tips, destination guides, and inspiring stories to fuel your wanderlust. From must-see locations to insider advice, we’re here to make your journey unforgettable.'
       />
-
       <ParentComponent>
-        <div className='blog-details grid grid-cols-12  gap-6 py-6'>
+        <div className='blog-details grid grid-cols-12  gap-6 px-4 py-6'>
           {/* blog deatils section  */}
           <div className='col-span-12 lg:col-span-8'>
             <div>

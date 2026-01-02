@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import VendorManagemnetTable from '../../../Components/Dashboard/Vendor/VendorManagemnetTable';
 import { Helmet } from 'react-helmet-async';
 import { getUsers } from '../../../Apis/CreateNewUser';
+import Loading from '~/Shared/Loading';
 
 const Vendor = () => {
   const [columns] = useState({
@@ -18,36 +19,37 @@ const Vendor = () => {
   const [vendorData, setVendorData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [pagination,setPagination] = useState({
-    page:1,
-    totalPages:1,
-    limit:10,
-    total:0,
-    hasPreviousPage:false,
-    hasNextPage:false,
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    limit: 10,
+    total: 0,
+    hasPreviousPage: false,
+    hasNextPage: false,
   });
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getUsers({
-          role: 'vendor',
-          page: currentPage,
-          limit: 10,
-        });
-        if(response?.success){
-          setVendorData(response?.data || []);
-          setPagination(response?.pagination || {});
-        }else{
-          setVendorData([]);
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  const fetchUsers = async () => {
+    try {
+      const response = await getUsers({
+        role: 'vendor',
+        page: currentPage,
+        limit: 10,
+      });
+      if (response?.success) {
+        setVendorData(response?.data || []);
+        setPagination(response?.pagination || {});
+      } else {
+        setVendorData([]);
       }
-    };
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUsers();
   }, [currentPage]);
 
@@ -55,7 +57,9 @@ const Vendor = () => {
     setCurrentPage(newPage);
   }
 
-  if (loading) return <p>Loading vendors...</p>;
+  if (loading) return <div>
+    <Loading />
+  </div>;
   if (error) return <p>Error loading vendors: {error}</p>;
 
   return (
@@ -69,6 +73,7 @@ const Vendor = () => {
         columns={columns}
         pagination={pagination}
         handlePageChange={handlePageChange}
+        onChangeButton={()=>fetchUsers()}
       />
     </div>
   );

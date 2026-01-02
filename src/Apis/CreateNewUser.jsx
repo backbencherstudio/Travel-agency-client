@@ -130,7 +130,7 @@ export const searchUsers = async (query) => {
 export const getVendorsRequests = async () => {
   try {
     const response = await axiosClient.get(`/api/auth/vendor-request-list`);
-    return response.data;
+    return response?.data;
   } catch (error) {
     if (error.response) {
       console.error("Error response from server:", error.response.data);
