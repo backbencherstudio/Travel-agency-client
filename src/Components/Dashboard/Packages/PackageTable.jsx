@@ -3,6 +3,7 @@ import TablePagination from "../../../Shared/TablePagination";
 import coverImage from "../../../assets/img/tour-details/image-1.png";
 import { FcApproval } from "react-icons/fc";
 import { IoMdCloseCircle } from "react-icons/io";
+import { GiSandsOfTime } from "react-icons/gi";
 import {
   Table,
   TableBody,
@@ -500,8 +501,8 @@ const PackageTable = ({
                             </p>
                           ) : (
                             <p className="flex items-center gap-1 text-[#B42318] font-medium px-3 py-[2px] border border-[#FECDCA] bg-[#FEF3F2] rounded-2xl">
-                              <RxCross2 className="text-[12px] text-[#B42318]" />
-                              Inactive
+                              <GiSandsOfTime className="text-[12px] text-[#B42318]" />
+                              Pending
                             </p>
                           )}
                         </div>

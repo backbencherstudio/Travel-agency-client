@@ -363,7 +363,7 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
                         </td>
                       )}
                       {/* {selectedStatus === 'Booking_Requests' || selectedStatus === 'Pending' && ( */}
-                      {(item.status === "requests" || item.status === "pending") && <td className='px-6 py-5' style={{ textAlign: 'center' }}>
+                      <td className='px-6 py-5' style={{ textAlign: 'center' }}>
                         <button
                           className='text-[#475467] hover:text-blue-700 transform duration-300'
                           onClick={() =>
@@ -374,7 +374,7 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
                         >
                           <FaEye className='text-lg' />
                         </button>
-                      </td>}
+                      </td>
                       {/* )} */}
                     </tr>
                   ))

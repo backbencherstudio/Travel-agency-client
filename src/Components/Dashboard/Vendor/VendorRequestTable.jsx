@@ -4,9 +4,19 @@ import { approveUser, rejectUser } from '../../../Apis/GetUserApis'
 import Swal from 'sweetalert2'
 import { useState } from 'react';
 import { updateVendorRequest } from '~/Apis/CreateNewUser';
+import TablePagination from '~/Shared/TablePagination';
 
-export default function VendorRequestTable({ data = [] }) {
+export default function VendorRequestTable({ data = [], onConfirm }) {
   const [requestsData, setRequestsData] = useState(data)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+    limit: 10,
+    total: 0,
+    hasPreviousPage: false,
+    hasNextPage: false,
+  });
 
   console.log('Vendor request table data:', requestsData)
 
@@ -26,9 +36,7 @@ export default function VendorRequestTable({ data = [] }) {
       try {
         await updateVendorRequest(id)
         Swal.fire('Success!', 'Vendor request has been approved.', 'success')
-        setRequestsData(prevData =>
-          prevData.filter(item => item.id !== id)
-        )
+        onConfirm();
       } catch (error) {
         Swal.fire('Error!', 'Failed to approve vendor request.', 'error')
       }
@@ -59,6 +67,19 @@ export default function VendorRequestTable({ data = [] }) {
       }
     }
   }
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  }
+
+  const handleNextPage = (event) => {
+    handlePageChange(pagination.page + 1);
+  };
+
+  const handlePreviousPage = () => {
+    handlePageChange(Math.max(1, pagination.page - 1));
+  }
+
 
   return (
     <div className='w-full overflow-x-auto'>
@@ -95,7 +116,7 @@ export default function VendorRequestTable({ data = [] }) {
                     {item.avatar ? (
                       <img
                         className='rounded-lg'
-                        src={item.avatar}
+                        src={item.avatar_url}
                         alt={item.name}
                         style={{ width: '48px', height: '48px', objectFit: 'cover' }}
                       />
@@ -133,9 +154,7 @@ export default function VendorRequestTable({ data = [] }) {
                       ? new Date(item.vendor_request_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                        day: 'numeric'
                       })
                       : 'N/A'}
                   </p>
@@ -174,6 +193,18 @@ export default function VendorRequestTable({ data = [] }) {
           )}
         </tbody>
       </table>
+      <div className='pt-4'>
+        <TablePagination
+          handleChangePage={handlePageChange}
+          handleNextPage={handleNextPage}
+          handlePreviousPage={handlePreviousPage}
+          page={pagination?.page}
+          filteredData={data}
+          rowsPerPage={pagination?.limit}
+          totalPages={pagination?.totalPages}
+          pagination={pagination}
+        />
+      </div>
     </div>
   )
 }

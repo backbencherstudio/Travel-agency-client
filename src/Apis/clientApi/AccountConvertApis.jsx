@@ -12,4 +12,14 @@ AccountConvertApis.convertToVendor = async () => {
   }
 }
 
+AccountConvertApis.getOnboardingStatus = async () => {
+  const url = '/api/escrow/onboarding-link';
+  try {
+    const response = await axiosClient.get(url);
+    return response.data;
+  } catch (error) {
+    return { message: 'An error occurred while fetching onboarding status.' }
+  } 
+}
+
 export default AccountConvertApis;

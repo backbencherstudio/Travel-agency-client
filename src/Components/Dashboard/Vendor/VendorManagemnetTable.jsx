@@ -24,7 +24,7 @@ import VendorRequestTable from './VendorRequestTable';
 import { Activity } from 'react';
 import { getVendorsRequests } from '~/Apis/CreateNewUser'
 
-const VendorManagemnetTable = ({ tableType = '', title, data, columns,pagination,handlePageChange }) => {
+const VendorManagemnetTable = ({ tableType = '', title, data, columns, pagination, handlePageChange, onChangeButton }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredData, setFilteredData] = useState(data)
   const navigate = useNavigate()
@@ -41,7 +41,7 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns,pagination
   const actionRefs = useRef(new Map())
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
   const [showVendorRequests, setShowVendorRequests] = useState(false);
-  const [requestList,setRequestList]=useState([]);
+  const [requestList, setRequestList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -199,22 +199,34 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns,pagination
     setIsOpen(false)
   }
 
-  useEffect(() => {
-      const fetchVendorRequests = async () => {
-        try {
-          const response = await getVendorsRequests();
-          
-          if(response?.success){
-            setRequestList(response?.data || []);
-          }
-        } catch (err) {
-          setError(err.message);
-        } finally {
-          setLoading(false);
-        }
-      };
+  const handleButtonClick = (status) => {
+    setShowVendorRequests(status);
+    if (status) {
       fetchVendorRequests();
-    }, []);
+    } else {
+      onChangeButton();
+    }
+  }
+
+  const fetchVendorRequests = async () => {
+    try {
+      const response = await getVendorsRequests();
+      if(response?.success){
+        console.log('Vendor requests response data:', response);
+        setRequestList(response?.data || []);
+      }else{
+        setRequestList([]);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVendorRequests();
+  }, []);
 
   return (
     <div>
@@ -272,8 +284,8 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns,pagination
 
 
       <div>
-        <button type="button" onClick={() => setShowVendorRequests(false)} className={`text-sm px-6 py-1.5 rounded-tl-lg font-medium transition-all duration-300 ${!showVendorRequests ? "bg-[#EB5B2A] text-white" : "bg-gray-200 text-gray-600"}`}>Vendors</button>
-        <button type="button" onClick={() => setShowVendorRequests(true)} className={`text-sm px-6 py-1.5 rounded-tr-lg font-medium transition-all duration-300 ${showVendorRequests ? "bg-[#EB5B2A] text-white" : "bg-gray-200 text-gray-600"}`}>Pending requests</button>
+        <button type="button" onClick={() => handleButtonClick(false)} className={`text-sm px-6 py-1.5 rounded-tl-lg font-medium transition-all duration-300 ${!showVendorRequests ? "bg-[#EB5B2A] text-white" : "bg-gray-200 text-gray-600"}`}>Vendors</button>
+        <button type="button" onClick={() => handleButtonClick(true)} className={`text-sm px-6 py-1.5 rounded-tr-lg font-medium transition-all duration-300 ${showVendorRequests ? "bg-[#EB5B2A] text-white" : "bg-gray-200 text-gray-600"}`}>Pending requests</button>
       </div>
 
 
@@ -323,83 +335,83 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns,pagination
               <tbody className='text-nowrap'>
                 {filteredData?.length > 0 ? (
                   filteredData?.map(item => (
-                      <tr
-                        className={`text-[#1D1F2C] border-b border-[#EDEDED] ${(tableType === 'user' || tableType === 'blog') &&
-                          'cursor-pointer hover:bg-[#fdf0ea]'
-                          }`}
-                        key={item?.id}
-                        onClick={() => handleRowClick(item.id)}
-                      >
-                        {columns?.name && (
-                          <td className='px-4 py-3'>
-                            <div
-                              onClick={() =>
-                                navigate(`/dashboard/vendor-details/${item.id}`)
-                              }
-                              className='flex items-center gap-3 cursor-pointer '
-                            >
-                              {item.name.startsWith('http') ? (
-                                <img
-                                  className=''
-                                  src={item.name}
-                                  alt={item.name}
-                                  style={{ width: '48px', height: '48px' }}
-                                />
-                              ) : (
-                                <div className='w-[48px] h-[48px] rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-md'>
-                                  <span className='text-white text-xl font-semibold '>
-                                    {item.name?.charAt(0).toUpperCase()}
-                                  </span>
-                                </div>
-                              )}
-                              <div>
-                                <p className='truncate text-[#1D1F2C] text-[14px]'>
-                                  {item.name}
-                                </p>
-                                <p className='truncate text-[#757D83] text-[10px] font-medium flex  items-center gap-1 mt-1'>
-                                  <LuMailOpen />
-                                  <span>{item.email}</span>
-                                </p>
+                    <tr
+                      className={`text-[#1D1F2C] border-b border-[#EDEDED] ${(tableType === 'user' || tableType === 'blog') &&
+                        'cursor-pointer hover:bg-[#fdf0ea]'
+                        }`}
+                      key={item?.id}
+                      onClick={() => handleRowClick(item.id)}
+                    >
+                      {columns?.name && (
+                        <td className='px-4 py-3'>
+                          <div
+                            onClick={() =>
+                              navigate(`/dashboard/vendor-details/${item.id}`)
+                            }
+                            className='flex items-center gap-3 cursor-pointer '
+                          >
+                            {item.name.startsWith('http') ? (
+                              <img
+                                className=''
+                                src={item.name}
+                                alt={item.name}
+                                style={{ width: '48px', height: '48px' }}
+                              />
+                            ) : (
+                              <div className='w-[48px] h-[48px] rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-md'>
+                                <span className='text-white text-xl font-semibold '>
+                                  {item.name?.charAt(0).toUpperCase()}
+                                </span>
                               </div>
+                            )}
+                            <div>
+                              <p className='truncate text-[#1D1F2C] text-[14px]'>
+                                {item.name}
+                              </p>
+                              <p className='truncate text-[#757D83] text-[10px] font-medium flex  items-center gap-1 mt-1'>
+                                <LuMailOpen />
+                                <span>{item.email}</span>
+                              </p>
                             </div>
-                          </td>
-                        )}
-                        {columns?.phone && (
-                          <td className='px-4 text-[12px]'>
-                            <p className='truncate text-[#475467]'>
-                              {item.phone_number
-                                ? item.phone_number
-                                : 'Not Available'}
-                            </p>
-                          </td>
-                        )}
-                        {columns?.address && (
-                          <td className='px-4 text-[12px]'>
-                            <p className='truncate text-[#475467]'>
-                              {item.address ? item.address : 'Not Available'}
-                            </p>
-                          </td>
-                        )}
-                        {columns?.status && (
-                          <td className='px-4'>
-                            <p
-                              className={`px-2 py-1 text-[12px] rounded-full text-center ${item.approved_at === null
-                                ? 'bg-[#FEF3F2]'
-                                : 'bg-[#FDEFEA]'
-                                }`}
-                            >
-                              {item.approved_at === null
-                                ? 'No Expertise'
-                                : 'Venice Tour Guide'}
-                            </p>
-                          </td>
-                        )}
-
+                          </div>
+                        </td>
+                      )}
+                      {columns?.phone && (
+                        <td className='px-4 text-[12px]'>
+                          <p className='truncate text-[#475467]'>
+                            {item.phone_number
+                              ? item.phone_number
+                              : 'Not Available'}
+                          </p>
+                        </td>
+                      )}
+                      {columns?.address && (
+                        <td className='px-4 text-[12px]'>
+                          <p className='truncate text-[#475467]'>
+                            {item.address ? item.address : 'Not Available'}
+                          </p>
+                        </td>
+                      )}
+                      {columns?.status && (
                         <td className='px-4'>
-                          <div className='flex gap-4'>
-                            {' '}
-                            {/* View Button */}
-                            {/* <div className='relative flex justify-center'>
+                          <p
+                            className={`px-2 py-1 text-[12px] rounded-full text-center ${item.approved_at === null
+                              ? 'bg-[#FEF3F2]'
+                              : 'bg-[#FDEFEA]'
+                              }`}
+                          >
+                            {item.approved_at === null
+                              ? 'No Expertise'
+                              : 'Venice Tour Guide'}
+                          </p>
+                        </td>
+                      )}
+
+                      <td className='px-4'>
+                        <div className='flex gap-4'>
+                          {' '}
+                          {/* View Button */}
+                          {/* <div className='relative flex justify-center'>
                           <button
                             onClick={e => handleThreeDotsClick(e, item.id)}
                             className='text-blue-600 transition-all duration-500 ease-in-out'
@@ -446,25 +458,25 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns,pagination
                             </DropdownPortal>
                           )}
                         </div> */}
-                            <button
-                              onClick={() =>
-                                navigate(`/dashboard/vendor-details/${item.id}`)
-                              }
-                              className='text-[#475467] hover:text-blue-400 transform duration-300'
-                            >
-                              <FaEye className='text-lg' />
-                            </button>
-                            {/* Delete Button */}
-                            <button
-                              onClick={() => handleDeleteUser(item.id)}
-                              className='text-[#333E47] hover:text-red-700 transform duration-300'
-                            >
-                              <LuTrash2 className='text-lg' />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                          <button
+                            onClick={() =>
+                              navigate(`/dashboard/vendor-details/${item.id}`)
+                            }
+                            className='text-[#475467] hover:text-blue-400 transform duration-300'
+                          >
+                            <FaEye className='text-lg' />
+                          </button>
+                          {/* Delete Button */}
+                          <button
+                            onClick={() => handleDeleteUser(item.id)}
+                            className='text-[#333E47] hover:text-red-700 transform duration-300'
+                          >
+                            <LuTrash2 className='text-lg' />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 ) : (
                   <tr>
                     <td
@@ -480,11 +492,11 @@ const VendorManagemnetTable = ({ tableType = '', title, data, columns,pagination
               </tbody>
             </table>
           </div>
-          <TablePagination handleChangePage={handlePageChange} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={pagination?.page} filteredData={filteredData} rowsPerPage={pagination?.limit} totalPages={pagination?.totalPages} pagination={pagination}/>
+          <TablePagination handleChangePage={handlePageChange} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={pagination?.page} filteredData={filteredData} rowsPerPage={pagination?.limit} totalPages={pagination?.totalPages} pagination={pagination} />
         </div>
         :
         <div className='bg-white rounded-lg rounded-tl-none p-4 space-y-4'>
-          <VendorRequestTable data={requestList}/>
+          <VendorRequestTable data={requestList} onConfirm={() => fetchVendorRequests()} />
         </div>
       }
 

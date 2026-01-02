@@ -18,6 +18,7 @@ import AddPackageDatePicker from "~/Components/Admin/AddPackageDatePicker";
 import { IoIosClose } from "react-icons/io";
 import { FaPlus } from "react-icons/fa";
 import { LuTrash2 } from "react-icons/lu";
+import { useNavigate } from "react-router-dom";
 // import {
 //   Select,
 //   SelectContent,
@@ -32,6 +33,7 @@ const getSelectedOptions = (options, selectedIds) =>
   options.filter((o) => selectedIds.some((s) => s.id === o.value));
 
 const AddPackage = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -147,9 +149,15 @@ const AddPackage = () => {
         setPolicies(
           (resPolicies.data?.data || []).map((p) => toOption(p.id, p.policy))
         );
+        if(resPolicies?.data?.data?.length === 0){
+          navigate('/dashboard/package-destination-&-policy')
+        }
         setDestinations(
           (resDestinations.data?.data || []).map((d) => toOption(d.id, d.name))
         );
+        if(resDestinations?.data?.data?.length === 0){
+          navigate('/dashboard/package-destination-&-policy')
+        }
         setTravellerTypes(resTravellerTypes.data?.data || []);
         setExtraServices(resServices.data?.data || []);
         setLanguages(resLanguages.data?.data || []);
@@ -506,6 +514,7 @@ const AddPackage = () => {
       return prev.filter((item, idx) => idx != id);
     });
   };
+
 
   return (
     <div className="flex flex-col gap-4">

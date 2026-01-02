@@ -347,7 +347,7 @@ const Navbar = () => {
                               to="/dashboard"
                               className="text-base xl:text-xl text-zinc-600 hover:text-[#b24b7d] duration-300"
                             >
-                              Dashboard
+                              {user?.type === "admin"?"Admin":"Vendor"} Dashboard
                             </Link>
                           )}
                         {user?.type === "user" && (
@@ -515,7 +515,7 @@ const Navbar = () => {
                         to="/dashboard"
                         className="block bg-gray-300 px-6 py-3 text-center text-gray-800 rounded-md"
                       >
-                        Admin Dashboard
+                        {user?.type === "admin"?"Admin":"Vendor"} Dashboard
                       </Link>
                     )}
 

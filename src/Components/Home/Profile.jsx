@@ -38,7 +38,6 @@ const UserProfile = () => {
   }, [user])
 
   const onSubmit = async (data) => {
-    console.log(data);
     setApiapiLoading(true);
     setNewEmail(data?.email);
     const form = new FormData();
@@ -47,7 +46,9 @@ const UserProfile = () => {
       form.append(key, data[key]);
     });
     const res = await AuthApis.update(form);
+    console.log('update response', res);
     if (res?.success) {
+      fetchUserInfo();
       setApiapiLoading(false);
       if (data?.email !== user?.email) {
         const sendOtpRes = await EmailChangeApis.send({email: data?.email})
@@ -56,7 +57,6 @@ const UserProfile = () => {
         }
       }
     }
-    // Handle form submission, e.g., send data to the server
   };
 
   const handleImageChange = (e) => {
@@ -73,6 +73,15 @@ const UserProfile = () => {
   }
 
   const handleVendorConvert = () => {
+    if(!user?.profile_complete){
+      Swal.fire({
+        title: 'Incomplete Profile',
+        text: 'Please complete your profile before converting to a vendor.',
+        icon: 'warning',
+        confirmButtonText: 'OK'
+      });
+      return;
+    }
     Swal.fire({
       title: 'Are you sure?',
       text: 'You want to convert your account to vendor',
@@ -93,6 +102,16 @@ const UserProfile = () => {
         }
       }
     })
+  }
+
+  const getOnboardingStatus = async() => {
+    try{
+      const res = await AccountConvertApis.getOnboardingStatus();
+      return res;
+    }catch(err){
+      console.error('Error fetching onboarding status:', err);
+      return null;
+    }
   }
 
   // console.log('imageFile', imageFile)
@@ -237,9 +256,10 @@ const UserProfile = () => {
               <div className="mt-6 flex justify-end">
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-[#f97316] text-white rounded hover:bg-[#f17c28] transition"
+                  disabled={apiLoading}
+                  className="px-6 py-2 bg-[#f97316] text-white rounded hover:bg-[#f17c28] disabled:opacity-50 disabled:cursor-not-allowed transition"
                 >
-                  {apiLoading ? 'apiLoading...' : 'Update Profile'}
+                  {apiLoading ? 'Updating...' : 'Update Profile'}
                 </button>
               </div>
               {user?.type === 'user' && (
