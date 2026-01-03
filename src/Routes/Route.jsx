@@ -79,6 +79,8 @@ import OffersManagement from "../Pages/Dashboard/OffersManagement/OffersManageme
 import ViewOffers from "../Pages/Dashboard/OffersManagement/ViewOffers";
 import EditOffers from "../Pages/Dashboard/OffersManagement/EditOffers";
 import PackagePlaces from "~/Pages/Dashboard/Package/PackagePlaces";
+import AddReviewTour from "~/Pages/ReviewPackage/AddReviewTour";
+
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 export const router = createBrowserRouter([
@@ -220,6 +222,10 @@ export const router = createBrowserRouter([
       {
         path: "/booking-history-review/:id",
         element: <ReviewBooking />,
+      },
+      {
+        path: "/add-review/:id",
+        element: <AddReviewTour />,
       },
       //========================================================================================================================================
       {

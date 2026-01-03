@@ -170,7 +170,7 @@ export default function ({
               handleImageClick(true, 0);
             }}
           />
-          <div className="flex justify-end items-center gap-2">
+          {/* <div className="flex justify-end items-center gap-2">
             <p className="text-sm text-[#0F1416]">
               {details?.package_languages?.length > 1 && (
                 <Tooltip
@@ -189,7 +189,7 @@ export default function ({
                 </Tooltip>
               )}
             </p>
-          </div>
+          </div> */}
         </div>
         {/* Grid images */}
         <div className="relative overflow-hidden mx-auto">

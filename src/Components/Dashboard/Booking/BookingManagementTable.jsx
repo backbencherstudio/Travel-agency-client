@@ -1,7 +1,7 @@
 import { FaCheckCircle, FaTimesCircle, FaSearch, FaEye } from 'react-icons/fa'
 import { GoDotFill } from 'react-icons/go'
 import TablePagination from '../../../Shared/TablePagination'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import user1 from "../../../assets/img/travel-packages/package-1.png"
 import {
   Table,
@@ -14,10 +14,11 @@ import {
 } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { MdKeyboardArrowDown } from 'react-icons/md'
-import debounce from 'lodash/debounce'
+import debounce from 'lodash/debounce';
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
 
 const statusStyles = {
-  Confirmed: {
+  confirmed: {
     color: '#067647',
     backgroundColor: '#ECFDF3',
     border: '1px solid #ABEFC6',
@@ -25,7 +26,7 @@ const statusStyles = {
       <path d="M10.1749 3L4.67493 8.5L2.17493 6" stroke="#17B26A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   },
-  Pending: {
+  pending: {
     color: '#0A3159',
     backgroundColor: '#E7ECF2',
     border: '1px solid #90A9C3',
@@ -33,7 +34,7 @@ const statusStyles = {
       <circle cx="3.17493" cy="3" r="3" fill="#0E457D" />
     </svg>
   },
-  Cancelled: {
+  cancel: {
     color: '#B42318',
     backgroundColor: '#FEF3F2',
     border: '1px solid #FECDCA',
@@ -41,32 +42,40 @@ const statusStyles = {
       <path d="M9.17493 3.5L4.17493 8.5M4.17493 3.5L9.17493 8.5" stroke="#F04438" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   },
-  Requests: {
+  vendor_completed: {
     color: '#067647',
     backgroundColor: '#ECFDF3',
     border: '1px solid #ABEFC6',
     icon: <svg xmlns="http://www.w3.org/2000/svg" width="13" height="12" viewBox="0 0 13 12" fill="none">
       <circle cx="6.6748" cy="6" r="3" fill="#067647" />
     </svg>
+  },
+  complete: {
+    color: '#067647',
+    backgroundColor: '#ECFDF3',
+    border: '1px solid #ABEFC6',
+    icon: <IoCheckmarkDoneSharp />
   }
 }
 
 // const BookingManagementTable = ({ tableType = '', title, data, columns }) => {
-const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
+const BookingManagementTable = ({ tableType = '', title, columns, data, handleFilterChange, handleQueryChange, query, status }) => {
 
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filteredData, setFilteredData] = useState()
-  const [selectedStatus, setSelectedStatus] = useState('All Status')
+  const [searchQuery, setSearchQuery] = useState(query)
+  const [filteredData, setFilteredData] = useState(data)
+  const [selectedStatus, setSelectedStatus] = useState(status)
   const [isOpen, setIsOpen] = useState(false)
   const statuses = [
     'All Status',
-    'Requests',
     'Pending',
     'Confirmed',
-    'Cancelled'
+    'Cancel',
+    'Complete',
   ]
 
-  console.log(selectedStatus)
+
+  console.log('selectedStatus', status)
+
   const navigate = useNavigate()
 
   const dropdownRef = useRef(null) // Reference for dropdown
@@ -76,56 +85,18 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10)
 
   // Debounced search function
-  const debouncedSearch = useCallback(
-    debounce((query, status, data) => {
-      if (!data) return;
+  const debouncedSearch = useMemo(
+    () => debounce((query) => handleQueryChange(query), 500),
+    [handleQueryChange]
+  )
 
-      let filtered = data;
-
-      // Filter by search query
-      if (query) {
-        filtered = data.filter(item => {
-          const userName = item.user?.name?.toLowerCase() || '';
-          const packageName = item.booking_items?.[0]?.package?.name?.toLowerCase() || '';
-          const invoiceNumber = item.invoice_number?.toLowerCase() || '';
-          const searchTerm = query.toLowerCase();
-
-          return userName.includes(searchTerm) ||
-            packageName.includes(searchTerm) ||
-            invoiceNumber.includes(searchTerm);
-        });
-      }
-
-      // Filter by status
-      if (status !== 'All Status') {
-        filtered = filtered.filter(item =>
-          item.status?.toLowerCase() === status.toLowerCase()
-        );
-      }
-
-      setFilteredData(filtered);
-
-      // Update URL with search query and status
-      const params = new URLSearchParams(window.location.search);
-      if (query) params.set('search', query);
-      else params.delete('search');
-      if (status !== 'All Status') params.set('status', status);
-      else params.delete('status');
-
-      const newUrl = `${window.location.pathname}?${params.toString()}`;
-      window.history.pushState({}, '', newUrl);
-    }, 500),
-    []
-  );
+  useEffect(() => {
+    return () => debouncedSearch.cancel()
+  }, [debouncedSearch])
 
   useEffect(() => {
     setFilteredData(data)
-  }, [])
-
-  useEffect(() => {
-    debouncedSearch(searchQuery, selectedStatus, data);
-  }, [searchQuery, selectedStatus, debouncedSearch]);
-  // }, [searchQuery, selectedStatus, data, debouncedSearch]);
+  }, [data])
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
@@ -153,6 +124,7 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
   const handleStatusChange = status => {
     setSelectedStatus(status)
     setIsOpen(false)
+    handleFilterChange(status)
   }
 
   // Close dropdown when clicking outside
@@ -168,9 +140,6 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
     }
   }, [])
 
-
-  console.log("Booking data : ",filteredData)
-
   return (
     <div>
       <div className='flex flex-col md:flex-row justify-between items-center mb-7'>
@@ -182,7 +151,10 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
               placeholder='Search...'
               className='py-1.5 pl-10 rounded-md focus:outline-none focus:border-orange-400 w-full lg:w-[100%]'
               value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
+              onChange={e => {
+                setSearchQuery(e.target.value)
+                debouncedSearch(e.target.value)
+              }}
             />
             <FaSearch className='absolute top-3 left-3 text-zinc-400' />
           </div>
@@ -191,6 +163,7 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
           <div className='flex justify-center' ref={dropdownRef}>
             <div className='relative inline-block text-left'>
               <button
+                type='button'
                 onClick={() => setIsOpen(!isOpen)}
                 className='inline-flex items-center gap-2 justify-between w-full px-4 py-2 text-sm font-medium text-white bg-[#EB5B2A] rounded-md hover:bg-orange-600 focus:outline-none focus:ring focus:ring-orange-200'
               >
@@ -209,7 +182,7 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
                       <button
                         key={status}
                         onClick={() => handleStatusChange(status)}
-                        className={`w-full px-5 py-5 text-left text-[#4A4C56] text-base hover:bg-gray-200 ${selectedStatus === status
+                        className={`w-full px-5 py-5 text-left text-[#4A4C56] text-base hover:bg-gray-200 capitalize ${selectedStatus === status
                           ? 'bg-gray-100 font-semibold'
                           : ''
                           }`}
@@ -274,10 +247,32 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
                     </div>
                   </th>
                 )}
+                {columns?.total_amount && (
+                  <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
+                    <div className='flex items-center gap-1 justify-center'>
+                      <span>Amount</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )}
+                {columns?.payment_status && (
+                  <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
+                    <div className='flex items-center gap-1 justify-center'>
+                      <span className='text-center'>Payment Status</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
+                        <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
+                      </svg>
+                    </div>
+                  </th>
+                )}
                 {columns?.status && (
                   <th className='px-6 py-3 text-[#475467] text-[12px] font-medium'>
                     <div className='flex items-center gap-1 justify-center'>
-                      <span className='text-center'>Status</span>
+                      <span className='text-center'>Booking Status</span>
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z" fill="#757D83" />
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z" fill="#757D83" />
@@ -330,8 +325,44 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
                         <td className='px-6 py-5' style={{ textAlign: 'center' }}>
                           <p className='text-[#475467] text-[12px]'>
                             {/* {new Date(item.created_at).toLocaleDateString()} */}
-                            {item.created_at}
+                            {item.created_at?.split('T')[0]}
                           </p>
+                        </td>
+                      )}
+                      {columns?.total_amount && (
+                        <td className='px-6 py-5' style={{ textAlign: 'center' }}>
+                          <p className='text-[#475467] text-[12px]'>
+                            {/* {new Date(item.created_at).toLocaleDateString()} */}
+                            ${item.total_amount?.split('T')[0]}
+                          </p>
+                        </td>
+                      )}
+                      {columns?.payment_status && (
+                        <td className='px-6 py-5' style={{ textAlign: 'center' }}>
+                          <span
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '8px',
+                              backgroundColor:
+                                statusStyles[item.payment_status?.toLowerCase() === "succeeded" ? "confirmed" : item.payment_status?.toLowerCase()]?.backgroundColor ||
+                                'transparent',
+                              color:
+                                statusStyles[item.payment_status?.toLowerCase() === "succeeded" ? "confirmed" : item.payment_status?.toLowerCase()]?.color || 'black',
+                              padding: '1px 14px',
+                              borderRadius: '50px',
+                              fontSize: '12px',
+                              fontWeight: '500',
+                              border:
+                                statusStyles[item.payment_status?.toLowerCase() === "succeeded" ? "confirmed" : item.payment_status?.toLowerCase()]?.border || 'none',
+                              height: '30px',
+                            }}
+                            className='w-full'
+                          >
+                            {statusStyles[item.payment_status?.toLowerCase() === "succeeded" ? "confirmed" : item.payment_status?.toLowerCase()]?.icon}
+                            <span className='capitalize'>{item.payment_status?.toLowerCase()?.split('_')?.join(" ")}</span>
+                          </span>
                         </td>
                       )}
                       {columns?.status && (
@@ -343,22 +374,22 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
                               justifyContent: 'center',
                               gap: '8px',
                               backgroundColor:
-                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.backgroundColor ||
+                                statusStyles[item.status?.toLowerCase()]?.backgroundColor ||
                                 'transparent',
                               color:
-                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.color || 'black',
+                                statusStyles[item.status?.toLowerCase()]?.color || 'black',
                               padding: '1px 14px',
                               borderRadius: '50px',
                               fontSize: '12px',
                               fontWeight: '500',
                               border:
-                                statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.border || 'none',
+                                statusStyles[item.status?.toLowerCase()]?.border || 'none',
                               height: '30px',
                             }}
                             className='w-full'
                           >
-                            {statusStyles[item.status?.charAt(0).toUpperCase() + item.status?.slice(1)]?.icon}
-                            <span>{item.status?.charAt(0).toUpperCase() + item.status?.slice(1)}</span>
+                            {statusStyles[item.status?.toLowerCase()]?.icon}
+                            <span className='capitalize'>{item.status?.toLowerCase()?.split('_')?.join(" ")}</span>
                           </span>
                         </td>
                       )}
@@ -403,7 +434,13 @@ const BookingManagementTable = ({ tableType = '', title, columns,data }) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         /> */}
         </div>
-        <TablePagination handleChangePage={handleChangePage} handleNextPage={handleNextPage} handlePreviousPage={handlePreviousPage} page={page} filteredData={filteredData} rowsPerPage={rowsPerPage} />
+        <TablePagination
+          handleChangePage={handleChangePage}
+          handleNextPage={handleNextPage}
+          handlePreviousPage={handlePreviousPage}
+          page={page} filteredData={filteredData}
+          rowsPerPage={rowsPerPage}
+        />
       </div>
     </div>
   )

@@ -6,12 +6,12 @@ import calender from "../../assets/img/tour-details/calender.svg";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../Context/AuthProvider/AuthProvider";
-import { createCheckout,checkAvailability } from "../../Apis/clientApi/ClientBookApi";
+import { createCheckout, checkAvailability } from "../../Apis/clientApi/ClientBookApi";
 import Loading from "../../Shared/Loading";
 import TourDatePicker from "./TourDatePicker";
 import ReservetionConfirmation from "./ReservetaionConfirmation";
 import FreeCancellation from "./FreeCancellation";
-import {datePickerIcon,avatarIcon} from '../../../public/Icons'
+import { datePickerIcon, avatarIcon } from '../../../public/Icons'
 import { useLocation } from "react-router-dom";
 import { useBookingContext } from "~/Context/BookingContext/BookingContext";
 const BookCard = ({
@@ -23,7 +23,7 @@ const BookCard = ({
   bookNowPayLaterDesc,
   handleBooking
 }) => {
-  const {updateBooking} = useBookingContext();
+  const { updateBooking } = useBookingContext();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [extraServices, setExtraServices] = useState([]);
@@ -113,7 +113,7 @@ const BookCard = ({
     }
 
     if (!selectedDate["start"] || totalTravelers <= 0) {
-      console.log("Date : ",selectedDate)
+      console.log("Date : ", selectedDate)
       toast.error("Please select both check-in date and number of travellers.");
       return;
     }
@@ -138,27 +138,27 @@ const BookCard = ({
       setTimeout(async () => {
         try {
           const response = await checkAvailability(bookingData);
-          if(response?.success){
-              handleBooking(selectedDate['start']);
-              updateBooking("totalMember",adultTravelers+childTravelers+infantTravelers)
-              updateBooking("bookingDate",new Date(selectedDate['start']))
-              updateBooking("memberType",{
-                adult: adultTravelers,
-                child: childTravelers,
-                infant: infantTravelers
-              })
-              updateBooking('package',{
-                name:details.name,
-                id:details.id,
-                review:0.0,
-                destination: `${details?.package_destinations?.[0]?.destination?.name},${details?.package_destinations?.[0]?.destination?.country?.name}`,
-                duration: details?.duration,
-                duration_type: details?.duration_type,
-                price: details?.final_price
-              })
-              updateBooking('final_price',details?.final_price);
-          }else{
-              handleCheckAvailability();
+          if (response?.success) {
+            handleBooking(selectedDate['start']);
+            updateBooking("totalMember", adultTravelers + childTravelers + infantTravelers)
+            updateBooking("bookingDate", new Date(selectedDate['start']))
+            updateBooking("memberType", {
+              adult: adultTravelers,
+              child: childTravelers,
+              infant: infantTravelers
+            })
+            updateBooking('package', {
+              name: details.name,
+              id: details.id,
+              review: 0.0,
+              destination: `${details?.package_destinations?.[0]?.destination?.name},${details?.package_destinations?.[0]?.destination?.country?.name}`,
+              duration: details?.duration,
+              duration_type: details?.duration_type,
+              price: details?.final_price
+            })
+            updateBooking('final_price', details?.final_price);
+          } else {
+            handleCheckAvailability();
           }
         } catch (error) {
           toast.error("An error occurred while processing your booking.");
@@ -240,7 +240,7 @@ const BookCard = ({
 
   const handleSelectedDate = (name, date) => {
     setSelectedDate(prev => ({ ...prev, [name]: date }));
-    if(!path.pathname.includes('packages')){
+    if (!path.pathname.includes('packages')) {
       handleOpenDatePicker();
     }
   };
@@ -285,11 +285,11 @@ const BookCard = ({
           {booking && (
             <div className="flex justify-between items-center">
               <div className="text-[18px] text-[#475467] font-medium">
-                {adultTravelers+childTravelers+infantTravelers} Travelers <span className="text-sm">X</span> $
+                {adultTravelers + childTravelers + infantTravelers} Travelers <span className="text-sm">X</span> $
                 {details?.price}
               </div>
               <div className="text-[24px] font-semibold text-[#0F1416]">
-                ${(details?.price * (adultTravelers+childTravelers+infantTravelers)).toFixed(2)}
+                ${(details?.price * (adultTravelers + childTravelers + infantTravelers)).toFixed(2)}
               </div>
             </div>
           )}
@@ -300,7 +300,10 @@ const BookCard = ({
         <div>
           {/* Date Picker */}
           <div className="flex gap-4 flex-col sm:flex-row relative">
-            <div
+            <button
+              type="button"
+              disabled={booking}
+              onClick={handleOpenDatePicker}
               className={`flex-1 flex border ${booking ? "justify-between" : ""
                 } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
             >
@@ -312,10 +315,8 @@ const BookCard = ({
                   {datePickerIcon}
                 </div>
               )}
-              <button
-              disabled={booking}
-              onClick={handleOpenDatePicker}
-              className={`${booking?"":"cursor-pointer"}`}
+              <div
+                className={`${booking ? "" : "cursor-pointer"}`}
               >
                 {!selectedDate["start"] ? (
                   <div className="text-sm sm:text-[16px] text-[#a6aaaccc]">Check-In</div>
@@ -329,21 +330,21 @@ const BookCard = ({
                     })}
                   </div>
                 )}
-              </button>
+              </div>
               {booking && (
                 <div className="text-2xl ml-2 w-fit">
                   {datePickerIcon}
                 </div>
               )}
-              
-            </div>
+
+            </button>
             {openDatePicker && (
-                <TourDatePicker
-                  handleOpenDatePicker={handleOpenDatePicker}
-                  handleSelectedDate={handleSelectedDate}
-                  handleCheckInCheckOutDate={handleCheckInCheckOutDate}
-                />
-              )}
+              <TourDatePicker
+                handleOpenDatePicker={handleOpenDatePicker}
+                handleSelectedDate={handleSelectedDate}
+                handleCheckInCheckOutDate={handleCheckInCheckOutDate}
+              />
+            )}
             {location.pathname.split("/")[1] === "cruises" && <div
               className={`flex-1 flex border ${booking ? "justify-between" : ""
                 } items-center gap-4 p-4 rounded-2xl border-[#e5e6e6] shadow-sm relative`}
@@ -357,7 +358,7 @@ const BookCard = ({
                 </div>
               )}
               <div
-              onClick={handleOpenDatePicker}
+                onClick={handleOpenDatePicker}
               >
                 {!selectedDate["end"] ? (
                   <div className="text-sm sm:text-[16px] text-[#a6aaaccc]">Check-Out</div>
@@ -391,7 +392,7 @@ const BookCard = ({
               </div>
             )}
 
-            <button disabled={booking} className={`flex justify-between items-center w-full ${booking?"":"cursor-pointer"}`} onClick={toggleTravelerMenu}>
+            <button disabled={booking} className={`flex justify-between items-center w-full ${booking ? "" : "cursor-pointer"}`} onClick={toggleTravelerMenu}>
               {showTravelerMenu ? (
                 <div className="text-sm sm:text-[16px] cursor-pointer">
                   {totalTravelers} Travelers

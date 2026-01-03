@@ -73,7 +73,7 @@ const UserDashboardSidebar = () => {
 
   return (
     <div className='h-full w-[214px]'>
-      <div className="pt-12 pb-6 bg-white rounded-xl h-full w-full px-2">
+      <div className="pt-12 pb-6 bg-white rounded-l-xl lg:rounded-xl h-full w-full px-2">
         {/* Profile Section */}
         <div className="flex flex-col items-center">
           <img src={user?.avatar_url} alt="Profile" className='rounded-full'/>
