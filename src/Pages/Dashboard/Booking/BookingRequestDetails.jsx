@@ -6,7 +6,9 @@ import BookManageApis from '../../../Apis/BookManageApis'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import { Helmet } from 'react-helmet-async'
-import Loading from '~/Shared/Loading'
+import Loading from '~/Shared/Loading';
+import { AuthContext } from '~/Context/AuthProvider/AuthProvider';
+import { useContext } from 'react';
 
 const BookingRequestDetails = () => {
   const { id } = useParams()
@@ -14,6 +16,7 @@ const BookingRequestDetails = () => {
   const [bookingDetails, setBookingDetails] = useState(null)
   const [loading, setLoading] = useState(true)
   const [selectedStatus, setSelectedStatus] = useState('');
+  const { user } = useContext(AuthContext);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['booking-request-details'],
@@ -30,7 +33,12 @@ const BookingRequestDetails = () => {
   const handleUpdateStatus = async (status) => {
     setLoading(true);
     if (!status) return;
-    const res = await BookManageApis.update(id, { status })
+    let res;
+    if(status === "request_complete"){
+      res = await BookManageApis.requestComplete(id)
+    }else{
+      res = await BookManageApis.update(id, { status })
+    }
     if (res.success) {
       toast.success(res.message);
       navigate(-1);
@@ -180,8 +188,8 @@ const BookingRequestDetails = () => {
           >
             Back
           </button>
-          {data?.data?.status === "pending" && <div className='flex gap-4 justify-between'>
-            <button onClick={() => { setSelectedStatus("confirmed"); handleUpdateStatus("confirmed") }} className='bg-[#4CAF50] text-white rounded cursor-pointer font-medium py-[7px] px-6'>Approve</button>
+          {(data?.data?.status === "pending" && data?.data?.creator?.id === user?.id) && <div className='flex gap-4 justify-between'>
+            {data?.data?.payment_status?.toLowerCase() === "succeeded" && <button onClick={() => { setSelectedStatus("confirmed"); handleUpdateStatus("confirmed") }} className='bg-[#4CAF50] text-white rounded cursor-pointer font-medium py-[7px] px-6'>Approve</button>}
             <button
               onClick={() => handleUpdateStatus("cancelled")}
               className='bg-[#FF5252] text-white rounded cursor-pointer font-medium py-[7px] px-6'
@@ -190,7 +198,7 @@ const BookingRequestDetails = () => {
             </button>
           </div>}
           {data?.data?.status === "confirmed" && <div className='flex gap-4 justify-between'>
-            <button onClick={() => { setSelectedStatus("confirmed"); handleUpdateStatus("confirmed") }} className='bg-[#4CAF50] text-white px-4 rounded cursor-pointer'>Request completion</button>
+            <button onClick={() => { setSelectedStatus("confirmed"); handleUpdateStatus("request_complete") }} className='bg-[#4CAF50] text-white px-4 rounded cursor-pointer'>Request completion</button>
             <button
               onClick={() => handleUpdateStatus("cancel")}
               className='bg-[#FF5252] text-white rounded cursor-pointer font-medium py-[7px] px-6'

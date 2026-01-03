@@ -58,7 +58,7 @@ const UserDashboardLayout = () => {
         <div className={`flex items-stretch lg:gap-6 h-full min-h-[690px] relative`}>
           {/* Sidebar */}
             <div
-              className={`absolute lg:static z-[2] h-full lg:w-[214px] backdrop-blur-sm shadow-md  transition-all duration-300 ${
+              className={`absolute lg:static z-[2] h-full lg:w-[214px] bg-[#0003] backdrop-blur-sm shadow-md  transition-all duration-300 ${
                 sidebarOpen ? "translate-x-0 inset-0" : "-translate-x-[234px] lg:translate-x-0"
               } rounded-2xl`}
               onClick={()=>setSidebarOpen(false)}

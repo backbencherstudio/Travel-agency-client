@@ -12,9 +12,11 @@ export default function AddTravellers({ travellersType, handleTravellers }) {
     control,
     setValue,
     reset,
+    watch,
   } = useForm();
   const [show, setShow] = useState(false);
   const [options, setOptions] = useState([]);
+  const ageValue = watch("age");
 
   const handleToggleForm = () => setShow(!show);
 
@@ -23,6 +25,17 @@ export default function AddTravellers({ travellersType, handleTravellers }) {
   };
 
   const onSubmit = (data) => {
+    const age = parseInt(data.age, 10);
+    if (age >= 12 && travellersType?.adult > 0) {
+      data.type = toOption("adult", "Adult");
+    } else if (age >= 2 && age <= 11 && travellersType?.child > 0) {
+      data.type = toOption("child", "Child");
+    } else if (age <= 1 && travellersType?.infant > 0) {
+      data.type = toOption("infant", "Infant");
+    } else {
+      alert("No available slots for the selected traveller type.");
+      return;
+    }
     handleTravellers(data);
     reset();
   };
@@ -43,6 +56,10 @@ export default function AddTravellers({ travellersType, handleTravellers }) {
       return opt;
     });
   }, [travellersType]);
+
+  useEffect(()=>{
+    console.log("age changed:", ageValue)
+  },[ageValue])
 
   return (
     <div>
@@ -85,23 +102,12 @@ export default function AddTravellers({ travellersType, handleTravellers }) {
             <label htmlFor="type" className="block">
               Type
             </label>
-            <Controller
-              control={control}
-              name="type"
-              defaultValue={[]}
-              rules={{
-                required: "Please select a type",
-              }}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  options={options.map((opt) => toOption(opt, opt))}
-                  onChange={handleSelectChange}
-                  placeholder="Select type"
-                  className="react-select-container"
-                  classNamePrefix="react-select"
-                />
-              )}
+            <input
+              type="text"
+              disabled
+              value={ageValue >= 12 ? "adult" : ageValue >= 11 ? "child" : "infant"}
+              className="px-5 py-3 w-full rounded-lg border border-zinc-300 focus:outline-none focus:border-[#EB5B2A]"
+              placeholder="Enter user type"
             />
           </div>
           {errors.type && <p className="text-red-500">{errors.type.message}</p>}

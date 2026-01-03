@@ -25,7 +25,8 @@ const Packages = () => {
     isError,
     data,
     error,
-    refetch
+    refetch,
+    isFetching,
   } = useQuery({
     queryKey: ['packages'],
     queryFn: async () => {
@@ -72,6 +73,7 @@ const Packages = () => {
             columns={columns}
             refetch={refetch}
             showAction={true}
+            loading={isLoading || isFetching}
           />
         </div>
       )}

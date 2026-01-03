@@ -184,7 +184,6 @@ const Contacts = () => {
                       {...register("phone_number", {
                         required: "Phone number is required",
                         pattern: {
-                          value: /^[0-9]+$/,
                           message: "Phone number must be numeric",
                         },
                       })}
@@ -261,7 +260,7 @@ const Contacts = () => {
             {/* -------------------------- End Contact Form Section -------------------------- */}
 
             {/* -------------------------- Map Section -------------------------- */}
-            <div>
+            {/* <div>
               <div
                 className="bg-white overflow-hidden rounded-lg border h-full w-full"
                 style={{ aspectRatio: "16/16" }}
@@ -273,7 +272,7 @@ const Contacts = () => {
                   loading="lazy"
                 />
               </div>
-            </div>
+            </div> */}
             {/* -------------------------- End Map Section -------------------------- */}
           </div>
         </ParentComponent>
@@ -300,7 +299,7 @@ const Contacts = () => {
             </div>
 
             {/* Office Location Info */}
-            <div className="content flex flex-col items-center text-center mx-auto w-[363px] h-[192px]">
+            {/* <div className="content flex flex-col items-center text-center mx-auto w-[363px] h-[192px]">
               <div className="icon p-3 bg-white shadow-sm rounded-full flex justify-center items-center mb-4">
                 <img src={c2} alt="c2" className="h-6 w-6" />
               </div>
@@ -311,7 +310,7 @@ const Contacts = () => {
               <p className="text-base text-[#0e457d] font-bold">
                 8 12 Victoria Road Barnsley, South Yorkshire S70 2BB
               </p>
-            </div>
+            </div> */}
 
             {/* Phone Contact Info */}
             <div className="content flex flex-col items-center text-center mx-auto w-[363px] h-[192px]">

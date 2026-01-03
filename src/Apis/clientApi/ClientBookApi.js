@@ -295,3 +295,55 @@ export const updateComment = async (packageId, reviewId, data) => {
     throw error
   }
 }
+
+
+export const completePackage = async checkoutId => {
+  const url = `/api/booking/${checkoutId}/confirm`
+  try {
+    const response = await axiosClient.post(url, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      return {
+        errors: error.response.data.errors,
+        message:
+          error.response.data.message ||
+          'An error occurred while creating the booking.'
+      }
+    } else if (error.request) {
+      return { message: 'No response received from the server.' }
+    } else {
+      return { message: 'An error occurred while processing the request.' }
+    }
+  }
+}
+
+
+export const sendReview = async (packageId, data) => {
+  const url = `/api/package/${packageId}/review`
+  try {
+    const response = await axiosClient.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    return response.data
+  } catch (error) {
+    if (error.response) {
+      return {
+        errors: error.response.data.errors,
+        message:
+          error.response.data.message ||
+          'An error occurred while creating the booking.'
+      }
+    } else if (error.request) {
+      return { message: 'No response received from the server.' }
+    } else {
+      return { message: 'An error occurred while processing the request.' }
+    }
+  }
+}

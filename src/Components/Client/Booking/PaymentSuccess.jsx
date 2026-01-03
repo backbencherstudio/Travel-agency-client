@@ -57,7 +57,7 @@ const PaymentSuccess = () => {
           </Link>
 
           <Link
-            to='/booking-history'
+            to='/user-dashboard/tour-management'
             className='px-8 py-3 border border-[#0E457D] text-[#0E457D] rounded-full hover:bg-gray-50 transition duration-300'
           >
             View Booking

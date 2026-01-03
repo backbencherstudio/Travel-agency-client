@@ -13,6 +13,7 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
+import { IoClose } from "react-icons/io5";
 import { FaEdit, FaSearch } from "react-icons/fa";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { IoIosCheckmark } from "react-icons/io";
@@ -27,6 +28,10 @@ import debounce from "lodash.debounce";
 import DropdownPortal from "../../../Shared/DropdownPortal";
 import { LuTrash2 } from "react-icons/lu";
 import { MdEdit } from "react-icons/md";
+import { Label } from "~/components/ui/label"
+import { Switch } from "~/components/ui/switch"
+import { X } from "lucide-react";
+import Loading from "~/Shared/Loading";
 
 // const PackageTable = ({ tableType = '', title, data, columns, refetch }) => {
 const PackageTable = ({
@@ -36,11 +41,14 @@ const PackageTable = ({
   refetch,
   showAction,
   data,
+  loading,
+  onStatusChange = () => { },
 }) => {
   const { user } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpenAction, setIsOpenAction] = useState(null);
   const [showTab, setShowTab] = useState("all");
+  const [statusUpdating, setStatusUpdating] = useState(false);
   const navigate = useNavigate();
   const actionRefs = useRef(new Map());
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
@@ -53,6 +61,7 @@ const PackageTable = ({
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filteredData, setFilteredData] = useState(data);
+  const [statusMap, setStatusMap] = useState({});
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -104,6 +113,16 @@ const PackageTable = ({
     console.log("Page : ", newPage);
     setPage(newPage);
   };
+
+  // Sync status map with incoming data so switches initialize with item.status
+  useEffect(() => {
+    if (!data) return;
+    const nextStatus = {};
+    data.forEach((pkg) => {
+      nextStatus[pkg.id] = pkg.status;
+    });
+    setStatusMap(nextStatus);
+  }, [data]);
 
   const handleNextPage = (event) => {
     setPage((prev) => prev + 1);
@@ -203,8 +222,8 @@ const PackageTable = ({
           showTab === "all"
             ? data
             : data.filter(
-                (item) => item.type.toLowerCase() === showTab.toLowerCase()
-              )
+              (item) => item.type.toLowerCase() === showTab.toLowerCase()
+            )
         );
         navigate(location.pathname);
       } else {
@@ -213,8 +232,8 @@ const PackageTable = ({
           showTab === "all"
             ? data
             : data.filter(
-                (item) => item.type.toLowerCase() === showTab.toLowerCase()
-              );
+              (item) => item.type.toLowerCase() === showTab.toLowerCase()
+            );
         const filtered = baseData.filter((item) =>
           item.name.toLowerCase().includes(lowercasedQuery)
         );
@@ -234,17 +253,49 @@ const PackageTable = ({
     handleActiveTab(showTab);
   }, [showTab]);
 
-  const handleApprove = async (id) => {
-    try{
-
-    }catch(err){
-      console.log(err);
-    }finally{
-      
+  const handleStatusToggle = async (id, checked) => {
+    setStatusUpdating(true);
+    const nextStatus = checked ? 1 : 0;
+    const result = await Swal.fire({
+      title: "Change package status?",
+      text: "Are you sure you want to change the status of this package?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, change",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+    });
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosClient.patch(`/api/admin/package/${id}/status`, { status: nextStatus });
+        if (res?.data?.success) {
+          await Swal.fire(
+            "Updated!",
+            "The package status has been updated successfully.",
+            "success"
+          );
+          refetch();
+        } else {
+          await Swal.fire(
+            "Failed!",
+            "The package status could not be updated.",
+            "error"
+          );
+        }
+      } catch (err) {
+        await Swal.fire(
+          "Failed!",
+          "The package status could not be updated.",
+          "error"
+        );
+      } finally {
+        setStatusUpdating(false);
+      }
+    }else{
+      setStatusUpdating(false);
     }
   };
-
-  const handleReject = async (id) => {};
 
   return (
     <div className="bg-white rounded-lg space-y-4">
@@ -252,28 +303,25 @@ const PackageTable = ({
         <div className="flex flex-col md:flex-row justify-between items-center gap-3 px-4 pt-4 rounded-t-xl">
           <div className="flex flex-col sm:flex-row md:gap-6 flex-1 text-nowrap">
             <button
-              className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3 ${
-                showTab === "all" &&
+              className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3 ${showTab === "all" &&
                 "sm:border-b-2 border-[#EB5B2A] text-[#A7411E]"
-              }`}
+                }`}
               onClick={() => handleActiveTab("all")}
             >
               All Packages
             </button>
             <button
-              className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3  ${
-                showTab === "tour" &&
+              className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === "tour" &&
                 "sm:border-b-2 border-[#EB5B2A] text-[#A7411E]"
-              }`}
+                }`}
               onClick={() => handleActiveTab("tour")}
             >
-              Tour Packages
+              Tours
             </button>
             <button
-              className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3  ${
-                showTab === "cruise" &&
+              className={`text-xs md:text-base font-semibold text-[#667085] px-4 pb-3  ${showTab === "cruise" &&
                 "sm:border-b-2 border-[#EB5B2A] text-[#A7411E]"
-              }`}
+                }`}
               onClick={() => handleActiveTab("package")}
             >
               Packages
@@ -323,7 +371,7 @@ const PackageTable = ({
               </th>
               <th className="px-3">
                 <div className="flex items-center gap-1">
-                  <span className="font-normal">Package</span>
+                  <span className="font-normal">Package type</span>
                   <svg
                     className="cursor-pointer"
                     xmlns="http://www.w3.org/2000/svg"
@@ -375,7 +423,85 @@ const PackageTable = ({
               </th>
               <th className="px-3">
                 <div className="flex items-center gap-1">
+                  <span className="font-normal">Creator</span>
+                  <svg
+                    className="cursor-pointer"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z"
+                      fill="#757D83"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z"
+                      fill="#757D83"
+                    />
+                  </svg>
+                </div>
+              </th>
+              <th className="px-3">
+                <div className="flex items-center gap-1">
                   <span className="font-normal">Budget</span>
+                  <svg
+                    className="cursor-pointer"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z"
+                      fill="#757D83"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z"
+                      fill="#757D83"
+                    />
+                  </svg>
+                </div>
+              </th>
+              <th className="px-3">
+                <div className="flex items-center gap-1">
+                  <span className="font-normal">Date</span>
+                  <svg
+                    className="cursor-pointer"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M4.50314 8.00314C4.674 7.83229 4.951 7.83229 5.12186 8.00314L7 9.88128L8.87814 8.00314C9.049 7.83229 9.326 7.83229 9.49686 8.00314C9.66771 8.174 9.66771 8.451 9.49686 8.62186L7.30936 10.8094C7.1385 10.9802 6.8615 10.9802 6.69064 10.8094L4.50314 8.62186C4.33229 8.451 4.33229 8.174 4.50314 8.00314Z"
+                      fill="#757D83"
+                    />
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M4.50314 5.99686C4.674 6.16771 4.951 6.16771 5.12186 5.99686L7 4.11872L8.87814 5.99686C9.049 6.16771 9.326 6.16771 9.49686 5.99686C9.66771 5.826 9.66771 5.549 9.49686 5.37814L7.30936 3.19064C7.1385 3.01979 6.8615 3.01979 6.69064 3.19064L4.50314 5.37814C4.33229 5.549 4.33229 5.826 4.50314 5.99686Z"
+                      fill="#757D83"
+                    />
+                  </svg>
+                </div>
+              </th>
+              <th className="px-3">
+                <div className="flex items-center gap-1">
+                  <span className="font-normal whitespace-nowrap">Updated Date</span>
                   <svg
                     className="cursor-pointer"
                     xmlns="http://www.w3.org/2000/svg"
@@ -444,10 +570,10 @@ const PackageTable = ({
                 ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 ?.map((item, index) => (
                   <tr className={`hover:bg-[#fdf0ea] px-3 py-5`} key={index}>
-                    <td className="py-5 px-3 min-w-[290px] overflow-hidden">
+                    <td className="py-5 px-3 min-w-[300px] overflow-hidden">
                       <div className="flex items-center gap-2 ">
                         {item.package_files &&
-                        item.package_files.length !== 0 ? (
+                          item.package_files.length !== 0 ? (
                           <img
                             src={item.package_files[0]?.file_url}
                             alt={item.package_files[0]?.file_url}
@@ -476,35 +602,91 @@ const PackageTable = ({
                       </div>
                     </td>
                     <td
-                      className="px-3"
+                      className="px-3 capitalize font-semibold text-sm"
                       style={{
                         minWidth: "150px",
                         color: "#475467",
-                        fontSize: "12px",
                       }}
                     >
                       {item.type || "Not Available"}
                     </td>
-                    <td className="block min-w-[300px] text-[12px]  text-wrap py-5 px-3 capitalize text-[#475467]">
+                    <td className="min-w-[300px] text-[12px]  text-wrap py-5 px-3 capitalize text-[#475467]">
                       {item.description}
+                    </td>
+                    <td className="text-[#475467] text-[12px] px-3 min-w-[150px]">
+                      <div className="flex items-center gap-2 ">
+                        {item.user &&
+                          item.user?.avatar_url ? (
+                          <img
+                            src={item.user?.avatar_url}
+                            alt={item.user?.avatar_url}
+                            className=" w-10 h-10 rounded-full"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-semibold text-white">
+                            {user?.name?.slice(0, 1).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex flex-col gap-[5px]">
+                          <p className="text-xs font-medium text-[#000E19] text-nowrap">
+                            {item.user?.name}
+                            {/* {user?.id === item?.user?.id && (
+                              <span className="text-xs font-normal text-[#475467]">
+                                me
+                              </span>
+                            )} */}
+                          </p>
+                          <p className="text-xs font-normal text-[#475467] capitalize">
+                            #{item.user?.type}
+                          </p>
+                        </div>
+                      </div>
                     </td>
                     <td className="text-[#475467] text-[12px] px-3">
                       ${item.price}
                     </td>
+                    <td className="text-[#475467] text-[12px] px-3">
+                      {item.created_at?.split("T")[0]}
+                    </td>
+                    <td className="text-[#475467] text-[12px] px-3">
+                      {item.updated_at?.split("T")[0]}
+                    </td>
                     {columns?.status && (
                       <td className="px-3 min-w-[150px]">
                         <div>
-                          {item.status === 1 ? (
-                            <p className="flex items-center gap-1 text-[#067647] font-medium px-3 py-[2px] border border-[#ABEFC6] bg-[#ECFDF3] rounded-2xl">
-                              <IoIosCheckmark className="text-xl text-[#17B26A]" />
-                              Active
-                            </p>
-                          ) : (
-                            <p className="flex items-center gap-1 text-[#B42318] font-medium px-3 py-[2px] border border-[#FECDCA] bg-[#FEF3F2] rounded-2xl">
-                              <GiSandsOfTime className="text-[12px] text-[#B42318]" />
-                              Pending
-                            </p>
-                          )}
+                          <div className="flex items-center space-x-2">
+                            {(() => {
+                              const currentStatus =
+                                statusMap[item.id] ?? item.status ?? 0;
+                              const switchId = `status-${item.id}`;
+                              return (
+                                <>
+                                  {user?.id === item.user?.id && <Switch
+                                    id={switchId}
+                                    disabled={(statusUpdating || loading) ? "off" : ""}
+                                    checked={Boolean(currentStatus)}
+                                    onCheckedChange={(checked) =>
+                                      handleStatusToggle(item?.id, checked)
+                                    }
+                                    className="disabled:cursor-progress"
+                                  />}
+                                  <Label htmlFor={switchId}>
+                                    {currentStatus === 1 ? (
+                                      <p className="flex items-center gap-1 text-[#067647] font-medium px-3 py-[2px] border border-[#ABEFC6] bg-[#ECFDF3] rounded-2xl">
+                                        <IoIosCheckmark className="text-xl text-[#17B26A]" />
+                                        Active
+                                      </p>
+                                    ) : (
+                                      <p className="flex items-center gap-1 text-[#B42318] font-medium px-3 py-[2px] border border-[#FECDCA] bg-[#FEF3F2] rounded-2xl">
+                                        <IoClose className="text-[12px] text-[#B42318]" />
+                                        Deactive
+                                      </p>
+                                    )}
+                                  </Label>
+                                </>
+                              );
+                            })()}
+                          </div>
                         </div>
                       </td>
                     )}
@@ -543,11 +725,17 @@ const PackageTable = ({
                       </TableCell> */}
                     {columns?.action && showAction && (
                       <td className="px-3">
-                        <div className="relative flex items-center w-fit">
-                          {(item?.approved_at || user?.type === "vendor") && (
+                        <div className="relative flex items-center justify-center w-full space-x-2">
+                          {((item?.approved_at && user?.type === "vendor") || (user?.id === item.user?.id)) && (
                             <Link
                               to={`/dashboard/edit-package/${item?.id}`}
-                              className={`flex bg-[#EB5B2A] w-fit gap-3 p-3 rounded-md font-medium text-white`}
+                              aria-disabled={loading || statusUpdating}
+                              onClick={(e) => {
+                                if (loading || statusUpdating) {
+                                  e.preventDefault();
+                                }
+                              }}
+                              className={`flex bg-[#EB5B2A] w-fit gap-3 p-3 rounded-md font-medium text-white ${(loading || statusUpdating) ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -568,25 +756,26 @@ const PackageTable = ({
                             </Link>
                           )}
                           {(!item?.approved_at && user?.type === "admin") && (
-                            <div
+                            <button
                               onClick={(e) => handleApproveClick(item.id)}
                               className={`flex w-fit gap-3 p-2 text-3xl rounded-md font-medium text-[#4A4C56]`}
                             >
-                              <FcApproval className="cursor-pointer"/>
-                            </div>
+                              <FcApproval className="cursor-pointer" />
+                            </button>
                           )}
                           {(!item?.approved_at && user?.type === "admin") && (
-                            <div
+                            <button
                               onClick={(e) => handleRejectClick(item.id)}
                               className={`flex w-fit gap-3 p-2 text-3xl rounded-md font-medium text-[#4A4C56]`}
                             >
-                              <IoMdCloseCircle className="cursor-pointer"/>
-                            </div>
+                              <IoMdCloseCircle className="cursor-pointer" />
+                            </button>
                           )}
                           {item?.approved_at && (
-                            <div
+                            <button
                               onClick={(e) => handlePackageDelete(e, item.id)}
-                              className={`flex w-fit gap-3 p-3 rounded-md font-medium text-[#4A4C56] cursor-pointer`}
+                              disabled={loading || statusUpdating}
+                              className={`flex w-fit gap-3 p-3 rounded-md font-medium text-[#4A4C56] cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 border`}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -614,7 +803,7 @@ const PackageTable = ({
                                   fill="#777980"
                                 />
                               </svg>
-                            </div>
+                            </button>
                           )}
                         </div>
 

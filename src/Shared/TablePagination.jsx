@@ -12,7 +12,7 @@ export default function TablePagination({
   pagination
 }) {
 
-  console.log('Pagination props:', { page, filteredData, rowsPerPage, totalPages, pagination });
+  // console.log('Pagination props:', { page, filteredData, rowsPerPage, totalPages, pagination });
   const showEllipsis = totalPages > 6;
   const lastPagesStart = Math.max(0, totalPages - 6);
 
